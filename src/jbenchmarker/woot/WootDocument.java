@@ -141,4 +141,12 @@ public abstract class WootDocument<N extends WootNode> implements Document {
     public WootOperation insert(TraceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, char content) {
         return new WootOperation(o, id, ip, in, content);
     }
+
+    /**
+     * Apply a localy generated insert between position ip and in, starting from indentifier idp. 
+     */
+    void insertLocal(WootOperation wop, int ip, WootIdentifier idp, int in) {
+        ip = findAfter(ip, idp);               
+        insertBetween(ip, in, wop);
+    }
 }

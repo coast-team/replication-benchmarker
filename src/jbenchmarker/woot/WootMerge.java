@@ -64,8 +64,8 @@ public class WootMerge extends MergeAlgorithm {
             int v = wdoc.getVisible(p);
             for (int i = 0; i < opt.getOffset(); i++) {
                 WootOperation wop = wdoc.delete(opt, wdoc.getElements().get(v).getId());
+                wdoc.getElements().get(v).setVisible(false);
                 lop.add(wop);
-                wdoc.apply(wop);
                 if (i+1 < opt.getOffset()) v = wdoc.nextVisible(v);
             }         
         } else {
@@ -76,9 +76,9 @@ public class WootMerge extends MergeAlgorithm {
            for (int i = 0; i < opt.getContent().length(); i++) {
                 WootIdentifier id = nextIdentifier();
                 WootOperation wop = wdoc.insert(opt, id, idp, idn, opt.getContent().charAt(i));
+                wdoc.insertLocal(wop, ip, idp, in+i);
                 idp = id;
                 lop.add(wop);
-                wdoc.apply(wop);
            } 
         }
         return lop;
