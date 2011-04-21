@@ -34,7 +34,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.HashMap;
@@ -55,9 +54,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.Operation;
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.core.VectorClock;
 import jbenchmarker.sim.CausalDispatcher;
 import org.jdom.input.DOMBuilder;
 import org.w3c.dom.Document;
@@ -94,7 +91,14 @@ public class Trace2XML {
     }
 
     public static void main(String[] args) throws Exception  {
-
+        if (args.length < 1 || args.length > 2) {
+            System.err.println("Arguments : trace [document]");
+            System.err.println("- trace : a file.log to parse ");
+            System.err.println("- document : keep only operation on a document (default all document)");
+            System.err.println("Produces file.xml");
+            System.exit(1);
+        }
+        
         // Création d'un nouveau DOM
         DocumentBuilderFactory fabrique = DocumentBuilderFactory.newInstance();
         DocumentBuilder constructeur = fabrique.newDocumentBuilder();
@@ -103,28 +107,21 @@ public class Trace2XML {
         document.setXmlVersion("1.0");
         document.setXmlStandalone(true);
 
-        //Element racine0 = document.createElement("Traces");
-        //document.appendChild(racine0);
-
-        //premier serveur
         Element racine1 = document.createElement("Traces");
         document.appendChild(racine1);
         
-         Element trace = document.createElement("Trace");
-         racine1.appendChild(trace);
+        Element trace = document.createElement("Trace");
+        racine1.appendChild(trace);
 
-        BufferedWriter out = null;
-        if (args.length>2) out = new BufferedWriter(new FileWriter(args[2]));
-        //Pour le premier groupe
-        Decompose(new InputStreamReader(new FileInputStream(args[0])), document, trace, true, true, out);
-//        Decompose("2.log", document, racine1);
-//        Decompose("4.log", document, racine1);
-//        Decompose("5.log", document, racine1);
+        File f = new File(args[0]);
+        int doc = (args.length == 2) ? Integer.parseInt(args[1]) : 0;                
+        System.out.print(f.getName() + " ");
+        decompose(new InputStreamReader(new FileInputStream(f)), document, trace, true, true, null, doc);
 
-        transformerXml(document, args[1]);
+        transformerXml(document, f.getName().replace("log", "xml"));
     }
     
-    public static Element operation(Document document, String type, String replica, String position, String timestamp, String doc, Node VC) {
+    public static Element operation(Document document, String type, String replica, String position, String timestamp, int doc, Node VC) {
         Element OP = document.createElement("Operation");
         Element t = document.createElement("Type");
         Element p = document.createElement("Position");
@@ -136,7 +133,7 @@ public class Trace2XML {
         p.setTextContent(position);
         r.setTextContent(replica);
         ts.setTextContent(timestamp);
-        d.setTextContent(doc);
+        d.setTextContent(""+doc);
         
         OP.appendChild(t);
         OP.appendChild(d);        
@@ -148,7 +145,7 @@ public class Trace2XML {
         return OP;
     }
         
-    public static Element insert(Document document, String replica, String position, String content, String timestamp, String doc, Node VC) {
+    public static Element insert(Document document, String replica, String position, String content, String timestamp, int doc, Node VC) {
         Element n = operation(document, "Ins", replica, position, timestamp, doc, VC);
         Element t = document.createElement("Text");
                 
@@ -157,7 +154,7 @@ public class Trace2XML {
         return n;
     }
 
-    public static Element delete(Document document, String replica, String position, String offset, String timestamp, String doc, Node VC) {
+    public static Element delete(Document document, String replica, String position, String offset, String timestamp, int doc, Node VC) {
         Element n = operation(document, "Del", replica, position, timestamp, doc, VC);
         Element o = document.createElement("Offset");
                 
@@ -191,7 +188,8 @@ public class Trace2XML {
      * @param out output produced by log
      * @throws Exception IO or IncorrectTrace
      */
-    static void Decompose(InputStreamReader stream, Document document, Element racine, boolean checkCausality, boolean checkPosition, BufferedWriter out) throws Exception {
+    static void decompose(InputStreamReader stream, Document document, Element racine, 
+            boolean checkCausality, boolean checkPosition, BufferedWriter out, int docToKeep) throws Exception {
         String[] Clock = null, Separation = null;
         String myLine;
         String[] Info;
@@ -215,9 +213,11 @@ public class Trace2XML {
                     
         try {
             while ((myLine = llog.readLine()) != null) {
+
+                
                 //System.out.println(myLine);
                 Element OP;
-
+                int doc;
                 Clock = ExtraireVH(myLine);
                 Element VH = document.createElement("VectorClock");
 
@@ -230,7 +230,10 @@ public class Trace2XML {
                 if (myLine.contains("Del")) {
                     Info = DecomposeLigne("Del", myLine);
                     pos = Info[0].replace("(", "");
-                    OP = Trace2XML.delete(document, Info[4], pos, Info[1], Info[2], Info[3], VH);
+                    doc = Integer.parseInt(Info[3]);
+                    int doct = (doc == docToKeep) ? 1 : doc;
+                    OP = Trace2XML.delete(document, Info[4], pos, Info[1], Info[2], doct, VH);
+                    
                 } else {
                     Info = DecomposeLigne("Ins", myLine);
                     sb = new StringBuffer(Info[0]);
@@ -243,40 +246,12 @@ public class Trace2XML {
                         text = text.replace("\"", "");
                     text = text.replace("\\n", "\n");
                     pos = Info[1];
-                    OP = Trace2XML.insert(document, Info[4], pos, text, Info[2], Info[3], VH);
+                    doc = Integer.parseInt(Info[3]);
+                    int doct = (doc == docToKeep) ? 1 : doc;
+                    OP = Trace2XML.insert(document, Info[4], pos, text, Info[2], doct, VH);
                 }      
-
-                int doc = Integer.parseInt(Info[3]);
                 docs.add(doc);
-//                if (checkCausality) {  // brut force
-//                    Map<Integer, VectorClock> dclock = clocks.get(doc);
-//                    if (dclock == null) {
-//                        dclock = new HashMap<Integer, VectorClock>();
-//                        clocks.put(doc, dclock);
-//                        if (myLine.contains("Del")) {
-//                            throw new IncorrectTrace("First operation is del on document " + doc);
-//                        } else {
-//                        // Filler
-//                           text = text + fill;
-//                           OP.getLastChild().setTextContent(text);
-//                        }
-////                        dclock.put(fillerReplica, new VectorClock());
-////                        dclock.get(fillerReplica).inc(fillerReplica);
-////                        Element fillVector = document.createElement("VectorClock");
-////                        fillVector.appendChild(entry(document, "" + fillerReplica, "1"));
-////                        racine.appendChild(Trace2XML.insert(document, "" + fillerReplica , "0", filler, Info[2], Info[3], fillVector));
-//                    }
-//                    org.jdom.Element opd = builder.build(OP);
-//                    TraceOperation opt = TraceGenerator.oneXML2OP(opd);
-//                    if (!dclock.containsKey(opt.getReplica())) {
-//                        dclock.put(opt.getReplica(), new VectorClock());
-//                    }
-//                    TraceGenerator.causalCheck(opt, dclock);
-//                    if (!opt.getVC().greaterThan(dclock.get(opt.getReplica()))) 
-//                        throw new IncorrectTrace("Bad order on VC " + opt);
-//                    dclock.get(opt.getReplica()).upTo(opt.getVC());
-//                }
-
+                
                 if (checkPosition) {
                     StringBuilder s = docsTest.get(doc);
                     if (s == null) {
@@ -296,7 +271,7 @@ public class Trace2XML {
                        throw new IncorrectTrace("Operation position " + pos + " out of bound " + s.length() + " in \n" + s.toString());
                     }
                 }
-                racine.appendChild(OP);
+                if (docToKeep==0 || doc==1) racine.appendChild(OP);
             }
             if (out != null) {
                 for (Entry<Integer, StringBuilder> d : docsTest.entrySet()) {
