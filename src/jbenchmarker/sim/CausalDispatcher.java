@@ -56,7 +56,7 @@ public class CausalDispatcher  extends Simulator {
         final Map<Integer, List<List<Operation>>> genHistory = new HashMap<Integer, List<List<Operation>>>();
         final Map<Integer, VectorClock> clocks = new HashMap<Integer, VectorClock>();
         final VectorClock globalClock = new VectorClock();
-        final List<TraceOperation> concurrentOps = new LinkedList();
+        final List<TraceOperation> concurrentOps = new LinkedList<TraceOperation>();
         
         while (trace.hasNext()) {
             final TraceOperation opt = trace.next();
