@@ -102,7 +102,7 @@ public class LogootIdentifier implements Comparable<LogootIdentifier> {
                 i++;
             }
         }
-        while (i<=index) {
+        while (i<=length) {
            P.addComponent(new Component(digits.get(i), peer, clock));
            i++;
         }        
