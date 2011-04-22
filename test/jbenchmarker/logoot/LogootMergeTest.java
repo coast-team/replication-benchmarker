@@ -18,6 +18,7 @@
 
 
 package jbenchmarker.logoot;
+import java.util.ArrayList;
 import jbenchmarker.core.Operation;
 import jbenchmarker.trace.TraceOperation;
 import java.util.List;
@@ -46,7 +47,6 @@ public class LogootMergeTest
         @Test
     public void testgenerateLocal() {
         LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 64, new BoundaryStrategy(1000000000));
-        LogootDocument lg = (LogootDocument) (LM.getDoc());
 
         List<Operation> a = LM.generateLocal(insert(0, "a"));  //a
         assertEquals(1, a.size());
@@ -66,8 +66,32 @@ public class LogootMergeTest
         assertEquals("fEKLa", LM.getDoc().view());
 
 
-        a = LM.generateLocal(delete(1, 3));//La
+        a = LM.generateLocal(delete(1, 3));
         assertEquals("fa", LM.getDoc().view());
+    }
+        
+    @Test
+    public void testDeleteBloc() {
+        
+        LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 64, new BoundaryStrategy(1000000000));
+        LogootDocument lg = (LogootDocument) (LM.getDoc());
+        
+        
+        List<Operation> a = LM.generateLocal(insert(0, "aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib"));
+        assertEquals(80, a.size());
+        assertEquals("aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib", LM.getDoc().view());
+
+
+        for(int i =1;i<lg.getIdTable().size()-1;i++)
+        {
+             assertTrue(lg.getIdTable().get(i).compareTo(lg.getIdTable().get(i-1)) > 0);
+             assertFalse(lg.getIdTable().get(i).compareTo(lg.getIdTable().get(i+1)) > 0);
+        }
+        
+        a = LM.generateLocal(delete(1, 78));
+        assertEquals("ab", LM.getDoc().view());
+        
+        
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
