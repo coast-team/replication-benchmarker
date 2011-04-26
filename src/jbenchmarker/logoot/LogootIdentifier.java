@@ -97,9 +97,7 @@ public class LogootIdentifier implements Comparable<LogootIdentifier> {
             i++;
         }
         if (i==0) {            
-            while (i < Q.id.size() 
-                    && digits.get(i) >= 
-                    Q.id.get(i).getDigit()) {
+            while (i < Q.id.size() && digits.get(i) >= Q.id.get(i).getDigit()) {
                 P.addComponent(new Component(Q.id.get(i).getDigit(), Q.id.get(i).getPeerID(), Q.id.get(i).getClock()));
                 i++;
             }

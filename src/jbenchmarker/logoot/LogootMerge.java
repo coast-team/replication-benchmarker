@@ -59,6 +59,11 @@ public class LogootMerge extends MergeAlgorithm {
     @Override
     protected void integrateLocal(Operation op) {
         getDoc().apply(op);
+        List<LogootIdentifier> lg = ((LogootDocument) this.getDoc()).getIdTable();        
+        for (int i = 1; i < lg.size(); i++) {
+            if (lg.get(i).compareTo(lg.get(i-1))<=0)
+                System.err.println(i);
+        }
     }
 
     @Override
