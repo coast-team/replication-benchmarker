@@ -27,7 +27,6 @@ import jbenchmarker.woot.wooth.WootHashMerge;
  * @author urso
  */
 public class WootHFactory implements ReplicaFactory {
-    @Override
     public MergeAlgorithm createReplica(int r) {
         return new WootHashMerge(new WootHashDocument(), r);
     }

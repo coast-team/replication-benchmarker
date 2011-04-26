@@ -77,7 +77,6 @@ public class Component implements Comparable<Component> {
         return "<" + digit + ',' + peerID + ',' + clock + '>';
     }
 
-    @Override
     public int compareTo(Component t) {
         if (this.digit == t.digit) {
             return (this.peerID == t.peerID) ? this.clock - t.clock : this.peerID - t.peerID;

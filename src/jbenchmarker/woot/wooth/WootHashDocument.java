@@ -43,7 +43,6 @@ public class WootHashDocument implements Document {
         this.map.put(WootIdentifier.IE, end);
     }
 
-    @Override
     public String view() {
         StringBuilder s = new StringBuilder();
         for (WootHashNode w=first; w!=null; w = w.getNext()) 
@@ -61,7 +60,6 @@ public class WootHashDocument implements Document {
         return false;    
     }    
     
-    @Override
     public void apply(Operation op) {
         WootOperation wop = (WootOperation) op;
         

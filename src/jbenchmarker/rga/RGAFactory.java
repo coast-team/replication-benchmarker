@@ -23,7 +23,6 @@ import jbenchmarker.core.ReplicaFactory;
 
 public class RGAFactory implements ReplicaFactory {
 
-	@Override
 	public MergeAlgorithm createReplica(int r) {
 		return new RGAMerge(new RGADocument(), r);
 	}

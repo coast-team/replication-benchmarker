@@ -47,7 +47,6 @@ public class PlaceboFactory implements ReplicaFactory {
         }        
     }
     
-    @Override
     public MergeAlgorithm createReplica(int r) {
         return new MergeAlgorithm(new Document() {
             public String view() {

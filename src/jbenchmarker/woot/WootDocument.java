@@ -46,7 +46,6 @@ public abstract class WootDocument<N extends WootNode> implements Document {
         elements.add(CE);
     }
 
-    @Override
     public String view() {
         StringBuilder s = new StringBuilder();
         for (WootNode w : elements) 
@@ -72,8 +71,7 @@ public abstract class WootDocument<N extends WootNode> implements Document {
         }
         throw new NoSuchElementException("Don't find " + id + " after position " + d);
     }
-    
-    @Override
+
     public void apply(Operation op) {
         WootOperation wop = (WootOperation) op;
         

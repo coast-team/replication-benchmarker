@@ -39,7 +39,6 @@ public class RGADocument implements Document {
 		hash	= new HashMap<RGAS4Vector, RGANode>(); 
 	}
 	
-	@Override
 	public String view() {
 		StringBuilder s = new StringBuilder();
 		RGANode node = head.getNext();
@@ -51,7 +50,6 @@ public class RGADocument implements Document {
 	}
 	
 	
-	@Override
 	public void apply(Operation op) {
 		RGAOperation rgaop = (RGAOperation)op;
 //		if(rgaop.getLoR() == RGAOperation.LOCAL){

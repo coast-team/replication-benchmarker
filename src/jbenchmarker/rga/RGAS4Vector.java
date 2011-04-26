@@ -49,7 +49,6 @@ public class RGAS4Vector implements Comparable<RGAS4Vector> {
 		return "["+ssn+","+sid+","+sum+"]";
 	}
 	
-	@Override 
 	public int compareTo(RGAS4Vector s4v) {
 		// TODO Auto-generated method stub
 		if(this.ssn > s4v.ssn) return  AFTER;

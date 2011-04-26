@@ -48,7 +48,6 @@ public class LogootDocument implements Document {
         document.add(' ');
     }
     
-    @Override
     public String view() {
         StringBuilder s = new StringBuilder();
         for (char c : document) {
@@ -74,7 +73,6 @@ public class LogootDocument implements Document {
                 ? startIndex + 1 : startIndex;
     }
     
-    @Override
     public void apply(Operation op) {
         LogootOperation lg = (LogootOperation) op;
         LogootIdentifier idToSearch = lg.getIdentifiant();

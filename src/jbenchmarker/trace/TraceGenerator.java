@@ -113,7 +113,6 @@ public class TraceGenerator {
             this.size = size;
         }
 
-        @Override
         public boolean hasNext() {
             if (line == size) return false;
             if (!children.hasNext()) return false;
@@ -130,7 +129,6 @@ public class TraceGenerator {
             return children.hasNext();
         }
 
-        @Override
         public TraceOperation next() {
             if (goNext && !hasNext()) throw new NoSuchElementException();
             goNext = true;
@@ -138,7 +136,6 @@ public class TraceGenerator {
             return next;
         }
 
-        @Override
         public void remove() {
             throw new UnsupportedOperationException("Not supported yet.");
         }

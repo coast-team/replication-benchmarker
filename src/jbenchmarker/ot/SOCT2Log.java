@@ -38,7 +38,6 @@ public class SOCT2Log implements Iterable<TTFOperation> {
         return this.operations.size();
     }
 
-    @Override
     public Iterator<TTFOperation> iterator() {
         return this.operations.iterator();
     }

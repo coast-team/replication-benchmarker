@@ -31,7 +31,6 @@ import jbenchmarker.woot.wooto.WootOptimizedDocument;
  * @author urso
  */
 public class WootOFactory implements ReplicaFactory {
-    @Override
     public MergeAlgorithm createReplica(int r) {
         return new WootMerge(new WootOptimizedDocument(), r);
     }

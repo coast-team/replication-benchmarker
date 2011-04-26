@@ -47,8 +47,6 @@ public class WootIdentifier implements Comparable<WootIdentifier> {
         return replica;
     }
 
-
-    @Override
     public int compareTo(WootIdentifier t) {
         if (this.replica == t.replica) 
             return this.clock - t.clock;

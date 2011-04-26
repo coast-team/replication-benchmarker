@@ -36,7 +36,6 @@ public class TTFDocument implements Document {
         this.model = new ArrayList<TTFChar>();
     }
 
-    @Override
     public String view() {
         StringBuilder sb = new StringBuilder();
         for (TTFChar c : this.model) {
@@ -47,7 +46,6 @@ public class TTFDocument implements Document {
         return sb.toString();
     }
 
-    @Override
     public void apply(Operation op) {
         TTFOperation oop = (TTFOperation) op;
         int pos = oop.getPosition();

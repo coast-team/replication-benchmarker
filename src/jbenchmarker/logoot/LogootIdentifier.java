@@ -130,7 +130,6 @@ public class LogootIdentifier implements Comparable<LogootIdentifier> {
         return l;
     }
 
-    @Override
     public int compareTo(LogootIdentifier t) {
         int m = Math.min(id.size(), t.id.size());
         for (int i = 0; i < m; i++) {          

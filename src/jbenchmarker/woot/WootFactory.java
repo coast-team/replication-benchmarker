@@ -27,7 +27,6 @@ import jbenchmarker.woot.original.WootOriginalDocument;
  * @author urso
  */
 public class WootFactory implements ReplicaFactory {
-    @Override
     public MergeAlgorithm createReplica(int r) {
         return new WootMerge(new WootOriginalDocument(), r);
     }
