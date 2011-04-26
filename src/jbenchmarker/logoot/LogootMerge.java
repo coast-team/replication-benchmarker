@@ -19,6 +19,7 @@
 package jbenchmarker.logoot;
 
 
+import java.math.BigInteger;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.Operation;
 import jbenchmarker.trace.TraceOperation;
@@ -35,7 +36,8 @@ public class LogootMerge extends MergeAlgorithm {
     final private long max; // MAX = 2^nbBit - 1
 
     private int myClock;
-    private LogootStrategy strategy;
+    private final LogootStrategy strategy;
+    private final BigInteger base;
 
 
     
@@ -47,6 +49,7 @@ public class LogootMerge extends MergeAlgorithm {
         this.strategy = strategy;
         if (nbBit==64) max = Long.MAX_VALUE;
         else this.max = (long) Math.pow(2,nbBit)-1;
+        base = BigInteger.valueOf(2).pow(nbBit);
     }
 
     public long getNbBit() {
@@ -93,11 +96,6 @@ public class LogootMerge extends MergeAlgorithm {
         return lop;
     }
 
-    // Use only if nbBit < 64
-    long getBase() {
-        return max+1;
-    }
-
     void incClock() {
         this.myClock++;
     }
@@ -108,5 +106,9 @@ public class LogootMerge extends MergeAlgorithm {
 
     long getMax() {
         return this.max;
+    }
+    
+    BigInteger getBase() {
+        return base;
     }
 }

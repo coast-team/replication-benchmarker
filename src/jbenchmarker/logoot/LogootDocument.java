@@ -86,7 +86,7 @@ public class LogootDocument implements Document {
         } else if (idTable.get(pos).equals(idToSearch)) {
             idTable.remove(pos);
             document.remove(pos);
-        }
+        } 
     }
 
     public RangeList<LogootIdentifier> getIdTable() {

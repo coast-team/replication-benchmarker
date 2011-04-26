@@ -18,6 +18,7 @@
 
 package jbenchmarker.logoot;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -28,10 +29,12 @@ import java.util.Random;
 class BoundaryStrategy implements LogootStrategy {
 
     private Random ran = new Random();
-    private int bound;
+    private final long bound;
+    private final BigInteger boundBI;
 
     public BoundaryStrategy(int bound) {
         this.bound = bound;
+        this.boundBI = BigInteger.valueOf(bound);
     }    
         
     public long nextLong(long l) {
@@ -46,49 +49,29 @@ class BoundaryStrategy implements LogootStrategy {
      */
     public ArrayList<LogootIdentifier> generateLineIdentifiers(LogootMerge replica, LogootIdentifier P, LogootIdentifier Q, int n) {
         int index = 0, tMin = Math.min(P.length(), Q.length());
-        long space = 0, interval = 0;
 //        BigInteger interval = BigInteger.ZERO, N = BigInteger.valueOf(n);
 
         while (index<tMin && P.getComponentAt(index).equals(Q.getComponentAt(index))) {
             index++;
         }
-        long diff = Q.getDigitAt(index) - P.getDigitAt(index) - 1;
-        if (diff < n) {
-            if (diff<0) space = 0;
-            else space = diff;
-            index++;
-            while (interval == 0) {
-                if (space > 0 && replica.getNbBit() == 64) { // Enough place => boundary 
-                    interval = bound;
-                } else {
-                    if (replica.getNbBit() == 64) {
-                        space = replica.getMax() - P.getDigitAt(index);
-                        if ((space / bound > n) || (Q.getDigitAt(index) / bound > n)) {
-                            interval = bound;
-                        } else {
-                            space += Q.getDigitAt(index);
-                        }
-                    } else {
-                        space = space * replica.getBase() + replica.getMax() - P.getDigitAt(index) + Q.getDigitAt(index);
-                    }
-                    if (space > n) {
-                        interval = space / n;
-                    } else {
-                        index++;
-                    }
-                }
-            }
+        long interval, d = Q.getDigitAt(index) - P.getDigitAt(index) - 1;
+        if (d >= n) {
+            interval = Math.min(d/n, bound); 
         } else {
-            interval = diff / n;
+            BigInteger diff = d == -1 ? BigInteger.ZERO : BigInteger.valueOf(d),
+                    N = BigInteger.valueOf(n);
+            while (diff.compareTo(N) < 0) {
+                index++;
+                diff = diff.multiply(replica.getBase()).
+                        add(BigInteger.valueOf(replica.getMax() - P.getDigitAt(index)).
+                        add(BigInteger.valueOf(Q.getDigitAt(index))));
+            }
+            interval = diff.divide(N).min(boundBI).longValue();
         }
-           
-        if (interval > bound) interval = bound;
-        
         ArrayList<LogootIdentifier> patch = new ArrayList<LogootIdentifier>();        
-        LogootIdentifier id = P;        
-        for (int i = 0; i < n; i++) 
-        {
-            id = id.plus(index, nextLong(interval)+1, Q, replica.getMax(), replica.getReplicaNb(), replica.getClock()); 
+        LogootIdentifier id = P;
+        for (int i = 0; i < n; i++) {
+            id = id.plus(index, nextLong(interval) + 1, Q, replica.getMax(), replica.getReplicaNb(), replica.getClock());
             replica.incClock();
             patch.add(id);
         }
