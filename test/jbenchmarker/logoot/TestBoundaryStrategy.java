@@ -207,23 +207,29 @@ public class TestBoundaryStrategy {
         LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 64, new BoundaryStrategy(1000000000));
         BoundaryStrategy BS = new BoundaryStrategy(50);
 
-        LogootIdentifier P = new LogootIdentifier(3);
-        LogootIdentifier Q = new LogootIdentifier(3);
+        LogootIdentifier P = new LogootIdentifier(6);
+        LogootIdentifier Q = new LogootIdentifier(6);
 
 
-        P.addComponent(new Component(31256, 4, 50));
-        P.addComponent(new Component(31256, 6, 60));
-        P.addComponent(new Component(0, 6, 115));
-        P.addComponent(new Component(31256, 8, 60));
+        P.addComponent(new Component(414380831, 4, 50));
+        P.addComponent(new Component(414380831, 4, 50));
+        P.addComponent(new Component(110691753, 6, 60));
+        P.addComponent(new Component(1233733303, 8, 60));
+        P.addComponent(new Component(78996211, 8, 60));
+        P.addComponent(new Component(22338338, 8, 60));
         
-        Q.addComponent(new Component(31256, 4, 50));
-        Q.addComponent(new Component(31256, 6, 60));
-        Q.addComponent(new Component(0, 6, 115));
-        Q.addComponent(new Component(31256, 8, 61));
+        Q.addComponent(new Component(414380831, 4, 50));
+        Q.addComponent(new Component(414380831, 4, 50));
+        Q.addComponent(new Component(110691753, 6, 60));
+        Q.addComponent(new Component(1233733303, 8, 60));
+        Q.addComponent(new Component(78996211, 8, 60));
+        Q.addComponent(new Component(22338338, 8, 60));
+        Q.addComponent(new Component(0, 11, 100));
+        Q.addComponent(new Component(3115485, 11, 100));
 
-        ArrayList<LogootIdentifier> patch = BS.generateLineIdentifiers(LM, P, Q, 200);
+        ArrayList<LogootIdentifier> patch = BS.generateLineIdentifiers(LM, P, Q, 50);
 
-        assertEquals(200, patch.size());
+        assertEquals(50, patch.size());
 
         for (int i = 1; i < patch.size() - 1; i++) {
             assertTrue(patch.get(i).compareTo(P) > 0);
