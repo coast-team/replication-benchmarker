@@ -31,7 +31,7 @@ import static org.junit.Assert.*;
  */
 public class TestBoundaryStrategy {
     
-    @Ignore
+    //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas1() {
         System.out.println("Test Boundary Strategy...");
@@ -59,7 +59,7 @@ public class TestBoundaryStrategy {
         }
     }
     
-    @Ignore
+    //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas2() {
         LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 64, new BoundaryStrategy(1000000000));
@@ -67,7 +67,6 @@ public class TestBoundaryStrategy {
 
         LogootIdentifier P = new LogootIdentifier(2);
         LogootIdentifier Q = new LogootIdentifier(2);
-        LogootIdentifier R = new LogootIdentifier(2);
 
         P.addComponent(new Component(20, 4, 50));
         P.addComponent(new Component(30, 4, 60));
@@ -87,7 +86,7 @@ public class TestBoundaryStrategy {
         }
     }
     
-    @Ignore
+    //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas3() {
         LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 64, new BoundaryStrategy(1000000000));
@@ -95,8 +94,6 @@ public class TestBoundaryStrategy {
 
         LogootIdentifier P = new LogootIdentifier(2);
         LogootIdentifier Q = new LogootIdentifier(2);
-        LogootIdentifier R = new LogootIdentifier(2);
-
 
         P.addComponent(new Component(20, 4, 50));
         P.addComponent(new Component(10, 6, 60));
@@ -115,7 +112,7 @@ public class TestBoundaryStrategy {
         }
     }
     
-    @Ignore
+    //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas4() {
         LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 64, new BoundaryStrategy(1000000000));
@@ -145,7 +142,7 @@ public class TestBoundaryStrategy {
         }
     }
     
-    @Ignore
+    //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas5() {
         LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 64, new BoundaryStrategy(1000000000));
@@ -175,7 +172,7 @@ public class TestBoundaryStrategy {
             assertFalse(patch.get(i).compareTo(Q) > 0);
         }
     }
-    @Ignore
+    //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas6() {
         LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 64, new BoundaryStrategy(1000000000));
@@ -205,7 +202,7 @@ public class TestBoundaryStrategy {
             assertFalse(patch.get(i).compareTo(Q) > 0);
         }
     }
-     
+     //@Ignore
      @Test
     public void testgenerateLineIdentifiersCas7() {
         LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 11, 64, new BoundaryStrategy(1000000000));
