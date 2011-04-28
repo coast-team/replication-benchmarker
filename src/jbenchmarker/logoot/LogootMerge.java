@@ -84,6 +84,8 @@ public class LogootMerge extends MergeAlgorithm {
             }
             lg.getIdTable().addAll(position+1, patch);
             lg.getDocument().addAll(position+1, lc);
+
+            
         } else {
             offset = opt.getOffset();
             for (int k = 1; k <= offset; k++) {
@@ -103,7 +105,11 @@ public class LogootMerge extends MergeAlgorithm {
     int getClock() {
         return this.myClock;
     }
-
+    
+    void setClock(int c) {
+        this.myClock = c;
+    }
+    
     long getMax() {
         return this.max;
     }
