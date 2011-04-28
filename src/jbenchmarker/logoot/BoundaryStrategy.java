@@ -49,7 +49,6 @@ class BoundaryStrategy implements LogootStrategy {
      */
     public ArrayList<LogootIdentifier> generateLineIdentifiers(LogootMerge replica, LogootIdentifier P, LogootIdentifier Q, int n) {
         int index = 0, tMin = Math.min(P.length(), Q.length());
-//        BigInteger interval = BigInteger.ZERO, N = BigInteger.valueOf(n);
 
         while (index<tMin && P.getComponentAt(index).equals(Q.getComponentAt(index))) {
             index++;
@@ -66,15 +65,19 @@ class BoundaryStrategy implements LogootStrategy {
                         add(BigInteger.valueOf(replica.getMax() - P.getDigitAt(index)).
                         add(BigInteger.valueOf(Q.getDigitAt(index))));
             }
-            interval = diff.divide(N).min(boundBI).longValue();
+            
+            if(index > P.length() && Q.getComponentAt(P.length()).getDigit()== 0)
+                interval = Q.getDigitAt(Q.length()-1)/n;
+            else
+                interval = diff.divide(N).min(boundBI).longValue();
         }
         ArrayList<LogootIdentifier> patch = new ArrayList<LogootIdentifier>();        
         LogootIdentifier id = P;
         for (int i = 0; i < n; i++) {
-            id = id.plus(index, nextLong(interval) + 1, Q, replica.getMax(), replica.getReplicaNb(), replica.getClock());
+           id = id.plus(index, nextLong(interval) + 1, Q, replica.getMax(), replica.getReplicaNb(), replica.getClock());
             replica.incClock();
             patch.add(id);
-        }
+        }  
         return patch;
     }
 }

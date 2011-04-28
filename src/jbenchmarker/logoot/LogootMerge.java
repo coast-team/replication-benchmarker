@@ -39,8 +39,6 @@ public class LogootMerge extends MergeAlgorithm {
     private final LogootStrategy strategy;
     private final BigInteger base;
 
-
-    
     // nbBit <= 64
     public LogootMerge(Document doc, int r, int nbBit, LogootStrategy strategy) {
         super(doc, r);

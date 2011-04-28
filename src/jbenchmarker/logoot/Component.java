@@ -22,7 +22,7 @@ public class Component implements Comparable<Component> {
 
     final private long digit;
     final private int peerID;
-    final private int clock;
+    private int clock;
 
     public Component(long d, int pid, int c) {
         this.digit = d;
@@ -40,6 +40,10 @@ public class Component implements Comparable<Component> {
 
     public int getClock() {
         return clock;
+    }
+    
+    public void setClock(int c) {
+        clock = c;
     }
 
     @Override
