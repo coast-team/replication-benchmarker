@@ -19,17 +19,69 @@
 
 package jbenchmarker.logoot;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author urso
  */
-public interface LogootStrategy {
+public abstract class LogootStrategy {
+
+
 
 
     /**
      * Generate N identifier between P and Q;
      */
-    ArrayList<LogootIdentifier> generateLineIdentifiers(LogootMerge replica, LogootIdentifier P, LogootIdentifier Q, int N);
+    abstract ArrayList<LogootIdentifier> generateLineIdentifiers(LogootMerge replica, LogootIdentifier P, LogootIdentifier Q, int N);
+
+
+
+    static LogootIdentifier plus(int index, long sep, BigInteger base, LogootIdentifier P, LogootIdentifier Q, int peer, int clock) {
+        LogootIdentifier R = new LogootIdentifier(index + 1);
+        BigInteger basis = big(P, index, base).add(BigInteger.valueOf(sep));
+        List<Long> digits = digits(basis, index, base);
+        int i = 0;
+
+        while (i < index && i < P.length() && digits.get(index - i) == P.getDigitAt(i)) {
+            R.addComponent(P.getComponentAt(i).clone());
+            i++;
+        }
+        while (i < index && i < Q.length() && digits.get(index - i) >= Q.getDigitAt(i)) {
+            R.addComponent(Q.getComponentAt(i).clone());
+            i++;
+        }
+        while (i <= index) {
+            R.addComponent(new Component(digits.get(index - i), peer, clock));
+            i++;
+        }
+        return R;
+    }
+
+    /**
+     * An identifier as a biginteger.
+     */
+    static BigInteger big(LogootIdentifier id, int index, BigInteger base) {
+        BigInteger bi = BigInteger.valueOf(id.getDigitAt(0));
+        for (int i = 1; i <= index; i++) {
+            bi = bi.multiply(base).add(BigInteger.valueOf(id.getDigitAt(i)));
+        }
+        return bi;
+    }
+
+    /**
+     * Digits of BigInteger in reverse order
+     */
+    static List<Long> digits(BigInteger id, int index, BigInteger base) {
+        List<Long> l = new ArrayList<Long>(index+1);
+        while(index>=0) {
+            BigInteger[] dr = id.divideAndRemainder(base);
+            l.add(dr[1].longValue());
+            id = dr[0];
+            --index;
+        }
+        return l;
+    }
 }
