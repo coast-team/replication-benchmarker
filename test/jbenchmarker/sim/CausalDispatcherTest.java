@@ -51,7 +51,6 @@ public class CausalDispatcherTest {
     }
     
     static public class RFMock implements ReplicaFactory {
-        @Override
         public MergeAlgorithm createReplica(int r) {
             return new MergeAlgorithm(new Document() {
                 public String view() { return null; }
