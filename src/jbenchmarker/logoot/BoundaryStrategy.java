@@ -20,6 +20,7 @@ package jbenchmarker.logoot;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -68,15 +69,14 @@ class BoundaryStrategy extends LogootStrategy {
             }           
             interval = diff.divide(N).min(boundBI).longValue();
         }
+        
         ArrayList<LogootIdentifier> patch = new ArrayList<LogootIdentifier>();        
-        LogootIdentifier id = P;
-        BigInteger bigId = big(P, index, replica.getBase());
+        List<Long> digits = P.digits(index);
         for (int i = 0; i < n; i++) {
-//           id = id.plus(index, nextLong(interval) + 1, Q, replica.getMax(), replica.getReplicaNb(), replica.getClock());
-            bigId = bigId.add(BigInteger.valueOf(nextLong(interval) + 1));
-            id = plus(index, bigId, replica.getBase(), id, Q, replica.getReplicaNb(), replica.getClock());
+            plus(digits, nextLong(interval) + 1, replica.getBase(), replica.getMax());
+            P = constructIdentifier(digits, P, Q, replica.getReplicaNb(), replica.getClock());
             replica.incClock();
-            patch.add(id);
+            patch.add(P);
         }  
         return patch;
     }

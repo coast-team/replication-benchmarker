@@ -39,21 +39,19 @@ public abstract class LogootStrategy {
 
 
 
-    static LogootIdentifier plus(int index, BigInteger bigId, BigInteger base, LogootIdentifier P, LogootIdentifier Q, int peer, int clock) {
-        LogootIdentifier R = new LogootIdentifier(index + 1);
-        List<Long> digits = digits(bigId, index, base);
-        int i = 0;
-
-        while (i < index && i < P.length() && digits.get(index - i) == P.getDigitAt(i)) {
+    static LogootIdentifier constructIdentifier(List<Long> digits, LogootIdentifier P, LogootIdentifier Q, int peer, int clock) {
+        LogootIdentifier R = new LogootIdentifier(digits.size());
+        int i = 0, index = digits.size() - 1; 
+        while (i < index && i < P.length() && digits.get(i) == P.getDigitAt(i)) {
             R.addComponent(P.getComponentAt(i).clone());
             i++;
         }
-        while (i < index && i < Q.length() && digits.get(index - i) >= Q.getDigitAt(i)) {
+        while (i < index && i < Q.length() && digits.get(i) >= Q.getDigitAt(i)) {
             R.addComponent(Q.getComponentAt(i).clone());
             i++;
         }
         while (i <= index) {
-            R.addComponent(new Component(digits.get(index - i), peer, clock));
+            R.addComponent(new Component(digits.get(i), peer, clock));
             i++;
         }
         return R;
@@ -69,18 +67,21 @@ public abstract class LogootStrategy {
         }
         return bi;
     }
-
-    /**
-     * Digits of BigInteger in reverse order
-     */
-    static List<Long> digits(BigInteger id, int index, BigInteger base) {
-        List<Long> l = new ArrayList<Long>(index+1);
-        while(index>=0) {
-            BigInteger[] dr = id.divideAndRemainder(base);
-            l.add(dr[1].longValue());
-            id = dr[0];
-            --index;
+    
+    static List<Long> plus(List<Long> lid, long sep, BigInteger base, long max) {
+        int index = lid.size() - 1;
+        long last = lid.get(index);
+        if (max - last < sep) {
+            BigInteger dr[] = BigInteger.valueOf(last).add(BigInteger.valueOf(sep)).divideAndRemainder(base);
+            lid.set(index, dr[1].longValue());
+            while (dr[0].longValue() != 0) {
+                --index;
+                dr = BigInteger.valueOf(lid.get(index)).add(dr[0]).divideAndRemainder(base);
+                lid.set(index, dr[1].longValue());            
+            }
+        } else {
+            lid.set(index, last + sep); 
         }
-        return l;
+        return lid;
     }
 }
