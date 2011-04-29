@@ -23,10 +23,6 @@
 
 package jbenchmarker.logoot;
 
-import java.math.BigInteger;
-import org.junit.Test;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -170,10 +166,12 @@ public class LogootIdentifierTest {
         P.addComponent(new Component(8, 4, 110));
         Q.addComponent(new Component(6, 4, 110));
         Q.addComponent(new Component(9, 4, 110));
+        
+        LogootIdentifier R = P.plus(2, 20, Q, 100, 2, 50);
 
-        assertEquals(3, P.plus(2, 20, Q, 100, 2, 50).length());
-        assertTrue(P.compareTo(P.plus(1, 20, Q, 100, 2, 50)) < 0);
-        assertTrue(P.plus(1, 20, Q, 100, 2, 50).compareTo(Q) > 0);
+        assertEquals(3, R.length());
+        assertTrue(P.compareTo(R) < 0);
+        assertTrue(R.compareTo(Q) < 0);
     }
 
     @Test
@@ -182,15 +180,89 @@ public class LogootIdentifierTest {
         LogootIdentifier Q = new LogootIdentifier(3);
 
         P.addComponent(new Component(6, 4, 110));
-        P.addComponent(new Component(9, 3, 110));
+        P.addComponent(new Component(9, 3, 10));
         Q.addComponent(new Component(6, 4, 110));
-        Q.addComponent(new Component(9, 4, 110));
+        Q.addComponent(new Component(9, 4, 112));
 
-        assertEquals(3, P.plus(2, 20, Q, 100, 2, 50).length());
-        assertTrue(P.compareTo(P.plus(1, 20, Q, 100, 2, 50)) < 0);
-        assertTrue(P.plus(1, 20, Q, 100, 2, 50).compareTo(Q) > 0);
+        LogootIdentifier R = P.plus(2, 42, Q, 100, 2, 50);
+        
+        assertEquals(3, R.length());
+        assertTrue(P.compareTo(R) < 0);
+        assertTrue(R.compareTo(Q) < 0);
     }
 
-    
-    
+    @Test
+    public void TestPlusShift() {
+        LogootIdentifier P = new LogootIdentifier(3);
+        LogootIdentifier Q = new LogootIdentifier(3);
+
+        P.addComponent(new Component(61, 4, 110));
+        P.addComponent(new Component(95, 3, 10));
+        Q.addComponent(new Component(61, 5, 110));
+        Q.addComponent(new Component(42, 4, 112));
+
+        LogootIdentifier R = P.plus(1, 42, Q, 100, 2, 50);
+
+        assertEquals(2, R.length());
+        assertEquals(Q.getComponentAt(0), R.getComponentAt(0));
+        assertTrue(P.compareTo(R) < 0);
+        assertTrue(R.compareTo(Q) < 0);
+    }
+
+    @Test
+    public void TestPlusShiftB() {
+        LogootIdentifier P = new LogootIdentifier(3);
+        LogootIdentifier Q = new LogootIdentifier(3);
+
+        P.addComponent(new Component(12, 2, 11));
+        P.addComponent(new Component(61, 4, 110));
+        P.addComponent(new Component(95, 3, 10));
+        Q.addComponent(new Component(12, 2, 11));
+        Q.addComponent(new Component(63, 5, 110));
+        Q.addComponent(new Component(42, 4, 112));
+
+        LogootIdentifier R = P.plus(2, 72, Q, 100, 2, 50);
+
+        assertEquals(3, R.length());
+        assertEquals(P.getComponentAt(0), R.getComponentAt(0));
+        assertEquals(62,R.getComponentAt(1).getDigit());
+        assertTrue(P.compareTo(R) < 0);
+        assertTrue(R.compareTo(Q) < 0);
+    }
+
+    @Test
+    public void TestPlusShortest() {
+        LogootIdentifier P = new LogootIdentifier(3);
+        LogootIdentifier Q = new LogootIdentifier(3);
+
+        P.addComponent(new Component(64, 4, 110));
+        Q.addComponent(new Component(64, 4, 110));
+        Q.addComponent(new Component(9, 4, 112));
+
+        LogootIdentifier R = P.plus(1, 6, Q, 100, 2, 50);
+
+        assertEquals(2, R.length());
+        assertEquals(Q.getComponentAt(0), R.getComponentAt(0));
+        assertTrue(P.compareTo(R) < 0);
+        assertTrue(R.compareTo(Q) < 0);
+    }
+
+    @Test
+    public void TestPlusShort0() {
+        LogootIdentifier P = new LogootIdentifier(3);
+        LogootIdentifier Q = new LogootIdentifier(3);
+
+        P.addComponent(new Component(72, 4, 110));
+        Q.addComponent(new Component(72, 4, 110));
+        Q.addComponent(new Component(0, 0, 1));
+        Q.addComponent(new Component(97, 4, 111));
+
+        LogootIdentifier R = P.plus(2, 57, Q, 100, 2, 50);
+
+        assertEquals(3, R.length());
+        assertEquals(P.getComponentAt(0), R.getComponentAt(0));
+        assertEquals(Q.getComponentAt(1), R.getComponentAt(1));
+        assertTrue(P.compareTo(R) < 0);
+        assertTrue(R.compareTo(Q) < 0);
+    }
 }
