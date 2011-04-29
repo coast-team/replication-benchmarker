@@ -15,14 +15,13 @@
  *   along with ReplicationBenchmark.  If not, see <http://www.gnu.org/licenses/>.
  *
  **/
-
 package jbenchmarker.logoot;
 
 public class Component implements Comparable<Component> {
 
     final private long digit;
     final private int peerID;
-    private int clock;
+    final private int clock;
 
     public Component(long d, int pid, int c) {
         this.digit = d;
@@ -40,10 +39,6 @@ public class Component implements Comparable<Component> {
 
     public int getClock() {
         return clock;
-    }
-    
-    public void setClock(int c) {
-        clock = c;
     }
 
     @Override
@@ -88,8 +83,8 @@ public class Component implements Comparable<Component> {
             return (this.digit - t.digit > 0) ? 1 : -1;
         }
     }
-    
+
     public Component clone() {
-        return new Component(digit,peerID,clock);
+        return new Component(digit, peerID, clock);
     }
 }

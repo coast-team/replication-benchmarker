@@ -15,8 +15,8 @@
  *   along with ReplicationBenchmark.  If not, see <http://www.gnu.org/licenses/>.
  *
  **/
-
 package jbenchmarker.logoot;
+
 import java.util.*;
 
 public class LogootIdentifier implements Comparable<LogootIdentifier> {
@@ -34,7 +34,7 @@ public class LogootIdentifier implements Comparable<LogootIdentifier> {
     public Component getComponentAt(int position) {
         return id.get(position);
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -72,50 +72,44 @@ public class LogootIdentifier implements Comparable<LogootIdentifier> {
         }
         return ligneIdentif;
     }
-        
+
     LogootIdentifier plus(int length, long sep, LogootIdentifier Q, long max, int peer, int clock) {
         int index = length;
-        List<Long> digits = this.digits(length);
+        List<Long> digits = null;
+        digits = this.digits(length);
+
         long start = digits.get(length), p = max - start;
-        
-        if(p < sep) {
+
+        if (p < sep) {
             digits.set(index, sep - p - 1);
             --index;
             while (digits.get(index) == max) {
-                digits.set(index,(long)0);
+                digits.set(index, (long) 0);
                 --index;
             }
-            digits.set(index, digits.get(index)+1);                
+            digits.set(index, digits.get(index) + 1);
         } else {
-            digits.set(index, start + sep); 
+            digits.set(index, start + sep);
         }
-        
-        LogootIdentifier P = new LogootIdentifier(length+1);
+
+        LogootIdentifier P = new LogootIdentifier(length + 1);
         int i = 0;
         while (i < this.id.size() && digits.get(i) == id.get(i).getDigit()) {
             P.addComponent(new Component(digits.get(i), id.get(i).getPeerID(), id.get(i).getClock()));
             i++;
         }
 
-        if (i==0) {            
+        if (i == 0 || (i < length && Q.getComponentAt(i).getDigit() == 0) ) {
             while (i < Q.id.size() && digits.get(i) >= Q.id.get(i).getDigit()) {
                 P.addComponent(new Component(Q.id.get(i).getDigit(), Q.id.get(i).getPeerID(), Q.id.get(i).getClock()));
                 i++;
             }
         }
-        
-        if(length>this.length() && Q.getComponentAt(this.length()).getDigit()== 0)
-        {
-            int Qclock = Q.getComponentAt(this.length()).getClock();
-            P.addComponent(new Component(digits.get(i), peer, Qclock));
+
+        while (i <= length) {
+            P.addComponent(new Component(digits.get(i), peer, clock));
             i++;
         }
-        
-        while (i<=length) {
-           P.addComponent(new Component(digits.get(i), peer, clock));
-           i++;
-        }
-        
         return P;
     }
 
@@ -123,8 +117,11 @@ public class LogootIdentifier implements Comparable<LogootIdentifier> {
      * Returns O if index > length().
      **/
     long getDigitAt(int index) {
-        if (index>=this.length()) return 0;
-        else return id.get(index).getDigit();
+        if (index >= this.length()) {
+            return 0;
+        } else {
+            return id.get(index).getDigit();
+        }
     }
 
     private List<Long> digits(int index) {
@@ -141,7 +138,7 @@ public class LogootIdentifier implements Comparable<LogootIdentifier> {
 
     public int compareTo(LogootIdentifier t) {
         int m = Math.min(id.size(), t.id.size());
-        for (int i = 0; i < m; i++) {          
+        for (int i = 0; i < m; i++) {
             int c = id.get(i).compareTo(t.id.get(i));
             if (c != 0) {
                 return c;
@@ -149,13 +146,12 @@ public class LogootIdentifier implements Comparable<LogootIdentifier> {
         }
         return id.size() - t.id.size();
     }
-    
+
     public LogootIdentifier clone() {
         LogootIdentifier o = new LogootIdentifier(id.size());
-        for (Component c:id)
+        for (Component c : id) {
             o.id.add(c.clone());
+        }
         return o;
     }
-    
-    
 }

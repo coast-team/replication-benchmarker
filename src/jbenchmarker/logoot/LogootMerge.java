@@ -15,9 +15,7 @@
  *   along with ReplicationBenchmark.  If not, see <http://www.gnu.org/licenses/>.
  *
  **/
-
 package jbenchmarker.logoot;
-
 
 import java.math.BigInteger;
 import jbenchmarker.core.MergeAlgorithm;
@@ -26,15 +24,15 @@ import jbenchmarker.trace.TraceOperation;
 import jbenchmarker.core.Document;
 
 import java.util.*;
+
 /**
  *
  * @author mehdi urso
  */
 public class LogootMerge extends MergeAlgorithm {
 
-    final private int nbBit;  
+    final private int nbBit;
     final private long max; // MAX = 2^nbBit - 1
-
     private int myClock;
     private final LogootStrategy strategy;
     private final BigInteger base;
@@ -45,15 +43,18 @@ public class LogootMerge extends MergeAlgorithm {
         myClock = 0;
         this.nbBit = nbBit;
         this.strategy = strategy;
-        if (nbBit==64) max = Long.MAX_VALUE;
-        else this.max = (long) Math.pow(2,nbBit)-1;
+        if (nbBit == 64) {
+            max = Long.MAX_VALUE;
+        } else {
+            this.max = (long) Math.pow(2, nbBit) - 1;
+        }
         base = BigInteger.valueOf(2).pow(nbBit);
     }
 
     public long getNbBit() {
         return nbBit;
     }
-        
+
     @Override
     protected void integrateLocal(Operation op) {
         getDoc().apply(op);
@@ -70,28 +71,27 @@ public class LogootMerge extends MergeAlgorithm {
         if (opt.getType() == TraceOperation.OpType.ins) {
             N = opt.getContent().length();
             content = opt.getContent();
-            ArrayList<LogootIdentifier> patch = strategy.generateLineIdentifiers(this,lg.getIdTable().get(position),
+            ArrayList<LogootIdentifier> patch = strategy.generateLineIdentifiers(this, lg.getIdTable().get(position),
                     lg.getIdTable().get(position + 1), N);
 
             ArrayList<Character> lc = new ArrayList<Character>(patch.size());
             for (int cmpt = 0; cmpt < patch.size(); cmpt++) {
                 char c = content.charAt(cmpt);
                 LogootOperation log = LogootOperation.insert(opt, patch.get(cmpt), c);
-                lop.add(log);              
+                lop.add(log);
                 lc.add(c);
             }
-            lg.getIdTable().addAll(position+1, patch);
-            lg.getDocument().addAll(position+1, lc);
+            lg.getIdTable().addAll(position + 1, patch);
+            lg.getDocument().addAll(position + 1, lc);
 
-            
         } else {
             offset = opt.getOffset();
             for (int k = 1; k <= offset; k++) {
-                LogootOperation wop = LogootOperation.Delete(opt, lg.getIdTable().get(position+k));
+                LogootOperation wop = LogootOperation.Delete(opt, lg.getIdTable().get(position + k));
                 lop.add(wop);
             }
-            lg.getIdTable().removeRangeOffset(position+1,offset);
-            lg.getDocument().removeRangeOffset(position+1,offset);
+            lg.getIdTable().removeRangeOffset(position + 1, offset);
+            lg.getDocument().removeRangeOffset(position + 1, offset);
         }
         return lop;
     }
@@ -103,15 +103,15 @@ public class LogootMerge extends MergeAlgorithm {
     int getClock() {
         return this.myClock;
     }
-    
+
     void setClock(int c) {
         this.myClock = c;
     }
-    
+
     long getMax() {
         return this.max;
     }
-    
+
     BigInteger getBase() {
         return base;
     }
