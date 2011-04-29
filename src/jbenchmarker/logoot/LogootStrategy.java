@@ -39,10 +39,9 @@ public abstract class LogootStrategy {
 
 
 
-    static LogootIdentifier plus(int index, long sep, BigInteger base, LogootIdentifier P, LogootIdentifier Q, int peer, int clock) {
+    static LogootIdentifier plus(int index, BigInteger bigId, BigInteger base, LogootIdentifier P, LogootIdentifier Q, int peer, int clock) {
         LogootIdentifier R = new LogootIdentifier(index + 1);
-        BigInteger basis = big(P, index, base).add(BigInteger.valueOf(sep));
-        List<Long> digits = digits(basis, index, base);
+        List<Long> digits = digits(bigId, index, base);
         int i = 0;
 
         while (i < index && i < P.length() && digits.get(index - i) == P.getDigitAt(i)) {

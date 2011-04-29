@@ -53,17 +53,11 @@ class BoundaryStrategy extends LogootStrategy {
                 || (P.length() <= index && Q.length() > index && Q.getDigitAt(index) == 0))) {
             index++;
         }         
-        while(Q.getComponentAt(index).getDigit()== 0)
-             index++;
         
         long interval, d = Q.getDigitAt(index) - P.getDigitAt(index) - 1;
         if (d >= n) {
             interval = Math.min(d/n, bound); 
-        }
-        else
-            if(index > P.length() && Q.getComponentAt(P.length()).getDigit()== 0)
-                interval = Q.getDigitAt(Q.length()-1)/n;
-        else {
+        } else {
             BigInteger diff = d == -1 ? BigInteger.ZERO : BigInteger.valueOf(d),
                     N = BigInteger.valueOf(n);
             while (diff.compareTo(N) < 0) {
@@ -71,17 +65,16 @@ class BoundaryStrategy extends LogootStrategy {
                 diff = diff.multiply(replica.getBase()).
                         add(BigInteger.valueOf(replica.getMax() - P.getDigitAt(index)).
                         add(BigInteger.valueOf(Q.getDigitAt(index))));
-            }
-            
-            if(index > P.length() && Q.getComponentAt(P.length()).getDigit()== 0)
-                interval = Q.getDigitAt(Q.length()-1)/n;
+            }           
             interval = diff.divide(N).min(boundBI).longValue();
         }
         ArrayList<LogootIdentifier> patch = new ArrayList<LogootIdentifier>();        
         LogootIdentifier id = P;
+        BigInteger bigId = big(P, index, replica.getBase());
         for (int i = 0; i < n; i++) {
-           id = id.plus(index, nextLong(interval) + 1, Q, replica.getMax(), replica.getReplicaNb(), replica.getClock());
-//            id = plus(index, nextLong(interval) + 1, replica.getBase(), id, Q, replica.getReplicaNb(), replica.getClock());
+//           id = id.plus(index, nextLong(interval) + 1, Q, replica.getMax(), replica.getReplicaNb(), replica.getClock());
+            bigId = bigId.add(BigInteger.valueOf(nextLong(interval) + 1));
+            id = plus(index, bigId, replica.getBase(), id, Q, replica.getReplicaNb(), replica.getClock());
             replica.incClock();
             patch.add(id);
         }  

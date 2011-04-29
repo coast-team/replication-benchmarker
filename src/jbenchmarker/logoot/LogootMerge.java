@@ -92,7 +92,7 @@ public class LogootMerge extends MergeAlgorithm {
             }
             lg.getIdTable().removeRangeOffset(position + 1, offset);
             lg.getDocument().removeRangeOffset(position + 1, offset);
-        }
+        }      
         return lop;
     }
 

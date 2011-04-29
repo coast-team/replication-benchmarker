@@ -50,7 +50,7 @@ public class IntegrationLogoot {
         assertEquals(r, cd.getReplicas().get(4).getDoc().view());
     }
     
-    @Ignore
+//    @Ignore
     @Test
     public void testLogootG1Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
@@ -63,7 +63,7 @@ public class IntegrationLogoot {
         }
     }
     
-    @Ignore
+//    @Ignore
     @Test
     public void testLogootG2Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
@@ -76,7 +76,7 @@ public class IntegrationLogoot {
         }
     }
     
-    @Ignore
+//    @Ignore
     @Test
     public void testLogootG3Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);

@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
  *
  * @author mehdi
  */
-public class TestBoundaryStrategy {
+public class BoundaryStrategyTest {
     
     //@Ignore
     @Test
@@ -52,7 +52,7 @@ public class TestBoundaryStrategy {
 
         assertEquals(100, patch.size());
 
-        for (int i = 1; i < patch.size() - 1; i++) {
+        for (int i = 1; i < patch.size(); i++) {
             assertTrue(patch.get(i).compareTo(P) > 0);
             assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
             assertTrue(patch.get(i).compareTo(Q) < 0);
@@ -79,7 +79,7 @@ public class TestBoundaryStrategy {
 
         assertEquals(200, patch.size());
 
-        for (int i = 1; i < patch.size() - 1; i++) {
+        for (int i = 1; i < patch.size(); i++) {
             assertTrue(patch.get(i).compareTo(P) > 0);
             assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
             assertTrue(patch.get(i).compareTo(Q) < 0);
@@ -105,7 +105,7 @@ public class TestBoundaryStrategy {
 
         assertEquals(200, patch.size());
 
-        for (int i = 1; i < patch.size() - 1; i++) {
+        for (int i = 1; i < patch.size(); i++) {
             assertTrue(patch.get(i).compareTo(P) > 0);
             assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
             assertFalse(patch.get(i).compareTo(Q) > 0);
@@ -135,7 +135,7 @@ public class TestBoundaryStrategy {
 
         assertEquals(200, patch.size());
 
-        for (int i = 1; i < patch.size() - 1; i++) {
+        for (int i = 1; i < patch.size(); i++) {
             assertTrue(patch.get(i).compareTo(P) > 0);
             assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
             assertFalse(patch.get(i).compareTo(Q) > 0);
@@ -166,7 +166,7 @@ public class TestBoundaryStrategy {
 
         assertEquals(200, patch.size());
 
-        for (int i = 1; i < patch.size() - 1; i++) {
+        for (int i = 1; i < patch.size(); i++) {
             assertTrue(patch.get(i).compareTo(P) > 0);
             assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
             assertFalse(patch.get(i).compareTo(Q) > 0);
@@ -196,7 +196,7 @@ public class TestBoundaryStrategy {
 
         assertEquals(200, patch.size());
 
-        for (int i = 1; i < patch.size() - 1; i++) {
+        for (int i = 1; i < patch.size(); i++) {
             assertTrue(patch.get(i).compareTo(P) > 0);
             assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
             assertFalse(patch.get(i).compareTo(Q) > 0);
@@ -213,27 +213,23 @@ public class TestBoundaryStrategy {
 
         
         LM.setClock(101);
-        P.addComponent(new Component(20, 4, 50));
-        P.addComponent(new Component(20, 4, 50));
-        P.addComponent(new Component(20, 6, 60));
         P.addComponent(new Component(12, 8, 60));
         P.addComponent(new Component(7, 8, 60));
         P.addComponent(new Component(22, 8, 60));
         
-        Q.addComponent(new Component(20, 4, 50));
-        Q.addComponent(new Component(20, 4, 50));
-        Q.addComponent(new Component(20, 6, 60));
         Q.addComponent(new Component(12, 8, 60));
         Q.addComponent(new Component(7, 8, 60));
         Q.addComponent(new Component(22, 8, 60));
-        Q.addComponent(new Component(0, 11, 100));
+        Q.addComponent(new Component(0, 1, 2));
+        Q.addComponent(new Component(0, 2, 10));
         Q.addComponent(new Component(15, 11, 100));
 
         ArrayList<LogootIdentifier> patch = BS.generateLineIdentifiers(LM, P, Q, 2);
 
         assertEquals(2, patch.size());
-        for (int i = 0; i < patch.size() - 1; i++) {
+        for (int i = 1; i < patch.size(); i++) {
             assertTrue(patch.get(i).compareTo(P) > 0);
+            assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
             assertFalse(patch.get(i).compareTo(Q) > 0);
         }
     }

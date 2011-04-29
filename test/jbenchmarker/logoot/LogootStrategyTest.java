@@ -38,8 +38,9 @@ public class LogootStrategyTest {
         P.addComponent(new Component(8, 4, 110));
         Q.addComponent(new Component(6, 4, 110));
         Q.addComponent(new Component(9, 4, 110));
-
-        LogootIdentifier R = plus(2, 20, base, P, Q, 2, 50);
+        
+        BigInteger b = big(P, 2, base).add(BigInteger.valueOf(20));
+        LogootIdentifier R = plus(2, b, base, P, Q, 2, 50);
 
         assertEquals(3, R.length());
         assertEquals(P.getComponentAt(0), R.getComponentAt(0));
@@ -58,7 +59,8 @@ public class LogootStrategyTest {
         Q.addComponent(new Component(6, 4, 110));
         Q.addComponent(new Component(9, 4, 112));
 
-        LogootIdentifier R = plus(2, 42, base, P, Q, 2, 50);
+        BigInteger b = big(P, 2, base).add(BigInteger.valueOf(42));
+        LogootIdentifier R = plus(2, b, base, P, Q, 2, 50);
 
         assertEquals(3, R.length());
         assertEquals(P.getComponentAt(0), R.getComponentAt(0));
@@ -77,7 +79,8 @@ public class LogootStrategyTest {
         Q.addComponent(new Component(61, 5, 110));
         Q.addComponent(new Component(42, 4, 112));
 
-        LogootIdentifier R = plus(1, 42, base, P, Q, 2, 50);
+        BigInteger b = big(P, 1, base).add(BigInteger.valueOf(42));
+        LogootIdentifier R = plus(1, b, base, P, Q, 2, 50);
 
         assertEquals(2, R.length());
         assertEquals(Q.getComponentAt(0), R.getComponentAt(0));
@@ -97,7 +100,8 @@ public class LogootStrategyTest {
         Q.addComponent(new Component(63, 5, 110));
         Q.addComponent(new Component(42, 4, 112));
 
-        LogootIdentifier R = plus(2, 72, base, P, Q, 2, 50);
+        BigInteger b = big(P, 2, base).add(BigInteger.valueOf(72));
+        LogootIdentifier R = plus(2, b, base, P, Q, 2, 50);
 
         assertEquals(3, R.length());
         assertEquals(P.getComponentAt(0), R.getComponentAt(0));
@@ -115,7 +119,8 @@ public class LogootStrategyTest {
         Q.addComponent(new Component(64, 4, 110));
         Q.addComponent(new Component(9, 4, 112));
 
-        LogootIdentifier R = plus(1, 6, base, P, Q, 2, 50);
+        BigInteger b = big(P, 1, base).add(BigInteger.valueOf(6));
+        LogootIdentifier R = plus(1, b, base, P, Q, 2, 50);
 
         assertEquals(2, R.length());
         assertEquals(Q.getComponentAt(0), R.getComponentAt(0));
@@ -133,7 +138,8 @@ public class LogootStrategyTest {
         Q.addComponent(new Component(0, 0, 1));
         Q.addComponent(new Component(97, 4, 111));
 
-        LogootIdentifier R = plus(2, 57, base, P, Q, 2, 50);
+        BigInteger b = big(P, 2, base).add(BigInteger.valueOf(57));
+        LogootIdentifier R = plus(2, b, base, P, Q, 2, 50);
 
         assertEquals(3, R.length());
         assertEquals(P.getComponentAt(0), R.getComponentAt(0));
