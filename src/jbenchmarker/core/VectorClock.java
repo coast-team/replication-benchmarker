@@ -34,6 +34,8 @@ import java.util.TreeMap;
  */
 public class VectorClock extends TreeMap<Integer, Integer> {
 
+	public enum Causality {HB, CO, HA};
+	
     public VectorClock() {
         super();
     }
@@ -115,6 +117,33 @@ public class VectorClock extends TreeMap<Integer, Integer> {
         return false;
     }
 
+    
+    
+    /**
+     * This function works correctly only when causality is preserved. 
+     * added by Roh
+     */    
+    public static Causality comp(int s1, VectorClock T1, int s2, VectorClock T2){
+    	Integer e11=T1.getSafe(new Integer(s1));
+    	Integer e12=T2.getSafe(new Integer(s1));
+    	Integer e21=T1.getSafe(new Integer(s2));
+    	Integer e22=T2.getSafe(new Integer(s2));
+    	if(e11 > e12 && e21 >= e22) return Causality.HA; // T1 happened after T2; T2->T1
+    	else if(e11 <= e12 && e21 < e22) return Causality.HB; // T1 Happened before T1->T2 
+    	return Causality.CO;
+    }
+    
+    public String toString(){
+    	String ret = new String("{");
+    	Iterator<Map.Entry<Integer, Integer>> it = this.entrySet().iterator();
+    	while(it.hasNext()){
+    		Map.Entry<Integer, Integer> i = it.next();
+    		ret += "("+i.getKey()+","+i.getValue()+"),";
+    	}
+    	
+    	return ret+"}";
+    }
+    
     /*
      * Is this VC // T ? 
      * true iff nor VC > T nor T > VC
