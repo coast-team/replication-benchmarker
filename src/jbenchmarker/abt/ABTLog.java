@@ -1,3 +1,22 @@
+/**
+ *   This file is part of ReplicationBenchmark.
+ *
+ *   ReplicationBenchmark is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   ReplicationBenchmark is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with ReplicationBenchmark.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ **/
+
+
 package jbenchmarker.abt;
 
 import java.util.ArrayList;
@@ -10,13 +29,15 @@ import java.util.NoSuchElementException;
 import jbenchmarker.core.VectorClock.Causality;
 import jbenchmarker.trace.TraceOperation.OpType;
 
-
+/**
+*
+* @author Roh
+*/
 public class ABTLog {
 	
 	protected List<ABTOperation> Hi = new ArrayList<ABTOperation>();
 	protected List<ABTOperation> Hd = new ArrayList<ABTOperation>();
-	protected int 	hc = 0;
-	private int 	sid;
+	private   int 	sid;
 	
 	public ABTLog(int sid){
 		this.sid = sid;
@@ -27,25 +48,17 @@ public class ABTLog {
 		
 		ABTOperation o1 = null;
 		ABTOperation o2 = null;
-		List<ABTOperation> hih=new ArrayList<ABTOperation>();
-		List<ABTOperation> hic=new ArrayList<ABTOperation>();
-
+		List<ABTOperation> hih = new ArrayList<ABTOperation>();
+		List<ABTOperation> hic = new ArrayList<ABTOperation>();
+		
+		//System.out.println(Hi.size()+"  "+Hd.size());		
 		convert2HC(op, Hi, hih, hic);
-
-		if(sid==113) {
-			printHistory(hic);
-		}
 		
 		o2 = ITSQ(op, hic);
 		o1 = ITSQ(o2, Hd);
-/*		if(sid==6 && op.pos==4995) {			
-			printHistory(hic);
-			System.out.println(op.vc);
-			System.out.println("[  o2:"+o2+"  o1:"+o1+"  ]");
-		}*/
 		
 		if(o1==null){
-			
+			// do nothing
 		} else if(o1.getType()==OpType.del){
 			Hd.add(o1);
 		} else if(o1.getType()==OpType.ins){
@@ -57,22 +70,24 @@ public class ABTLog {
 				oz = li.next();
 				oy.pos = ox.pos;
 				IT(ox,oz);
-				IT(oz,oy);				
+				IT(oz,oy);		
 			}
-			Hi.add(o2);			
+			Hi.add(o2);
 		}
 		return o1;
 	}
 	
 	public ABTOperation updateHL(final ABTOperation op){
-		//ABTOperation op = o1;//(ABTOperation)o1.clone();
 		ABTOperation tmp = (ABTOperation)op.clone();
 		
-		ArrayList<ABTOperation>	 sHd = new ArrayList<ABTOperation>();
-		ListIterator<ABTOperation> liHd = Hd.listIterator(Hd.size());
+		ArrayList<ABTOperation>	 	sHd  = new ArrayList<ABTOperation>();
+		ListIterator<ABTOperation> 	liHd = Hd.listIterator(Hd.size());
+		
+		//System.out.println(Hi.size()+"  "+Hd.size());
+		
 		while(liHd.hasPrevious()){
 			if(op.getType()==OpType.ins){
-				ABTOperation top=(ABTOperation)liHd.previous().clone();				
+				ABTOperation top=(ABTOperation)liHd.previous().clone();
 				swap(tmp, top, true);
 				sHd.add(0,top);
 			} else {
@@ -84,9 +99,8 @@ public class ABTLog {
 			Hd.add(op);
 		} else if(op.getType()==OpType.ins){
 			Hi.add(tmp);
-			Hd=sHd;
+			Hd = sHd;
 		}
-		//if(tmp.pos != op.pos) System.out.println(tmp+"==>"+op); 
 		return tmp;
 	}
 
@@ -108,7 +122,6 @@ public class ABTLog {
 				break;
 			case HB:				
 				throw new RuntimeException(op1.sid+":"+op1.vc+"  "+op1.sid+":"+op2.vc+": Causality violation");
-				
 			}
 			 
 		}
@@ -148,7 +161,6 @@ public class ABTLog {
 	}
 	
 	private void IT(ABTOperation o1, final ABTOperation o2){
-		//ABTOperation op=(ABTOperation)o1.clone();
 		if(o2.pos < o1.pos){
 			if(o2.getType()==OpType.ins){
 				o1.pos = o1.pos + 1;
@@ -170,6 +182,7 @@ public class ABTLog {
 		}		
 	}
 	
+	//unproven code
 	private ABTOperation ET(ABTOperation o1, ABTOperation o2){
 		ABTOperation op = (ABTOperation)o1.clone();
 		if(o2.pos < o1.pos){
@@ -198,11 +211,7 @@ public class ABTLog {
 			if(o==null) break;
 		}
 		return o;
-	}
-	
-	private void ETSQ(){
-		
-	}
+	}	
 	
 	public void printHistory(List<ABTOperation> H){
 		for(int i=H.size();i>0;i--){
@@ -218,8 +227,6 @@ public class ABTLog {
 		
 		int i=0;
 		int max=Hi.size()>Hd.size()? Hi.size() : Hd.size();
-		//if(Hd.size()<2) return;
-		//if(Hd.size()>10) System.exit(1);
 		for(i=max;i>0;i--){
 			Formatter fmt = new Formatter();
 			fmt.format("%4d", i);

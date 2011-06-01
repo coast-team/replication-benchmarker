@@ -124,14 +124,15 @@ public class VectorClock extends TreeMap<Integer, Integer> {
      * added by Roh
      */    
     public static Causality comp(int s1, VectorClock T1, int s2, VectorClock T2){
-    	Integer e11=T1.getSafe(new Integer(s1));
-    	Integer e12=T2.getSafe(new Integer(s1));
-    	Integer e21=T1.getSafe(new Integer(s2));
-    	Integer e22=T2.getSafe(new Integer(s2));
-    	if(e11 > e12 && e21 >= e22) return Causality.HA; // T1 happened after T2; T2->T1
-    	else if(e11 <= e12 && e21 < e22) return Causality.HB; // T1 Happened before T1->T2 
+    	int e11=T1.getSafe(s1);
+    	int e12=T2.getSafe(s1);
+    	int e21=T1.getSafe(s2);
+    	int e22=T2.getSafe(s2);
+    	if(e11 > e12 && e21 >= e22) return Causality.HA; 		// T1 happened after T2;  T2->T1
+    	else if(e11 <= e12 && e21 < e22) return Causality.HB; 	// T1 Happened before T2; T1->T2 
     	return Causality.CO;
     }
+    
     
     public String toString(){
     	String ret = new String("{");

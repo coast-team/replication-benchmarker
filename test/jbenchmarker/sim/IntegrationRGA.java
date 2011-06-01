@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author urso
+ * @author Roh
  */
 public class IntegrationRGA {
     @Test

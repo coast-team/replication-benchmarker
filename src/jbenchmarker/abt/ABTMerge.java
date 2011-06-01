@@ -10,6 +10,10 @@ import jbenchmarker.core.VectorClock;
 import jbenchmarker.trace.IncorrectTrace;
 import jbenchmarker.trace.TraceOperation;
 
+/**
+*
+* @author Roh
+*/
 public class ABTMerge extends MergeAlgorithm {
 	
 	private VectorClock siteVC;
@@ -29,19 +33,9 @@ public class ABTMerge extends MergeAlgorithm {
 		ABTOperation top = null;
 		ABTDocument abtdoc = (ABTDocument)(this.getDoc());
 		
-		//if(true) return;
 		this.siteVC.inc(abtop.getOriginalOp().getReplica());
-	/*
-		if(abtop.sid==8){
-			if(abtop.pos==4995) abtlog.printHistory();
-			System.out.print(abtop+" ==> ");// at site "+this.getReplicaNb());
-		}
-		*/
 		top = abtlog.updateHR(abtop);		
-		//if(abtop.sid==8) System.out.println(top+" at site "+this.getReplicaNb()); 
 		if(top != null) abtdoc.apply(top);
-		
-		//System.out.println(abtdoc.model);
 	}
 
 	@Override
@@ -67,11 +61,8 @@ public class ABTMerge extends MergeAlgorithm {
 				abtop = new ABTOperation(opt,p+i, opt.getContent().charAt(i), siteVC);
 			}
 		
-			//System.out.println("!at site "+this.getReplicaNb()+" "+abtop);
 			abtdoc.apply(abtop);
-			abtop=abtlog.updateHL(abtop);
-			//System.out.println("==>"+abtop);
-			//abtlog.printHistory();
+			abtop = abtlog.updateHL(abtop);
 			lop.add(abtop);
 		}
 		return lop;
