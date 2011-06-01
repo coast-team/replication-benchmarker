@@ -127,6 +127,39 @@
 		        	</archive>
 		    	</configuration>
 			</plugin>
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.9.0</version>
+				<configuration>					
+	               <properties>
+	                    <year>2011</year>
+						<name>${project.name}</name>
+						<url>${project.url}</url>
+	                    <organisation>${project.organization.name}</organisation>
+	                </properties>					
+					<encoding>UTF-8</encoding>
+	                <basedir>${basedir}</basedir>
+	                <header>${basedir}/src/etc/header.txt</header>
+	                <quiet>false</quiet>
+	                <failIfMissing>true</failIfMissing>
+	                <aggregate>false</aggregate>
+	                <includes>
+	                    <include>src/**</include>
+	                    <include>**/test/**</include>
+	                </includes>
+	                <excludes>
+	                    <exclude>target/**</exclude>
+	                </excludes>					
+		    	</configuration>
+		    	<executions>
+	                <execution>
+	                    <goals>
+	                        <goal>check</goal>
+	                    </goals>
+	                </execution>
+	            </executions>	
+			</plugin>			
 			<!-- Maven3 specific configuration -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
