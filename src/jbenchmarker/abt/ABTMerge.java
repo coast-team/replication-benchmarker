@@ -16,26 +16,29 @@ import jbenchmarker.trace.TraceOperation;
 */
 public class ABTMerge extends MergeAlgorithm {
 	
-	private VectorClock siteVC;
-	private ABTLog		abtlog;
+	protected 	VectorClock siteVC;
+	protected 	ABTLog		abtlog;
+	private 	ABTGC		abtgc;
+	
 	public ABTMerge(Document doc, int r){
 		super(doc, r);
 		siteVC = new VectorClock();
 		abtlog = new ABTLog(this.getReplicaNb());
-		
+		abtgc  = new ABTGC(this);
 	}
 	
 	@Override
 	protected void integrateLocal(Operation op) throws IncorrectTrace {
 		// TODO Auto-generated method stub
 		
-		ABTOperation abtop = (ABTOperation)op.clone();
+		ABTOperation abtop = (ABTOperation)op;		
 		ABTOperation top = null;
 		ABTDocument abtdoc = (ABTDocument)(this.getDoc());
 		
 		this.siteVC.inc(abtop.getOriginalOp().getReplica());
 		top = abtlog.updateHR(abtop);		
 		if(top != null) abtdoc.apply(top);
+		this.abtgc.collect(abtop);
 	}
 
 	@Override
