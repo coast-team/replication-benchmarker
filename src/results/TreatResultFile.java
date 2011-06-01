@@ -37,7 +37,7 @@ public class TreatResultFile {
 
     static long getLast(String line) {
         String tab[] = line.split("\t");
-        return Long.parseLong(tab[tab.length - 1]);
+        return Long.parseLong(tab[tab.length - 1].trim());
     }
     
     static List<Long> fileToArray(File file) throws FileNotFoundException, IOException {
@@ -93,17 +93,18 @@ public class TreatResultFile {
             System.err.println("- smooth_mem : smooth used for memory results ");
             System.exit(1);
         }
+        
         Map<String, Integer> smooth = new java.util.HashMap<String, Integer>();
         File dir = new File(args[0]);
 
         smooth.put("usr", Integer.parseInt(args[1]));
         smooth.put("gen", Integer.parseInt(args[2]));
         smooth.put("mem", Integer.parseInt(args[3]));
-
+        
         for (String res : smooth.keySet()) {
             int scale = smooth.get(res);
             File[] fs = dir.listFiles(new ResultFilter(res));
-            Arrays.sort(fs, new Comparator<File>() {
+            Arrays.sort(fs, new Comparator<File>() { 
                 public int compare(File t, File t1) {
                     return t.getName().compareTo(t1.getName());
                 }                
@@ -113,7 +114,7 @@ public class TreatResultFile {
                 int nbOp = moy.size();
                 String cut[] = f.getName().split("-");
                 String algo = cut[0], trace = cut[1];                
-                
+
                 List<Long> s = smooth(moy, scale);               
                 String fileName = algo + "-" + trace + "-" + res + ".data";                
                 PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
@@ -128,6 +129,8 @@ public class TreatResultFile {
                     }
                     sum += m;
                 }
+                
+                
                 final String out = res + " - " + algo + " - " + trace;  
                 System.out.println("AVG : " + out + " = " + (sum / nbOp));
                 System.out.println("MAX : " + out + " = " + max);
