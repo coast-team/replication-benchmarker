@@ -39,7 +39,8 @@ public class ABTOperation extends Operation{
 	
 	public ABTOperation(TraceOperation o){
 		super(o);
-		this.sid = this.getOriginalOp().getReplica();		
+		this.sid = this.getOriginalOp().getReplica();
+		this.c	 ='\0';
 	}
 	
 	//delete
@@ -49,6 +50,7 @@ public class ABTOperation extends Operation{
 		this.sid = this.getOriginalOp().getReplica();
 		this.pos = p;		
 		this.vc  = new VectorClock(vc);
+		this.c   = '\0';
 	}
 	
 	//insert
@@ -105,14 +107,15 @@ public class ABTOperation extends Operation{
 		ret=fmt2+".";	
 		
 		if(getType()==OpType.ins) {
-			ret+="ins("+fmt+",\'";
-			if(this.c=='\n') ret+="\\n";
-			else if(this.c=='\t') ret+="\\t";
-			else ret+=this.c;
-			ret+="\')";
+			ret+="ins("+fmt+",\'";			
+		} else if(getType()==OpType.del) {
+			ret+="del("+fmt+",\'";			
 		}
-		else if(getType()==OpType.del)ret+="del("+fmt+")";
-		//ret+=" with "+vc.toString();
+		if(this.c=='\0') ret+="\\0";
+		else if(this.c=='\n') ret+="\\n";
+		else if(this.c=='\t') ret+="\\t";
+		else ret+=this.c;
+		ret+="\')";
 		return ret;
 	}
 	

@@ -57,7 +57,9 @@ public class IntegrationABT {
        cd.run(trace);
        String r = cd.getReplicas().get(0).getDoc().view();
        for (MergeAlgorithm m : cd.getReplicas().values()) {
+    	   //System.out.println(m.getReplicaNb()+"  "+m.getDoc().view());
            assertEquals(r, m.getDoc().view());
+           
        }
    }
    

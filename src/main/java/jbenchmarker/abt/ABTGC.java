@@ -50,6 +50,7 @@ public class ABTGC {
 		
 		while(it.hasNext()){
 			if(!it.next().vc.greaterThan(commonAncesstorVC)){
+				//System.out.println()
 				it.remove();
 			}
 		}

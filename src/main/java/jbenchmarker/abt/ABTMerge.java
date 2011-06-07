@@ -20,6 +20,7 @@ package jbenchmarker.abt;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
@@ -27,6 +28,7 @@ import jbenchmarker.core.Operation;
 import jbenchmarker.core.VectorClock;
 import jbenchmarker.trace.IncorrectTrace;
 import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.TraceOperation.OpType;
 
 /**
 *
@@ -52,11 +54,13 @@ public class ABTMerge extends MergeAlgorithm {
 		ABTOperation abtop = (ABTOperation)op;		
 		ABTOperation top = null;
 		ABTDocument abtdoc = (ABTDocument)(this.getDoc());
-		
+		if (this.readyFor(abtop.sid, abtop.vc)) throw new RuntimeException("it seems causal reception is broken");
 		this.siteVC.inc(abtop.getOriginalOp().getReplica());
+
 		top = abtlog.updateHR(abtop);		
+
 		if(top != null) abtdoc.apply(top);
-		this.abtgc.collect(abtop);
+		//this.abtgc.collect(abtop);
 	}
 
 	@Override
@@ -81,11 +85,25 @@ public class ABTMerge extends MergeAlgorithm {
 			} else {
 				abtop = new ABTOperation(opt,p+i, opt.getContent().charAt(i), siteVC);
 			}
-		
+			
 			abtdoc.apply(abtop);
 			abtop = abtlog.updateHL(abtop);
+			
 			lop.add(abtop);
 		}
 		return lop;
 	}
+	
+    public boolean readyFor(int r, VectorClock op) {
+        if (this.siteVC.getSafe(r) != op.getSafe(r)) {
+            return false;
+        }
+        for (Map.Entry<Integer, Integer> e : op.entrySet()) {
+            if ((e.getKey() != r) && (this.siteVC.getSafe(e.getKey()) < e.getValue())) {
+                return false;
+            }
+        }
+        return true;
+    }
+	
 }

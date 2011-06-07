@@ -39,7 +39,6 @@ public class ABTDocument implements Document{
 	@Override
 	public String view() {
 		// TODO Auto-generated method stub
-		
 		return model;
 	}
 
@@ -47,41 +46,42 @@ public class ABTDocument implements Document{
 	public void apply(Operation op) {
 		// TODO Auto-generated method stub
 		ABTOperation abtop = (ABTOperation)op;
-		//System.out.println("{"+model+"}");
 		try{
 			if(abtop.getType()==OpType.del){
+				if(abtop.c=='\0') abtop.c = model.charAt(abtop.pos-1);
+				else {
+					if(abtop.c != model.charAt(abtop.pos-1)) {
+						System.err.println("Intention violation:"+abtop);						
+						System.err.println("intention:"+abtop.c);
+						System.err.println("but:"+model.charAt(abtop.pos-1));						
+						System.err.println("["+model.substring(0,abtop.pos-1)+"]"+model.charAt(abtop.pos-1)+"["+model.substring(abtop.pos)+"]");
+						throw new RuntimeException(abtop+" ");
+					}
+				}
 				if(abtop.pos<1){
 					throw new RuntimeException("Incorrect parameter");
-				} else if(abtop.pos==1){
-					model = model.substring(abtop.pos-1);
-				} else if(abtop.pos == model.length()){
-					model = model.substring(0,abtop.pos-1);
 				} else if(abtop.pos>model.length()){
 					throw new RuntimeException("Incorrect parameter");
 				} else {
 					model = model.substring(0,abtop.pos-1)+model.substring(abtop.pos);
 				}
+
 			} else {
-				//System.out.println(model.length()+"  "+abtop.pos);
 				if(abtop.pos<0){
 					throw new RuntimeException("Incorrect parameter");
 				} else if(abtop.pos==0){
-					model = abtop.c+model;
-				} else if(abtop.pos==model.length()){
-					model = model+abtop.c;
-				} else if(abtop.pos>model.length()) {
-					System.err.println(abtop.sid+" "+abtop.pos+"  "+model.length());
+					model = abtop.c+model;				 
+				} else if(abtop.pos>model.length()) {					
 					throw new RuntimeException("Incorrect parameter");
 				} else {					
-					model = model.substring(0,abtop.pos)+abtop.c+model.substring(abtop.pos);
+					model = model.substring(0,abtop.pos)+abtop.c+model.substring(abtop.pos);					
 				}
 			}
 		} catch(StringIndexOutOfBoundsException sioobe){
 			sioobe.printStackTrace();
 			System.exit(1);
 		}
-		//System.out.println("["+model+"]");
-		
+
 	}
 
 }

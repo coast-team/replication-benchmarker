@@ -50,9 +50,8 @@ public class ABTLog {
 		List<ABTOperation> hih = new LinkedList<ABTOperation>();
 		List<ABTOperation> hic = new LinkedList<ABTOperation>();
 		
-		//System.out.println(Hi.size()+"  "+Hd.size());		
 		convert2HC(op, Hi, hih, hic);
-		
+	
 		o2 = ITSQ(op, hic);
 		o1 = ITSQ(o2, Hd);
 		
@@ -80,17 +79,13 @@ public class ABTLog {
 		ABTOperation tmp = (ABTOperation)op.clone();
 		
 		LinkedList<ABTOperation>	sHd  = new LinkedList<ABTOperation>();
-		//ArrayList<ABTOperation>		sHd  = new ArrayList<ABTOperation>();
 		ListIterator<ABTOperation> 	liHd = Hd.listIterator(Hd.size());
-		
-		//System.out.println(Hi.size()+"  "+Hd.size());
 		
 		while(liHd.hasPrevious()){
 			if(op.getType()==OpType.ins){
 				ABTOperation top=(ABTOperation)liHd.previous().clone();
 				swap(tmp, top, true);
 				sHd.addFirst(top);
-				//sHd.add(0,top);							
 			} else {
 				swap(tmp, (ABTOperation)liHd.previous(), false);
 			}
@@ -133,13 +128,15 @@ public class ABTLog {
 		ABTOperation o2;
 		if(!realswap) o2=(ABTOperation)op2.clone();
 		else o2=op2;
-		if(o1.pos > o2.pos){
+		int pos1=(o1.getType()==OpType.ins?o1.pos:o1.pos-1);
+		int pos2=(o2.getType()==OpType.ins?o2.pos:o2.pos-1);
+		if(pos1 > pos2){
 			if(o2.getType()==OpType.ins) {
 				o1.pos = o1.pos - 1;
 			} else if(o2.getType()==OpType.del){
 				o1.pos = o1.pos + 1;
 			}			
-		} else if(o1.pos == o2.pos){
+		} else if(pos1 == pos2){
 			if(o2.getType()==OpType.del &&
 			   o1.getType()==OpType.del){
 				o1.pos = o1.pos+1;
@@ -161,14 +158,17 @@ public class ABTLog {
 		}		
 	}
 	
-	private void IT(ABTOperation o1, final ABTOperation o2){
-		if(o2.pos < o1.pos){
+	private ABTOperation IT(ABTOperation o1, final ABTOperation o2){
+		int pos1=(o1.getType()==OpType.ins?o1.pos:o1.pos-1);
+		int pos2=(o2.getType()==OpType.ins?o2.pos:o2.pos-1);
+	
+		if(pos2 < pos1){
 			if(o2.getType()==OpType.ins){
 				o1.pos = o1.pos + 1;
 			} else if(o2.getType()==OpType.del){
 				o1.pos = o1.pos - 1;
-			}			
-		} else if(o2.pos == o1.pos){
+			}
+		} else if(pos2 == pos1){
 			if(o2.getType()==OpType.ins && 
 			   o1.getType()==OpType.del){
 				o1.pos = o1.pos + 1;
@@ -181,6 +181,7 @@ public class ABTLog {
 				o1=null;
 			}
 		}		
+		return o1;
 	}
 	
 	//unproven code
@@ -208,8 +209,10 @@ public class ABTLog {
 		ABTOperation o = (ABTOperation)op.clone();
 		ListIterator<ABTOperation> li = H.listIterator();
 		while(li.hasNext()){
-			IT(o, li.next());
-			if(o==null) break;
+			o=IT(o, li.next());
+			if(o==null) {
+				return o;
+			}
 		}
 		return o;
 	}	
@@ -232,7 +235,7 @@ public class ABTLog {
 			Formatter fmt = new Formatter();
 			fmt.format("%4d", i);
 			if(i<=Hi.size()) System.out.print("|"+fmt+":"+Hi.get(i-1)+"\t| ");
-			else System.out.print("|\t\t| \t");
+			else System.out.print("|\t\t\t| ");
 			if(i<=Hd.size()) System.out.print("|"+fmt+":"+Hd.get(i-1)+"\t|");
 			else System.out.print("|\t\t\t|");
 			if(i<=Hi.size()) System.out.print("\t"+Hi.get(i-1).sid+":"+Hi.get(i-1).vc+"     ");
