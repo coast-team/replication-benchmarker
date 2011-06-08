@@ -32,9 +32,9 @@ public interface OperationProfile {
     String nextContent();
 
     /**
-     *  Randomly generates an offset for a delete operation
+     *  Randomly generates an offset from this position for a delete operation
      */
-    int nextOffset(int position, int l);
+    int nextOffset(int position, int length);
 
     /**
      *  Randomly generates a position for an operation

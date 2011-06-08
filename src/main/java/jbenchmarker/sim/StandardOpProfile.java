@@ -60,7 +60,7 @@ public class StandardOpProfile implements OperationProfile {
     @Override
     public String nextContent() {
         int length = (r.nextDouble() < perBlock) ? 
-               (int) r.nextGaussian(avgBlockSize, sdvBlockSize) : 1;
+                     (int) r.nextLongGaussian(avgBlockSize, sdvBlockSize) : 1;
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < length; i++) {
             s.append((char) ('a' + r.nextInt(26)));
@@ -72,7 +72,7 @@ public class StandardOpProfile implements OperationProfile {
     @Override
     public int nextOffset(int position, int l) {
         int length = (r.nextDouble() < perBlock) ? 
-               (int) r.nextGaussian(avgBlockSize, sdvBlockSize) : 1;
+               (int) r.nextLongGaussian(avgBlockSize-1, sdvBlockSize) : 1;
         return Math.min(l-position, length);
     }
 }

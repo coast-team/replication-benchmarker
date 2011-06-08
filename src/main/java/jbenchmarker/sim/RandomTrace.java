@@ -109,7 +109,15 @@ public class RandomTrace implements Iterator<TraceOperation> {
                 VectorClock opc = (VectorClock) vc.clone();
                 next = TraceOperation.random(rindex, opc, op);
                 for (int i = 0; i < replicas; i++) {
-                    delivery[i].put(time + (long) r.nextGaussian(delay, sdv), opc);
+                    long rt = time + r.nextLongGaussian(delay, sdv);
+                    VectorClock x = delivery[i].get(rt);
+                    if (x == null) {
+                        delivery[i].put(rt, opc);
+                    } else {
+                        x = (VectorClock) x.clone();
+                        x.upTo(opc);
+                        delivery[i].put(rt, x);
+                    }                                            
                 }   
             }
             rindex++;

@@ -40,4 +40,16 @@ public class RandomGauss extends Random {
         } while (x <= 0);
         return x;
     }
+    
+    /**
+     * Returns the next strictly positive pseudorandom, Gaussian ("normally") 
+     * distributed double value with the specified mean and the specified 
+     * standard deviation from this random number generator's sequence.
+     * @param mean the mean 
+     * @param sdv the standard deviation 
+     * @return the next pseudorandom, Gaussian ("normally") distributed strictly positive double value
+     */
+    public long nextLongGaussian(double mean, double sdv) {
+        return 1+ (long) nextGaussian(mean-1, sdv);
+    }
 }
