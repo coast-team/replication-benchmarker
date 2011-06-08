@@ -34,26 +34,30 @@ import jbenchmarker.trace.TraceOperation;
 public class RGAMerge extends MergeAlgorithm {
 
 	private VectorClock siteVC;
-	//private int prt = 104;
+	private RGAPurger	purger;
 	
 	public RGAMerge(Document doc, int r){
 		super(doc, r);
 		siteVC = new VectorClock();
+		purger = new RGAPurger((RGADocument)this.getDoc());
 	}
 	
 	@Override
 	protected void integrateLocal(Operation op) throws IncorrectTrace {
-		RGAOperation 	rgaop = (RGAOperation) op;
-		RGADocument	rgadoc = (RGADocument)(this.getDoc());
+		RGAOperation rgaop  = (RGAOperation) op;
+		RGADocument	 rgadoc = (RGADocument)(this.getDoc());
+		this.siteVC.inc(rgaop.getOriginalOp().getReplica());
 		rgadoc.apply(rgaop);
-		this.siteVC.inc(rgaop.getOriginalOp().getReplica());		 
+		purger.setLastVC(rgaop.getS4VTms().sid, rgaop.getOriginalOp().getVC());
+		//RGANode tau = purger.tryPurge();
+		//if(tau != null) rgadoc.purge(tau);
 	}
 
 	@Override
 	protected List<Operation> generateLocal(TraceOperation opt) throws IncorrectTrace {
 		List<Operation> lop 		= new ArrayList<Operation>();
 		RGADocument 	rgadoc 	= (RGADocument)(this.getDoc());
-		RGAS4Vector 		s4vtms, s4vpos = null;
+		RGAS4Vector 	s4vtms, s4vpos = null;
 		RGAOperation 	rgaop;		
 		RGANode			target = null;
 		
@@ -70,6 +74,7 @@ public class RGAMerge extends MergeAlgorithm {
 		}		
 		
 		for(int i=0; i < offset ; i++) {
+			this.siteVC.inc(this.getReplicaNb());
 			s4vtms = new RGAS4Vector(this.getReplicaNb(), this.siteVC);
 			if(opt.getType() == TraceOperation.OpType.del) {
 				rgaop = new RGAOperation(opt, p+1, target.getKey(), s4vtms);
@@ -80,7 +85,8 @@ public class RGAMerge extends MergeAlgorithm {
 			}
 			lop.add(rgaop);
 			rgadoc.apply(rgaop);
-			this.siteVC.inc(this.getReplicaNb());
+			
+			purger.setLastVC(this.getReplicaNb(),this.siteVC);
 		}
 
 		return lop;

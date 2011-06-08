@@ -31,12 +31,15 @@ import java.util.NoSuchElementException;
 public class RGADocument implements Document {
 	
 	private HashMap<RGAS4Vector, RGANode> 	hash;
-	private RGANode											head;
+	
+	private RGANode		head;
+	//private RGAPurger	purger;
 	
 	public RGADocument(){
 		super();
 		head = new RGANode();		
-		hash	= new HashMap<RGAS4Vector, RGANode>(); 
+		hash = new HashMap<RGAS4Vector, RGANode>();
+		//purger= new RGAPurger(this);
 	}
 	
 	public String view() {
@@ -57,7 +60,7 @@ public class RGADocument implements Document {
 //			else LocalInsert(rgaop);			
 //		} else {
 			if(rgaop.getType() == TraceOperation.OpType.del) RemoteDelete(rgaop);
-			else RemoteInsert(rgaop);
+			else RemoteInsert(rgaop);			
 //		}
 	}
 
@@ -79,7 +82,8 @@ public class RGADocument implements Document {
 	private void LocalDelete(RGAOperation op){
 		RGANode node = getVisibleNode(op.getIntPos()); 
 		if(node == null)  throw new NoSuchElementException("Don't find " + op.getIntPos());
-		node.makeTombstone();
+		node.makeTombstone(op.getS4VTms());
+	//	purger.enrol(node);
 	}
 	
 	private void RemoteInsert(RGAOperation op){
@@ -105,7 +109,8 @@ public class RGADocument implements Document {
 	private void RemoteDelete(RGAOperation op){
 		RGANode node = hash.get(op.getS4VPos());
 		if(node == null) throw new NoSuchElementException("Cannot find" + op.getS4VPos());
-		node.makeTombstone();
+		node.makeTombstone(op.getS4VTms());
+	//	purger.enrol(node);
 	}
 	
 	public RGAS4Vector getVisibleS4V(int v){
@@ -115,8 +120,8 @@ public class RGADocument implements Document {
 	}
 		
 	public RGANode getVisibleNode(int v){
-		RGANode 	node = head;
-		int 			j 		= 0;
+		RGANode	node = head;
+		int 	j	 = 0;
 		
 		while(j < v && node != null){
 			node = node.getNext();

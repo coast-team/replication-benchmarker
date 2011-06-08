@@ -24,20 +24,19 @@ package jbenchmarker.rga;
 */ 
 public class RGANode {
 	private RGAS4Vector 	key;
-	//private RGAS4Vector 	pre; 		//unnecessary because of no update. 
-	private boolean 			visible;
-	private char 				content;
-	private RGANode		next;
+	private RGAS4Vector 	tomb;	//used for visible and tombstone purging if null, then not tombstone 		 
+	private char 			content;
+	private RGANode			next;
 	
 	public RGANode(){
 		this.key 	= null;
 		this.next 	= null;		
-		this.visible = true;
+		this.tomb 	= null;
 	}
 	public RGANode(RGAS4Vector s4v, char c){
 		this.key 		= s4v;
 		this.content 	= c;
-		this.visible		= true;
+		this.tomb		= null;
 		this.next		= null;
 	}
 	
@@ -50,11 +49,12 @@ public class RGANode {
 	}
 	
 	public boolean isVisible(){
-		return visible;
+		if(this.tomb==null) return true;
+		return false;
 	}
 	
-	public void makeTombstone(){
-		visible = false;
+	public void makeTombstone(RGAS4Vector s4v){
+		this.tomb = s4v;
 	}
 	
 	public void setNext(RGANode nd){
@@ -63,6 +63,10 @@ public class RGANode {
 	
 	public RGANode getNext(){
 		return next;
+	}
+	
+	public RGAS4Vector getTomb(){
+		return this.tomb;
 	}
 	
 	public RGANode getNextVisible(){

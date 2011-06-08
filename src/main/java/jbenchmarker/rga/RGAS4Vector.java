@@ -28,17 +28,16 @@ public class RGAS4Vector implements Comparable<RGAS4Vector> {
 	public static final int EQUAL 	= 0;
 	public static final int BEFORE	= -1;
 	
-	
-	private int ssn;
-	private int sid;
-	private int sum;
-	private int seq;
+	protected int ssn;
+	protected int sid;
+	protected int sum;
+	protected int seq;
 	
 	public RGAS4Vector(int ssn, int sid, VectorClock vc){
-		this.ssn		= ssn;	
-		this.sid 		= sid;
+		this.ssn	= ssn;	
+		this.sid	= sid;
 		this.sum 	= vc.getSum();
-		this.seq		= vc.getSafe(sid);
+		this.seq	= vc.getSafe(sid);
 	}
 	
 	public RGAS4Vector(int sid, VectorClock vc){
