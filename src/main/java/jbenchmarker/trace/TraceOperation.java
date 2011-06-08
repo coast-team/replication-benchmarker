@@ -18,7 +18,9 @@
  */
 package jbenchmarker.trace;
 
+import jbenchmarker.core.Document;
 import jbenchmarker.core.VectorClock;
+import jbenchmarker.sim.OperationProfile;
 
 /**
  *
@@ -27,15 +29,16 @@ import jbenchmarker.core.VectorClock;
 public class TraceOperation {
 
 
-    public enum OpType { ins, del }; 
+
+    public enum OpType { ins, del, rdm }; 
     
     final private int replica;                  // replica number
-    final private OpType type;                  // type of operation : insert or delete
-    final private int position;                 // position in the document
-    final private int offset;                   // length of a del
-    final private String content;          // content of an ins
+    private OpType type;                  // type of operation : insert or delete
+    private int position;                 // position in the document
+    private int offset;                   // length of a del
+    private String content;          // content of an ins
     final private VectorClock VC;               // Vector clock 
-
+    private final OperationProfile op;
     
     public VectorClock getVC() {
         return VC;
@@ -63,27 +66,35 @@ public class TraceOperation {
         return type;
     }
 
-    public TraceOperation(OpType type, int replica, int position, int offset, String content, VectorClock VC) {
+    TraceOperation(OpType type, int replica, int position, int offset, String content, VectorClock VC, OperationProfile op) {
         this.type = type;
         this.replica = replica;
         this.position = position;
         this.offset = offset;
         this.content = content;
         this.VC = VC;
+        this.op = op;
     }
 
     /*
      * Construction of an insert operation 
      */
     static public TraceOperation insert(int replica, int position, String content, VectorClock VC) {
-        return new TraceOperation(OpType.ins, replica, position, 0, content, VC);
+        return new TraceOperation(OpType.ins, replica, position, 0, content, VC, null);
     }
     
     /*
      * Construction of an insert operation 
      */
     static public TraceOperation delete(int replica, int position, int offset, VectorClock VC) {
-        return new TraceOperation(OpType.del, replica, position, offset, null, VC);
+        return new TraceOperation(OpType.del, replica, position, offset, null, VC, null);
+    }
+    
+    /*
+     * Construction of an insert operation 
+     */
+    static public TraceOperation random(int replica, VectorClock VC, OperationProfile op) {
+        return new TraceOperation(OpType.rdm, replica, -1, -1, null, VC, op);
     }
 
     @Override
@@ -135,5 +146,22 @@ public class TraceOperation {
     
     public int getRange() {
         return (type == OpType.ins) ? content.length() : offset;  
+    }
+    
+    /** 
+     * Instanciate a random operation according to OperationProfile.
+     * @param replica state of the replica
+     */
+    public void instanciate(Document replica) {
+      int l = replica.view().length();              
+      position = op.nextPosition(l);
+ 
+      if (l==0 || op.nextType() == OpType.ins) {
+          type = OpType.ins;
+          content = op.nextContent();
+      } else {
+          type = OpType.del;
+          offset = op.nextOffset(position, l);
+      }      
     }
 }

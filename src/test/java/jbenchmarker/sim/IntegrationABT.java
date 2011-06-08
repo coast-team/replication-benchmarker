@@ -98,4 +98,17 @@ public class IntegrationABT {
            assertEquals(r, m.getDoc().view());
        }
    }
+     
+    //    @Ignore
+    @Test
+    public void testLogootRandom() throws Exception {
+        Iterator<TraceOperation> trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
+        CausalDispatcher cd = new CausalDispatcher(new ABTFactory());
+
+        cd.run(trace);
+        String r = cd.getReplicas().get(0).getDoc().view();
+        for (MergeAlgorithm m : cd.getReplicas().values()) {
+            assertEquals(r, m.getDoc().view());
+        }
+    }
 }

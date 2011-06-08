@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import jbenchmarker.core.*;
@@ -52,6 +53,7 @@ public class CausalDispatcher  extends Simulator {
         final Map<Integer, VectorClock> clocks = new HashMap<Integer, VectorClock>();
         final VectorClock globalClock = new VectorClock();
         final List<TraceOperation> concurrentOps = new LinkedList<TraceOperation>();
+        final Random ran =new Random();
         
         while (trace.hasNext()) {
             final TraceOperation opt = trace.next();
@@ -89,6 +91,11 @@ public class CausalDispatcher  extends Simulator {
                     vc.inc(e);
                 }
             }
+
+            if (opt.getType() == TraceOperation.OpType.rdm) {
+                opt.instanciate(a.getDoc());
+            }
+            
             final List<Operation> lop = duplicate(a.generate(opt));
             genHistory.get(r).add(lop);
             clocks.get(r).inc(r);

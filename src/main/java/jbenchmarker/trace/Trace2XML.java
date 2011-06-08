@@ -279,11 +279,7 @@ public class Trace2XML {
                 org.jdom.Element opl = builder.build(racine);
                 for (int d : docs) {
                     Iterator<TraceOperation> trace = new TraceGenerator.TraceIterator(d, opl.getChildren().iterator());
-                    CausalDispatcher cd = new CausalDispatcher(new ReplicaFactory() {
-                        public MergeAlgorithm createReplica(int r) {
-                            return new CausalChecker(r);
-                        }
-                    });
+                    CausalDispatcher cd = new CausalDispatcher(new CausalCheckerFactory());
                     cd.run(trace);
                 }
             }
