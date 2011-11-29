@@ -75,8 +75,8 @@ public abstract class MergeAlgorithm {
      * Adds operation in history and execution time
      */
     public void integrate(Operation op) throws IncorrectTrace {
-        long startTime = System.nanoTime();
         history.add(op);
+        long startTime = System.nanoTime();
         integrateLocal(op); 
         execTime.add(System.nanoTime() - startTime);
     }

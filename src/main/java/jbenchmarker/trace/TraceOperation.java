@@ -30,7 +30,7 @@ public class TraceOperation {
 
 
 
-    public enum OpType { ins, del, rdm }; 
+    public enum OpType { ins, del, rdm, rcv }; 
     
     final private int replica;                  // replica number
     private OpType type;                  // type of operation : insert or delete
@@ -91,12 +91,19 @@ public class TraceOperation {
     }
     
     /*
-     * Construction of an insert operation 
+     * Construction of a random operation 
      */
     static public TraceOperation random(int replica, VectorClock VC, OperationProfile op) {
         return new TraceOperation(OpType.rdm, replica, -1, -1, null, VC, op);
     }
-
+    
+    /*
+     * Construction of a receive operation 
+     */
+    static public TraceOperation receive(int replica, VectorClock VC) {
+        return new TraceOperation(OpType.rcv, replica, -1, -1, null, VC, null);
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

@@ -26,7 +26,7 @@ import jbenchmarker.trace.TraceOperation;
  * @author urso
  */
 public class StandardOpProfile implements OperationProfile {
-
+ 
     private final double perIns, perBlock, sdvBlockSize;
     private final int avgBlockSize;
     private final RandomGauss r;

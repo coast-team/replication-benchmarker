@@ -20,7 +20,9 @@ package jbenchmarker.sim;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Random;
+import java.util.Set;
 import jbenchmarker.core.VectorClock;
 import jbenchmarker.trace.TraceOperation;
 
@@ -30,12 +32,12 @@ import jbenchmarker.trace.TraceOperation;
  * should be instanciate by the targeted simulator.
  * @author urso
  */
-public class RandomTrace implements Iterator<TraceOperation> {
+public class RandomTraceNC implements Iterator<TraceOperation> {
     private long time;
     private final long duration, delay;
     private final double probability, sdv;
     private final int replicas;
-    private final Map<Long,VectorClock>[] delivery;
+    private final Map<Long,NavigableSet<VectorClock>>[] delivery;
     private final VectorClock[] states;
     private final ReplicaProfile rp;
     private final OperationProfile op;
@@ -68,7 +70,7 @@ public class RandomTrace implements Iterator<TraceOperation> {
      * @param sdv standard deviation of delay for operation reception (gaussian)
      * @param replicas number of replicas
      */
-    public RandomTrace(long duration, ReplicaProfile rp, StandardOpProfile op, double probability, long delay, double sdv, int replicas) {
+    public RandomTraceNC(long duration, ReplicaProfile rp, StandardOpProfile op, double probability, long delay, double sdv, int replicas) {
         this.duration = duration;
         this.rp = rp;
         this.op = op;
@@ -78,7 +80,7 @@ public class RandomTrace implements Iterator<TraceOperation> {
         this.replicas = replicas;
         delivery = new Map[replicas];
         for (int i = 0; i < replicas; i++) 
-            delivery[i] = new java.util.HashMap<Long,VectorClock>();
+            delivery[i] = new java.util.HashMap<Long,NavigableSet<VectorClock>>();
         states = new VectorClock[replicas];
         for (int i = 0; i < replicas; i++) 
             states[i] = new VectorClock();
@@ -100,30 +102,30 @@ public class RandomTrace implements Iterator<TraceOperation> {
         TraceOperation o = next;
         next = null;
         while (next == null && time < duration) {
-            VectorClock vc = states[rindex], d = delivery[rindex].get(time);
-            if (d != null) {
-                vc.upTo(d);
-            }
-            if (rp.willGenerate(rindex, time, duration, probability)) {
-                vc.inc(rindex);
-                VectorClock opc = (VectorClock) vc.clone();
-                next = TraceOperation.random(rindex, opc, op);
-                for (int i = 0; i < replicas; i++) {
-                    long rt = time + r.nextLongGaussian(delay, sdv);
-                    VectorClock x = delivery[i].get(rt);
-                    if (x == null) {
-                        delivery[i].put(rt, opc);
-                    } else {
-                        x = (VectorClock) x.clone();
-                        x.upTo(opc);
-                        delivery[i].put(rt, x);
-                    }                                            
-                }   
-            }
-            rindex++;
-            if (rindex == replicas) {
-               time++;
-               rindex = 0;
+            VectorClock vc = states[rindex];
+            NavigableSet <VectorClock> ds = delivery[rindex].get(time);
+            if (ds != null) {
+                next = TraceOperation.receive(rindex, ds.pollFirst());
+            } else {
+                if (rp.willGenerate(rindex, time, duration, probability)) {
+                    vc.inc(rindex);
+                    VectorClock opc = (VectorClock) vc.clone();
+                    next = TraceOperation.random(rindex, opc, op);
+                    for (int i = 0; i < replicas; i++) {
+                        long rt = time + r.nextLongGaussian(delay, sdv);
+                        NavigableSet<VectorClock> x = delivery[i].get(rt);
+                        if (x == null) {
+                            x = new java.util.TreeSet<VectorClock>();
+                            delivery[i].put(rt, x);
+                        }
+                        x.add(opc);
+                    }
+                }
+                rindex++;
+                if (rindex == replicas) {
+                    time++;
+                    rindex = 0;
+                }
             }
         }
         return o;
