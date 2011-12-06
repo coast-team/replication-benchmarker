@@ -16,19 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.treedoc;
+package jbenchmarker.sim;
 
-import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
+import jbenchmarker.treedoc.TreedocFactory;
 
 /**
  * 
  * @author mzawirski
  */
-public class TreedocFactory implements ReplicaFactory {
-
+public class IntegrationTreedocTest extends AbstractIntegrationTest {
 	@Override
-	public MergeAlgorithm createReplica(int r) {
-		return new TreedocMerge(r);
+	protected ReplicaFactory createFactory() {
+		return new TreedocFactory();
 	}
 }

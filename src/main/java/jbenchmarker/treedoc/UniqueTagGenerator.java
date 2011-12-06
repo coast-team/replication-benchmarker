@@ -18,17 +18,9 @@
  */
 package jbenchmarker.treedoc;
 
-import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.ReplicaFactory;
-
 /**
- * 
  * @author mzawirski
  */
-public class TreedocFactory implements ReplicaFactory {
-
-	@Override
-	public MergeAlgorithm createReplica(int r) {
-		return new TreedocMerge(r);
-	}
+public interface UniqueTagGenerator {
+	UniqueTag nextTag();
 }

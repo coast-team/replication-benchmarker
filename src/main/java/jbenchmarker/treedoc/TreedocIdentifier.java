@@ -26,10 +26,12 @@ import java.util.BitSet;
  * of pairs: (direction, timestamp), indexed by integer [0, length()]. Direction
  * is {@link EdgeDirection#LEFT} or {@link EdgeDirection#RIGHT} and reflects
  * treedoc tree edges.
+ * <p>
+ * Identifiers are constructed and used by {@link TreedocRoot}.
  * 
  * @author mzawirski
  */
-class TreedocIdentifier {
+public class TreedocIdentifier {
 	enum EdgeDirection {
 		LEFT, RIGHT
 	};
@@ -39,7 +41,7 @@ class TreedocIdentifier {
 	 * 
 	 * @author mzawirski
 	 */
-	public static class Recorder {
+	static class Recorder {
 		private BitSet path = new BitSet();
 		private ArrayList<UniqueTag> tags = new ArrayList<UniqueTag>();
 		private int index;

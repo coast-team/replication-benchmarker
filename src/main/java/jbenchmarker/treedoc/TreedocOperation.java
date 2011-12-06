@@ -28,7 +28,7 @@ import jbenchmarker.trace.TraceOperation.OpType;
  */
 public class TreedocOperation extends Operation {
 	private final TreedocIdentifier id;
-	private final char content;
+	private final String content;
 
 	/**
 	 * Creates Treedoc operation with dummy content.
@@ -41,7 +41,7 @@ public class TreedocOperation extends Operation {
 	public TreedocOperation(final TraceOperation o, final TreedocIdentifier id) {
 		super(o);
 		this.id = id;
-		this.content = (char) 0; // Dummy.
+		this.content = null; // Dummy.
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class TreedocOperation extends Operation {
 	 *            content expressed as a single character.
 	 */
 	public TreedocOperation(final TraceOperation o, final TreedocIdentifier id,
-			final char content) {
+			final String content) {
 		super(o);
 		this.id = id;
 		this.content = content;
@@ -69,7 +69,7 @@ public class TreedocOperation extends Operation {
 		return id;
 	}
 
-	public char getContent() {
+	public String getContent() {
 		return content;
 	}
 

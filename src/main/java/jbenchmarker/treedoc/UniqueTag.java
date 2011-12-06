@@ -25,8 +25,24 @@ package jbenchmarker.treedoc;
  * @author mzawirski
  */
 public class UniqueTag implements Comparable<UniqueTag> {
+	public final static UniqueTag MIN = new UniqueTag(Integer.MIN_VALUE,
+			Integer.MIN_VALUE);
+	public final static UniqueTag MAX = new UniqueTag(Integer.MAX_VALUE,
+			Integer.MAX_VALUE);
+
 	private final int replicaId;
 	private final int counter;
+
+	public static UniqueTagGenerator createGenerator(final int replicaId) {
+		return new UniqueTagGenerator() {
+			int currentStamp;
+
+			@Override
+			public UniqueTag nextTag() {
+				return new UniqueTag(replicaId, currentStamp++);
+			}
+		};
+	}
 
 	public UniqueTag(final int replicaId, final int counter) {
 		this.replicaId = replicaId;
@@ -43,5 +59,13 @@ public class UniqueTag implements Comparable<UniqueTag> {
 
 	public UniqueTag clone() {
 		return new UniqueTag(replicaId, counter);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(this instanceof UniqueTag))
+			return false;
+		final UniqueTag other = (UniqueTag) obj;
+		return counter == other.counter && replicaId == other.replicaId;
 	}
 }

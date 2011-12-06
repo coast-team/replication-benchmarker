@@ -21,7 +21,6 @@ package jbenchmarker.treedoc;
 import java.util.LinkedList;
 import java.util.List;
 
-import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.Operation;
 import jbenchmarker.trace.IncorrectTrace;
@@ -32,10 +31,8 @@ import jbenchmarker.trace.TraceOperation;
  * @author mzawirski
  */
 public class TreedocMerge extends MergeAlgorithm {
-	private int replicaClock;
-
-	public TreedocMerge(final Document doc, int r) {
-		super(doc, r);
+	public TreedocMerge(int r) {
+		super(new TreedocDocument(UniqueTag.createGenerator(r)), r);
 	}
 
 	@Override
@@ -46,36 +43,26 @@ public class TreedocMerge extends MergeAlgorithm {
 	@Override
 	protected List<Operation> generateLocal(TraceOperation opt)
 			throws IncorrectTrace {
-		final TreedocNode rootNode = ((TreedocDocument) getDoc()).getRootNode();
+		final TreedocRoot rootNode = ((TreedocDocument) getDoc()).getRoot();
 		final List<Operation> ops = new LinkedList<Operation>();
-		final UniqueTag timestamp = getNextTimestamp();
 
 		switch (opt.getType()) {
 		case ins:
-			final String content = opt.getContent();
-			// TODO: Implement batch operations efficiently!! This is an ugly
-			// impl.
-			for (int i = 0; i < content.length(); i++) {
-				final char ch = content.charAt(i);
-				final TreedocIdentifier id = rootNode.insertAt(
-						i + opt.getPosition(), ch, timestamp);
-				ops.add(new TreedocOperation(opt, id, ch));
-			}
+			final TreedocIdentifier id = rootNode.insertAt(opt.getPosition(),
+					opt.getContent());
+			ops.add(new TreedocOperation(opt, id, opt.getContent()));
 			break;
 		case del:
+			// TODO: implement batch delete more efficiently?
 			for (int i = opt.getPosition(); i < opt.getPosition()
 					+ opt.getOffset(); i++) {
-				final TreedocIdentifier id = rootNode.deleteAt(i);
-				ops.add(new TreedocOperation(opt, id));
+				final TreedocIdentifier deletedId = rootNode.deleteAt(i);
+				ops.add(new TreedocOperation(opt, deletedId));
 			}
 			break;
 		default:
 			throw new IncorrectTrace("Unsupported operation type");
 		}
 		return ops;
-	}
-
-	private UniqueTag getNextTimestamp() {
-		return new UniqueTag(getReplicaNb(), replicaClock++);
 	}
 }

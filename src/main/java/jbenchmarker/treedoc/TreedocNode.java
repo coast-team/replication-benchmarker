@@ -18,6 +18,9 @@
  */
 package jbenchmarker.treedoc;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import jbenchmarker.treedoc.TreedocIdentifier.EdgeDirection;
 import jbenchmarker.treedoc.TreedocIdentifier.Recorder;
 
@@ -25,21 +28,20 @@ import jbenchmarker.treedoc.TreedocIdentifier.Recorder;
  * A node of of Treedoc binary-like tree. Each node have (optionally) left and
  * right children. The infix traversal order specifies document content.
  * <p>
- * Only the root node of this class (created by {@link #createRoot()} is meant
- * for public access.
- * <p>
  * Thread-hostile.
  * 
  * @author mzawirski
  */
 class TreedocNode {
-	public static TreedocNode createRoot() {
-		return new TreedocNode(null, (char) 0, true);
-	}
+	// TODO: export as a setting
+	static final boolean USE_DISAMBIGUATORS_TRICK = true;
 
-	private static int binarySearchByTag(final TreedocNode[] nodes,
-			final UniqueTag tag) {
-		// Based on code from Arrays.binarySearch, since rewrting binary search
+	protected static int binarySearchByTag(final EdgeDirection direction,
+			final TreedocNode[] nodes, final UniqueTag tag) {
+		if (nodes == null)
+			return -1;
+
+		// Based on code from Arrays.binarySearch, since rewriting binary search
 		// differently does not make sense. I do not expect copyright trobules.
 		int low = 0;
 		int high = nodes.length - 1;
@@ -58,175 +60,254 @@ class TreedocNode {
 		return -(low + 1);
 	}
 
-	private static void getNodesContent(final TreedocNode nodes[],
+	protected static void getNodesContent(final TreedocNode nodes[],
 			final StringBuilder contentBuffer) {
 		if (nodes == null)
 			return;
-		for (TreedocNode child : nodes) {
+		for (final TreedocNode child : nodes) {
 			if (child.getSubtreeSize() > 0)
 				child.getSubtreeContent(contentBuffer);
 		}
 	}
 
-	private UniqueTag uniqueTag;
-	private char content;
-	private int subtreeSize;
-	private boolean tombstone;
-	private TreedocNode leftChildren[];
-	private TreedocNode rightChildren[];
+	protected UniqueTag uniqueTag;
+	/**
+	 * Node content, valid only if !tombstone.
+	 */
+	protected char content;
+	protected int subtreeSize;
+	protected boolean tombstone;
+	protected TreedocNode leftChildren[];
+	protected TreedocNode rightChildren[];
 
-	private TreedocNode(final UniqueTag uniqueTag, final char content,
-			final boolean tombstone) {
+	/**
+	 * Creates non-empty node.
+	 */
+	protected TreedocNode(final UniqueTag uniqueTag, final char content) {
 		this.uniqueTag = uniqueTag;
 		this.content = content;
-		this.tombstone = tombstone;
-		if (!tombstone)
-			this.subtreeSize = 1;
+		this.subtreeSize = 1;
 	}
 
-	public void insertAt(final TreedocIdentifier id, final char content) {
-		final int lastIndex = id.length() - 1;
-		final TreedocNode newNodeParent = findNodeAndAlterSize(id, 0,
-				lastIndex, 1);
-		final UniqueTag lastTag = id.getUniqueTag(lastIndex);
-		final EdgeDirection lastDirection = id.getEdgeDirection(lastIndex);
-		final TreedocNode newNode = new TreedocNode(lastTag, content,
-				false);
-		newNodeParent.insertChild(newNode, lastDirection);
+	/**
+	 * Creates tombstone node.
+	 */
+	protected TreedocNode(final UniqueTag uniqueTag) {
+		this.uniqueTag = uniqueTag;
+		this.tombstone = true;
 	}
 
-	public void deleteAt(final TreedocIdentifier id) {
-		final TreedocNode node = findNodeAndAlterSize(id, 0, id.length(),
-				-1);
-		if (node.tombstone)
-			throw new IllegalStateException(
-					"State corrupted, content already deleted");
-		node.tombstone = true;
-	}
-
-	public TreedocIdentifier insertAt(final int index, final char content,
-			final UniqueTag tag) {
-		final TreedocNode newNode = new TreedocNode(tag, content, false);
-		final Recorder idRecorder = new Recorder();
-		final TreedocNode precedingNode;
-		if (index == 0) {
-			// Assumption: this is the root of the tree.
-			precedingNode = this;
-		} else {
-			precedingNode = findNthContentAndAlterSize(index, idRecorder, 1);
-		}
-		precedingNode.insertAfter(newNode, idRecorder);
-		return idRecorder.createIdentifier();
-	}
-
-	public TreedocIdentifier deleteAt(final int index) {
-		final Recorder idRecorder = new Recorder();
-		final TreedocNode node = findNthContentAndAlterSize(index + 1,
-				idRecorder, -1);
-		node.tombstone = true;
-		return idRecorder.createIdentifier();
-	}
-
-	public int getSubtreeSize() {
+	protected int getSubtreeSize() {
 		return subtreeSize;
 	}
 
-	public void getSubtreeContent(final StringBuilder contentBuffer) {
+	protected void getSubtreeContent(final StringBuilder contentBuffer) {
 		getNodesContent(leftChildren, contentBuffer);
-		if (containsContent())
+		if (!tombstone)
 			contentBuffer.append(content);
 		getNodesContent(rightChildren, contentBuffer);
 	}
 
-	private boolean containsContent() {
-		return !tombstone;
+	protected boolean isRoot() {
+		return false;
 	}
 
-	private TreedocNode findNodeAndAlterSize(final TreedocIdentifier id,
-			final int idIndex, final int idUseLength, final int sizeDelta) {
-		subtreeSize += sizeDelta;
-		if (idIndex == idUseLength)
-			return this;
-		final EdgeDirection direction = id.getEdgeDirection(idIndex);
-		final TreedocNode children[] = direction == EdgeDirection.LEFT ? leftChildren
-				: rightChildren;
-		final UniqueTag tag = id.getUniqueTag(idIndex);
-		final TreedocNode child = children[binarySearchByTag(children, tag)];
-		return child.findNodeAndAlterSize(id, idIndex + 1, idUseLength,
-				sizeDelta);
-	}
-
-	private void insertChild(final TreedocNode child,
-			final EdgeDirection direction) {
-		final TreedocNode children[] = direction == EdgeDirection.LEFT ? leftChildren
-				: rightChildren;
-		TreedocNode newChildren[];
-		if (children == null) {
-			newChildren = new TreedocNode[1];
-			newChildren[0] = child;
+	/**
+	 * Finds an deletes a node indicated by id.
+	 * 
+	 * @param id
+	 * @param idIndex
+	 * @return true if node was still there.
+	 */
+	protected boolean findAndDeleteNode(final TreedocIdentifier id,
+			final int idIndex) {
+		if (idIndex == id.length()) {
+			final boolean wasTombstone = tombstone;
+			if (!wasTombstone)
+				subtreeSize--;
+			tombstone = true;
+			return !wasTombstone;
 		} else {
-			newChildren = new TreedocNode[children.length + 1];
-			int childIndex = binarySearchByTag(children, child.uniqueTag);
-			if (childIndex >= 0)
-				throw new IllegalStateException(
-						"Corrupted state, node to insert already exists.");
-			childIndex = (childIndex - 1) * -1;
-			System.arraycopy(children, 0, newChildren, 0, childIndex);
-			newChildren[childIndex] = child;
-			System.arraycopy(children, childIndex, newChildren, childIndex + 1,
-					children.length - childIndex);
+			final EdgeDirection direction = id.getEdgeDirection(idIndex);
+			final TreedocNode children[] = getChildren(direction);
+			final UniqueTag tag = id.getUniqueTag(idIndex);
+			final int childIndex = binarySearchByTag(direction, children, tag);
+			if (childIndex >= 0) {
+				final TreedocNode child = children[childIndex];
+				if (child.findAndDeleteNode(id, idIndex + 1)) {
+					subtreeSize--;
+					// Discard a whole subtree, as close to the root as
+					// possible.
+					if (child.subtreeSize == 0 && (isRoot() || subtreeSize > 0))
+						removeEmptyChild(direction, childIndex);
+					return true;
+				}
+			}
+			// Else: subtree already does not exist.
+			return false;
 		}
+	}
+
+	protected void findAndInsertNode(final TreedocIdentifier id,
+			final int idIndex, final String content) {
+		subtreeSize += content.length();
+		if (idIndex == id.length()) {
+			// Fill in the last subtree on the path with the content.
+			createBalancedSubtreeOfContent(content, 0, content.length());
+		} else {
+			final EdgeDirection direction = id.getEdgeDirection(idIndex);
+			final TreedocNode children[] = getChildren(direction);
+			final UniqueTag tag = id.getUniqueTag(idIndex);
+			int childIndex = binarySearchByTag(direction, children, tag);
+			final TreedocNode child;
+			if (childIndex >= 0) {
+				child = children[childIndex];
+			} else {
+				// Create node on the path if necessary.
+				child = new TreedocNode(tag);
+				TreedocNode newChildren[];
+				if (children == null) {
+					// Sequential case - single child.
+					newChildren = new TreedocNode[1];
+					newChildren[0] = child;
+				} else {
+					// Concurrent case - multiple children.
+					newChildren = new TreedocNode[children.length + 1];
+					childIndex = (childIndex + 1) * -1;
+					System.arraycopy(children, 0, newChildren, 0, childIndex);
+					newChildren[childIndex] = child;
+					System.arraycopy(children, childIndex, newChildren,
+							childIndex + 1, children.length - childIndex);
+				}
+				setChildren(direction, newChildren);
+			}
+			child.findAndInsertNode(id, idIndex + 1, content);
+		}
+	}
+
+	// TODO: document
+	protected void createBalancedSubtreeOfContent(final String content,
+			final int begin, final int length) {
+		// Invariant: leftSubtree + rightSubtree + 1 = length
+		final int leftSubtree = (length - 1) / 2;
+		final int rightSubtree = length - 1 - leftSubtree;
+		if (leftSubtree > 0) {
+			final TreedocNode leftChild = new TreedocNode(uniqueTag);
+			final TreedocNode[] leftChildren = new TreedocNode[1];
+			leftChildren[0] = leftChild;
+			setChildren(EdgeDirection.LEFT, leftChildren);
+			leftChild.createBalancedSubtreeOfContent(content, begin,
+					leftSubtree);
+		}
+		this.content = content.charAt(begin + leftSubtree);
+		this.tombstone = false;
+		this.subtreeSize = length;
+		if (rightSubtree > 0) {
+			final TreedocNode rightChild = new TreedocNode(uniqueTag);
+			final TreedocNode[] rightChildren = new TreedocNode[1];
+			rightChildren[0] = rightChild;
+			setChildren(EdgeDirection.RIGHT, rightChildren);
+			rightChild.createBalancedSubtreeOfContent(content, begin
+					+ leftSubtree + 1, rightSubtree);
+		}
+	}
+
+	protected TreedocNode[] getChildren(final EdgeDirection direction) {
+		return direction == EdgeDirection.LEFT ? leftChildren : rightChildren;
+	}
+
+	protected void setChildren(final EdgeDirection direction,
+			final TreedocNode[] newChildren) {
 		if (direction == EdgeDirection.LEFT)
 			leftChildren = newChildren;
 		else
 			rightChildren = newChildren;
 	}
 
-	private TreedocNode findNthContentAndAlterSize(final int n,
-			final Recorder idRecorder, final int sizeDelta) {
-		if (n <= 0)
-			throw new IllegalArgumentException(
-					"requested node with a negative index");
-		if (n > subtreeSize)
-			throw new IllegalArgumentException(
-					"requested node out of subtree range");
-		subtreeSize += sizeDelta;
-		int nodesToSkip = n;
-		for (TreedocNode child : leftChildren) {
-			final int childSize = child.getSubtreeSize();
-			if (childSize == 0)
-				continue;
-			if (childSize <= nodesToSkip) {
-				idRecorder.recordEdge(EdgeDirection.LEFT, child.uniqueTag);
-				child.findNthContentAndAlterSize(nodesToSkip, idRecorder,
-						sizeDelta);
-			} else {
-				nodesToSkip -= childSize;
-			}
+	protected void removeEmptyChild(final EdgeDirection direction,
+			final int childIndex) {
+		final TreedocNode children[] = getChildren(direction);
+		final TreedocNode newChildren[];
+		if (children.length == 1) {
+			newChildren = null;
+		} else {
+			newChildren = new TreedocNode[children.length - 1];
+			System.arraycopy(children, 0, newChildren, 0, childIndex);
+			System.arraycopy(children, childIndex + 1, newChildren, childIndex,
+					children.length - childIndex - 1);
 		}
-
-		if (containsContent())
-			nodesToSkip--;
-		if (nodesToSkip == 0)
-			return this;
-
-		for (TreedocNode child : rightChildren) {
-			final int childSize = child.getSubtreeSize();
-			if (childSize == 0)
-				continue;
-			if (childSize <= nodesToSkip) {
-				idRecorder.recordEdge(EdgeDirection.RIGHT, child.uniqueTag);
-				child.findNthContentAndAlterSize(nodesToSkip, idRecorder,
-						sizeDelta);
-			} else {
-				nodesToSkip -= childSize;
-			}
-		}
-		throw new IllegalStateException(
-				"Could not find a node within a subtree - corrupted metadata!");
+		setChildren(direction, newChildren);
 	}
 
-	private TreedocNode insertAfter(final TreedocNode newNode,
+	protected TreedocNode findNthContentAndAlterSize(final DecreasingCounter n,
+			final Recorder idRecorder, final int sizeDelta) {
+		subtreeSize += sizeDelta;
+		final TreedocNode leftDescendant = findNthContentInChildrenAndAlterSize(
+				EdgeDirection.LEFT, n, idRecorder, sizeDelta);
+		if (leftDescendant != null)
+			return leftDescendant;
+
+		if (!tombstone)
+			n.decrement(1);
+		if (n.get() == 0)
+			return this;
+
+		final TreedocNode rightDescendant = findNthContentInChildrenAndAlterSize(
+				EdgeDirection.RIGHT, n, idRecorder, sizeDelta);
+		if (rightDescendant == null)
+			throw new IllegalStateException(
+					"Could not find a node within a subtree - corrupted metadata!");
+		return rightDescendant;
+	}
+
+	protected TreedocNode findNthContentInChildrenAndAlterSize(
+			final EdgeDirection direction, final DecreasingCounter n,
+			final Recorder idRecorder, final int sizeDelta) {
+		final TreedocNode children[] = getChildren(direction);
+		if (children == null)
+			return null;
+		for (int childIndex = 0; childIndex < children.length; childIndex++) {
+			final TreedocNode child = children[childIndex];
+			final int childSize = child.getSubtreeSize();
+			if (childSize == 0)
+				continue;
+			if (n.get() <= childSize) {
+				// TODO: the fact this exact condition is here is a hack.
+				if (USE_DISAMBIGUATORS_TRICK) {
+					if (sizeDelta > 0
+							&& direction == EdgeDirection.RIGHT
+							&& childIndex == children.length - 1
+							&& childSize == n.get()
+							&& children[childIndex].uniqueTag
+									.compareTo(UniqueTag.MAX) < 0) {
+						final TreedocNode newChildren[] = new TreedocNode[children.length + 1];
+						System.arraycopy(children, 0, newChildren, 0,
+								children.length);
+						final TreedocNode maxTagNode = new TreedocNode(
+								UniqueTag.MAX);
+						idRecorder.recordEdge(direction, maxTagNode.uniqueTag);
+						maxTagNode.subtreeSize = subtreeSize;
+						newChildren[children.length] = maxTagNode;
+						setChildren(direction, newChildren);
+						return newChildren[children.length];
+					}
+				}
+				idRecorder.recordEdge(direction, child.uniqueTag);
+				final TreedocNode foundNode = child.findNthContentAndAlterSize(
+						n, idRecorder, sizeDelta);
+				// Discard a whole subtree, as close to the root as possible.
+				if (child.subtreeSize == 0 && (isRoot() || subtreeSize > 0))
+					removeEmptyChild(direction, childIndex);
+
+				return foundNode;
+			} else {
+				n.decrement(childSize);
+			}
+		}
+		return null;
+	}
+
+	protected TreedocNode insertAfter(final TreedocNode newNode,
 			final Recorder idRecorder) {
 		if (rightChildren == null) {
 			rightChildren = new TreedocNode[1];
@@ -244,9 +325,9 @@ class TreedocNode {
 		return newNode;
 	}
 
-	private void insertBefore(final TreedocNode newNode,
+	protected void insertBefore(final TreedocNode newNode,
 			final Recorder idRecorder) {
-		subtreeSize++;
+		subtreeSize += newNode.subtreeSize;
 		if (leftChildren == null) {
 			leftChildren = new TreedocNode[1];
 			leftChildren[0] = newNode;
@@ -255,6 +336,27 @@ class TreedocNode {
 			final TreedocNode firstChild = leftChildren[0];
 			idRecorder.recordEdge(EdgeDirection.LEFT, firstChild.uniqueTag);
 			firstChild.insertBefore(newNode, idRecorder);
+		}
+	}
+
+	/**
+	 * An integer counter object. A work-around for Java, whic does not support
+	 * returning two objects (a pretty handy feature for recursively traversing
+	 * the tree).
+	 */
+	protected static class DecreasingCounter {
+		private int value;
+
+		public DecreasingCounter(final int value) {
+			this.value = value;
+		}
+
+		public int get() {
+			return value;
+		}
+
+		public void decrement(final int delta) {
+			value -= delta;
 		}
 	}
 }

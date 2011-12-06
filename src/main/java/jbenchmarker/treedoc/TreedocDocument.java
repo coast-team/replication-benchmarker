@@ -27,21 +27,15 @@ import jbenchmarker.core.Operation;
  * @author mzawirski
  */
 public class TreedocDocument implements Document {
-	final TreedocNode rootNode;
+	final TreedocRoot rootNode;
 
-	public TreedocDocument() {
-		rootNode = TreedocNode.createRoot();
+	public TreedocDocument(final UniqueTagGenerator tagGenerator) {
+		rootNode = new TreedocRoot(tagGenerator);
 	}
 
 	@Override
 	public String view() {
-		final int length = rootNode.getSubtreeSize();
-		final StringBuilder buffer = new StringBuilder(length);
-		rootNode.getSubtreeContent(buffer);
-		if (buffer.length() != length)
-			throw new RuntimeException("Unexpected document size: got "
-					+ buffer.length() + ", want " + length);
-		return buffer.toString();
+		return rootNode.getContent();
 	}
 
 	@Override
@@ -59,7 +53,7 @@ public class TreedocDocument implements Document {
 		}
 	}
 
-	TreedocNode getRootNode() {
+	TreedocRoot getRoot() {
 		return rootNode;
 	}
 }
