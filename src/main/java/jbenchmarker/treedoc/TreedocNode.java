@@ -18,9 +18,9 @@
  */
 package jbenchmarker.treedoc;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.Iterator;
 
+import jbenchmarker.treedoc.TreedocIdentifier.ComponentScanner;
 import jbenchmarker.treedoc.TreedocIdentifier.EdgeDirection;
 import jbenchmarker.treedoc.TreedocIdentifier.Recorder;
 
@@ -37,9 +37,12 @@ class TreedocNode {
 	static final boolean USE_DISAMBIGUATORS_TRICK = true;
 
 	protected static int binarySearchByTag(final EdgeDirection direction,
-			final TreedocNode[] nodes, final UniqueTag tag) {
+			final TreedocNode[] nodes, UniqueTag tag) {
 		if (nodes == null)
 			return -1;
+
+		if (tag == null)
+			tag = getMajorNodeTag(direction);
 
 		// Based on code from Arrays.binarySearch, since rewriting binary search
 		// differently does not make sense. I do not expect copyright trobules.
@@ -47,7 +50,9 @@ class TreedocNode {
 		int high = nodes.length - 1;
 		while (low <= high) {
 			int mid = (low + high) >>> 1;
-			final UniqueTag midTag = nodes[mid].uniqueTag;
+			UniqueTag midTag = nodes[mid].uniqueTag;
+			if (midTag == null)
+				midTag = getMajorNodeTag(direction);
 			int cmp = midTag.compareTo(tag);
 
 			if (cmp < 0)
@@ -58,6 +63,10 @@ class TreedocNode {
 				return mid;
 		}
 		return -(low + 1);
+	}
+
+	protected static UniqueTag getMajorNodeTag(final EdgeDirection direction) {
+		return direction == EdgeDirection.RIGHT ? UniqueTag.MAX : UniqueTag.MIN;
 	}
 
 	protected static void getNodesContent(final TreedocNode nodes[],
@@ -132,22 +141,23 @@ class TreedocNode {
 	 * @param idIndex
 	 * @return true if node was still there.
 	 */
-	protected boolean findAndDeleteNode(final TreedocIdentifier id,
-			final int idIndex) {
-		if (idIndex == id.length()) {
+	protected boolean findAndDeleteNode(
+			final Iterator<ComponentScanner> idIterator, final int idIndex) {
+		if (!idIterator.hasNext()) {
 			final boolean wasTombstone = tombstone;
 			if (!wasTombstone)
 				subtreeSize--;
 			tombstone = true;
 			return !wasTombstone;
 		} else {
-			final EdgeDirection direction = id.getEdgeDirection(idIndex);
+			final ComponentScanner component = idIterator.next();
+			final EdgeDirection direction = component.getDirection();
+			final UniqueTag tag = component.getTag();
 			final TreedocNode children[] = getChildren(direction);
-			final UniqueTag tag = id.getUniqueTag(idIndex);
 			final int childIndex = binarySearchByTag(direction, children, tag);
 			if (childIndex >= 0) {
 				final TreedocNode child = children[childIndex];
-				if (child.findAndDeleteNode(id, idIndex + 1)) {
+				if (child.findAndDeleteNode(idIterator, idIndex + 1)) {
 					subtreeSize--;
 					// Discard a whole subtree, as close to the root as
 					// possible.
@@ -161,16 +171,19 @@ class TreedocNode {
 		}
 	}
 
-	protected void findAndInsertNode(final TreedocIdentifier id,
-			final int idIndex, final String content) {
+	protected void findAndInsertNode(
+			final Iterator<ComponentScanner> idIterator, final int idIndex,
+			final String content) {
 		subtreeSize += content.length();
-		if (idIndex == id.length()) {
+		if (!idIterator.hasNext()) {
 			// Fill in the last subtree on the path with the content.
 			createBalancedSubtreeOfContent(content, 0, content.length());
 		} else {
-			final EdgeDirection direction = id.getEdgeDirection(idIndex);
+			final TreedocIdentifier.ComponentScanner component = idIterator
+					.next();
+			final EdgeDirection direction = component.getDirection();
+			final UniqueTag tag = component.getTag();
 			final TreedocNode children[] = getChildren(direction);
-			final UniqueTag tag = id.getUniqueTag(idIndex);
 			int childIndex = binarySearchByTag(direction, children, tag);
 			final TreedocNode child;
 			if (childIndex >= 0) {
@@ -194,11 +207,21 @@ class TreedocNode {
 				}
 				setChildren(direction, newChildren);
 			}
-			child.findAndInsertNode(id, idIndex + 1, content);
+			child.findAndInsertNode(idIterator, idIndex + 1, content);
 		}
 	}
 
-	// TODO: document
+	/**
+	 * Creates a balanced tree of a given length containing a content. Assumes
+	 * that this node is empty.
+	 * 
+	 * @param content
+	 *            content for the subtree.
+	 * @param begin
+	 *            first index of content to use.
+	 * @param length
+	 *            size of content to create.
+	 */
 	protected void createBalancedSubtreeOfContent(final String content,
 			final int begin, final int length) {
 		// Invariant: leftSubtree + rightSubtree + 1 = length
@@ -287,19 +310,16 @@ class TreedocNode {
 			if (n.get() <= childSize) {
 				// TODO: the fact this exact condition is here is a hack.
 				if (USE_DISAMBIGUATORS_TRICK) {
-					if (sizeDelta > 0
-							&& direction == EdgeDirection.RIGHT
-							&& childIndex == children.length - 1
+					if (sizeDelta > 0 && direction == EdgeDirection.RIGHT
 							&& childSize == n.get()
-							&& children[childIndex].uniqueTag
-									.compareTo(UniqueTag.MAX) < 0) {
+							&& childIndex == children.length - 1
+							&& children[childIndex].uniqueTag != null) {
 						final TreedocNode newChildren[] = new TreedocNode[children.length + 1];
 						System.arraycopy(children, 0, newChildren, 0,
 								children.length);
-						final TreedocNode maxTagNode = new TreedocNode(
-								UniqueTag.MAX);
+						final TreedocNode maxTagNode = new TreedocNode(null);
 						idRecorder.recordEdge(direction, maxTagNode.uniqueTag);
-						maxTagNode.subtreeSize = subtreeSize;
+						maxTagNode.subtreeSize = sizeDelta;
 						newChildren[children.length] = maxTagNode;
 						setChildren(direction, newChildren);
 						return newChildren[children.length];
@@ -327,12 +347,11 @@ class TreedocNode {
 			rightChildren[0] = newNode;
 			idRecorder.recordEdge(EdgeDirection.RIGHT, newNode.uniqueTag);
 		} else {
-			// TODO: If we want to compact the space & reduce access time,
-			// we might handle the case "node.compareTo(rightChildren[0]) < 0"
-			// differently.
-
 			final TreedocNode firstChild = rightChildren[0];
 			idRecorder.recordEdge(EdgeDirection.RIGHT, firstChild.uniqueTag);
+			// TODO: An alternative here is to handle the case
+			// (node.uniqueTag.compareTo(rightChildren[0].uniqueTag) < 0)
+			// differently.
 			firstChild.insertBefore(newNode, idRecorder);
 		}
 		return newNode;
@@ -348,6 +367,9 @@ class TreedocNode {
 		} else {
 			final TreedocNode firstChild = leftChildren[0];
 			idRecorder.recordEdge(EdgeDirection.LEFT, firstChild.uniqueTag);
+			// TODO: An alternative here is to handle the case
+			// (node.uniqueTag.compareTo(leftChildren[0].uniqueTag) < 0)
+			// differently.
 			firstChild.insertBefore(newNode, idRecorder);
 		}
 	}

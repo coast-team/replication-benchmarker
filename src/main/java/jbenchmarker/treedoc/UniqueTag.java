@@ -49,6 +49,14 @@ public class UniqueTag implements Comparable<UniqueTag> {
 		this.counter = counter;
 	}
 
+	public int getReplicaId() {
+		return replicaId;
+	}
+
+	public int getCounter() {
+		return counter;
+	}
+
 	@Override
 	public int compareTo(UniqueTag o) {
 		if (replicaId != o.replicaId) {
@@ -63,7 +71,7 @@ public class UniqueTag implements Comparable<UniqueTag> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(this instanceof UniqueTag))
+		if (!(obj instanceof UniqueTag))
 			return false;
 		final UniqueTag other = (UniqueTag) obj;
 		return counter == other.counter && replicaId == other.replicaId;
