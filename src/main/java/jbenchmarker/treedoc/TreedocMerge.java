@@ -43,12 +43,12 @@ public class TreedocMerge extends MergeAlgorithm {
 	@Override
 	protected List<Operation> generateLocal(TraceOperation opt)
 			throws IncorrectTrace {
-		final TreedocRoot rootNode = ((TreedocDocument) getDoc()).getRoot();
+		final TreedocDocument doc = ((TreedocDocument) getDoc());
 		final List<Operation> ops = new LinkedList<Operation>();
 
 		switch (opt.getType()) {
 		case ins:
-			final TreedocIdentifier id = rootNode.insertAt(
+			final TreedocIdentifier id = doc.insertAt(
 					restrictedIndex(opt.getPosition(), true), opt.getContent());
 			ops.add(new TreedocOperation(opt, id, opt.getContent()));
 			break;
@@ -56,7 +56,7 @@ public class TreedocMerge extends MergeAlgorithm {
 			// TODO: implement batch delete more efficiently?
 			for (int i = opt.getPosition(); i < opt.getPosition()
 					+ opt.getOffset(); i++) {
-				final TreedocIdentifier deletedId = rootNode
+				final TreedocIdentifier deletedId = doc
 						.deleteAt(restrictedIndex(i, false));
 				ops.add(new TreedocOperation(opt, deletedId));
 			}
@@ -71,7 +71,7 @@ public class TreedocMerge extends MergeAlgorithm {
 		// FIXME: Hack with restricting index within the range!
 		// It seems to be caused by Simulator replaying delete blindly without
 		// verifying replica document size first. Not 100% sure though.
-		return Math.min(index, ((TreedocDocument) getDoc()).getRoot()
-				.getContentSize() - (insert ? 0 : 1));
+		return Math.min(index, ((TreedocDocument) getDoc()).getContentSize()
+				- (insert ? 0 : 1));
 	}
 }

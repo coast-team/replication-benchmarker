@@ -18,7 +18,9 @@
  */
 package jbenchmarker.sim;
 
+import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
+import jbenchmarker.treedoc.TreedocDocument;
 import jbenchmarker.treedoc.TreedocFactory;
 
 /**
@@ -29,5 +31,12 @@ public class IntegrationTreedocTest extends AbstractIntegrationTest {
 	@Override
 	protected ReplicaFactory createFactory() {
 		return new TreedocFactory();
+	}
+
+	@Override
+	protected void assertConsistentViews() {
+		super.assertConsistentViews();
+		for (MergeAlgorithm replica : cd.getReplicas().values())
+			((TreedocDocument) replica.getDoc()).printStats();
 	}
 }

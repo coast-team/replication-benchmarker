@@ -32,7 +32,7 @@ import org.junit.Test;
  * @author mzawirski
  */
 public abstract class AbstractIntegrationTest {
-	private CausalDispatcher cd;
+	protected CausalDispatcher cd;
 
 	@Before
 	public void setUp() {

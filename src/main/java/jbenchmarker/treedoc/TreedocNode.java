@@ -70,6 +70,15 @@ class TreedocNode {
 		}
 	}
 
+	protected static int getNodesNumber(final TreedocNode nodes[]) {
+		int result = 0;
+		if (nodes != null) {
+			for (final TreedocNode child : nodes)
+				result += child.getNodesNumber();
+		}
+		return result;
+	}
+
 	protected UniqueTag uniqueTag;
 	/**
 	 * Node content, valid only if !tombstone.
@@ -106,6 +115,10 @@ class TreedocNode {
 		if (!tombstone)
 			contentBuffer.append(content);
 		getNodesContent(rightChildren, contentBuffer);
+	}
+
+	protected int getNodesNumber() {
+		return getNodesNumber(leftChildren) + 1 + getNodesNumber(rightChildren);
 	}
 
 	protected boolean isRoot() {

@@ -78,6 +78,11 @@ public class TreedocRoot extends TreedocNode {
 		return buffer.toString();
 	}
 
+	public void printStats() {
+		System.out.println("Nodes in the tree: " + getNodesNumber());
+		System.out.println("Non-empty nodes in the tree: " + getContentSize());
+	}
+
 	@Override
 	protected boolean isRoot() {
 		return true;

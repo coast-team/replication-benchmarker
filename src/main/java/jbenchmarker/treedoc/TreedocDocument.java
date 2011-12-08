@@ -26,16 +26,14 @@ import jbenchmarker.core.Operation;
  * 
  * @author mzawirski
  */
-public class TreedocDocument implements Document {
-	final TreedocRoot rootNode;
-
+public class TreedocDocument extends TreedocRoot implements Document {
 	public TreedocDocument(final UniqueTagGenerator tagGenerator) {
-		rootNode = new TreedocRoot(tagGenerator);
+		super(tagGenerator);
 	}
 
 	@Override
 	public String view() {
-		return rootNode.getContent();
+		return getContent();
 	}
 
 	@Override
@@ -43,17 +41,13 @@ public class TreedocDocument implements Document {
 		final TreedocOperation treedocOp = (TreedocOperation) op;
 		switch (treedocOp.getType()) {
 		case ins:
-			rootNode.insertAt(treedocOp.getId(), treedocOp.getContent());
+			insertAt(treedocOp.getId(), treedocOp.getContent());
 			break;
 		case del:
-			rootNode.deleteAt(treedocOp.getId());
+			deleteAt(treedocOp.getId());
 			break;
 		default:
 			throw new IllegalArgumentException("Unsupported operation type");
 		}
-	}
-
-	TreedocRoot getRoot() {
-		return rootNode;
 	}
 }
