@@ -51,7 +51,7 @@ public class TreedocRoot extends TreedocNode {
 			precedingNode.subtreeSize += content.length();
 		} else {
 			precedingNode = findNthContentAndAlterSize(new DecreasingCounter(
-					restrictedIndex(index, true)), idRecorder, content.length());
+					index), idRecorder, content.length());
 		}
 		precedingNode.insertAfter(newNode, idRecorder);
 		return idRecorder.createIdentifier();
@@ -60,17 +60,9 @@ public class TreedocRoot extends TreedocNode {
 	public TreedocIdentifier deleteAt(int index) {
 		final Recorder idRecorder = new Recorder();
 		final TreedocNode node = findNthContentAndAlterSize(
-				new DecreasingCounter(restrictedIndex(index, false) + 1),
-				idRecorder, -1);
+				new DecreasingCounter(index + 1), idRecorder, -1);
 		node.tombstone = true;
 		return idRecorder.createIdentifier();
-	}
-
-	private int restrictedIndex(final int index, final boolean insert) {
-		// FIXME: Hack with restricting index within the range!
-		// It seems to be caused by Simulator replaying delete blindly without
-		// verifying replica document size first. Not 100% sure though.
-		return Math.min(index, getContentSize() - (insert ? 0 : 1));
 	}
 
 	public int getContentSize() {

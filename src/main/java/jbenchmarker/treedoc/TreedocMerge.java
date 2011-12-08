@@ -48,15 +48,16 @@ public class TreedocMerge extends MergeAlgorithm {
 
 		switch (opt.getType()) {
 		case ins:
-			final TreedocIdentifier id = rootNode.insertAt(opt.getPosition(),
-					opt.getContent());
+			final TreedocIdentifier id = rootNode.insertAt(
+					restrictedIndex(opt.getPosition(), true), opt.getContent());
 			ops.add(new TreedocOperation(opt, id, opt.getContent()));
 			break;
 		case del:
 			// TODO: implement batch delete more efficiently?
 			for (int i = opt.getPosition(); i < opt.getPosition()
 					+ opt.getOffset(); i++) {
-				final TreedocIdentifier deletedId = rootNode.deleteAt(i);
+				final TreedocIdentifier deletedId = rootNode
+						.deleteAt(restrictedIndex(i, false));
 				ops.add(new TreedocOperation(opt, deletedId));
 			}
 			break;
@@ -64,5 +65,13 @@ public class TreedocMerge extends MergeAlgorithm {
 			throw new IncorrectTrace("Unsupported operation type");
 		}
 		return ops;
+	}
+
+	protected int restrictedIndex(final int index, final boolean insert) {
+		// FIXME: Hack with restricting index within the range!
+		// It seems to be caused by Simulator replaying delete blindly without
+		// verifying replica document size first. Not 100% sure though.
+		return Math.min(index, ((TreedocDocument) getDoc()).getRoot()
+				.getContentSize() - (insert ? 0 : 1));
 	}
 }
