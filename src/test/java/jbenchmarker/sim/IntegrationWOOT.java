@@ -18,8 +18,8 @@
  */
 package jbenchmarker.sim;
 
-import jbenchmarker.woot.WootOFactory;
-import jbenchmarker.woot.WootFactory;
+import static jbenchmarker.woot.WootFactories.WootOFactory;
+import static jbenchmarker.woot.WootFactories.WootFactory;
 import org.junit.Ignore;
 import java.util.Iterator;
 import jbenchmarker.core.MergeAlgorithm;

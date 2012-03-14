@@ -18,7 +18,7 @@
  */
 package jbenchmarker.sim;
 
-import jbenchmarker.woot.WootHFactory;
+import static jbenchmarker.woot.WootFactories.WootHFactory;
 import jbenchmarker.core.MergeAlgorithm;
 import java.util.Iterator;
 import jbenchmarker.trace.TraceGenerator;

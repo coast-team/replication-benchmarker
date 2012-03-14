@@ -16,18 +16,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.woot;
+package jbenchmarker.wootr;
 
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.woot.wooth.WootHashDocument;
-import jbenchmarker.woot.wooth.WootHashMerge;
+import jbenchmarker.woot.original.*;
+import jbenchmarker.woot.wooth.*;
+import jbenchmarker.woot.wooto.*;
+
 /**
  *
  * @author urso
  */
-public class WootHFactory implements ReplicaFactory {
-    public MergeAlgorithm createReplica(int r) {
-        return new WootHashMerge(new WootHashDocument(), r);
+public class WootFactories {
+    public static class WootFactory implements ReplicaFactory {
+        public MergeAlgorithm createReplica(int r) {
+            return new WootMerge(new WootOriginalDocument(), r);
+        }
+    }
+    
+    public static class WootHFactory implements ReplicaFactory {
+        public MergeAlgorithm createReplica(int r) {
+            return new WootHashMerge(new WootHashDocument(), r);
+        }
+    }
+    
+    public static class WootOFactory implements ReplicaFactory {
+        public MergeAlgorithm createReplica(int r) {
+            return new WootMerge(new WootOptimizedDocument(), r);
+        }
     }
 }

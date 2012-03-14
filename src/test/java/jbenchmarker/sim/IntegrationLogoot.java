@@ -107,6 +107,6 @@ public class IntegrationLogoot {
         String r = cd.getReplicas().get(0).getDoc().view();
         for (MergeAlgorithm m : cd.getReplicas().values()) {
             assertEquals(r, m.getDoc().view());
-        }
+        }     
     }
 }

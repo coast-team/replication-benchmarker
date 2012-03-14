@@ -19,7 +19,7 @@
 package jbenchmarker.sim;
 
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.woot.WootOFactory;
+import static jbenchmarker.woot.WootFactories.WootOFactory;
 import java.util.Iterator;
 import jbenchmarker.trace.TraceGenerator;
 import jbenchmarker.trace.TraceOperation;

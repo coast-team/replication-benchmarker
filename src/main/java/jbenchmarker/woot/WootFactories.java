@@ -20,13 +20,30 @@ package jbenchmarker.woot;
 
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.woot.wooto.WootOptimizedDocument;
+import jbenchmarker.woot.original.*;
+import jbenchmarker.woot.wooth.*;
+import jbenchmarker.woot.wooto.*;
+
 /**
  *
  * @author urso
  */
-public class WootOFactory implements ReplicaFactory {
-    public MergeAlgorithm createReplica(int r) {
-        return new WootMerge(new WootOptimizedDocument(), r);
+public class WootFactories {
+    public static class WootFactory implements ReplicaFactory {
+        public MergeAlgorithm createReplica(int r) {
+            return new WootMerge(new WootOriginalDocument(), r);
+        }
+    }
+    
+    public static class WootHFactory implements ReplicaFactory {
+        public MergeAlgorithm createReplica(int r) {
+            return new WootHashMerge(new WootHashDocument(), r);
+        }
+    }
+    
+    public static class WootOFactory implements ReplicaFactory {
+        public MergeAlgorithm createReplica(int r) {
+            return new WootMerge(new WootOptimizedDocument(), r);
+        }
     }
 }
