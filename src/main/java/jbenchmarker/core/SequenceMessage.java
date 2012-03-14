@@ -18,20 +18,21 @@
  */
 package jbenchmarker.core;
 
+import crdt.CommutativeMessage;
 import jbenchmarker.trace.TraceOperation;
 
 /**
  * An operation for a replication algorithm.
  * @author urso
  */
-public abstract class Operation {
+public abstract class SequenceMessage extends CommutativeMessage {
     final private TraceOperation originalOp;       // Trace operation issuing this one
 
     public TraceOperation getOriginalOp() {
         return originalOp;
     }
     
-    public Operation(TraceOperation o) {
+    public SequenceMessage(TraceOperation o) {
         this.originalOp = o;
     }
 
@@ -43,7 +44,7 @@ public abstract class Operation {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Operation other = (Operation) obj;
+        final SequenceMessage other = (SequenceMessage) obj;
         if (this.originalOp != other.originalOp && (this.originalOp == null || !this.originalOp.equals(other.originalOp))) {
             return false;
         }
@@ -57,5 +58,16 @@ public abstract class Operation {
         return hash;
     }
     
-    abstract public Operation clone();
+    @Override
+    abstract public SequenceMessage clone();
+
+    @Override
+    protected CommutativeMessage copy() {
+        return clone();
+    }
+
+    @Override
+    protected String visu() {
+        return toString();
+    }
 }

@@ -19,7 +19,7 @@
 package jbenchmarker.treedoc;
 
 import jbenchmarker.core.Document;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 
 /**
  * An instance of Treedoc document, implemented as a binary-like tree.
@@ -37,7 +37,7 @@ public class TreedocDocument extends TreedocRoot implements Document {
 	}
 
 	@Override
-	public void apply(Operation op) {
+	public void apply(SequenceMessage op) {
 		final TreedocOperation treedocOp = (TreedocOperation) op;
 		switch (treedocOp.getType()) {
 		case ins:

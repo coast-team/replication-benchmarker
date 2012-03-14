@@ -18,12 +18,14 @@
  */
 package jbenchmarker.woot;
 
+import crdt.CRDT;
+import crdt.Factory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.IncorrectTrace;
 import jbenchmarker.trace.TraceOperation;
 
@@ -42,7 +44,7 @@ public class WootMerge extends MergeAlgorithm {
     }
     
     @Override
-    protected void integrateLocal(Operation op) {
+    protected void integrateLocal(SequenceMessage op) {
 //        WootOperation wop = (WootOperation) op;
 //        WootDocument<? extends WootNode> wdoc = (WootDocument<? extends WootNode>) (this.getDoc());
 //        if (wop.getType()==TraceOperation.OpType.ins && (!wdoc.has(wop.getIp()) || !wdoc.has(wop.getIp())))
@@ -51,8 +53,8 @@ public class WootMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected List<Operation> generateLocal(TraceOperation opt) throws IncorrectTrace {
-        List<Operation> lop = new ArrayList<Operation>();
+    protected List<SequenceMessage> generateLocal(TraceOperation opt) throws IncorrectTrace {
+        List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
         WootDocument<? extends WootNode> wdoc = (WootDocument<? extends WootNode>) (this.getDoc());
         int p = opt.getPosition();
         if (opt.getType() == TraceOperation.OpType.del) {
@@ -82,5 +84,10 @@ public class WootMerge extends MergeAlgorithm {
     private WootIdentifier nextIdentifier() {
         clock++;
         return new WootIdentifier(this.getReplicaNb(), clock);
+    }
+
+    @Override
+    public CRDT<String> create() {
+        return new WootMerge(((Factory<Document>) this.getDoc()).create(), -1);
     }
 }

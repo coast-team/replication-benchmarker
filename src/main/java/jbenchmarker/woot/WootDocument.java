@@ -18,20 +18,20 @@
  */
 package jbenchmarker.woot;
 
+import crdt.Factory;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import jbenchmarker.core.Document;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.TraceOperation;
 
 /**
  *
  * @author urso
  */
-public abstract class WootDocument<N extends WootNode> implements Document {
+public abstract class WootDocument<N extends WootNode> implements Document, Factory<Document> {
     final protected List<N> elements;
 
     public WootDocument(N CB, N CE) {
@@ -67,7 +67,7 @@ public abstract class WootDocument<N extends WootNode> implements Document {
         throw new NoSuchElementException("Don't find " + id + " after position " + d);
     }
 
-    public void apply(Operation op) {
+    public void apply(SequenceMessage op) {
         WootOperation wop = (WootOperation) op;
         
         if (wop.getType() == TraceOperation.OpType.del) {

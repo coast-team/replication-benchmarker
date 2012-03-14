@@ -20,7 +20,7 @@ package jbenchmarker.abt;
 
 import java.util.Formatter;
 
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.VectorClock;
 import jbenchmarker.core.VectorClock.Causality;
 import jbenchmarker.trace.TraceOperation;
@@ -30,7 +30,7 @@ import jbenchmarker.trace.TraceOperation.OpType;
 *
 * @author Roh
 */
-public class ABTOperation extends Operation{
+public class ABTOperation extends SequenceMessage{
 
 	protected char 			c;
 	protected int 			pos;
@@ -83,13 +83,13 @@ public class ABTOperation extends Operation{
 		return c;
 	}
 	
-    // FIXME: should be moved to Operation class?
+    // FIXME: should be moved to SequenceMessage class?
     public OpType getType() {
         return this.getOriginalOp().getType();
     }
 	
 	@Override
-	public Operation clone() {
+	public SequenceMessage clone() {
 		// TODO Auto-generated method stub
 		ABTOperation op = new ABTOperation(getOriginalOp());
 		op.pos = this.pos;

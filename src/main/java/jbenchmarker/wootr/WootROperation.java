@@ -18,7 +18,7 @@
  */
 package jbenchmarker.wootr;
 
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.TraceOperation;
 import jbenchmarker.trace.TraceOperation.OpType;
 
@@ -26,7 +26,7 @@ import jbenchmarker.trace.TraceOperation.OpType;
  *
  * @author urso
  */
-public class WootROperation extends Operation {
+public class WootROperation extends SequenceMessage {
     final private WootRNode node; 
         
     /**
@@ -63,7 +63,7 @@ public class WootROperation extends Operation {
 
     
     @Override
-    public Operation clone() {
+    public SequenceMessage clone() {
         return new WootROperation(this.getOriginalOp(), (WootRNode) node.clone());
     }
 }

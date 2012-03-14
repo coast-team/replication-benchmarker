@@ -18,13 +18,14 @@
  */
 package jbenchmarker.trace;
 
+import crdt.CRDT;
 import java.util.ArrayList;
 import java.util.List;
-import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.core.VectorClock;
+import jbenchmarker.sim.PlaceboFactory.PlaceboDocument;
 
 /**
  * Check that operation are received in causal order.
@@ -32,48 +33,51 @@ import jbenchmarker.core.VectorClock;
  */
 public class CausalCheckerFactory implements ReplicaFactory {
 //   @Override
+    private static class CCMerge extends MergeAlgorithm {
 
-    public MergeAlgorithm createReplica(int r) {
-        return new MergeAlgorithm(new Document() {
-            @Override
-            public String view() {
-                return "";
-            }
-            @Override
-            public void apply(Operation op) {
-            }
-        }, r) {
+        public CCMerge(int r) {
+            super(new PlaceboDocument(), r);
+        }
+        
+        private VectorClock vc = new VectorClock();
 
-            private VectorClock vc = new VectorClock();
+        @Override
+        protected void integrateLocal(SequenceMessage op) throws IncorrectTrace {
+            check(op.getOriginalOp());
+            this.getDoc().apply(op);
+            vc.inc(op.getOriginalOp().getReplica());
+        }
 
-            @Override
-            protected void integrateLocal(Operation op) throws IncorrectTrace {
-                check(op.getOriginalOp());
-                this.getDoc().apply(op);
-                vc.inc(op.getOriginalOp().getReplica());
-            }
+        @Override
+        protected List<SequenceMessage> generateLocal(TraceOperation opt) throws IncorrectTrace {
+            check(opt);
+            List<SequenceMessage> l = new ArrayList<SequenceMessage>(1);
+            SequenceMessage op = new SequenceMessage(opt) {
 
-            @Override
-            protected List<Operation> generateLocal(TraceOperation opt) throws IncorrectTrace {
-                check(opt);
-                List<Operation> l = new ArrayList<Operation>(1);
-                Operation op = new Operation(opt) {
-
-                    public Operation clone() {
-                        return this;
-                    }
-                };
-                l.add(op);
-                this.getDoc().apply(op);
-                vc.inc(this.getReplicaNb());
-                return l;
-            }
-
-            private void check(TraceOperation op) throws IncorrectTrace {
-                if (!vc.readyFor(op.getReplica(), op.getVC())) {
-                    throw new IncorrectTrace("Replica " + this.getReplicaNb() + " not ready for " + op);
+                public SequenceMessage clone() {
+                    return this;
                 }
+            };
+            l.add(op);
+            this.getDoc().apply(op);
+            vc.inc(this.getReplicaNb());
+            return l;
+        }
+
+        private void check(TraceOperation op) throws IncorrectTrace {
+            if (!vc.readyFor(op.getReplica(), op.getVC())) {
+                throw new IncorrectTrace("Replica " + this.getReplicaNb() + " not ready for " + op);
             }
-        };
+        }
+
+        @Override
+        public CRDT<String> create() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
+    
+    @Override
+    public MergeAlgorithm createReplica(int r) {
+        return new CCMerge(r);                
     }
 }

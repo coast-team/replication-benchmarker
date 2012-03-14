@@ -61,4 +61,9 @@ public class WootOriginalDocument extends WootDocument<WootOriginalNode> {
         walgo(ip, in, wn);
     }
 
+    @Override
+    public WootDocument<WootOriginalNode> create() {
+        return new WootOriginalDocument();
+    }
+
 }

@@ -49,7 +49,7 @@ public class CausalDispatcher  extends Simulator {
      */
     public void run(Iterator<TraceOperation> trace) throws IncorrectTrace {        
         final Map<Integer, List<TraceOperation>> history = new HashMap<Integer, List<TraceOperation>>();
-        final Map<Integer, List<List<Operation>>> genHistory = new HashMap<Integer, List<List<Operation>>>();
+        final Map<Integer, List<List<SequenceMessage>>> genHistory = new HashMap<Integer, List<List<SequenceMessage>>>();
         final Map<Integer, VectorClock> clocks = new HashMap<Integer, VectorClock>();
         final VectorClock globalClock = new VectorClock();
         final List<TraceOperation> concurrentOps = new LinkedList<TraceOperation>();
@@ -63,7 +63,7 @@ public class CausalDispatcher  extends Simulator {
             if (a == null) {     
                 a = this.newReplica(r); 
                 clocks.put(r, new VectorClock());
-                genHistory.put(r, new ArrayList<List<Operation>>());
+                genHistory.put(r, new ArrayList<List<SequenceMessage>>());
                 history.put(r, new ArrayList<TraceOperation>());
             }
             history.get(r).add(opt);
@@ -85,7 +85,7 @@ public class CausalDispatcher  extends Simulator {
                 }
                 for (TraceOperation t : concurrentOps) {
                     int e = t.getReplica();
-                    for (Operation op : genHistory.get(e).get(t.getVC().get(e)-1)) {
+                    for (SequenceMessage op : genHistory.get(e).get(t.getVC().get(e)-1)) {
                         a.integrate(op.clone()); 
                     }
                     vc.inc(e);
@@ -96,7 +96,7 @@ public class CausalDispatcher  extends Simulator {
                 opt.instanciate(a.getDoc());
             }
             
-            final List<Operation> lop = duplicate(a.generate(opt));
+            final List<SequenceMessage> lop = duplicate(a.generate(opt));
             genHistory.get(r).add(lop);
             clocks.get(r).inc(r);
             globalClock.inc(r);
@@ -120,7 +120,7 @@ public class CausalDispatcher  extends Simulator {
                     for (int s : replicas.keySet()) {
                         for (int j = vc.getSafe(s); (j < globalClock.get(s))
                                 && vc.readyFor(s, history.get(s).get(j).getVC()); j++) {
-                            for (Operation op : genHistory.get(s).get(j)) {
+                            for (SequenceMessage op : genHistory.get(s).get(j)) {
                                 a.integrate(op.clone());
                             }
                             vc.inc(s);
@@ -151,9 +151,9 @@ public class CausalDispatcher  extends Simulator {
     }
     
     
-    public static List<Operation> duplicate(List<Operation> list) {
-        ArrayList<Operation> res = new ArrayList<Operation>();
-        for (Operation elt : list) {
+    public static List<SequenceMessage> duplicate(List<SequenceMessage> list) {
+        ArrayList<SequenceMessage> res = new ArrayList<SequenceMessage>();
+        for (SequenceMessage elt : list) {
             res.add(elt.clone());
         }
         return res;

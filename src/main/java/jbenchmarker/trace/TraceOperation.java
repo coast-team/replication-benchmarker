@@ -26,7 +26,7 @@ import jbenchmarker.sim.OperationProfile;
  *
  * @author urso
  */
-public class TraceOperation {
+public class TraceOperation implements crdt.Operation {
 
 
 

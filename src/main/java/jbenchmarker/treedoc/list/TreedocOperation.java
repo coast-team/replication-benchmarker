@@ -19,14 +19,14 @@
 package jbenchmarker.treedoc.list;
 
 import citi.treedoc.TreedocId;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.TraceOperation;
 
 /**
  * 
  * @author mzawirski
  */
-public class TreedocOperation extends Operation {
+public class TreedocOperation extends SequenceMessage {
 	private final TreedocId id;
 	private final char content;
 
@@ -51,7 +51,7 @@ public class TreedocOperation extends Operation {
 	}
 
 	@Override
-	public Operation clone() {
+	public SequenceMessage clone() {
 		return new TreedocOperation(getOriginalOp(), new TreedocId(id), content);
 	}
 }

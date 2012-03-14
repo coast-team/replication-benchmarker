@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Iterator;
 import jbenchmarker.core.VectorClock;
 import java.util.List;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.IncorrectTrace;
 import jbenchmarker.trace.TraceOperation;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class SOCT2Test {
         int siteId = 0;
         SOCT2MergeAlgorithm merger = new SOCT2MergeAlgorithm(new TTFDocument(), siteId);
 
-        List<Operation> ops = merger.generateLocal(insert(siteId, 0, "b"));
+        List<SequenceMessage> ops = merger.generateLocal(insert(siteId, 0, "b"));
         assertEquals(1, ops.size());
         TTFOperation opg = (TTFOperation) ops.get(0);
         assertEquals(OpType.ins, opg.getType());
@@ -73,7 +73,7 @@ public class SOCT2Test {
         int siteId = 0;
         SOCT2MergeAlgorithm merger = new SOCT2MergeAlgorithm(new TTFDocument(), siteId);
 
-        List<Operation> ops = merger.generateLocal(insert(siteId, 0, "abc"));
+        List<SequenceMessage> ops = merger.generateLocal(insert(siteId, 0, "abc"));
         assertEquals(3, ops.size());
 
         TTFOperation opg = (TTFOperation) ops.get(0);
@@ -102,7 +102,7 @@ public class SOCT2Test {
         merger.generateLocal(insert(siteId, 0, "abcd"));
 
         // remove 'a'
-        List<Operation> ops = merger.generateLocal(delete(siteId, 0, 1));
+        List<SequenceMessage> ops = merger.generateLocal(delete(siteId, 0, 1));
         assertEquals(1, ops.size());
         TTFOperation opg = (TTFOperation) ops.get(0);
         assertEquals(OpType.del, opg.getType());
@@ -145,7 +145,7 @@ public class SOCT2Test {
         merger.generateLocal(insert(siteId, 0, "abcd"));
 
         // remove "abcd"
-        List<Operation> ops = merger.generateLocal(delete(siteId, 0, 4));
+        List<SequenceMessage> ops = merger.generateLocal(delete(siteId, 0, 4));
 
         assertEquals(4, ops.size());
         TTFOperation opg = (TTFOperation) ops.get(0);
@@ -225,14 +225,14 @@ public class SOCT2Test {
     @Test
     public void testTP2PuzzleAtSite1() throws IncorrectTrace {
         SOCT2MergeAlgorithm site0 = new SOCT2MergeAlgorithm(new TTFDocument(), 0);
-        List<Operation> ops = site0.generateLocal(insert(0, 0, "abc"));
+        List<SequenceMessage> ops = site0.generateLocal(insert(0, 0, "abc"));
 
         TTFOperation op1 = TTFOperation.from(insert(0, 1, "x", vc(3, 0, 0)));
         TTFOperation op2 = TTFOperation.from(insert(1, 2, "y", vc(3, 0, 0)));
         TTFOperation op3 = TTFOperation.from(delete(2, 1, 1, vc(3, 0, 0)));
 
         SOCT2MergeAlgorithm site1 = new SOCT2MergeAlgorithm(new TTFDocument(), 1);
-        for (Operation op : ops) {
+        for (SequenceMessage op : ops) {
             site1.integrate(op);
         }
         site1.integrate(op2);
@@ -246,14 +246,14 @@ public class SOCT2Test {
     @Test
     public void testTP2PuzzleAtSite1bis() throws IncorrectTrace {
         SOCT2MergeAlgorithm site0 = new SOCT2MergeAlgorithm(new TTFDocument(), 0);
-        List<Operation> ops = site0.generateLocal(insert(0, 0, "abc"));
+        List<SequenceMessage> ops = site0.generateLocal(insert(0, 0, "abc"));
 
         TTFOperation op1 = TTFOperation.from(insert(0, 1, "x", vc(3, 0, 0)));
         TTFOperation op2 = TTFOperation.from(insert(1, 2, "y", vc(3, 0, 0)));
         TTFOperation op3 = TTFOperation.from(delete(2, 1, 1, vc(3, 0, 0)));
 
         SOCT2MergeAlgorithm site1 = new SOCT2MergeAlgorithm(new TTFDocument(), 1);
-        for (Operation op : ops) {
+        for (SequenceMessage op : ops) {
             site1.integrate(op);
         }
         site1.integrate(op2);
@@ -267,14 +267,14 @@ public class SOCT2Test {
     @Test
     public void testTP2PuzzleAtSite2() throws IncorrectTrace {
         SOCT2MergeAlgorithm site0 = new SOCT2MergeAlgorithm(new TTFDocument(), 0);
-        List<Operation> ops = site0.generateLocal(insert(0, 0, "abc"));
+        List<SequenceMessage> ops = site0.generateLocal(insert(0, 0, "abc"));
 
         TTFOperation op1 = TTFOperation.from(insert(0, 1, "x", vc(3, 0, 0)));
         TTFOperation op2 = TTFOperation.from(insert(1, 2, "y", vc(3, 0, 0)));
         TTFOperation op3 = TTFOperation.from(delete(2, 1, 1, vc(3, 0, 0)));
 
         SOCT2MergeAlgorithm site2 = new SOCT2MergeAlgorithm(new TTFDocument(), 2);
-        for (Operation op : ops) {
+        for (SequenceMessage op : ops) {
             site2.integrate(op);
         }
         site2.integrate(op3);
@@ -288,14 +288,14 @@ public class SOCT2Test {
     @Test
     public void testTP2PuzzleAtSite2bis() throws IncorrectTrace {
         SOCT2MergeAlgorithm site0 = new SOCT2MergeAlgorithm(new TTFDocument(), 0);
-        List<Operation> ops = site0.generateLocal(insert(0, 0, "abc"));
+        List<SequenceMessage> ops = site0.generateLocal(insert(0, 0, "abc"));
 
         TTFOperation op1 = TTFOperation.from(insert(0, 1, "x", vc(3, 0, 0)));
         TTFOperation op2 = TTFOperation.from(insert(1, 2, "y", vc(3, 0, 0)));
         TTFOperation op3 = TTFOperation.from(delete(2, 1, 1, vc(3, 0, 0)));
 
         SOCT2MergeAlgorithm site2 = new SOCT2MergeAlgorithm(new TTFDocument(), 2);
-        for (Operation op : ops) {
+        for (SequenceMessage op : ops) {
             site2.integrate(op);
         }
         site2.integrate(op3);
@@ -312,12 +312,12 @@ public class SOCT2Test {
         SOCT2MergeAlgorithm site2 = new SOCT2MergeAlgorithm(new TTFDocument(), 2);
         SOCT2MergeAlgorithm site3 = new SOCT2MergeAlgorithm(new TTFDocument(), 3);
 
-        List<Operation> ops0 = duplicate(site1.generateLocal(insert(1, 0, "abc")));
+        List<SequenceMessage> ops0 = duplicate(site1.generateLocal(insert(1, 0, "abc")));
         integrateSeqAtSite(ops0, site2);
         integrateSeqAtSite(ops0, site3);
-        List<Operation> ops1 = duplicate(site1.generateLocal(insert(1, 1, "x")));
-        List<Operation> ops2 = duplicate(site2.generateLocal(insert(2, 2, "y")));
-        List<Operation> ops3 = duplicate(site3.generateLocal(delete(3, 1, 1)));
+        List<SequenceMessage> ops1 = duplicate(site1.generateLocal(insert(1, 1, "x")));
+        List<SequenceMessage> ops2 = duplicate(site2.generateLocal(insert(2, 2, "y")));
+        List<SequenceMessage> ops3 = duplicate(site3.generateLocal(delete(3, 1, 1)));
         
         integrateSeqAtSite(ops2, site1);
         integrateSeqAtSite(ops3, site1);        
@@ -338,21 +338,21 @@ public class SOCT2Test {
         SOCT2MergeAlgorithm site2 = new SOCT2MergeAlgorithm(new TTFDocument(), 2);
         SOCT2MergeAlgorithm site4 = new SOCT2MergeAlgorithm(new TTFDocument(), 4);
 
-        List<Operation> ops0 = duplicate(site0.generateLocal(insert(0, 0, "ABC")));
+        List<SequenceMessage> ops0 = duplicate(site0.generateLocal(insert(0, 0, "ABC")));
         assertEquals("ABC", site0.getDoc().view());
         
         integrateSeqAtSite(ops0, site2);
         assertEquals("ABC", site2.getDoc().view());
         
-        List<Operation> ops2 = duplicate(site2.generateLocal(insert(2, 2, "vw")));
+        List<SequenceMessage> ops2 = duplicate(site2.generateLocal(insert(2, 2, "vw")));
         assertEquals("ABvwC", site2.getDoc().view());
-        List<Operation> ops2b = duplicate(site2.generateLocal(insert(2, 4, "xyz")));
+        List<SequenceMessage> ops2b = duplicate(site2.generateLocal(insert(2, 4, "xyz")));
         assertEquals("ABvwxyzC", site2.getDoc().view());
 
         integrateSeqAtSite(ops0, site4);
         assertEquals("ABC", site4.getDoc().view());
 
-        List<Operation> ops4 = duplicate(site4.generateLocal(delete(4, 1, 2)));
+        List<SequenceMessage> ops4 = duplicate(site4.generateLocal(delete(4, 1, 2)));
         assertEquals("A", site4.getDoc().view());
 
         integrateSeqAtSite(ops4, site2);
@@ -384,15 +384,15 @@ public class SOCT2Test {
         Ins(' Mehdi', 21, 1297672411625, 1, 2, [<2,2><0,1>])
         Del(14, 3, 1297672512653, 1, 4, [<0,1><4,1>])    
          */
-        List<Operation> ops0 = duplicate(site0.generateLocal(insert(0, 0, "Salut Monsieur  \nFin"))); // [<0,1>]        
+        List<SequenceMessage> ops0 = duplicate(site0.generateLocal(insert(0, 0, "Salut Monsieur  \nFin"))); // [<0,1>]        
         
         integrateSeqAtSite(ops0, site2);
-        List<Operation> ops2 = site2.generateLocal(insert(2, 14, "Bonjour")); // [<2,1><0,1>]        
-        List<Operation> ops2b = site2.generateLocal(insert(2, 21, " Mehdi")); // [<2,2><0,1>]
+        List<SequenceMessage> ops2 = site2.generateLocal(insert(2, 14, "Bonjour")); // [<2,1><0,1>]        
+        List<SequenceMessage> ops2b = site2.generateLocal(insert(2, 21, " Mehdi")); // [<2,2><0,1>]
         assertEquals("Salut MonsieurBonjour Mehdi  \nFin", site2.getDoc().view());
         
         integrateSeqAtSite(ops0, site4);
-        List<Operation> ops4 = duplicate(site4.generateLocal(delete(4, 14, 3))); // [<0,1><4,1>]
+        List<SequenceMessage> ops4 = duplicate(site4.generateLocal(delete(4, 14, 3))); // [<0,1><4,1>]
 
         integrateSeqAtSite(ops4, site2);
         assertEquals("Salut MonsieurBonjour MehdiFin", site2.getDoc().view());
@@ -448,16 +448,16 @@ public class SOCT2Test {
         return sb.toString();
     }
 
-    public static List<Operation> duplicate(List<Operation> list) {
-        ArrayList<Operation> res = new ArrayList<Operation>();
-        for (Operation elt : list) {
+    public static List<SequenceMessage> duplicate(List<SequenceMessage> list) {
+        ArrayList<SequenceMessage> res = new ArrayList<SequenceMessage>();
+        for (SequenceMessage elt : list) {
             res.add(((TTFOperation) elt).clone());
         }
         return res;
     }
 
-    private static void integrateSeqAtSite(List<Operation> seq, SOCT2MergeAlgorithm site) throws IncorrectTrace {
-        for (Operation op : duplicate(seq)) {
+    private static void integrateSeqAtSite(List<SequenceMessage> seq, SOCT2MergeAlgorithm site) throws IncorrectTrace {
+        for (SequenceMessage op : duplicate(seq)) {
             site.integrate(op);
         }
     }

@@ -18,8 +18,13 @@
  */
 package jbenchmarker.core;
 
+import crdt.CRDT;
+import crdt.CRDTMessage;
+import crdt.PreconditionException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jbenchmarker.trace.IncorrectTrace;
 import jbenchmarker.trace.TraceOperation;
 
@@ -27,7 +32,7 @@ import jbenchmarker.trace.TraceOperation;
  *
  * @author urso
  */
-public abstract class MergeAlgorithm {
+public abstract class MergeAlgorithm extends CRDT<String>{
     // Replica identifier
     final private int replicaNb;
     
@@ -38,7 +43,7 @@ public abstract class MergeAlgorithm {
     final private List<TraceOperation> geneHistory; 
 
     // All operations executed
-    final private List<Operation> history;
+    final private List<SequenceMessage> history;
     
     // Local operations generated time
     final private List<Long> geneExecTime;
@@ -52,7 +57,7 @@ public abstract class MergeAlgorithm {
     public MergeAlgorithm(Document doc, int r) {
         this.execTime = new ArrayList<Long>();
         this.geneExecTime = new ArrayList<Long>();
-        this.history = new ArrayList<Operation>();
+        this.history = new ArrayList<SequenceMessage>();
         this.geneHistory = new ArrayList<TraceOperation>();
         this.replicaNb = r;
         this.doc = doc;
@@ -61,12 +66,12 @@ public abstract class MergeAlgorithm {
     /**
      * To be define by the concrete merge algorithm
      */
-    protected abstract void integrateLocal(Operation op) throws IncorrectTrace;
+    protected abstract void integrateLocal(SequenceMessage op) throws IncorrectTrace;
     
     /**
      * To be define by the concrete merge algorithm
      */
-    protected abstract List<Operation> generateLocal(TraceOperation opt) throws IncorrectTrace;
+    protected abstract List<SequenceMessage> generateLocal(TraceOperation opt) throws IncorrectTrace;
     
    
     
@@ -74,7 +79,7 @@ public abstract class MergeAlgorithm {
      * Integration of a remote operation
      * Adds operation in history and execution time
      */
-    public void integrate(Operation op) throws IncorrectTrace {
+    public void integrate(SequenceMessage op) throws IncorrectTrace {
         history.add(op);
         long startTime = System.nanoTime();
         integrateLocal(op); 
@@ -85,14 +90,14 @@ public abstract class MergeAlgorithm {
      *  Generation of a local trace operation, returns a patch of operation
      * Throws IncorrectTrace iff operation is not generable in the context.
      **/    
-    public List<Operation> generate(TraceOperation opt) throws IncorrectTrace {
+    public List<SequenceMessage> generate(TraceOperation opt) throws IncorrectTrace {
         geneHistory.add(opt);
         long startTime = System.nanoTime();
-        List<Operation> l = generateLocal(opt);
+        List<SequenceMessage> l = generateLocal(opt);
         long t = System.nanoTime() - startTime, oh = t/l.size();
         int i = history.size();
         geneExecTime.add(t);
-        for (Operation o : l) {
+        for (SequenceMessage o : l) {
             execTime.add(oh);
             history.add(o);
             i++;
@@ -104,7 +109,7 @@ public abstract class MergeAlgorithm {
         return execTime;
     }
 
-    public List<Operation> getHistory() {
+    public List<SequenceMessage> getHistory() {
         return history;
     }
 
@@ -133,5 +138,37 @@ public abstract class MergeAlgorithm {
 
     public Long lastExecTime() {
         return this.geneExecTime.get(this.geneExecTime.size()-1);
+    }
+
+    @Override
+    public CRDTMessage applyLocal(crdt.Operation op) throws PreconditionException {
+        List<SequenceMessage> l = generateLocal((TraceOperation) op);
+        SequenceMessage m = null;
+        for (SequenceMessage n : l) {
+            if (m == null) { 
+                m = n;
+            } else {
+                m.concat(n);
+            }
+        }
+        return m;
+    }
+
+    @Override
+    public void applyRemote(CRDTMessage msg) {
+        try {
+            SequenceMessage s = (SequenceMessage) msg;
+            integrate(s);    
+            for (Object m : s.getMsgs()) {
+                integrate((SequenceMessage) m);
+            }
+        } catch (IncorrectTrace ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    @Override
+    public String lookup() {
+        return doc.view();
     }
 }

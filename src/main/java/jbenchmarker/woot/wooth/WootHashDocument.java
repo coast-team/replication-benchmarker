@@ -20,7 +20,7 @@ package jbenchmarker.woot.wooth;
 
 import java.util.Map;
 import jbenchmarker.core.Document;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.TraceOperation;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;
@@ -59,7 +59,7 @@ public class WootHashDocument implements Document {
         return false;    
     }    
     
-    public void apply(Operation op) {
+    public void apply(SequenceMessage op) {
         WootOperation wop = (WootOperation) op;
         
         if (wop.getType() == TraceOperation.OpType.del) {
@@ -156,5 +156,5 @@ public class WootHashDocument implements Document {
     
     WootHashNode getFirst() {
         return first;
-    } 
+    }
 }

@@ -18,12 +18,13 @@
  */
 package jbenchmarker.rga;
 
+import crdt.CRDT;
 import java.util.List;
 import java.util.ArrayList;
 import jbenchmarker.core.VectorClock;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.IncorrectTrace;
 import jbenchmarker.trace.TraceOperation;
 
@@ -43,7 +44,7 @@ public class RGAMerge extends MergeAlgorithm {
 	}
 	
 	@Override
-	protected void integrateLocal(Operation op) throws IncorrectTrace {
+	protected void integrateLocal(SequenceMessage op) throws IncorrectTrace {
 		RGAOperation rgaop  = (RGAOperation) op;
 		RGADocument	 rgadoc = (RGADocument)(this.getDoc());
 		this.siteVC.inc(rgaop.getOriginalOp().getReplica());
@@ -54,8 +55,8 @@ public class RGAMerge extends MergeAlgorithm {
 	}
 
 	@Override
-	protected List<Operation> generateLocal(TraceOperation opt) throws IncorrectTrace {
-		List<Operation> lop 		= new ArrayList<Operation>();
+	protected List<SequenceMessage> generateLocal(TraceOperation opt) throws IncorrectTrace {
+		List<SequenceMessage> lop 		= new ArrayList<SequenceMessage>();
 		RGADocument 	rgadoc 	= (RGADocument)(this.getDoc());
 		RGAS4Vector 	s4vtms, s4vpos = null;
 		RGAOperation 	rgaop;		
@@ -90,5 +91,10 @@ public class RGAMerge extends MergeAlgorithm {
 		}
 
 		return lop;
-	}	
+	}
+
+    @Override
+    public CRDT<String> create() {
+        return new RGAMerge(new RGADocument(), 0);
+    }
 }

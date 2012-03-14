@@ -21,7 +21,7 @@ package jbenchmarker.ot;
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.TraceOperation;
 
 /**
@@ -46,7 +46,7 @@ public class TTFDocument implements Document {
         return sb.toString();
     }
 
-    public void apply(Operation op) {
+    public void apply(SequenceMessage op) {
         TTFOperation oop = (TTFOperation) op;
         int pos = oop.getPosition();
 

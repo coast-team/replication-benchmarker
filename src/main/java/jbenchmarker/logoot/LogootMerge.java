@@ -18,9 +18,10 @@
  */
 package jbenchmarker.logoot;
 
+import crdt.CRDT;
 import java.math.BigInteger;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.TraceOperation;
 import jbenchmarker.core.Document;
 
@@ -57,13 +58,13 @@ public class LogootMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected void integrateLocal(Operation op) {
+    protected void integrateLocal(SequenceMessage op) {
         getDoc().apply(op);
     }
 
     @Override
-    protected List<Operation> generateLocal(TraceOperation opt) {
-        List<Operation> lop = new ArrayList<Operation>();
+    protected List<SequenceMessage> generateLocal(TraceOperation opt) {
+        List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
         LogootDocument lg = (LogootDocument) (this.getDoc());
         String content = "";
         int N = 0, offset = 0;
@@ -115,5 +116,10 @@ public class LogootMerge extends MergeAlgorithm {
 
     BigInteger getBase() {
         return base;
+    }
+
+    @Override
+    public CRDT<String> create() {
+        return new LogootMerge(new LogootDocument(Long.MAX_VALUE), 0, 64, new BoundaryStrategy(1000000000));
     }
 }

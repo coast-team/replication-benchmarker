@@ -18,12 +18,13 @@
  */
 package jbenchmarker.wootr;
 
+import crdt.CRDT;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.IncorrectTrace;
 import jbenchmarker.trace.TraceOperation;
 
@@ -39,7 +40,7 @@ public class WootMerge extends MergeAlgorithm {
     }
     
     @Override
-    protected void integrateLocal(Operation op) {
+    protected void integrateLocal(SequenceMessage op) {
 //        WootROperation wop = (WootROperation) op;
 //        WootRDocument<? extends WootRNode> wdoc = (WootRDocument<? extends WootRNode>) (this.getDoc());
 //        if (wop.getType()==TraceOperation.OpType.ins && (!wdoc.has(wop.getIp()) || !wdoc.has(wop.getIp())))
@@ -48,7 +49,12 @@ public class WootMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected List<Operation> generateLocal(TraceOperation opt) throws IncorrectTrace {
+    protected List<SequenceMessage> generateLocal(TraceOperation opt) throws IncorrectTrace {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public CRDT<String> create() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

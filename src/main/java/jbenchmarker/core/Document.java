@@ -32,5 +32,5 @@ public interface Document {
     /**
      * Applies a character operation
      */ 
-    public void apply(Operation op);
+    public void apply(SequenceMessage op);
 }

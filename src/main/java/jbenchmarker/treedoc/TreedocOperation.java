@@ -18,7 +18,7 @@
  */
 package jbenchmarker.treedoc;
 
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.TraceOperation;
 import jbenchmarker.trace.TraceOperation.OpType;
 
@@ -26,7 +26,7 @@ import jbenchmarker.trace.TraceOperation.OpType;
  * 
  * @author mzawirski
  */
-public class TreedocOperation extends Operation {
+public class TreedocOperation extends SequenceMessage {
 	private final TreedocIdentifier id;
 	private final String content;
 

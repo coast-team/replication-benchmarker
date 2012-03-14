@@ -18,7 +18,7 @@
  */
 package jbenchmarker.logoot;
 
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.TraceOperation;
 import jbenchmarker.trace.TraceOperation.OpType;
 
@@ -26,7 +26,7 @@ import jbenchmarker.trace.TraceOperation.OpType;
  *
  * @author mehdi urso
  */
-public class LogootOperation extends Operation
+public class LogootOperation extends SequenceMessage
 {
 
     final private LogootIdentifier identif;
@@ -61,7 +61,7 @@ public class LogootOperation extends Operation
 
     // FIXME: shoud clone the operation and its parameters
     @Override
-    public Operation clone() {
+    public SequenceMessage clone() {
         return new LogootOperation(this.getOriginalOp(), this.identif.clone(), this.content);
     }
 

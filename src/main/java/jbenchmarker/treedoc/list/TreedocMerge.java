@@ -18,6 +18,7 @@
  */
 package jbenchmarker.treedoc.list;
 
+import crdt.CRDT;
 import java.util.ArrayList;
 
 import java.util.LinkedList;
@@ -26,7 +27,7 @@ import java.util.List;
 import citi.treedoc.TreedocId;
 
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.IncorrectTrace;
 import jbenchmarker.trace.TraceOperation;
 
@@ -41,16 +42,16 @@ public class TreedocMerge extends MergeAlgorithm {
 	}
 
 	@Override
-	protected void integrateLocal(Operation op) throws IncorrectTrace {
+	protected void integrateLocal(SequenceMessage op) throws IncorrectTrace {
 		getDoc().apply(op);
 	}
 
 	@Override
-	protected List<Operation> generateLocal(TraceOperation opt)
+	protected List<SequenceMessage> generateLocal(TraceOperation opt)
 			throws IncorrectTrace {
 		final TreedocDocument treedoc = (TreedocDocument) getDoc();
 		final String content = opt.getContent();
-		final List<Operation> ops = new LinkedList<Operation>();
+		final List<SequenceMessage> ops = new LinkedList<SequenceMessage>();
 
 		switch (opt.getType()) {
 		case ins:
@@ -92,4 +93,9 @@ public class TreedocMerge extends MergeAlgorithm {
 		return Math.min(index, ((TreedocDocument) getDoc()).size()
 				- (insert ? 0 : 1));
 	}
+
+    @Override
+    public CRDT<String> create() {
+        return new TreedocMerge(new TreedocDocument(), 0);
+    }
 }

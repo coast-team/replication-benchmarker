@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jbenchmarker.core.Document;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.TraceOperation.OpType;
 
 /**
@@ -43,7 +43,7 @@ public class ABTDocument implements Document{
 	}
 
 	@Override
-	public void apply(Operation op) {
+	public void apply(SequenceMessage op) {
 		// TODO Auto-generated method stub
 		ABTOperation abtop = (ABTOperation)op;
 		try{

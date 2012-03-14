@@ -19,6 +19,7 @@
 package jbenchmarker.woot.wooto;
 
 import java.util.ListIterator;
+import jbenchmarker.core.Document;
 import jbenchmarker.woot.WootDocument;
 import jbenchmarker.woot.WootOperation;
 
@@ -62,6 +63,11 @@ public class WootOptimizedDocument extends WootDocument<WootOptimizedNode> {
             woalgo(d, f, wn);
         }
 
+    }
+
+    @Override
+    public Document create() {
+        return new WootOptimizedDocument();
     }
 
 

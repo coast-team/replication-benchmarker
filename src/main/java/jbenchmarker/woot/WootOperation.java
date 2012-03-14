@@ -18,7 +18,7 @@
  */
 package jbenchmarker.woot;
 
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.TraceOperation;
 import jbenchmarker.trace.TraceOperation.OpType;
 
@@ -26,7 +26,7 @@ import jbenchmarker.trace.TraceOperation.OpType;
  *
  * @author urso
  */
-public class WootOperation extends Operation {
+public class WootOperation extends SequenceMessage {
     final private WootIdentifier id;
     final private WootIdentifier ip;   // previous
     final private WootIdentifier in;   // next   
@@ -83,7 +83,7 @@ public class WootOperation extends Operation {
     }
 
     @Override
-    public Operation clone() {
+    public SequenceMessage clone() {
         return (ip == null) ? new WootOperation(this.getOriginalOp(), id.clone()) : 
                 new WootOperation(this.getOriginalOp(), id.clone(), ip.clone(), in.clone(), content);
     }

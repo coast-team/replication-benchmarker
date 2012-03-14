@@ -18,7 +18,7 @@
  */
 package jbenchmarker.logoot;
 import java.util.ArrayList;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.TraceOperation;
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class LogootMergeTest
     public void testgenerateLocal() {
         LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 64, new BoundaryStrategy(1000000000));
 
-        List<Operation> a = LM.generateLocal(insert(0, "a"));  //a
+        List<SequenceMessage> a = LM.generateLocal(insert(0, "a"));  //a
         assertEquals(1, a.size());
         assertEquals("a", LM.getDoc().view());
 
@@ -76,7 +76,7 @@ public class LogootMergeTest
         LogootDocument lg = (LogootDocument) (LM.getDoc());
         
         
-        List<Operation> a = LM.generateLocal(insert(0, "aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib"));
+        List<SequenceMessage> a = LM.generateLocal(insert(0, "aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib"));
         assertEquals(80, a.size());
         assertEquals("aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib", LM.getDoc().view());
 

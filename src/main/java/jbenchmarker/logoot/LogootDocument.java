@@ -19,7 +19,7 @@
 package jbenchmarker.logoot;
 
 import jbenchmarker.core.Document;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 
 import jbenchmarker.trace.TraceOperation;
 
@@ -72,7 +72,7 @@ public class LogootDocument implements Document {
                 ? startIndex + 1 : startIndex;
     }
     
-    public void apply(Operation op) {
+    public void apply(SequenceMessage op) {
         LogootOperation lg = (LogootOperation) op;
         LogootIdentifier idToSearch = lg.getIdentifiant();
         int pos = dicho(idToSearch);

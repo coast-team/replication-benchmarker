@@ -18,12 +18,13 @@
  */
 package jbenchmarker.ot;
 
+import crdt.CRDT;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.VectorClock;
 import jbenchmarker.trace.IncorrectTrace;
 import jbenchmarker.trace.TraceOperation;
@@ -54,7 +55,7 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
     }
 
     @Override
-    protected void integrateLocal(Operation op) {
+    protected void integrateLocal(SequenceMessage op) {
         TTFOperation oop = (TTFOperation) op;
 
         if (this.readyFor(oop.getSiteId(), oop.getClock())) {
@@ -70,9 +71,9 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
     }
 
     @Override
-    protected List<Operation> generateLocal(TraceOperation opt) throws IncorrectTrace {
+    protected List<SequenceMessage> generateLocal(TraceOperation opt) throws IncorrectTrace {
         TTFDocument doc = (TTFDocument) this.getDoc();
-        List<Operation> generatedOperations = new ArrayList<Operation>();
+        List<SequenceMessage> generatedOperations = new ArrayList<SequenceMessage>();
 
         int mpos = doc.viewToModel(opt.getPosition());
         if (opt.getType() == TraceOperation.OpType.del) {
@@ -106,5 +107,10 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
             }
         }
         return true;
+    }
+
+    @Override
+    public CRDT<String> create() {
+        return new SOCT2MergeAlgorithm(new TTFDocument(), 0);
     }
 }

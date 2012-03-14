@@ -18,7 +18,7 @@
  */
 package jbenchmarker.rga;
 
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.TraceOperation;
 import jbenchmarker.trace.TraceOperation.OpType;
 
@@ -26,7 +26,7 @@ import jbenchmarker.trace.TraceOperation.OpType;
 *
 * @author Roh
 */
-public class RGAOperation extends Operation {
+public class RGAOperation extends SequenceMessage {
 	
 	public static boolean LOCAL 		= true;
 	public static boolean REMOTE 	= false;
@@ -108,7 +108,7 @@ public class RGAOperation extends Operation {
 	}
 
     @Override
-    public Operation clone() {
+    public SequenceMessage clone() {
         return new RGAOperation(this.getOriginalOp(), intpos, 
                 s4vpos == null ? s4vpos : s4vpos.clone(), content,  
                 s4vtms == null ? s4vtms :s4vtms.clone());

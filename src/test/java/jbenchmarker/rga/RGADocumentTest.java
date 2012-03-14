@@ -19,7 +19,7 @@
 package jbenchmarker.rga;
 
 
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;

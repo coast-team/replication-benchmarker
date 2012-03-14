@@ -18,17 +18,17 @@
  */
 package jbenchmarker.abt;
 
+import crdt.CRDT;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.VectorClock;
 import jbenchmarker.trace.IncorrectTrace;
 import jbenchmarker.trace.TraceOperation;
-import jbenchmarker.trace.TraceOperation.OpType;
 
 /**
 *
@@ -48,7 +48,7 @@ public class ABTMerge extends MergeAlgorithm {
 	}
 	
 	@Override
-	protected void integrateLocal(Operation op) throws IncorrectTrace {
+	protected void integrateLocal(SequenceMessage op) throws IncorrectTrace {
 		// TODO Auto-generated method stub
 		
 		ABTOperation abtop = (ABTOperation)op;		
@@ -64,10 +64,10 @@ public class ABTMerge extends MergeAlgorithm {
 	}
 
 	@Override
-	protected List<Operation> generateLocal(TraceOperation opt)
+	protected List<SequenceMessage> generateLocal(TraceOperation opt)
 			throws IncorrectTrace {
 		// TODO Auto-generated method stub
-		List<Operation> lop		= new ArrayList<Operation>();
+		List<SequenceMessage> lop		= new ArrayList<SequenceMessage>();
 		ABTDocument		abtdoc	= (ABTDocument)(this.getDoc());
 		ABTOperation	abtop;
 		
@@ -104,6 +104,11 @@ public class ABTMerge extends MergeAlgorithm {
             }
         }
         return true;
+    }
+
+    @Override
+    public CRDT<String> create() {
+        return new ABTMerge(new ABTDocument(), -1);
     }
 	
 }

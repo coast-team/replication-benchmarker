@@ -20,7 +20,7 @@ package jbenchmarker.woot.wooth;
 
 import java.util.NoSuchElementException;
 import java.util.List;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.IncorrectTrace;
 import jbenchmarker.trace.TraceOperation;
 import jbenchmarker.woot.WootOperation;
@@ -49,7 +49,7 @@ public class WootHMergeTest {
         System.out.println("generateLocal");
         WootHashMerge instance = new WootHashMerge(new WootHashDocument(), 1);
         
-        List<Operation> r = instance.generateLocal(insert(0,"a"));
+        List<SequenceMessage> r = instance.generateLocal(insert(0,"a"));
         assertEquals(1, r.size());
         assertEquals('a', ((WootOperation) r.get(0)).getContent());
         assertEquals("a", instance.getDoc().view());        
@@ -101,7 +101,7 @@ public class WootHMergeTest {
     @Test
     public void accent() throws IncorrectTrace {
         WootHashMerge instance = new WootHashMerge(new WootHashDocument(), 1);
-        List<Operation> r = instance.generateLocal(insert(0,"à"));
+        List<SequenceMessage> r = instance.generateLocal(insert(0,"à"));
         assertEquals(1, r.size());
     }
    

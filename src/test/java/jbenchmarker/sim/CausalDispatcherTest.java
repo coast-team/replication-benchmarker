@@ -18,13 +18,13 @@
  */
 package jbenchmarker.sim;
 
+import crdt.CRDT;
 import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.trace.IncorrectTrace;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import java.util.ArrayList;
-import jbenchmarker.core.Operation;
-import jbenchmarker.core.VectorClock;
+import jbenchmarker.core.SequenceMessage;
 import java.util.List;
 import jbenchmarker.trace.TraceOperation;
 import org.junit.Test;
@@ -37,14 +37,14 @@ import static jbenchmarker.trace.TraceGeneratorTest.op;
  */
 public class CausalDispatcherTest {
 
-    // Operation mock
-    static private class OpMock extends Operation {
+    // SequenceMessage mock
+    static private class OpMock extends SequenceMessage {
         OpMock(TraceOperation opt) {
             super(opt);
         }
             
         @Override
-        public Operation clone() {
+        public SequenceMessage clone() {
             return this;
         }
     }
@@ -53,16 +53,21 @@ public class CausalDispatcherTest {
         public MergeAlgorithm createReplica(int r) {
             return new MergeAlgorithm(new Document() {
                 public String view() { return null; }
-                public void apply(Operation op) { }
+                public void apply(SequenceMessage op) { }
             }, r) {
-                protected void integrateLocal(Operation op) { this.getDoc().apply(op); }
+                protected void integrateLocal(SequenceMessage op) { this.getDoc().apply(op); }
 
-                protected List<Operation> generateLocal(TraceOperation opt) {
-                    List<Operation> l = new ArrayList<Operation>();
+                protected List<SequenceMessage> generateLocal(TraceOperation opt) {
+                    List<SequenceMessage> l = new ArrayList<SequenceMessage>();
                     OpMock op = new OpMock(opt);
                     this.getDoc().apply(op);
                     l.add(op);
                     return l;
+                }
+
+                @Override
+                public CRDT<String> create() {
+                    return createReplica(-1);
                 }
             }; 
         }
@@ -82,7 +87,7 @@ public class CausalDispatcherTest {
         
         TraceOperation op1 = op(2,0,1,0);
         trace.add(op1);        
-        List<Operation> o1 = new ArrayList<Operation>();
+        List<SequenceMessage> o1 = new ArrayList<SequenceMessage>();
         o1.add(new OpMock(op1));  
 
         cd.run(trace.iterator());
@@ -92,7 +97,7 @@ public class CausalDispatcherTest {
         cd.reset();
         TraceOperation op2 = op(1,1,0,0);
         trace.add(op2);  
-        List<Operation> o2 = new ArrayList<Operation>();
+        List<SequenceMessage> o2 = new ArrayList<SequenceMessage>();
         o2.add(new OpMock(op2)); o2.add(new OpMock(op1));
         o1.add(new OpMock(op2));
         
@@ -117,9 +122,9 @@ public class CausalDispatcherTest {
         cd.reset();
         TraceOperation op4 = op(3,1,1,1);
         trace.add(op4);
-        List<Operation> o3 = new ArrayList<Operation>();
+        List<SequenceMessage> o3 = new ArrayList<SequenceMessage>();
         o3.add(new OpMock(op1)); o3.add(new OpMock(op2)); o3.add(new OpMock(op4)); o3.add(new OpMock(op3));
-        List<Operation> o3b = new ArrayList<Operation>();
+        List<SequenceMessage> o3b = new ArrayList<SequenceMessage>();
         o3b.add(new OpMock(op2)); o3b.add(new OpMock(op1)); o3b.add(new OpMock(op4)); o3b.add(new OpMock(op3));
         o1.add(new OpMock(op4));
         o2.add(new OpMock(op4));

@@ -18,6 +18,7 @@
  */
 package jbenchmarker.sim;
 
+import crdt.CRDT;
 import java.util.List;
 import jbenchmarker.core.*;
 import jbenchmarker.trace.IncorrectTrace;
@@ -29,38 +30,59 @@ import jbenchmarker.trace.TraceOperation;
  * @author urso
  */
 public class PlaceboFactory implements ReplicaFactory {
-
-    public static class PlaceboOperation extends Operation {
+    public static class PlaceboOperation extends SequenceMessage {
 
         public PlaceboOperation(TraceOperation o) {
             super(o);
         }
 
         @Override
-        public Operation clone() {
+        public SequenceMessage clone() {
             return new PlaceboOperation(this.getOriginalOp());
-        }        
+        }
     }
     
-    public MergeAlgorithm createReplica(int r) {
-        return new MergeAlgorithm(new Document() {
-            public String view() {
-                return "";
+    public static class PlaceboDocument implements Document {
+
+        @Override
+        public String view() {
+            return "";
+        }
+
+        @Override
+        public void apply(SequenceMessage op) {
+        }
+    }
+    
+    private static class PlaceboMerge extends MergeAlgorithm {
+
+        PlaceboMerge() {
+            super(new PlaceboDocument(), 0);
+        }
+
+        @Override
+        protected void integrateLocal(SequenceMessage op) throws IncorrectTrace {
+            this.getDoc().apply(op);
+        }
+
+        @Override
+        protected List<SequenceMessage> generateLocal(TraceOperation opt) throws IncorrectTrace {
+            int nbop = (opt.getType() == TraceOperation.OpType.del) ? opt.getOffset() : opt.getContent().length();
+            List<SequenceMessage> l = new java.util.ArrayList<SequenceMessage>(nbop);
+            for (int i = 0; i < nbop; i++) {
+                l.add(new PlaceboOperation(opt));
             }
-            public void apply(Operation op) {
-            }
-        }, r) {
-            protected void integrateLocal(Operation op) throws IncorrectTrace {
-                this.getDoc().apply(op);
-            }
-            protected List<Operation> generateLocal(TraceOperation opt) throws IncorrectTrace {
-                int nbop = (opt.getType() == TraceOperation.OpType.del) ? opt.getOffset() : opt.getContent().length();
-                List<Operation> l = new java.util.ArrayList<Operation>(nbop);
-                for (int i = 0; i < nbop; i++)
-                    l.add(new PlaceboOperation(opt));
-                return l;
-            }
-        };
+            return l;
+        }
+
+        @Override
+        public CRDT<String> create() {
+            return new PlaceboMerge();
+        }
     }
 
+    @Override
+    public MergeAlgorithm createReplica(int r) {
+        return new PlaceboMerge();
+    }
 }

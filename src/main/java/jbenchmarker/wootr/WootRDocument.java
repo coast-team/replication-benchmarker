@@ -24,7 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import jbenchmarker.core.Document;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.TraceOperation;
 
 /**
@@ -50,7 +50,7 @@ public abstract class WootRDocument implements Document {
     }
     
 
-    public void apply(Operation op) {
+    public void apply(SequenceMessage op) {
         WootROperation wop = (WootROperation) op;
         WootRNode e = wop.getNode();
         if (wop.getType() == TraceOperation.OpType.del) {
