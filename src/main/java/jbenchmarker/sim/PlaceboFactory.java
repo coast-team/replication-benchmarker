@@ -29,7 +29,7 @@ import jbenchmarker.trace.TraceOperation;
  * Used to measure the base memory/time required to simulate a trace.
  * @author urso
  */
-public class PlaceboFactory implements ReplicaFactory {
+public class PlaceboFactory extends ReplicaFactory {
     public static class PlaceboOperation extends SequenceMessage {
 
         public PlaceboOperation(TraceOperation o) {
@@ -37,7 +37,7 @@ public class PlaceboFactory implements ReplicaFactory {
         }
 
         @Override
-        public SequenceMessage clone() {
+        public SequenceMessage copy() {
             return new PlaceboOperation(this.getOriginalOp());
         }
     }
@@ -82,7 +82,7 @@ public class PlaceboFactory implements ReplicaFactory {
     }
 
     @Override
-    public MergeAlgorithm createReplica(int r) {
+    public MergeAlgorithm create(int r) {
         return new PlaceboMerge();
     }
 }

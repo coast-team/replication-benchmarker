@@ -20,14 +20,10 @@ package crdt.simulator.random;
 
 import collect.Node;
 import crdt.CRDT;
-import crdt.Operation;
-import crdt.set.CRDTSet;
-import crdt.set.SetOperation;
 import crdt.tree.CRDTTree;
 import crdt.tree.TreeOperation;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * A profile that generates operation.

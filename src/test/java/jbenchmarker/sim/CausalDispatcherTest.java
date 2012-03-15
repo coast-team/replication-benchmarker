@@ -44,46 +44,53 @@ public class CausalDispatcherTest {
         }
             
         @Override
-        public SequenceMessage clone() {
+        public SequenceMessage copy() {
             return this;
         }
     }
-    
-    static public class RFMock implements ReplicaFactory {
-        public MergeAlgorithm createReplica(int r) {
+
+    static public class RFMock extends ReplicaFactory {
+
+        public MergeAlgorithm create(int r) {
             return new MergeAlgorithm(new Document() {
-                public String view() { return null; }
-                public void apply(SequenceMessage op) { }
+
+                public String view() {
+                    return null;
+                }
+
+                public void apply(SequenceMessage op) {
+                }
             }, r) {
-                protected void integrateLocal(SequenceMessage op) { this.getDoc().apply(op); }
+
+                protected void integrateLocal(SequenceMessage op) {
+                    this.getDoc().apply(op);
+                }
 
                 protected List<SequenceMessage> generateLocal(TraceOperation opt) {
                     List<SequenceMessage> l = new ArrayList<SequenceMessage>();
                     OpMock op = new OpMock(opt);
-                    this.getDoc().apply(op);
+//                this.getDoc().apply(op);
                     l.add(op);
                     return l;
                 }
 
                 @Override
                 public CRDT<String> create() {
-                    return createReplica(-1);
+                    throw new UnsupportedOperationException("Not supported yet.");
                 }
-            }; 
+            };
         }
-        
     }
     
-    
     /**
-     * Test of run method, of class CausalDispatcher.
+     * Test of run method, of class OldCausalDispatcher.
      */
     @Test
     public void testRun() throws IncorrectTrace, Exception {
         System.out.println("run");
         List<TraceOperation> trace = new ArrayList<TraceOperation>();
         
-        CausalDispatcher cd = new CausalDispatcher(new RFMock());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new RFMock());
         
         TraceOperation op1 = op(2,0,1,0);
         trace.add(op1);        
@@ -139,5 +146,4 @@ public class CausalDispatcherTest {
                 o3b.equals(cd.getReplicas().get(3).getHistory()));
         
    }
-   
 }

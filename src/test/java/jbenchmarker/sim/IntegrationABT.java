@@ -39,7 +39,7 @@ public class IntegrationABT {
        System.out.println("Integration test with ABT");        
        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
        
-       CausalDispatcher cd = new CausalDispatcher(new ABTFactory());
+       OldCausalDispatcher cd = new OldCausalDispatcher(new ABTFactory());
 
        cd.run(trace);
        String r = "Salut Monsieurjour MehdiFin";
@@ -52,12 +52,12 @@ public class IntegrationABT {
    @Test
    public void testABTG1Run() throws Exception {
        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
-       CausalDispatcher cd = new CausalDispatcher(new ABTFactory());
+       OldCausalDispatcher cd = new OldCausalDispatcher(new ABTFactory());
 
        cd.run(trace);
        String r = cd.getReplicas().get(0).getDoc().view();
        for (MergeAlgorithm m : cd.getReplicas().values()) {
-    	   //System.out.println(m.getReplicaNb()+"  "+m.getDoc().view());
+    	   //System.out.println(m.getReplicaNumber()+"  "+m.getDoc().view());
            assertEquals(r, m.getDoc().view());
            
        }
@@ -66,7 +66,7 @@ public class IntegrationABT {
    @Test
    public void testABTG2Run() throws Exception {
        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1,16);
-       CausalDispatcher cd = new CausalDispatcher(new ABTFactory());
+       OldCausalDispatcher cd = new OldCausalDispatcher(new ABTFactory());
 
        cd.run(trace);
        String r = cd.getReplicas().get(0).getDoc().view();
@@ -78,7 +78,7 @@ public class IntegrationABT {
    @Test
    public void testABTG3Run() throws Exception {
        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
-       CausalDispatcher cd = new CausalDispatcher(new ABTFactory());
+       OldCausalDispatcher cd = new OldCausalDispatcher(new ABTFactory());
 
        cd.run(trace);
        String r = cd.getReplicas().get(0).getDoc().view();
@@ -90,7 +90,7 @@ public class IntegrationABT {
    @Test
    public void testABTSerieRun() throws Exception {
        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
-       CausalDispatcher cd = new CausalDispatcher(new ABTFactory());
+       OldCausalDispatcher cd = new OldCausalDispatcher(new ABTFactory());
 
        cd.run(trace);
        String r = cd.getReplicas().get(0).getDoc().view();
@@ -103,7 +103,7 @@ public class IntegrationABT {
     @Test
     public void testLogootRandom() throws Exception {
         Iterator<TraceOperation> trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
-        CausalDispatcher cd = new CausalDispatcher(new ABTFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new ABTFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();

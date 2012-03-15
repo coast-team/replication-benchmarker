@@ -83,7 +83,7 @@ public class WootOperation extends SequenceMessage {
     }
 
     @Override
-    public SequenceMessage clone() {
+    public SequenceMessage copy() {
         return (ip == null) ? new WootOperation(this.getOriginalOp(), id.clone()) : 
                 new WootOperation(this.getOriginalOp(), id.clone(), ip.clone(), in.clone(), content);
     }

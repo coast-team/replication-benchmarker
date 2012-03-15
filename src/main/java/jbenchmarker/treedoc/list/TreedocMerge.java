@@ -58,7 +58,7 @@ public class TreedocMerge extends MergeAlgorithm {
 			final int index = restrictedIndex(opt.getPosition(), true);
 			if (content.length() == 1) {
 				final TreedocId id = treedoc.insert(index, content.charAt(0),
-						getReplicaNb());
+						getReplicaNumber());
 				ops.add(new TreedocOperation(opt, id, content.charAt(0)));
 			} else {
 				final List<Character> characters = new ArrayList<Character>(
@@ -66,7 +66,7 @@ public class TreedocMerge extends MergeAlgorithm {
 				for (int i = 0; i < content.length(); i++)
 					characters.add(content.charAt(i));
 				final List<TreedocId> ids = treedoc.insert(index,
-						content.length(), characters, getReplicaNb());
+						content.length(), characters, getReplicaNumber());
 				for (int i = 0; i < characters.size(); i++)
 					ops.add(new TreedocOperation(opt, ids.get(i), characters
 							.get(i)));

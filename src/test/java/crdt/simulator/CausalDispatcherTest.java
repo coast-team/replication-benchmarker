@@ -45,16 +45,15 @@ import static org.junit.Assert.*;
  */
 public class CausalDispatcherTest {
 
-    Factory p[] = { new WordSkip(), new WordReappear(), new WordRoot(), new WordCompact(), 
-        new WordIncrementalSkip(),  new WordIncrementalReappear(),
-        new WordIncrementalRoot(),  new WordIncrementalCompact(), new WordIncrementalSkipOpti()};
-    Factory s[] = { new CommutativeCounterSet(), new ConvergentCounterSet(), 
-            new CommutativeLwwSet(), new ConvergentLwwSet(),
-            new CommutativeOrSet(), new ConvergentOrSet() };
-    
+    Factory p[] = {new WordSkip(), new WordReappear(), new WordRoot(), new WordCompact(),
+        new WordIncrementalSkip(), new WordIncrementalReappear(),
+        new WordIncrementalRoot(), new WordIncrementalCompact(), new WordIncrementalSkipOpti()};
+    Factory s[] = {new CommutativeCounterSet(), new ConvergentCounterSet(),
+        new CommutativeLwwSet(), new ConvergentLwwSet(),
+        new CommutativeOrSet(), new ConvergentOrSet()};
     //Vector<LinkedList<TimeBench>> result = new Vector<LinkedList<TimeBench>>();
     int scale = 100;
-    
+
     public CausalDispatcherTest() {
     }
 
@@ -65,16 +64,16 @@ public class CausalDispatcherTest {
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
-    
-    CausalDispatcher testRun(Factory<CRDT> factory, int duration, int rn, OperationProfile opp) throws PreconditionException,IncorrectTrace {
+
+    static CausalDispatcher testRun(Factory<CRDT> factory, int duration, int rn, OperationProfile opp) throws PreconditionException, IncorrectTrace {
         CausalDispatcher cd = new CausalDispatcher(factory);
-        cd.run(new RandomTrace(duration, RandomTrace.FLAT, opp, 0.2, 10, 3, rn));    
+        cd.run(new RandomTrace(duration, RandomTrace.FLAT, opp, 0.2, 10, 3, rn));
         //System.out.println(cd.getlTime());
 
         //result.add(cd.getlTime());
-        
+
         //System.out.println(factory + "\nlocal : " + cd.getLocalAvg() + "   --- remote : " + cd.getRemoteAvg());
-        
+
         Object l = null;
         int i = 0;
         for (Entry<Integer, CRDT> r : cd.replicas.entrySet()) {
@@ -90,54 +89,39 @@ public class CausalDispatcherTest {
                         sf.append("Local ").append(j).append(":\n").append(cd.history.get(j)).
                                 append("\nMessages ").append(":\n").append(cd.genHistory.get(j)).
                                 append("\nResult ").append(":\n").append(cd.replicas.get(j).lookup()).
-//                                append("\nSet ").append(":\n").append(((WordTree) cd.replicas.get(j)).words.lookup()).
+                                //                                append("\nSet ").append(":\n").append(((WordTree) cd.replicas.get(j)).words.lookup()).
                                 append("\n---------\n");
                     }
                     //cd.view.affiche();
-                    
+
                     fail(" ** A= " + i + " ** B= " + r.getKey() + "\n" + sf.toString());
                 }
             }
         }
         return cd;
     }
-
     static final int vocabularySize = 100;
     
-//    @Ignore
-    @Test
-    public void testRunSets() throws IncorrectTrace, PreconditionException {
-        OperationProfile opp = new SetOperationProfile(0.70) {
-            @Override
-            public Object nextElement() {
-                return (int) (Math.random()*vocabularySize);
-            }
+    final static OperationProfile seqopp = new SetOperationProfile(0.70) {
 
-            @Override
-            public Object nextElement(Object elem) {
-                return ((Integer) elem + 1) % vocabularySize; 
-            }
-
-            @Override
-            public boolean full(Set s) {
-                return s.size() == vocabularySize;
-            }
-        };
-        long l = 0, r = 0, nl = 0, nr = 0;
-        for (int i = 0; i < 50; i++) {
-            CausalDispatcher cd = testRun(new CommutativeCounterSet(), 200, 20, opp);
-            l += cd.getLocalSum(); r += cd.getRemoteSum(); nl += cd.getNbLocal(); nr += cd.getNbRemote();
+        @Override
+        public Object nextElement() {
+            return (int) (Math.random() * vocabularySize);
         }
-        System.out.println("local : " + (l/nl) + "\nRemote : " + (r/nr));
 
-//        for (Factory<CRDT> sf : s) {
-//            testRun(sf, 200, 20, opp); 
-//            
-//        }
-        
-    }
+        @Override
+        public Object nextElement(Object elem) {
+            return ((Integer) elem + 1) % vocabularySize;
+        }
 
-   final static OperationProfile treeop = new TreeOperationProfile(0.70) {
+        @Override
+        public boolean full(Set s) {
+            return s.size() == vocabularySize;
+        }
+    };
+    
+    final static OperationProfile treeop = new TreeOperationProfile(0.70) {
+
         @Override
         public Object nextElement() {
             return (int) (Math.random() * vocabularySize);
@@ -153,8 +137,24 @@ public class CausalDispatcherTest {
             return n.getChildrenNumber() == vocabularySize;
         }
     };
+    
+//    @Ignore
+    @Test
+    public void testRunSets() throws IncorrectTrace, PreconditionException {
 
-    @Ignore
+//        long l = 0, r = 0, nl = 0, nr = 0;
+//        for (int i = 0; i < 50; i++) {
+//            CausalDispatcher cd = testRun(new CommutativeCounterSet(), 200, 20, seqopp);
+//            l += cd.getLocalSum(); r += cd.getRemoteSum(); nl += cd.getNbLocal(); nr += cd.getNbRemote();
+//        }
+//        System.out.println("local : " + (l/nl) + "\nRemote : " + (r/nr));
+
+        for (Factory<CRDT> sf : s) {
+            testRun(sf, 200, 20, seqopp);
+        }
+    }
+    
+//    @Ignore
     @Test
     public void testRunWord() throws IncorrectTrace, PreconditionException {
         for (Factory<CRDT> sf : s) {

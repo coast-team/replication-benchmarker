@@ -36,9 +36,10 @@ import jbenchmarker.trace.TraceOperation;
  *
  * @author urso
  */
-public class CausalDispatcher  extends Simulator {
+@Deprecated
+public class OldCausalDispatcher  extends Simulator {
     
-    public CausalDispatcher(ReplicaFactory rf) {
+    public OldCausalDispatcher(ReplicaFactory rf) {
         super(rf);
     }
 
@@ -86,7 +87,7 @@ public class CausalDispatcher  extends Simulator {
                 for (TraceOperation t : concurrentOps) {
                     int e = t.getReplica();
                     for (SequenceMessage op : genHistory.get(e).get(t.getVC().get(e)-1)) {
-                        a.integrate(op.clone()); 
+                        a.integrate(op.copy()); 
                     }
                     vc.inc(e);
                 }
@@ -121,7 +122,7 @@ public class CausalDispatcher  extends Simulator {
                         for (int j = vc.getSafe(s); (j < globalClock.get(s))
                                 && vc.readyFor(s, history.get(s).get(j).getVC()); j++) {
                             for (SequenceMessage op : genHistory.get(s).get(j)) {
-                                a.integrate(op.clone());
+                                a.integrate(op.copy());
                             }
                             vc.inc(s);
                         }
@@ -154,7 +155,7 @@ public class CausalDispatcher  extends Simulator {
     public static List<SequenceMessage> duplicate(List<SequenceMessage> list) {
         ArrayList<SequenceMessage> res = new ArrayList<SequenceMessage>();
         for (SequenceMessage elt : list) {
-            res.add(elt.clone());
+            res.add(elt.copy());
         }
         return res;
     }

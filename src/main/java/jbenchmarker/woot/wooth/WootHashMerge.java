@@ -76,7 +76,7 @@ public class WootHashMerge extends MergeAlgorithm {
 
     private WootIdentifier nextIdentifier() {
         clock++;
-        return new WootIdentifier(this.getReplicaNb(), clock);
+        return new WootIdentifier(this.getReplicaNumber(), clock);
     }
 
     @Override

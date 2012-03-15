@@ -32,11 +32,11 @@ import org.junit.Test;
  * @author mzawirski
  */
 public abstract class AbstractIntegrationTest {
-	protected CausalDispatcher cd;
+	protected OldCausalDispatcher cd;
 
 	@Before
 	public void setUp() {
-		cd = new CausalDispatcher(createFactory());
+		cd = new OldCausalDispatcher(createFactory());
 	}
 
 	protected abstract ReplicaFactory createFactory();

@@ -108,7 +108,7 @@ public class RGAOperation extends SequenceMessage {
 	}
 
     @Override
-    public SequenceMessage clone() {
+    public SequenceMessage copy() {
         return new RGAOperation(this.getOriginalOp(), intpos, 
                 s4vpos == null ? s4vpos : s4vpos.clone(), content,  
                 s4vtms == null ? s4vtms :s4vtms.clone());

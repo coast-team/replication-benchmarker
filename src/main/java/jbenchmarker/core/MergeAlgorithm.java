@@ -23,8 +23,6 @@ import crdt.CRDTMessage;
 import crdt.PreconditionException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jbenchmarker.trace.IncorrectTrace;
 import jbenchmarker.trace.TraceOperation;
 
@@ -33,8 +31,6 @@ import jbenchmarker.trace.TraceOperation;
  * @author urso
  */
 public abstract class MergeAlgorithm extends CRDT<String>{
-    // Replica identifier
-    final private int replicaNb;
     
     // Supported Document
     final private Document doc;
@@ -59,7 +55,7 @@ public abstract class MergeAlgorithm extends CRDT<String>{
         this.geneExecTime = new ArrayList<Long>();
         this.history = new ArrayList<SequenceMessage>();
         this.geneHistory = new ArrayList<TraceOperation>();
-        this.replicaNb = r;
+        this.setReplicaNumber(r);
         this.doc = doc;
     }
 
@@ -79,6 +75,7 @@ public abstract class MergeAlgorithm extends CRDT<String>{
      * Integration of a remote operation
      * Adds operation in history and execution time
      */
+    @Deprecated
     public void integrate(SequenceMessage op) throws IncorrectTrace {
         history.add(op);
         long startTime = System.nanoTime();
@@ -90,6 +87,7 @@ public abstract class MergeAlgorithm extends CRDT<String>{
      *  Generation of a local trace operation, returns a patch of operation
      * Throws IncorrectTrace iff operation is not generable in the context.
      **/    
+    @Deprecated
     public List<SequenceMessage> generate(TraceOperation opt) throws IncorrectTrace {
         geneHistory.add(opt);
         long startTime = System.nanoTime();
@@ -125,10 +123,6 @@ public abstract class MergeAlgorithm extends CRDT<String>{
         return doc;
     }
 
-    public int getReplicaNb() {
-        return replicaNb;
-    }
-
     public void reset() {
         this.execTime.clear();
         this.geneExecTime.clear();
@@ -136,6 +130,7 @@ public abstract class MergeAlgorithm extends CRDT<String>{
         this.geneHistory.clear();       
     }
 
+    @Override
     public Long lastExecTime() {
         return this.geneExecTime.get(this.geneExecTime.size()-1);
     }
@@ -158,9 +153,9 @@ public abstract class MergeAlgorithm extends CRDT<String>{
     public void applyRemote(CRDTMessage msg) {
         try {
             SequenceMessage s = (SequenceMessage) msg;
-            integrate(s);    
+            integrateLocal(s);    
             for (Object m : s.getMsgs()) {
-                integrate((SequenceMessage) m);
+                integrateLocal((SequenceMessage) m);
             }
         } catch (IncorrectTrace ex) {
             throw new IllegalStateException(ex);

@@ -35,7 +35,7 @@ public class IntegrationWOOTH {
     public void testWootHExempleRun() throws Exception {
         System.out.println("Integration test with WootH");
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
-        CausalDispatcher cd = new CausalDispatcher(new WootHFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new WootHFactory());
 
         cd.run(trace);
         String r = "Salut Monsieurjour MehdiFin";
@@ -48,7 +48,7 @@ public class IntegrationWOOTH {
     @Test
     public void testWootHG1Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
-        CausalDispatcher cd = new CausalDispatcher(new WootHFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new WootHFactory());
 
         cd.run(trace);
 //        for (Object o : ((WootHDocument) cd.getReplicas().get(0).getDoc()).getIdTable())                      
@@ -62,7 +62,7 @@ public class IntegrationWOOTH {
     @Test
     public void testWootHG2Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
-        CausalDispatcher cd = new CausalDispatcher(new WootHFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new WootHFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();
@@ -74,7 +74,7 @@ public class IntegrationWOOTH {
     @Test
     public void testWootHG3Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
-        CausalDispatcher cd = new CausalDispatcher(new WootHFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new WootHFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();
@@ -86,7 +86,7 @@ public class IntegrationWOOTH {
     @Test
     public void testWootHSerieRun() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
-        CausalDispatcher cd = new CausalDispatcher(new WootHFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new WootHFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();

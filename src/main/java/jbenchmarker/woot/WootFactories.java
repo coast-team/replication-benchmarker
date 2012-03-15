@@ -29,20 +29,20 @@ import jbenchmarker.woot.wooto.*;
  * @author urso
  */
 public class WootFactories {
-    public static class WootFactory implements ReplicaFactory {
-        public MergeAlgorithm createReplica(int r) {
+    public static class WootFactory extends ReplicaFactory {
+        public MergeAlgorithm create(int r) {
             return new WootMerge(new WootOriginalDocument(), r);
         }
     }
     
-    public static class WootHFactory implements ReplicaFactory {
-        public MergeAlgorithm createReplica(int r) {
+    public static class WootHFactory extends ReplicaFactory {
+        public MergeAlgorithm create(int r) {
             return new WootHashMerge(new WootHashDocument(), r);
         }
     }
     
-    public static class WootOFactory implements ReplicaFactory {
-        public MergeAlgorithm createReplica(int r) {
+    public static class WootOFactory extends ReplicaFactory {
+        public MergeAlgorithm create(int r) {
             return new WootMerge(new WootOptimizedDocument(), r);
         }
     }

@@ -40,7 +40,7 @@ public class RandomTraceNC implements Iterator<TraceOperation> {
     private final Map<Long,NavigableSet<VectorClock>>[] delivery;
     private final VectorClock[] states;
     private final ReplicaProfile rp;
-    private final OperationProfile op;
+    private final SequenceOperationProfile op;
     private int rindex;
     private TraceOperation next;
     private final RandomGauss r;
@@ -70,7 +70,7 @@ public class RandomTraceNC implements Iterator<TraceOperation> {
      * @param sdv standard deviation of delay for operation reception (gaussian)
      * @param replicas number of replicas
      */
-    public RandomTraceNC(long duration, ReplicaProfile rp, StandardOpProfile op, double probability, long delay, double sdv, int replicas) {
+    public RandomTraceNC(long duration, ReplicaProfile rp, SequenceOperationProfile op, double probability, long delay, double sdv, int replicas) {
         this.duration = duration;
         this.rp = rp;
         this.op = op;

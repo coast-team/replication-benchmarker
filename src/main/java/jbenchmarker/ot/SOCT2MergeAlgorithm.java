@@ -79,7 +79,7 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
         if (opt.getType() == TraceOperation.OpType.del) {
             for (int i = 0; i < opt.getOffset(); i++) {
                 TTFOperation op = TTFOperation.delete(opt, mpos + i, new VectorClock(this.siteVC));
-                this.siteVC.inc(this.getReplicaNb());
+                this.siteVC.inc(this.getReplicaNumber());
                 generatedOperations.add(op);
                 this.log.add(op);
                 doc.apply(op);
@@ -87,7 +87,7 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
         } else {
             for (int i = 0; i < opt.getContent().length(); i++) {
                 TTFOperation op = TTFOperation.insert(opt, mpos + i, opt.getContent().charAt(i), new VectorClock(this.siteVC));
-                this.siteVC.inc(this.getReplicaNb());
+                this.siteVC.inc(this.getReplicaNumber());
                 generatedOperations.add(op);
                 this.log.add(op);
                 doc.apply(op);

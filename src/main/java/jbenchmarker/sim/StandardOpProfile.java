@@ -18,14 +18,18 @@
  */
 package jbenchmarker.sim;
 
-import jbenchmarker.core.VectorClock;
+import crdt.CRDT;
+import crdt.Operation;
+import jbenchmarker.core.Document;
+import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.TraceOperation.OpType;
 
 /**
  * A profile that generates operation.
  * @author urso
  */
-public class StandardOpProfile implements OperationProfile {
+public class StandardOpProfile extends SequenceOperationProfile {
  
     private final double perIns, perBlock, sdvBlockSize;
     private final int avgBlockSize;
@@ -51,7 +55,6 @@ public class StandardOpProfile implements OperationProfile {
         return (r.nextDouble() < perIns) ? TraceOperation.OpType.ins : TraceOperation.OpType.del;            
     }
     
-    
     @Override
     public int nextPosition(int length) {
        return (int) (length*r.nextDouble());
@@ -74,5 +77,21 @@ public class StandardOpProfile implements OperationProfile {
         int length = (r.nextDouble() < perBlock) ? 
                (int) r.nextLongGaussian(avgBlockSize-1, sdvBlockSize) : 1;
         return Math.min(l-position, length);
+    }
+
+    @Override
+    public Operation nextOperation(CRDT crdt) {
+        Document replica = ((MergeAlgorithm) crdt).getDoc();
+
+        int l = replica.view().length();
+        int position = nextPosition(l);
+
+        if (l == 0 || nextType() == OpType.ins) {
+            String content = nextContent();
+            return TraceOperation.insert(crdt.getReplicaNumber(), position, content, null);
+        } else {
+            int offset = nextOffset(position, l);
+            return TraceOperation.delete(crdt.getReplicaNumber(), position, offset, null);
+        }
     }
 }

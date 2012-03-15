@@ -28,6 +28,7 @@ import jbenchmarker.trace.TraceOperation;
  *
  * @author urso
  */
+@Deprecated
 public abstract class Simulator {
     final protected Map<Integer,MergeAlgorithm> replicas;
 
@@ -66,7 +67,7 @@ public abstract class Simulator {
      * Adds the crated replica to the map.
      */
     public MergeAlgorithm newReplica(int number) {
-        MergeAlgorithm r = rf.createReplica(number);
+        MergeAlgorithm r = rf.create(number);
         replicas.put(number, r);
         return r;
     }

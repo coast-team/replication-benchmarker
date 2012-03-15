@@ -65,7 +65,7 @@ public class TTFOperation extends SequenceMessage {
     }
 
     @Override
-    public SequenceMessage clone() {
+    public SequenceMessage copy() {
         TTFOperation op = new TTFOperation(getOriginalOp());
         op.pos = this.pos;
         op.content = this.content;

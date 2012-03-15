@@ -74,7 +74,7 @@ class BoundaryStrategy extends LogootStrategy {
         List<Long> digits = P.digits(index);
         for (int i = 0; i < n; i++) {
             plus(digits, nextLong(interval) + 1, replica.getBase(), replica.getMax());
-            P = constructIdentifier(digits, P, Q, replica.getReplicaNb(), replica.getClock());
+            P = constructIdentifier(digits, P, Q, replica.getReplicaNumber(), replica.getClock());
             replica.incClock();
             patch.add(P);
         }  

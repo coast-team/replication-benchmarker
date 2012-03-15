@@ -59,15 +59,10 @@ public abstract class SequenceMessage extends CommutativeMessage {
     }
     
     @Override
-    abstract public SequenceMessage clone();
-
-    @Override
-    protected CommutativeMessage copy() {
-        return clone();
-    }
+    abstract public SequenceMessage copy();
 
     @Override
     protected String visu() {
-        return toString();
+        return originalOp.toString();
     }
 }

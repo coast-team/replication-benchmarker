@@ -56,7 +56,7 @@ public class RandomTraceTest {
     public void Causality() throws IncorrectTrace {
         System.out.println("causality");
         RandomTrace instance = new RandomTrace(240, RandomTrace.FLAT, new StandardOpProfile(0.5, 0.5, 10, 1.0), 0.2, 10, 3.0, 13);
-        CausalDispatcher cd = new CausalDispatcher(new CausalCheckerFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new CausalCheckerFactory());
         cd.run(instance);
     }    
 }

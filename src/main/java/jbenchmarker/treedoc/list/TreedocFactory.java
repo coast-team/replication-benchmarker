@@ -26,10 +26,10 @@ import jbenchmarker.core.ReplicaFactory;
  * 
  * @author mzawirski
  */
-public class TreedocFactory implements ReplicaFactory {
+public class TreedocFactory extends ReplicaFactory {
 
 	@Override
-	public MergeAlgorithm createReplica(int r) {
+	public MergeAlgorithm create(int r) {
 		return new TreedocMerge(new TreedocDocument(), r);
 	}
 

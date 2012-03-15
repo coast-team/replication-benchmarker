@@ -28,7 +28,6 @@ package jbenchmarker.trace;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.HashMap;
@@ -48,9 +47,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.sim.CausalDispatcher;
+import jbenchmarker.sim.OldCausalDispatcher;
 import org.jdom.input.DOMBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -279,7 +276,7 @@ public class Trace2XML {
                 org.jdom.Element opl = builder.build(racine);
                 for (int d : docs) {
                     Iterator<TraceOperation> trace = new TraceGenerator.TraceIterator(d, opl.getChildren().iterator());
-                    CausalDispatcher cd = new CausalDispatcher(new CausalCheckerFactory());
+                    OldCausalDispatcher cd = new OldCausalDispatcher(new CausalCheckerFactory());
                     cd.run(trace);
                 }
             }

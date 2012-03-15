@@ -36,7 +36,7 @@ public class IntegrationRGA {
         System.out.println("Integration test with RGA");        
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
         
-        CausalDispatcher cd = new CausalDispatcher(new RGAFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new RGAFactory());
 
         cd.run(trace);
         String r = "Salut Monsieurjour MehdiFin";
@@ -49,7 +49,7 @@ public class IntegrationRGA {
     @Test
     public void testRGAG1Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
-        CausalDispatcher cd = new CausalDispatcher(new RGAFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new RGAFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();
@@ -61,7 +61,7 @@ public class IntegrationRGA {
     @Test
     public void testRGAG2Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1,16);
-        CausalDispatcher cd = new CausalDispatcher(new RGAFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new RGAFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();
@@ -73,7 +73,7 @@ public class IntegrationRGA {
     @Test
     public void testRGAG3Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
-        CausalDispatcher cd = new CausalDispatcher(new RGAFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new RGAFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();
@@ -85,7 +85,7 @@ public class IntegrationRGA {
     @Test
     public void testRGASerieRun() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
-        CausalDispatcher cd = new CausalDispatcher(new RGAFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new RGAFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();

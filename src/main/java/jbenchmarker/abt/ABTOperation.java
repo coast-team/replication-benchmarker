@@ -89,7 +89,7 @@ public class ABTOperation extends SequenceMessage{
     }
 	
 	@Override
-	public SequenceMessage clone() {
+	public SequenceMessage copy() {
 		// TODO Auto-generated method stub
 		ABTOperation op = new ABTOperation(getOriginalOp());
 		op.pos = this.pos;

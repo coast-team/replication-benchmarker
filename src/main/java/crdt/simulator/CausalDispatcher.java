@@ -189,9 +189,6 @@ public class CausalDispatcher extends Simulator {
             genHistory.get(r).add(msg);
             clocks.get(r).inc(r);
             globalClock.inc(r);
-            memUsed.add(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
-            genTime.add(a.lastExecTime());
-            //time.takeTimeLoopStop();
         }
 
         Set<Integer> notComplete = new TreeSet<Integer>();

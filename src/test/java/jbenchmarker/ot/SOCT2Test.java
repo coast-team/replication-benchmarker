@@ -451,7 +451,7 @@ public class SOCT2Test {
     public static List<SequenceMessage> duplicate(List<SequenceMessage> list) {
         ArrayList<SequenceMessage> res = new ArrayList<SequenceMessage>();
         for (SequenceMessage elt : list) {
-            res.add(((TTFOperation) elt).clone());
+            res.add(((TTFOperation) elt).copy());
         }
         return res;
     }

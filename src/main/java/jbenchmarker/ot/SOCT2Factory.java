@@ -25,8 +25,9 @@ import jbenchmarker.core.ReplicaFactory;
  *
  * @author oster
  */
-public class SOCT2Factory implements ReplicaFactory {
-    public MergeAlgorithm createReplica(int siteId) {
+public class SOCT2Factory extends ReplicaFactory {
+    @Override
+    public MergeAlgorithm create(int siteId) {
         return new SOCT2MergeAlgorithm(new TTFDocument(), siteId);
     }
 }

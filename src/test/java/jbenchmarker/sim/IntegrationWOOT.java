@@ -35,13 +35,13 @@ import static org.junit.Assert.*;
 public class IntegrationWOOT {
 
     /**
-     * Test of run method, WOOT class CausalDispatcher; exemple.xml.
+     * Test of run method, WOOT class OldCausalDispatcher; exemple.xml.
      */
     @Test
     public void testWootExempleRun() throws Exception {
         System.out.println("Integration test with causal + WOOT");
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1, 100);
-        CausalDispatcher cd = new CausalDispatcher(new WootFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new WootFactory());
 
         cd.run(trace);
         String r = "Salut Monsieurjour MehdiFin";
@@ -51,13 +51,13 @@ public class IntegrationWOOT {
     }
     
     /**
-     * Test of run method on WOOT , of class CausalDispatcher; whole traces
+     * Test of run method on WOOT , of class OldCausalDispatcher; whole traces
      */
     @Ignore // Too long -- Passes on revision 96 -- 1800s
     @Test
     public void testWootG1Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1, 2000);         
-        CausalDispatcher cd = new CausalDispatcher(new WootFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new WootFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();
@@ -70,7 +70,7 @@ public class IntegrationWOOT {
     @Test
     public void testWootG2Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
-        CausalDispatcher cd = new CausalDispatcher(new WootFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new WootFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();
@@ -83,7 +83,7 @@ public class IntegrationWOOT {
     @Test
     public void testWootG3Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);         
-        CausalDispatcher cd = new CausalDispatcher(new WootFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new WootFactory());
         
         cd.run(trace);  
         String r = cd.getReplicas().get(0).getDoc().view();
@@ -92,14 +92,14 @@ public class IntegrationWOOT {
     }
 
     /**
-     * Test of run method on WOOTO, CausalDispatcher; whole traces
+     * Test of run method on WOOTO, OldCausalDispatcher; whole traces
      */
      @Ignore // (Only) 11 s 
     @Test
     public void testWootOG1Run() throws Exception {        
         System.out.println("Integration test with causal + WOOTO");
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
-        CausalDispatcher cd = new CausalDispatcher(new WootOFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new WootOFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();
@@ -109,13 +109,13 @@ public class IntegrationWOOT {
     }
         
     /**
-     * Test of run method, of class CausalDispatcher; WOOTO tail lines of G1.xml 
+     * Test of run method, of class OldCausalDispatcher; WOOTO tail lines of G1.xml 
      */
     
     @Test
     public void testWootOG1RunSubset() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1, 2000);
-        CausalDispatcher cd = new CausalDispatcher(new WootOFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new WootOFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();

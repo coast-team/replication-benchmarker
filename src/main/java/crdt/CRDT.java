@@ -28,6 +28,7 @@ public abstract class CRDT<L> extends Observable implements Factory<CRDT<L>> {
     
     abstract public L lookup();
     
+    @Deprecated
     public Long lastExecTime(){
         return 0L;
     }

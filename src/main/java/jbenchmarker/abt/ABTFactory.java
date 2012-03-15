@@ -25,8 +25,9 @@ import jbenchmarker.core.ReplicaFactory;
 *
 * @author Roh
 */
-public class ABTFactory implements ReplicaFactory {
-	public MergeAlgorithm createReplica(int r) {
+public class ABTFactory extends ReplicaFactory {
+    @Override
+	public MergeAlgorithm create(int r) {
 		return new ABTMerge(new ABTDocument(), r);
 	}
 }

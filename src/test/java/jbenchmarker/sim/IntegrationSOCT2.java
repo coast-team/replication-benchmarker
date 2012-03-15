@@ -38,7 +38,7 @@ public class IntegrationSOCT2 {
     @Test
     public void testSOCtestSOCT2ExempleRunT2G1Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
-        CausalDispatcher cd = new CausalDispatcher(new SOCT2Factory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new SOCT2Factory());
 
         long startTime = System.currentTimeMillis();
         cd.run(trace);

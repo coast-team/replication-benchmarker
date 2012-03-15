@@ -15,8 +15,8 @@ import jbenchmarker.trace.TraceOperation;
  * @author urso
  */
 public class LogootCounter extends LogootDocument {
-    public static class Factory implements ReplicaFactory {
-        @Override public MergeAlgorithm createReplica(int r) {
+    public static class Factory extends ReplicaFactory {
+        @Override public MergeAlgorithm create(int r) {
                 return new LogootMerge(new LogootDocument(Long.MAX_VALUE), r, 64, new BoundaryStrategy(1000000000));
         }
     }

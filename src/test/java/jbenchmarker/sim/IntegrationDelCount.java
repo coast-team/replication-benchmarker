@@ -40,24 +40,24 @@ public class IntegrationDelCount {
     @Test
     public void testLogootG1Run() throws Exception {
         Iterator<TraceOperation> trace;
-        CausalDispatcher cd;
+        OldCausalDispatcher cd;
         
 //        trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
-//        cd = new CausalDispatcher(new LogootFactory());
+//        cd = new OldCausalDispatcher(new LogootFactory());
 //
 //        cd.run(trace);
 //        System.out.println(LogootCounter.count / cd.getReplicas().keySet().size());
 //        LogootCounter.count = 0;
 //        
 //        trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
-//        cd = new CausalDispatcher(new LogootFactory());
+//        cd = new OldCausalDispatcher(new LogootFactory());
 //
 //        cd.run(trace);
 //        System.out.println(LogootCounter.count / cd.getReplicas().keySet().size());
 //        LogootCounter.count = 0;
 //        
 //        trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
-//        cd = new CausalDispatcher(new LogootFactory());
+//        cd = new OldCausalDispatcher(new LogootFactory());
 //        LogootCounter.count = 0;
 //
 //        cd.run(trace);
@@ -65,7 +65,7 @@ public class IntegrationDelCount {
 //        LogootCounter.count = 0;
 //        
 //        trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
-//        cd = new CausalDispatcher(new LogootFactory());
+//        cd = new OldCausalDispatcher(new LogootFactory());
 //        LogootCounter.count = 0;
 //
 //        cd.run(trace);
@@ -73,7 +73,7 @@ public class IntegrationDelCount {
 //        LogootCounter.count = 0;
         
         int nb = 10;
-        cd = new CausalDispatcher(new LogootCounter.Factory());
+        cd = new OldCausalDispatcher(new LogootCounter.Factory());
 
         for (int i = 0; i < nb; i++) {
             cd.reset();

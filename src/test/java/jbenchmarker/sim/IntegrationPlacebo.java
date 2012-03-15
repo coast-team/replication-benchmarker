@@ -40,7 +40,7 @@ public class IntegrationPlacebo {
             uop++;
             cop += top.getRange();
         }
-        CausalDispatcher cd = new CausalDispatcher(new PlaceboFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new PlaceboFactory());
         trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
         cd.run(trace);
         assertEquals(uop, cd.getMemUsed().size());

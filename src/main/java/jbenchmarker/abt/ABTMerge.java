@@ -43,7 +43,7 @@ public class ABTMerge extends MergeAlgorithm {
 	public ABTMerge(Document doc, int r){
 		super(doc, r);
 		siteVC = new VectorClock();
-		abtlog = new ABTLog(this.getReplicaNb());
+		abtlog = new ABTLog(this.getReplicaNumber());
 		abtgc  = new ABTGC(this);
 	}
 	
@@ -78,7 +78,7 @@ public class ABTMerge extends MergeAlgorithm {
 		else offset = opt.getContent().length();
 		
 		for(int i=0;i<offset;i++){
-			this.siteVC.inc(this.getReplicaNb());
+			this.siteVC.inc(this.getReplicaNumber());
 			
 			if(opt.getType() == TraceOperation.OpType.del){
 				abtop = new ABTOperation(opt,p+1, siteVC);

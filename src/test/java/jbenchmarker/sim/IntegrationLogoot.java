@@ -36,7 +36,7 @@ public class IntegrationLogoot {
     public void testLogootExempleRun() throws Exception {
         System.out.println("Integration test with logoot");
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
-        CausalDispatcher cd = new CausalDispatcher(new LogootFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new LogootFactory());
 
         cd.run(trace);
         String r = "Salut Monsieurjour MehdiFin";
@@ -49,7 +49,7 @@ public class IntegrationLogoot {
     @Test
     public void testLogootG1Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
-        CausalDispatcher cd = new CausalDispatcher(new LogootFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new LogootFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();
@@ -62,7 +62,7 @@ public class IntegrationLogoot {
     @Test
     public void testLogootG2Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
-        CausalDispatcher cd = new CausalDispatcher(new LogootFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new LogootFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();
@@ -75,7 +75,7 @@ public class IntegrationLogoot {
     @Test
     public void testLogootG3Run() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
-        CausalDispatcher cd = new CausalDispatcher(new LogootFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new LogootFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();
@@ -88,7 +88,7 @@ public class IntegrationLogoot {
     @Test
     public void testLogootSerieRun() throws Exception {
         Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
-        CausalDispatcher cd = new CausalDispatcher(new LogootFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new LogootFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();
@@ -101,7 +101,7 @@ public class IntegrationLogoot {
     @Test
     public void testLogootRandom() throws Exception {
         Iterator<TraceOperation> trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
-        CausalDispatcher cd = new CausalDispatcher(new LogootFactory());
+        OldCausalDispatcher cd = new OldCausalDispatcher(new LogootFactory());
 
         cd.run(trace);
         String r = cd.getReplicas().get(0).getDoc().view();

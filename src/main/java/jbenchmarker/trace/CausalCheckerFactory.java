@@ -31,7 +31,7 @@ import jbenchmarker.sim.PlaceboFactory.PlaceboDocument;
  * Check that operation are received in causal order.
  * @author urso
  */
-public class CausalCheckerFactory implements ReplicaFactory {
+public class CausalCheckerFactory extends ReplicaFactory {
 //   @Override
     private static class CCMerge extends MergeAlgorithm {
 
@@ -54,19 +54,19 @@ public class CausalCheckerFactory implements ReplicaFactory {
             List<SequenceMessage> l = new ArrayList<SequenceMessage>(1);
             SequenceMessage op = new SequenceMessage(opt) {
 
-                public SequenceMessage clone() {
+                public SequenceMessage copy() {
                     return this;
                 }
             };
             l.add(op);
             this.getDoc().apply(op);
-            vc.inc(this.getReplicaNb());
+            vc.inc(this.getReplicaNumber());
             return l;
         }
 
         private void check(TraceOperation op) throws IncorrectTrace {
             if (!vc.readyFor(op.getReplica(), op.getVC())) {
-                throw new IncorrectTrace("Replica " + this.getReplicaNb() + " not ready for " + op);
+                throw new IncorrectTrace("Replica " + this.getReplicaNumber() + " not ready for " + op);
             }
         }
 
@@ -77,7 +77,7 @@ public class CausalCheckerFactory implements ReplicaFactory {
     }
     
     @Override
-    public MergeAlgorithm createReplica(int r) {
+    public MergeAlgorithm create(int r) {
         return new CCMerge(r);                
     }
 }

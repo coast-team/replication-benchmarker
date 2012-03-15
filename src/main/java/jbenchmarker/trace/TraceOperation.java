@@ -20,7 +20,7 @@ package jbenchmarker.trace;
 
 import jbenchmarker.core.Document;
 import jbenchmarker.core.VectorClock;
-import jbenchmarker.sim.OperationProfile;
+import jbenchmarker.sim.SequenceOperationProfile;
 
 /**
  *
@@ -38,7 +38,7 @@ public class TraceOperation implements crdt.Operation {
     private int offset;                   // length of a del
     private String content;          // content of an ins
     final private VectorClock VC;               // Vector clock 
-    private final OperationProfile op;
+    private final SequenceOperationProfile op;
     
     public VectorClock getVC() {
         return VC;
@@ -66,7 +66,7 @@ public class TraceOperation implements crdt.Operation {
         return type;
     }
 
-    TraceOperation(OpType type, int replica, int position, int offset, String content, VectorClock VC, OperationProfile op) {
+    TraceOperation(OpType type, int replica, int position, int offset, String content, VectorClock VC, SequenceOperationProfile op) {
         this.type = type;
         this.replica = replica;
         this.position = position;
@@ -93,7 +93,7 @@ public class TraceOperation implements crdt.Operation {
     /*
      * Construction of a random operation 
      */
-    static public TraceOperation random(int replica, VectorClock VC, OperationProfile op) {
+    static public TraceOperation random(int replica, VectorClock VC, SequenceOperationProfile op) {
         return new TraceOperation(OpType.rdm, replica, -1, -1, null, VC, op);
     }
     

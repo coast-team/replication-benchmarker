@@ -75,8 +75,8 @@ public class RGAMerge extends MergeAlgorithm {
 		}		
 		
 		for(int i=0; i < offset ; i++) {
-			this.siteVC.inc(this.getReplicaNb());
-			s4vtms = new RGAS4Vector(this.getReplicaNb(), this.siteVC);
+			this.siteVC.inc(this.getReplicaNumber());
+			s4vtms = new RGAS4Vector(this.getReplicaNumber(), this.siteVC);
 			if(opt.getType() == TraceOperation.OpType.del) {
 				rgaop = new RGAOperation(opt, p+1, target.getKey(), s4vtms);
 				target = target.getNextVisible();
@@ -87,7 +87,7 @@ public class RGAMerge extends MergeAlgorithm {
 			lop.add(rgaop);
 			rgadoc.apply(rgaop);
 			
-			purger.setLastVC(this.getReplicaNb(),this.siteVC);
+			purger.setLastVC(this.getReplicaNumber(),this.siteVC);
 		}
 
 		return lop;
