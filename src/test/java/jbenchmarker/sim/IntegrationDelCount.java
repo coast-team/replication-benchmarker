@@ -25,7 +25,7 @@ import jbenchmarker.logoot.LogootFactory;
 import java.util.Iterator;
 import jbenchmarker.logoot.LogootCounter;
 import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -39,7 +39,7 @@ public class IntegrationDelCount {
 //    @Ignore
     @Test
     public void testLogootG1Run() throws Exception {
-        Iterator<TraceOperation> trace;
+        Iterator<SequenceOperation> trace;
         OldCausalDispatcher cd;
         
 //        trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);

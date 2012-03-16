@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import jbenchmarker.core.VectorClock;
+import collect.VectorClock;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -47,13 +47,13 @@ public class TraceGenerator {
     /*
      * Returns a association between replica number to the ordered list of trace operation. 
      */
-    public static Map<Integer, List<TraceOperation>> historyPerReplica(List<TraceOperation> trace) {
-        Map<Integer, List<TraceOperation>> histories = new HashMap<Integer, List<TraceOperation>>();
-        for (TraceOperation opt : trace) {
+    public static Map<Integer, List<SequenceOperation>> historyPerReplica(List<SequenceOperation> trace) {
+        Map<Integer, List<SequenceOperation>> histories = new HashMap<Integer, List<SequenceOperation>>();
+        for (SequenceOperation opt : trace) {
             int r = opt.getReplica();
-            List<TraceOperation> l = histories.get(r);
+            List<SequenceOperation> l = histories.get(r);
             if (l==null) {
-                l = new ArrayList<TraceOperation>();
+                l = new ArrayList<SequenceOperation>();
                 histories.put(r, l);
             }
             l.add(opt);
@@ -66,7 +66,7 @@ public class TraceGenerator {
      * @param e JDOM Element
      * @return the parsed Trace operation 
      */
-    public static TraceOperation oneXML2OP(Element e) {
+    public static SequenceOperation oneXML2OP(Element e) {
         int p = Integer.parseInt(e.getChildText("Position"));
         int r = Integer.parseInt(e.getChildText("NumReplica"));
         List vce = e.getChild("VectorClock").getChildren();
@@ -78,17 +78,17 @@ public class TraceGenerator {
                     Integer.parseInt(entry.getChildText("Clock")));
         }
         if (e.getChildText("Type").equals("Ins")) {
-            return TraceOperation.insert(r, p, e.getChildText("Text"), v);
+            return SequenceOperation.insert(r, p, e.getChildText("Text"), v);
         } else {
-            return TraceOperation.delete(r, p, Integer.parseInt(e.getChildText("Offset")), v);
+            return SequenceOperation.delete(r, p, Integer.parseInt(e.getChildText("Offset")), v);
         }
     }
     
     
-    public static class TraceIterator implements Iterator<TraceOperation> {
+    public static class TraceIterator implements Iterator<SequenceOperation> {
         Iterator children;
         int docnum;
-        TraceOperation next;
+        SequenceOperation next;
         boolean goNext;
         int size;
         int line;
@@ -124,7 +124,7 @@ public class TraceGenerator {
             return children.hasNext();
         }
 
-        public TraceOperation next() {
+        public SequenceOperation next() {
             if (goNext && !hasNext()) throw new NoSuchElementException();
             goNext = true;
             line++;
@@ -140,7 +140,7 @@ public class TraceGenerator {
     /**
      *  Extract trace form XML JDOM document
      */
-    public static Iterator<TraceOperation> traceFromXML(Document document, int docnum) throws JDOMException, IOException  {
+    public static Iterator<SequenceOperation> traceFromXML(Document document, int docnum) throws JDOMException, IOException  {
         List trace = document.getRootElement().getChild("Trace").getChildren();
         
         return new TraceIterator(docnum, trace.iterator()); 
@@ -149,7 +149,7 @@ public class TraceGenerator {
     /**
      *  Extract trace form XML JDOM document up to size operations
      */
-    public static Iterator<TraceOperation> traceFromXML(Document document, int docnum, int size) throws JDOMException, IOException  {
+    public static Iterator<SequenceOperation> traceFromXML(Document document, int docnum, int size) throws JDOMException, IOException  {
         List trace = document.getRootElement().getChild("Trace").getChildren();
         
         return new TraceIterator(docnum, trace.iterator(), size); 
@@ -159,14 +159,14 @@ public class TraceGenerator {
     /**
      * Extract trace form XML uri.
      */
-    public static Iterator<TraceOperation> traceFromXML(String uri, int docnum) throws JDOMException, IOException  {        
+    public static Iterator<SequenceOperation> traceFromXML(String uri, int docnum) throws JDOMException, IOException  {        
         return traceFromXML((new SAXBuilder()).build(uri), docnum);
     }
 
     /**
      * Extract trace form XML uri.
      */
-    public static Iterator<TraceOperation> traceFromXML(String uri, int docnum, int size) throws JDOMException, IOException  {        
+    public static Iterator<SequenceOperation> traceFromXML(String uri, int docnum, int size) throws JDOMException, IOException  {        
         return traceFromXML((new SAXBuilder()).build(uri), docnum, size);
     }
     
@@ -174,7 +174,7 @@ public class TraceGenerator {
     /**
      * Verifies causality of an operation according to replicas VectorClock.
      */
-    public static void causalCheck(TraceOperation opt, Map<Integer, VectorClock> vcs) throws IncorrectTrace {
+    public static void causalCheck(SequenceOperation opt, Map<Integer, VectorClock> vcs) throws IncorrectTrace {
         int r = opt.getReplica();
         if (opt.getVC().getSafe(r) == 0) {
             throw new IncorrectTrace("Zero/no entry in VC for replica" + opt);

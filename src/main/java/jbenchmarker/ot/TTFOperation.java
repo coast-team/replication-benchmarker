@@ -19,9 +19,9 @@
 package jbenchmarker.ot;
 
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.core.VectorClock;
-import jbenchmarker.trace.TraceOperation;
-import jbenchmarker.trace.TraceOperation.OpType;
+import collect.VectorClock;
+import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.trace.SequenceOperation.OpType;
 
 /**
  *
@@ -34,7 +34,7 @@ public class TTFOperation extends SequenceMessage {
     private VectorClock clock;
     private final int siteId;
 
-    public TTFOperation(TraceOperation o) {
+    public TTFOperation(SequenceOperation o) {
         super(o);
         this.siteId = this.getOriginalOp().getReplica();
     }
@@ -88,14 +88,14 @@ public class TTFOperation extends SequenceMessage {
         return sb.toString();
     }
 
-    public static TTFOperation delete(TraceOperation o, int pos, VectorClock vc) {
+    public static TTFOperation delete(SequenceOperation o, int pos, VectorClock vc) {
         TTFOperation op = new TTFOperation(o);
         op.pos = pos;
         op.clock = vc;
         return op;
     }
 
-    public static TTFOperation insert(TraceOperation o, int pos, char content, VectorClock vc) {
+    public static TTFOperation insert(SequenceOperation o, int pos, char content, VectorClock vc) {
         TTFOperation op = new TTFOperation(o);
         op.pos = pos;
         op.content = content;
@@ -103,7 +103,7 @@ public class TTFOperation extends SequenceMessage {
         return op;
     }
 
-    public static TTFOperation from(TraceOperation opt) {
+    public static TTFOperation from(SequenceOperation opt) {
         TTFOperation op = new TTFOperation(opt);
         op.clock = opt.getVC();
         op.pos = opt.getPosition();

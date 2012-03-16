@@ -24,7 +24,7 @@ import crdt.PreconditionException;
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 /**
  *
@@ -36,7 +36,7 @@ public abstract class MergeAlgorithm extends CRDT<String>{
     final private Document doc;
    
     // Local operations generated
-    final private List<TraceOperation> geneHistory; 
+    final private List<SequenceOperation> geneHistory; 
 
     // All operations executed
     final private List<SequenceMessage> history;
@@ -54,7 +54,7 @@ public abstract class MergeAlgorithm extends CRDT<String>{
         this.execTime = new ArrayList<Long>();
         this.geneExecTime = new ArrayList<Long>();
         this.history = new ArrayList<SequenceMessage>();
-        this.geneHistory = new ArrayList<TraceOperation>();
+        this.geneHistory = new ArrayList<SequenceOperation>();
         this.setReplicaNumber(r);
         this.doc = doc;
     }
@@ -67,7 +67,7 @@ public abstract class MergeAlgorithm extends CRDT<String>{
     /**
      * To be define by the concrete merge algorithm
      */
-    protected abstract List<SequenceMessage> generateLocal(TraceOperation opt) throws IncorrectTrace;
+    protected abstract List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTrace;
     
    
     
@@ -88,7 +88,7 @@ public abstract class MergeAlgorithm extends CRDT<String>{
      * Throws IncorrectTrace iff operation is not generable in the context.
      **/    
     @Deprecated
-    public List<SequenceMessage> generate(TraceOperation opt) throws IncorrectTrace {
+    public List<SequenceMessage> generate(SequenceOperation opt) throws IncorrectTrace {
         geneHistory.add(opt);
         long startTime = System.nanoTime();
         List<SequenceMessage> l = generateLocal(opt);
@@ -115,7 +115,7 @@ public abstract class MergeAlgorithm extends CRDT<String>{
         return geneExecTime;
     }
 
-    public List<TraceOperation> getLocalHistory() {
+    public List<SequenceOperation> getLocalHistory() {
         return geneHistory;
     }
     
@@ -137,7 +137,7 @@ public abstract class MergeAlgorithm extends CRDT<String>{
 
     @Override
     public CRDTMessage applyLocal(crdt.Operation op) throws PreconditionException {
-        List<SequenceMessage> l = generateLocal((TraceOperation) op);
+        List<SequenceMessage> l = generateLocal((SequenceOperation) op);
         SequenceMessage m = null;
         for (SequenceMessage n : l) {
             if (m == null) { 

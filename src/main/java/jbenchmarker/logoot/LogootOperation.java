@@ -19,8 +19,8 @@
 package jbenchmarker.logoot;
 
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.TraceOperation;
-import jbenchmarker.trace.TraceOperation.OpType;
+import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.trace.SequenceOperation.OpType;
 
 /**
  *
@@ -33,7 +33,7 @@ public class LogootOperation extends SequenceMessage
     
     final private char content;
 
-    private LogootOperation(TraceOperation o, LogootIdentifier identif, char content) {
+    private LogootOperation(SequenceOperation o, LogootIdentifier identif, char content) {
         super(o);
         this.identif = identif;
         this.content = content;
@@ -51,11 +51,11 @@ public class LogootOperation extends SequenceMessage
         return content;
     }
 
-    static LogootOperation insert(TraceOperation o, LogootIdentifier idf, char cont) {
+    static LogootOperation insert(SequenceOperation o, LogootIdentifier idf, char cont) {
         return new LogootOperation(o, idf, cont);
     }
 
-    public static LogootOperation Delete(TraceOperation o, LogootIdentifier idf) {
+    public static LogootOperation Delete(SequenceOperation o, LogootIdentifier idf) {
         return new LogootOperation(o, idf, (char) 0);
     }
 

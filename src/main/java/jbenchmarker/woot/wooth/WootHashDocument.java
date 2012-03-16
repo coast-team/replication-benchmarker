@@ -21,7 +21,7 @@ package jbenchmarker.woot.wooth;
 import java.util.Map;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;
 
@@ -62,7 +62,7 @@ public class WootHashDocument implements Document {
     public void apply(SequenceMessage op) {
         WootOperation wop = (WootOperation) op;
         
-        if (wop.getType() == TraceOperation.OpType.del) {
+        if (wop.getType() == SequenceOperation.OpType.del) {
             map.get(wop.getId()).setVisible(false);
         } else { 
             WootHashNode wn = new WootHashNode(wop.getId(), wop.getContent(), true, null, 
@@ -115,11 +115,11 @@ public class WootHashDocument implements Document {
         return v; 
     }
     
-    public WootOperation delete(TraceOperation o, WootIdentifier id) {
+    public WootOperation delete(SequenceOperation o, WootIdentifier id) {
         return new WootOperation(o, id);
     }
     
-    public WootOperation insert(TraceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, char content) {
+    public WootOperation insert(SequenceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, char content) {
         return new WootOperation(o, id, ip, in, content);
     }
 

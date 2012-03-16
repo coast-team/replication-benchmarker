@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 
 
@@ -38,11 +38,11 @@ import static org.junit.Assert.*;
 public class RGADocumentTest {
 
 //  LogootOperation ins(LogootIdentifier n,char c) {
-//  return LogootOperation.insert(TraceOperation.insert(0, 0, null, null), 
+//  return LogootOperation.insert(SequenceOperation.insert(0, 0, null, null), 
 //          n,c);
 //}
 //LogootOperation del(LogootIdentifier n) {
-//  return LogootOperation.Delete(TraceOperation.delete(0, 0, 0, null), n);
+//  return LogootOperation.Delete(SequenceOperation.delete(0, 0, 0, null), n);
 //}
 //
 //

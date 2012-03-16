@@ -18,7 +18,7 @@
  */
 package jbenchmarker.woot.original;
 
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;
 import org.junit.AfterClass;
@@ -49,11 +49,11 @@ public class WootDocumentTest {
 
     // helpers
     WootOperation ins(WootOriginalDocument r, WootOriginalNode n) {
-        return r.insert(TraceOperation.insert(0, 0, null, null), 
+        return r.insert(SequenceOperation.insert(0, 0, null, null), 
                 n.getId(), n.getCp().getId(), n.getCn().getId(), n.getContent());
     }
     WootOperation del(WootOriginalDocument r, WootOriginalNode n) {
-        return r.delete(TraceOperation.delete(0, 0, 0, null), n.getId());
+        return r.delete(SequenceOperation.delete(0, 0, 0, null), n.getId());
     }
     
     @BeforeClass

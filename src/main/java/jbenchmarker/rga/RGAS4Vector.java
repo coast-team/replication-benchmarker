@@ -18,7 +18,7 @@
  */
 package jbenchmarker.rga;
 
-import jbenchmarker.core.VectorClock; 
+import collect.VectorClock; 
 /**
 *
 * @author Roh

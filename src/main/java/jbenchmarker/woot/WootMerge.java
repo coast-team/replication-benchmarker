@@ -27,7 +27,7 @@ import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 /**
  *
@@ -47,17 +47,17 @@ public class WootMerge extends MergeAlgorithm {
     protected void integrateLocal(SequenceMessage op) {
 //        WootOperation wop = (WootOperation) op;
 //        WootDocument<? extends WootNode> wdoc = (WootDocument<? extends WootNode>) (this.getDoc());
-//        if (wop.getType()==TraceOperation.OpType.ins && (!wdoc.has(wop.getIp()) || !wdoc.has(wop.getIp())))
+//        if (wop.getType()==SequenceOperation.OpType.ins && (!wdoc.has(wop.getIp()) || !wdoc.has(wop.getIp())))
 //            pending.put(wop.getId(),wop);
         getDoc().apply(op);
     }
 
     @Override
-    protected List<SequenceMessage> generateLocal(TraceOperation opt) throws IncorrectTrace {
+    protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTrace {
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
         WootDocument<? extends WootNode> wdoc = (WootDocument<? extends WootNode>) (this.getDoc());
         int p = opt.getPosition();
-        if (opt.getType() == TraceOperation.OpType.del) {
+        if (opt.getType() == SequenceOperation.OpType.del) {
             int v = wdoc.getVisible(p);
             for (int i = 0; i < opt.getOffset(); i++) {
                 WootOperation wop = wdoc.delete(opt, wdoc.getElements().get(v).getId());

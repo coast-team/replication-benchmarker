@@ -22,7 +22,7 @@ import crdt.CRDT;
 import java.util.List;
 import jbenchmarker.core.*;
 import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 
 /**
@@ -32,7 +32,7 @@ import jbenchmarker.trace.TraceOperation;
 public class PlaceboFactory extends ReplicaFactory {
     public static class PlaceboOperation extends SequenceMessage {
 
-        public PlaceboOperation(TraceOperation o) {
+        public PlaceboOperation(SequenceOperation o) {
             super(o);
         }
 
@@ -66,8 +66,8 @@ public class PlaceboFactory extends ReplicaFactory {
         }
 
         @Override
-        protected List<SequenceMessage> generateLocal(TraceOperation opt) throws IncorrectTrace {
-            int nbop = (opt.getType() == TraceOperation.OpType.del) ? opt.getOffset() : opt.getContent().length();
+        protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTrace {
+            int nbop = (opt.getType() == SequenceOperation.OpType.del) ? opt.getOffset() : opt.getContent().length();
             List<SequenceMessage> l = new java.util.ArrayList<SequenceMessage>(nbop);
             for (int i = 0; i < nbop; i++) {
                 l.add(new PlaceboOperation(opt));

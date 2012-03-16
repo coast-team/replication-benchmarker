@@ -26,7 +26,7 @@ import jbenchmarker.core.MergeAlgorithm;
 import java.util.ArrayList;
 import jbenchmarker.core.SequenceMessage;
 import java.util.List;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static jbenchmarker.trace.TraceGeneratorTest.op;
@@ -39,7 +39,7 @@ public class CausalDispatcherTest {
 
     // SequenceMessage mock
     static private class OpMock extends SequenceMessage {
-        OpMock(TraceOperation opt) {
+        OpMock(SequenceOperation opt) {
             super(opt);
         }
             
@@ -66,7 +66,7 @@ public class CausalDispatcherTest {
                     this.getDoc().apply(op);
                 }
 
-                protected List<SequenceMessage> generateLocal(TraceOperation opt) {
+                protected List<SequenceMessage> generateLocal(SequenceOperation opt) {
                     List<SequenceMessage> l = new ArrayList<SequenceMessage>();
                     OpMock op = new OpMock(opt);
 //                this.getDoc().apply(op);
@@ -88,11 +88,11 @@ public class CausalDispatcherTest {
     @Test
     public void testRun() throws IncorrectTrace, Exception {
         System.out.println("run");
-        List<TraceOperation> trace = new ArrayList<TraceOperation>();
+        List<SequenceOperation> trace = new ArrayList<SequenceOperation>();
         
         OldCausalDispatcher cd = new OldCausalDispatcher(new RFMock());
         
-        TraceOperation op1 = op(2,0,1,0);
+        SequenceOperation op1 = op(2,0,1,0);
         trace.add(op1);        
         List<SequenceMessage> o1 = new ArrayList<SequenceMessage>();
         o1.add(new OpMock(op1));  
@@ -102,7 +102,7 @@ public class CausalDispatcherTest {
         assertEquals(o1, cd.getReplicas().get(2).getHistory());        
         
         cd.reset();
-        TraceOperation op2 = op(1,1,0,0);
+        SequenceOperation op2 = op(1,1,0,0);
         trace.add(op2);  
         List<SequenceMessage> o2 = new ArrayList<SequenceMessage>();
         o2.add(new OpMock(op2)); o2.add(new OpMock(op1));
@@ -115,7 +115,7 @@ public class CausalDispatcherTest {
         assertEquals(o2, cd.getReplicas().get(1).getHistory());
 
         cd.reset();
-        TraceOperation op3 = op(1,2,1,0);
+        SequenceOperation op3 = op(1,2,1,0);
         trace.add(op3);
         o1.add(new OpMock(op3));
         o2.add(new OpMock(op3));
@@ -127,7 +127,7 @@ public class CausalDispatcherTest {
         assertEquals(o2, cd.getReplicas().get(1).getHistory());
     
         cd.reset();
-        TraceOperation op4 = op(3,1,1,1);
+        SequenceOperation op4 = op(3,1,1,1);
         trace.add(op4);
         List<SequenceMessage> o3 = new ArrayList<SequenceMessage>();
         o3.add(new OpMock(op1)); o3.add(new OpMock(op2)); o3.add(new OpMock(op4)); o3.add(new OpMock(op3));

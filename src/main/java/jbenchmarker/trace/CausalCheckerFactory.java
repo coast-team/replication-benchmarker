@@ -24,7 +24,7 @@ import java.util.List;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.core.VectorClock;
+import collect.VectorClock;
 import jbenchmarker.sim.PlaceboFactory.PlaceboDocument;
 
 /**
@@ -49,7 +49,7 @@ public class CausalCheckerFactory extends ReplicaFactory {
         }
 
         @Override
-        protected List<SequenceMessage> generateLocal(TraceOperation opt) throws IncorrectTrace {
+        protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTrace {
             check(opt);
             List<SequenceMessage> l = new ArrayList<SequenceMessage>(1);
             SequenceMessage op = new SequenceMessage(opt) {
@@ -64,7 +64,7 @@ public class CausalCheckerFactory extends ReplicaFactory {
             return l;
         }
 
-        private void check(TraceOperation op) throws IncorrectTrace {
+        private void check(SequenceOperation op) throws IncorrectTrace {
             if (!vc.readyFor(op.getReplica(), op.getVC())) {
                 throw new IncorrectTrace("Replica " + this.getReplicaNumber() + " not ready for " + op);
             }

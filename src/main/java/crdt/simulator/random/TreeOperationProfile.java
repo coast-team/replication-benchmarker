@@ -20,6 +20,8 @@ package crdt.simulator.random;
 
 import collect.Node;
 import crdt.CRDT;
+import crdt.Operation;
+import collect.VectorClock;
 import crdt.tree.CRDTTree;
 import crdt.tree.TreeOperation;
 import java.util.ArrayList;
@@ -74,4 +76,9 @@ public abstract class TreeOperationProfile<T> implements OperationProfile {
     abstract public T nextElement(T elem);
 
     abstract public boolean full(Node<T> s);
+    
+    @Override
+    public Operation nextOperation(CRDT a, VectorClock vectorClock) {
+        return nextOperation(a);
+    }
 }

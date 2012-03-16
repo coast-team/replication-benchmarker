@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import jbenchmarker.core.VectorClock;
+import collect.VectorClock;
 
 public class ABTGC {
 	private ABTMerge merge;

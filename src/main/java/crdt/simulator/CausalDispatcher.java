@@ -18,6 +18,7 @@
  */
 package crdt.simulator;
 
+import collect.VectorClock;
 import crdt.*;
 import crdt.simulator.random.RandomTrace;
 import java.util.ArrayList;
@@ -161,7 +162,7 @@ public class CausalDispatcher extends Simulator {
             }
 
             Operation op = (opt.getType() == TraceOperation.Type.random)
-                    ? ((RandomTrace) trace).getOperationProfile().nextOperation(a)
+                    ? ((RandomTrace) trace).getOperationProfile().nextOperation(a, opt.getVectorClock())
                     : opt.getOperation();
             /*
              * ---------------

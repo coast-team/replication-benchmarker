@@ -24,7 +24,7 @@ import org.junit.Ignore;
 import java.util.Iterator;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -40,7 +40,7 @@ public class IntegrationWOOT {
     @Test
     public void testWootExempleRun() throws Exception {
         System.out.println("Integration test with causal + WOOT");
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1, 100);
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1, 100);
         OldCausalDispatcher cd = new OldCausalDispatcher(new WootFactory());
 
         cd.run(trace);
@@ -56,7 +56,7 @@ public class IntegrationWOOT {
     @Ignore // Too long -- Passes on revision 96 -- 1800s
     @Test
     public void testWootG1Run() throws Exception {
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1, 2000);         
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1, 2000);         
         OldCausalDispatcher cd = new OldCausalDispatcher(new WootFactory());
 
         cd.run(trace);
@@ -69,7 +69,7 @@ public class IntegrationWOOT {
     @Ignore // Too long -- Passess on revision 98 -- 9500s !
     @Test
     public void testWootG2Run() throws Exception {
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
         OldCausalDispatcher cd = new OldCausalDispatcher(new WootFactory());
 
         cd.run(trace);
@@ -82,7 +82,7 @@ public class IntegrationWOOT {
     @Ignore // Too long -- G3 pass on revision 86 -- 100s
     @Test
     public void testWootG3Run() throws Exception {
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);         
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);         
         OldCausalDispatcher cd = new OldCausalDispatcher(new WootFactory());
         
         cd.run(trace);  
@@ -98,7 +98,7 @@ public class IntegrationWOOT {
     @Test
     public void testWootOG1Run() throws Exception {        
         System.out.println("Integration test with causal + WOOTO");
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
         OldCausalDispatcher cd = new OldCausalDispatcher(new WootOFactory());
 
         cd.run(trace);
@@ -114,7 +114,7 @@ public class IntegrationWOOT {
     
     @Test
     public void testWootOG1RunSubset() throws Exception {
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1, 2000);
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1, 2000);
         OldCausalDispatcher cd = new OldCausalDispatcher(new WootOFactory());
 
         cd.run(trace);

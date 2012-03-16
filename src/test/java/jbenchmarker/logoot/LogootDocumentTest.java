@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.logoot;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 
 
@@ -31,12 +31,12 @@ public class LogootDocumentTest {
 
     // helpers
     LogootOperation ins(LogootIdentifier n, char c) {
-        return LogootOperation.insert(TraceOperation.insert(0, 0, null, null),
+        return LogootOperation.insert(SequenceOperation.insert(0, 0, null, null),
                 n, c);
     }
 
     LogootOperation del(LogootIdentifier n) {
-        return LogootOperation.Delete(TraceOperation.delete(0, 0, 0, null), n);
+        return LogootOperation.Delete(SequenceOperation.delete(0, 0, 0, null), n);
     }
 
     @Test

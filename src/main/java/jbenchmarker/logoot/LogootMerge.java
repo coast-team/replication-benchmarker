@@ -22,7 +22,7 @@ import crdt.CRDT;
 import java.math.BigInteger;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import jbenchmarker.core.Document;
 
 import java.util.*;
@@ -63,14 +63,14 @@ public class LogootMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> generateLocal(TraceOperation opt) {
+    protected List<SequenceMessage> generateLocal(SequenceOperation opt) {
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
         LogootDocument lg = (LogootDocument) (this.getDoc());
         String content = "";
         int N = 0, offset = 0;
         int position = opt.getPosition();
 
-        if (opt.getType() == TraceOperation.OpType.ins) {
+        if (opt.getType() == SequenceOperation.OpType.ins) {
             N = opt.getContent().length();
             content = opt.getContent();
             ArrayList<LogootIdentifier> patch = strategy.generateLineIdentifiers(this, lg.getIdTable().get(position),

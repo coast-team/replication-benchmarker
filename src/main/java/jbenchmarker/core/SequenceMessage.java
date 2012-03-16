@@ -19,20 +19,20 @@
 package jbenchmarker.core;
 
 import crdt.CommutativeMessage;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 /**
  * An operation for a replication algorithm.
  * @author urso
  */
 public abstract class SequenceMessage extends CommutativeMessage {
-    final private TraceOperation originalOp;       // Trace operation issuing this one
+    final private SequenceOperation originalOp;       // Trace operation issuing this one
 
-    public TraceOperation getOriginalOp() {
+    public SequenceOperation getOriginalOp() {
         return originalOp;
     }
     
-    public SequenceMessage(TraceOperation o) {
+    public SequenceMessage(SequenceOperation o) {
         this.originalOp = o;
     }
 

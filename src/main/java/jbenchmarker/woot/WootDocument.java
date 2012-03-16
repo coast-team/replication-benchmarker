@@ -25,7 +25,7 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 /**
  *
@@ -70,7 +70,7 @@ public abstract class WootDocument<N extends WootNode> implements Document, Fact
     public void apply(SequenceMessage op) {
         WootOperation wop = (WootOperation) op;
         
-        if (wop.getType() == TraceOperation.OpType.del) {
+        if (wop.getType() == SequenceOperation.OpType.del) {
             elements.get(find(wop.getId())).setVisible(false);
         } else { 
             int ip = find(wop.getIp()), in = findAfter(ip, wop.getIn());               
@@ -127,11 +127,11 @@ public abstract class WootDocument<N extends WootNode> implements Document, Fact
         return i; 
     }
     
-    public WootOperation delete(TraceOperation o, WootIdentifier id) {
+    public WootOperation delete(SequenceOperation o, WootIdentifier id) {
         return new WootOperation(o, id);
     }
     
-    public WootOperation insert(TraceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, char content) {
+    public WootOperation insert(SequenceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, char content) {
         return new WootOperation(o, id, ip, in, content);
     }
 

@@ -21,10 +21,10 @@ package jbenchmarker.abt;
 import java.util.Formatter;
 
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.core.VectorClock;
-import jbenchmarker.core.VectorClock.Causality;
-import jbenchmarker.trace.TraceOperation;
-import jbenchmarker.trace.TraceOperation.OpType;
+import collect.VectorClock;
+import collect.VectorClock.Causality;
+import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.trace.SequenceOperation.OpType;
 
 /**
 *
@@ -37,14 +37,14 @@ public class ABTOperation extends SequenceMessage{
 	protected VectorClock 	vc;
 	protected final int		sid;	
 	
-	public ABTOperation(TraceOperation o){
+	public ABTOperation(SequenceOperation o){
 		super(o);
 		this.sid = this.getOriginalOp().getReplica();
 		this.c	 ='\0';
 	}
 	
 	//delete
-	public ABTOperation(TraceOperation o, int p, VectorClock vc) {
+	public ABTOperation(SequenceOperation o, int p, VectorClock vc) {
 		super(o);
 		// TODO Auto-generated constructor stub
 		this.sid = this.getOriginalOp().getReplica();
@@ -54,7 +54,7 @@ public class ABTOperation extends SequenceMessage{
 	}
 	
 	//insert
-	public ABTOperation(TraceOperation o, int p, char c, VectorClock vc) {
+	public ABTOperation(SequenceOperation o, int p, char c, VectorClock vc) {
 		super(o);
 		// TODO Auto-generated constructor stub
 		this.sid = this.getOriginalOp().getReplica();

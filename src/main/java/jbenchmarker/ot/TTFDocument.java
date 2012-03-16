@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 /**
  *
@@ -50,7 +50,7 @@ public class TTFDocument implements Document {
         TTFOperation oop = (TTFOperation) op;
         int pos = oop.getPosition();
 
-        if (oop.getType() == TraceOperation.OpType.del) {
+        if (oop.getType() == SequenceOperation.OpType.del) {
             TTFChar c = this.model.get(pos);
             c.hide();
         } else {

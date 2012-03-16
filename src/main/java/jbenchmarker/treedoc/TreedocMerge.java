@@ -25,7 +25,7 @@ import java.util.List;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 /**
  * 
@@ -42,7 +42,7 @@ public class TreedocMerge extends MergeAlgorithm {
 	}
 
 	@Override
-	protected List<SequenceMessage> generateLocal(TraceOperation opt)
+	protected List<SequenceMessage> generateLocal(SequenceOperation opt)
 			throws IncorrectTrace {
 		final TreedocDocument doc = ((TreedocDocument) getDoc());
 		final List<SequenceMessage> ops = new LinkedList<SequenceMessage>();

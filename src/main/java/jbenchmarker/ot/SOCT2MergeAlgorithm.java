@@ -25,9 +25,9 @@ import java.util.Map;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.core.VectorClock;
+import collect.VectorClock;
 import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 /**
  *
@@ -71,12 +71,12 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> generateLocal(TraceOperation opt) throws IncorrectTrace {
+    protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTrace {
         TTFDocument doc = (TTFDocument) this.getDoc();
         List<SequenceMessage> generatedOperations = new ArrayList<SequenceMessage>();
 
         int mpos = doc.viewToModel(opt.getPosition());
-        if (opt.getType() == TraceOperation.OpType.del) {
+        if (opt.getType() == SequenceOperation.OpType.del) {
             for (int i = 0; i < opt.getOffset(); i++) {
                 TTFOperation op = TTFOperation.delete(opt, mpos + i, new VectorClock(this.siteVC));
                 this.siteVC.inc(this.getReplicaNumber());

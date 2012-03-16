@@ -18,6 +18,7 @@
  */
 package crdt.simulator;
 
+import collect.VectorClock;
 import crdt.Operation;
 
 /**

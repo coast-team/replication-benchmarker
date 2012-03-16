@@ -19,7 +19,7 @@
 package jbenchmarker.logoot;
 import java.util.ArrayList;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import java.util.List;
 
 
@@ -36,11 +36,11 @@ public class LogootMergeTest
 {
       
          // helpers
-    TraceOperation insert(int p, String s) {
-        return TraceOperation.insert(1, p, s, null); //Replica , position , content , VH
+    SequenceOperation insert(int p, String s) {
+        return SequenceOperation.insert(1, p, s, null); //Replica , position , content , VH
     }
-    TraceOperation delete(int p, int o) {
-         return TraceOperation.delete(1, p, o, null);//Replica , position , offset , VH
+    SequenceOperation delete(int p, int o) {
+         return SequenceOperation.delete(1, p, o, null);//Replica , position , offset , VH
     }
     
         @Test

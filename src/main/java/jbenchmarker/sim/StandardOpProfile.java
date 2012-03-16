@@ -22,8 +22,8 @@ import crdt.CRDT;
 import crdt.Operation;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.trace.TraceOperation;
-import jbenchmarker.trace.TraceOperation.OpType;
+import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.trace.SequenceOperation.OpType;
 
 /**
  * A profile that generates operation.
@@ -51,8 +51,8 @@ public class StandardOpProfile extends SequenceOperationProfile {
     }
 
     @Override
-    public TraceOperation.OpType nextType() {
-        return (r.nextDouble() < perIns) ? TraceOperation.OpType.ins : TraceOperation.OpType.del;            
+    public SequenceOperation.OpType nextType() {
+        return (r.nextDouble() < perIns) ? SequenceOperation.OpType.ins : SequenceOperation.OpType.del;            
     }
     
     @Override
@@ -88,10 +88,10 @@ public class StandardOpProfile extends SequenceOperationProfile {
 
         if (l == 0 || nextType() == OpType.ins) {
             String content = nextContent();
-            return TraceOperation.insert(crdt.getReplicaNumber(), position, content, null);
+            return SequenceOperation.insert(crdt.getReplicaNumber(), position, content, null);
         } else {
             int offset = nextOffset(position, l);
-            return TraceOperation.delete(crdt.getReplicaNumber(), position, offset, null);
+            return SequenceOperation.delete(crdt.getReplicaNumber(), position, offset, null);
         }
     }
 }

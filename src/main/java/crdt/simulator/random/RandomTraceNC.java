@@ -19,7 +19,7 @@
 package crdt.simulator.random;
 
 import crdt.simulator.TraceOperation;
-import crdt.simulator.VectorClock;
+import collect.VectorClock;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableSet;

@@ -21,16 +21,16 @@ package jbenchmarker.sim;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
-import jbenchmarker.core.VectorClock;
-import jbenchmarker.trace.TraceOperation;
+import collect.VectorClock;
+import jbenchmarker.trace.SequenceOperation;
 
 /**
  * An iterator to generate caussally consistent trace of operation. 
- * Each operation produced is a Random operation (TraceOperation.OpType.rdm) and 
+ * Each operation produced is a Random operation (SequenceOperation.OpType.rdm) and 
  * should be instanciate by the targeted simulator.
  * @author urso
  */
-public class RandomTrace implements Iterator<TraceOperation> {
+public class RandomTrace implements Iterator<SequenceOperation> {
     private long time;
     private final long duration, delay;
     private final double probability, sdv;
@@ -40,7 +40,7 @@ public class RandomTrace implements Iterator<TraceOperation> {
     private final ReplicaProfile rp;
     private final SequenceOperationProfile op;
     private int rindex;
-    private TraceOperation next;
+    private SequenceOperation next;
     private final RandomGauss r;
 
      
@@ -96,8 +96,8 @@ public class RandomTrace implements Iterator<TraceOperation> {
     }
 
     @Override
-    public TraceOperation next() {
-        TraceOperation o = next;
+    public SequenceOperation next() {
+        SequenceOperation o = next;
         next = null;
         while (next == null && time < duration) {
             VectorClock vc = states[rindex], d = delivery[rindex].get(time);
@@ -107,7 +107,7 @@ public class RandomTrace implements Iterator<TraceOperation> {
             if (rp.willGenerate(rindex, time, duration, probability)) {
                 vc.inc(rindex);
                 VectorClock opc = (VectorClock) vc.clone();
-                next = TraceOperation.random(rindex, opc, op);
+                next = SequenceOperation.random(rindex, opc, op);
                 for (int i = 0; i < replicas; i++) {
                     long rt = time + r.nextLongGaussian(delay, sdv);
                     VectorClock x = delivery[i].get(rt);

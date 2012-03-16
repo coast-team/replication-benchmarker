@@ -26,7 +26,7 @@ import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 /**
  *
@@ -43,13 +43,13 @@ public class WootMerge extends MergeAlgorithm {
     protected void integrateLocal(SequenceMessage op) {
 //        WootROperation wop = (WootROperation) op;
 //        WootRDocument<? extends WootRNode> wdoc = (WootRDocument<? extends WootRNode>) (this.getDoc());
-//        if (wop.getType()==TraceOperation.OpType.ins && (!wdoc.has(wop.getIp()) || !wdoc.has(wop.getIp())))
+//        if (wop.getType()==SequenceOperation.OpType.ins && (!wdoc.has(wop.getIp()) || !wdoc.has(wop.getIp())))
 //            pending.put(wop.getId(),wop);
         getDoc().apply(op);
     }
 
     @Override
-    protected List<SequenceMessage> generateLocal(TraceOperation opt) throws IncorrectTrace {
+    protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTrace {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

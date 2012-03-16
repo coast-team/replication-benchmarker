@@ -18,6 +18,7 @@
  */
 package jbenchmarker.sim;
 
+import collect.VectorClock;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,7 +31,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import jbenchmarker.core.*;
 import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 /**
  *
@@ -48,16 +49,16 @@ public class OldCausalDispatcher  extends Simulator {
      * Runs a causally ordered trace. Throws exception if not causally ordered 
      * trace or pb with classes.
      */
-    public void run(Iterator<TraceOperation> trace) throws IncorrectTrace {        
-        final Map<Integer, List<TraceOperation>> history = new HashMap<Integer, List<TraceOperation>>();
+    public void run(Iterator<SequenceOperation> trace) throws IncorrectTrace {        
+        final Map<Integer, List<SequenceOperation>> history = new HashMap<Integer, List<SequenceOperation>>();
         final Map<Integer, List<List<SequenceMessage>>> genHistory = new HashMap<Integer, List<List<SequenceMessage>>>();
         final Map<Integer, VectorClock> clocks = new HashMap<Integer, VectorClock>();
         final VectorClock globalClock = new VectorClock();
-        final List<TraceOperation> concurrentOps = new LinkedList<TraceOperation>();
+        final List<SequenceOperation> concurrentOps = new LinkedList<SequenceOperation>();
         final Random ran =new Random();
         
         while (trace.hasNext()) {
-            final TraceOperation opt = trace.next();
+            final SequenceOperation opt = trace.next();
             final int r = opt.getReplica();
             MergeAlgorithm a = this.getReplicas().get(r);
 
@@ -65,7 +66,7 @@ public class OldCausalDispatcher  extends Simulator {
                 a = this.newReplica(r); 
                 clocks.put(r, new VectorClock());
                 genHistory.put(r, new ArrayList<List<SequenceMessage>>());
-                history.put(r, new ArrayList<TraceOperation>());
+                history.put(r, new ArrayList<SequenceOperation>());
             }
             history.get(r).add(opt);
             // TraceGenerator.causalCheck(opt, clocks);
@@ -84,7 +85,7 @@ public class OldCausalDispatcher  extends Simulator {
                         }
                     }
                 }
-                for (TraceOperation t : concurrentOps) {
+                for (SequenceOperation t : concurrentOps) {
                     int e = t.getReplica();
                     for (SequenceMessage op : genHistory.get(e).get(t.getVC().get(e)-1)) {
                         a.integrate(op.copy()); 
@@ -93,7 +94,7 @@ public class OldCausalDispatcher  extends Simulator {
                 }
             }
 
-            if (opt.getType() == TraceOperation.OpType.rdm) {
+            if (opt.getType() == SequenceOperation.OpType.rdm) {
                 opt.instanciate(a.getDoc());
             }
             
@@ -132,11 +133,11 @@ public class OldCausalDispatcher  extends Simulator {
         }
     }
 
-    public static void insertCausalOrder(List<TraceOperation> concurrentOps, TraceOperation opt) {
-        final ListIterator<TraceOperation> it = concurrentOps.listIterator();
+    public static void insertCausalOrder(List<SequenceOperation> concurrentOps, SequenceOperation opt) {
+        final ListIterator<SequenceOperation> it = concurrentOps.listIterator();
         boolean cont = true;
         while (it.hasNext() && cont) {
-            TraceOperation t = it.next();
+            SequenceOperation t = it.next();
             if (t.getVC().greaterThan(opt.getVC())) {
                 cont = false;
                 it.previous();

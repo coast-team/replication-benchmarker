@@ -19,14 +19,14 @@
 package jbenchmarker.ot;
 
 import java.util.ArrayList;
-import jbenchmarker.trace.TraceOperation.OpType;
+import jbenchmarker.trace.SequenceOperation.OpType;
 import java.util.Map;
 import java.util.Iterator;
-import jbenchmarker.core.VectorClock;
+import collect.VectorClock;
 import java.util.List;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -408,20 +408,20 @@ public class SOCT2Test {
     }
 
     // helpers
-    private static TraceOperation insert(int r, int p, String s) {
+    private static SequenceOperation insert(int r, int p, String s) {
         return insert(r, p, s, null);
     }
 
-    private static TraceOperation insert(int r, int p, String s, VectorClock vc) {
-        return TraceOperation.insert(r, p, s, vc);
+    private static SequenceOperation insert(int r, int p, String s, VectorClock vc) {
+        return SequenceOperation.insert(r, p, s, vc);
     }
 
-    private static TraceOperation delete(int r, int p, int o) {
+    private static SequenceOperation delete(int r, int p, int o) {
         return delete(r, p, o, null);
     }
 
-    private static TraceOperation delete(int r, int p, int o, VectorClock vc) {
-        return TraceOperation.delete(r, p, o, vc);
+    private static SequenceOperation delete(int r, int p, int o, VectorClock vc) {
+        return SequenceOperation.delete(r, p, o, vc);
     }
 
     private static VectorClock vc(int... v) {

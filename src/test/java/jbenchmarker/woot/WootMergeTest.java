@@ -23,7 +23,7 @@ import jbenchmarker.woot.original.WootOriginalDocument;
 import java.util.List;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -34,11 +34,11 @@ import static org.junit.Assert.*;
 public class WootMergeTest {
 
     // helpers
-    TraceOperation insert(int p, String s) {
-        return TraceOperation.insert(1, p, s, null);
+    SequenceOperation insert(int p, String s) {
+        return SequenceOperation.insert(1, p, s, null);
     }
-    TraceOperation delete(int p, int o) {
-         return TraceOperation.delete(1, p, o, null);
+    SequenceOperation delete(int p, int o) {
+         return SequenceOperation.delete(1, p, o, null);
     }
     
     /**

@@ -19,8 +19,8 @@
 package jbenchmarker.wootr;
 
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.TraceOperation;
-import jbenchmarker.trace.TraceOperation.OpType;
+import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.trace.SequenceOperation.OpType;
 
 /**
  *
@@ -37,7 +37,7 @@ public class WootROperation extends SequenceMessage {
      * @param in identifier of next element
      * @param content content of element
      */
-    public WootROperation(TraceOperation o, WootRNode p, WootRNode n, char content) {
+    public WootROperation(SequenceOperation o, WootRNode p, WootRNode n, char content) {
         super(o);
         this.node = new WootRNode(content, p, n);
     }
@@ -47,7 +47,7 @@ public class WootROperation extends SequenceMessage {
      * @param o a trace delete
      * @param id identifier to delete
      */
-    public WootROperation(TraceOperation o, WootRNode e) {
+    public WootROperation(SequenceOperation o, WootRNode e) {
         super(o);
         this.node = e;
     }

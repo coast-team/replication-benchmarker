@@ -18,7 +18,7 @@
  */
 package jbenchmarker.woot.wooth;
 
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import jbenchmarker.woot.WootIdentifier;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -159,8 +159,8 @@ public class WootHDocumentTest {
     public void testApply() {
         System.out.println("apply");
         WootHashDocument instance = new WootHashDocument();
-        TraceOperation ins = TraceOperation.insert(0, 0, null, null),
-                del = TraceOperation.delete(0, 0, 0, null);
+        SequenceOperation ins = SequenceOperation.insert(0, 0, null, null),
+                del = SequenceOperation.delete(0, 0, 0, null);
         WootIdentifier a = new WootIdentifier(1,1), b = new WootIdentifier(1,2),
                 c = new WootIdentifier(2,1), d = new WootIdentifier(2,2), 
                 e = new WootIdentifier(3,1), f = new WootIdentifier(3,2),
@@ -200,7 +200,7 @@ public class WootHDocumentTest {
     @Test(timeout=100)
     public void wootPuzzle() {
         System.out.println("Woot Puzzle");
-        TraceOperation ins = TraceOperation.insert(0, 0, null, null);
+        SequenceOperation ins = SequenceOperation.insert(0, 0, null, null);
         WootHashDocument instance = new WootHashDocument();
         WootIdentifier a = new WootIdentifier(1,1), b = new WootIdentifier(3,1),
                 c = new WootIdentifier(2,1);

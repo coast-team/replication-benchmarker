@@ -25,7 +25,7 @@ import java.util.Iterator;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.abt.ABTFactory;
 import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public class IntegrationABT {
    @Test
    public void testABTExempleRun() throws Exception {
        System.out.println("Integration test with ABT");        
-       Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
+       Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
        
        OldCausalDispatcher cd = new OldCausalDispatcher(new ABTFactory());
 
@@ -51,7 +51,7 @@ public class IntegrationABT {
    // @Ignore
    @Test
    public void testABTG1Run() throws Exception {
-       Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
+       Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
        OldCausalDispatcher cd = new OldCausalDispatcher(new ABTFactory());
 
        cd.run(trace);
@@ -65,7 +65,7 @@ public class IntegrationABT {
    
    @Test
    public void testABTG2Run() throws Exception {
-       Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1,16);
+       Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1,16);
        OldCausalDispatcher cd = new OldCausalDispatcher(new ABTFactory());
 
        cd.run(trace);
@@ -77,7 +77,7 @@ public class IntegrationABT {
    
    @Test
    public void testABTG3Run() throws Exception {
-       Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
+       Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
        OldCausalDispatcher cd = new OldCausalDispatcher(new ABTFactory());
 
        cd.run(trace);
@@ -89,7 +89,7 @@ public class IntegrationABT {
    
    @Test
    public void testABTSerieRun() throws Exception {
-       Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
+       Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
        OldCausalDispatcher cd = new OldCausalDispatcher(new ABTFactory());
 
        cd.run(trace);
@@ -102,7 +102,7 @@ public class IntegrationABT {
     //    @Ignore
     @Test
     public void testLogootRandom() throws Exception {
-        Iterator<TraceOperation> trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
+        Iterator<SequenceOperation> trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
         OldCausalDispatcher cd = new OldCausalDispatcher(new ABTFactory());
 
         cd.run(trace);

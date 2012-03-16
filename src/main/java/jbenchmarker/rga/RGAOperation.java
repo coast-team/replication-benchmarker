@@ -19,8 +19,8 @@
 package jbenchmarker.rga;
 
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.TraceOperation;
-import jbenchmarker.trace.TraceOperation.OpType;
+import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.trace.SequenceOperation.OpType;
 
 /**
 *
@@ -37,7 +37,7 @@ public class RGAOperation extends SequenceMessage {
 	private boolean			lor;  // to be local or remote
 	private int					intpos;
 	
-	public RGAOperation(TraceOperation o) {
+	public RGAOperation(SequenceOperation o) {
 		super(o);
 		lor = LOCAL; 
 	}
@@ -56,7 +56,7 @@ public class RGAOperation extends SequenceMessage {
 	
 	public String toString(){
 		String ret =new String();
-		if(getType()==TraceOperation.OpType.del) ret +="del(";
+		if(getType()==SequenceOperation.OpType.del) ret +="del(";
 		else ret+="ins(\'"+content+"\',";
 		String s4va = s4vpos==null ? "null":s4vpos.toString();
 		String s4vb = s4vtms==null ? "null":s4vtms.toString();
@@ -67,7 +67,7 @@ public class RGAOperation extends SequenceMessage {
 	/*
 	 * for insert
 	 */
-	public RGAOperation(TraceOperation o, int pos, RGAS4Vector s4vpos, char c, RGAS4Vector s4vtms){
+	public RGAOperation(SequenceOperation o, int pos, RGAS4Vector s4vpos, char c, RGAS4Vector s4vtms){
 		super(o);
 		this.s4vpos 	= s4vpos;
 		this.s4vtms	= s4vtms;
@@ -79,7 +79,7 @@ public class RGAOperation extends SequenceMessage {
 	/*
 	 * for delete
 	 */
-	public RGAOperation(TraceOperation o, int pos, RGAS4Vector s4vpos, RGAS4Vector s4vtms){
+	public RGAOperation(SequenceOperation o, int pos, RGAS4Vector s4vpos, RGAS4Vector s4vtms){
 		super(o);
 		this.s4vpos	= s4vpos;
 		this.s4vtms	= s4vtms;

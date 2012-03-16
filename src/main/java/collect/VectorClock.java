@@ -16,15 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.core;
+package collect;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Implementation of a vector clock. 
@@ -32,7 +32,7 @@ import java.util.TreeMap;
  * @author urso
  * @author oster
  */
-public class VectorClock extends TreeMap<Integer, Integer> {
+public class VectorClock extends HashMap<Integer, Integer> {
 
 	public enum Causality {HB, CO, HA};
 	
@@ -134,15 +134,15 @@ public class VectorClock extends TreeMap<Integer, Integer> {
     }
     
     
+    @Override
     public String toString(){
-    	String ret = new String("{");
+    	StringBuilder ret = new StringBuilder("{");
     	Iterator<Map.Entry<Integer, Integer>> it = this.entrySet().iterator();
     	while(it.hasNext()){
     		Map.Entry<Integer, Integer> i = it.next();
-    		ret += "("+i.getKey()+","+i.getValue()+"),";
-    	}
-    	
-    	return ret+"}";
+    		ret.append("(").append(i.getKey()).append(",").append(i.getValue()).append("),");
+    	}    	
+    	return ret.append("}").toString();
     }
     
     /*
@@ -183,6 +183,15 @@ public class VectorClock extends TreeMap<Integer, Integer> {
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        for (Entry<Integer, Integer> k : this.entrySet()) {
+            hash += 7 * k.getKey() * k.getValue();
+        }
+        return hash;
+    }
+    
     /*
      * computes minimal vector from current and vector clocks provided in parameters.
      * for each vc in {this} U otherVectorClocks, for each i in min, min[i] <= vc[i] 
@@ -200,4 +209,6 @@ public class VectorClock extends TreeMap<Integer, Integer> {
         }
         return min;
     }
+
+
 }

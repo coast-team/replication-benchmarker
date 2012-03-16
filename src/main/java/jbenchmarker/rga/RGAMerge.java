@@ -21,12 +21,12 @@ package jbenchmarker.rga;
 import crdt.CRDT;
 import java.util.List;
 import java.util.ArrayList;
-import jbenchmarker.core.VectorClock;
+import collect.VectorClock;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 /**
 *
@@ -55,7 +55,7 @@ public class RGAMerge extends MergeAlgorithm {
 	}
 
 	@Override
-	protected List<SequenceMessage> generateLocal(TraceOperation opt) throws IncorrectTrace {
+	protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTrace {
 		List<SequenceMessage> lop 		= new ArrayList<SequenceMessage>();
 		RGADocument 	rgadoc 	= (RGADocument)(this.getDoc());
 		RGAS4Vector 	s4vtms, s4vpos = null;
@@ -65,7 +65,7 @@ public class RGAMerge extends MergeAlgorithm {
 		int	 p			= opt.getPosition();
 		int offset; 	
 		
-		if(opt.getType()==TraceOperation.OpType.del) {
+		if(opt.getType()==SequenceOperation.OpType.del) {
 			offset = opt.getOffset();
 			target = rgadoc.getVisibleNode(p+1);
 		} else {
@@ -77,7 +77,7 @@ public class RGAMerge extends MergeAlgorithm {
 		for(int i=0; i < offset ; i++) {
 			this.siteVC.inc(this.getReplicaNumber());
 			s4vtms = new RGAS4Vector(this.getReplicaNumber(), this.siteVC);
-			if(opt.getType() == TraceOperation.OpType.del) {
+			if(opt.getType() == SequenceOperation.OpType.del) {
 				rgaop = new RGAOperation(opt, p+1, target.getKey(), s4vtms);
 				target = target.getNextVisible();
 			} else {

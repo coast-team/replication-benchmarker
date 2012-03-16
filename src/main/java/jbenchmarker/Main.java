@@ -27,7 +27,7 @@ import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.sim.OldCausalDispatcher;
 import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 /**
  *
  * @author urso
@@ -56,7 +56,7 @@ public class Main {
         int cop = 0, uop = 0, nbReplica = 0;
         long st = System.currentTimeMillis();
         for (int ex = 0; ex < nbExec; ex++) {
-            Iterator<TraceOperation> trace = TraceGenerator.traceFromXML(args[1], 1);
+            Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML(args[1], 1);
             OldCausalDispatcher cd = new OldCausalDispatcher(rf);
             cd.run(trace);
 

@@ -22,6 +22,7 @@ import crdt.CRDT;
 import crdt.Operation;
 import crdt.set.CRDTSet;
 import crdt.set.SetOperation;
+import collect.VectorClock;
 import java.util.Set;
 
 /**
@@ -65,4 +66,9 @@ public abstract class SetOperationProfile<T> implements OperationProfile {
     abstract public T nextElement(T elem);
 
     abstract public boolean full(Set<T> s);
+
+    @Override
+    public Operation nextOperation(CRDT a, VectorClock vectorClock) {
+        return nextOperation(a);
+    }
 }

@@ -22,7 +22,7 @@ import java.util.Collections;
 
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import citi.treedoc.Treedoc;
 import citi.treedoc.TreedocId;
 import citi.treedoc.TreedocIdFactory;
@@ -58,7 +58,7 @@ public class TreedocDocument extends Treedoc<TreedocId, Character> implements
 	@Override
 	public void apply(SequenceMessage op) {
 		final TreedocOperation treedocOp = (TreedocOperation) op;
-		if (treedocOp.getOriginalOp().getType() == TraceOperation.OpType.ins) {
+		if (treedocOp.getOriginalOp().getType() == SequenceOperation.OpType.ins) {
 			insert(treedocOp.getId(), treedocOp.getContent());
 		} else {
 			remove(treedocOp.getId());

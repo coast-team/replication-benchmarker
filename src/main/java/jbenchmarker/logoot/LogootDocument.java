@@ -21,7 +21,7 @@ package jbenchmarker.logoot;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceMessage;
 
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 /**
  * A Logoot document. Contains a list of Charater and the corresponding list of LogootIndentitifer.
@@ -77,7 +77,7 @@ public class LogootDocument implements Document {
         LogootIdentifier idToSearch = lg.getIdentifiant();
         int pos = dicho(idToSearch);
         //Insertion et Delete
-        if (lg.getType() == TraceOperation.OpType.ins) {
+        if (lg.getType() == SequenceOperation.OpType.ins) {
             idTable.add(pos, idToSearch);
             document.add(pos, lg.getContent());
         } else if (idTable.get(pos).equals(idToSearch)) {

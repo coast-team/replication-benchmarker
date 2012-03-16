@@ -22,7 +22,7 @@ import static jbenchmarker.woot.WootFactories.WootHFactory;
 import jbenchmarker.core.MergeAlgorithm;
 import java.util.Iterator;
 import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -34,7 +34,7 @@ public class IntegrationWOOTH {
     @Test
     public void testWootHExempleRun() throws Exception {
         System.out.println("Integration test with WootH");
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
         OldCausalDispatcher cd = new OldCausalDispatcher(new WootHFactory());
 
         cd.run(trace);
@@ -47,7 +47,7 @@ public class IntegrationWOOTH {
     // @Ignore
     @Test
     public void testWootHG1Run() throws Exception {
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
         OldCausalDispatcher cd = new OldCausalDispatcher(new WootHFactory());
 
         cd.run(trace);
@@ -61,7 +61,7 @@ public class IntegrationWOOTH {
     
     @Test
     public void testWootHG2Run() throws Exception {
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
         OldCausalDispatcher cd = new OldCausalDispatcher(new WootHFactory());
 
         cd.run(trace);
@@ -73,7 +73,7 @@ public class IntegrationWOOTH {
     
     @Test
     public void testWootHG3Run() throws Exception {
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
         OldCausalDispatcher cd = new OldCausalDispatcher(new WootHFactory());
 
         cd.run(trace);
@@ -85,7 +85,7 @@ public class IntegrationWOOTH {
     
     @Test
     public void testWootHSerieRun() throws Exception {
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
         OldCausalDispatcher cd = new OldCausalDispatcher(new WootHFactory());
 
         cd.run(trace);
@@ -93,5 +93,17 @@ public class IntegrationWOOTH {
         for (MergeAlgorithm m : cd.getReplicas().values()) {
             assertEquals(r, m.getDoc().view());
         }
+    }
+    
+    @Test
+    public void testWootHRandom() throws Exception {
+        Iterator<SequenceOperation> trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
+        OldCausalDispatcher cd = new OldCausalDispatcher(new WootHFactory());
+
+        cd.run(trace);
+        String r = cd.getReplicas().get(0).getDoc().view();
+        for (MergeAlgorithm m : cd.getReplicas().values()) {
+            assertEquals(r, m.getDoc().view());
+        }     
     }
 }

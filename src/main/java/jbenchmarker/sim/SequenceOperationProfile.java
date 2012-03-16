@@ -20,11 +20,12 @@ package jbenchmarker.sim;
 
 import crdt.CRDT;
 import crdt.Operation;
+import collect.VectorClock;
 import crdt.simulator.random.OperationProfile;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.trace.TraceOperation;
-import jbenchmarker.trace.TraceOperation.OpType;
+import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.trace.SequenceOperation.OpType;
 
 /**
  * A profile that generates operation.
@@ -32,7 +33,7 @@ import jbenchmarker.trace.TraceOperation.OpType;
  */
 public abstract class SequenceOperationProfile implements OperationProfile {
 
-    abstract public TraceOperation.OpType nextType();
+    abstract public SequenceOperation.OpType nextType();
     
     abstract public int nextPosition(int length);
     
@@ -49,10 +50,17 @@ public abstract class SequenceOperationProfile implements OperationProfile {
 
         if (l == 0 || nextType() == OpType.ins) {
             String content = nextContent();
-            return TraceOperation.insert(crdt.getReplicaNumber(), position, content, null);
+            return SequenceOperation.insert(crdt.getReplicaNumber(), position, content, null);
         } else {
             int offset = nextOffset(position, l);
-            return TraceOperation.delete(crdt.getReplicaNumber(), position, offset, null);
+            return SequenceOperation.delete(crdt.getReplicaNumber(), position, offset, null);
         }
+    }
+
+    @Override
+    public Operation nextOperation(CRDT a, VectorClock vectorClock) {
+        SequenceOperation op = (SequenceOperation) nextOperation(a);
+        op.setVC(vectorClock);
+        return op;
     }
 }

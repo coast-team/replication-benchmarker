@@ -4,6 +4,7 @@
  */
 package crdt.simulator;
 
+import collect.VectorClock;
 import crdt.CRDTMessage;
 import java.awt.Color;
 import java.awt.Dimension;

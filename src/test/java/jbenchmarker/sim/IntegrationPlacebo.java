@@ -21,7 +21,7 @@ package jbenchmarker.sim;
 import jbenchmarker.core.MergeAlgorithm;
 import java.util.Iterator;
 import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -33,10 +33,10 @@ public class IntegrationPlacebo {
     @Test
     public void testG1Run() throws Exception {
         System.out.println("Integration test with placebo");
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
         int uop = 0, cop = 0;
         while (trace.hasNext()) {
-            TraceOperation top = trace.next();
+            SequenceOperation top = trace.next();
             uop++;
             cop += top.getRange();
         }

@@ -19,8 +19,8 @@
 package jbenchmarker.woot;
 
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.TraceOperation;
-import jbenchmarker.trace.TraceOperation.OpType;
+import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.trace.SequenceOperation.OpType;
 
 /**
  *
@@ -40,7 +40,7 @@ public class WootOperation extends SequenceMessage {
      * @param in identifier of next element
      * @param content content of element
      */
-    public WootOperation(TraceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, char content) {
+    public WootOperation(SequenceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, char content) {
         super(o);
         this.id = id;
         this.ip = ip;
@@ -53,7 +53,7 @@ public class WootOperation extends SequenceMessage {
      * @param o a trace delete
      * @param id identifier to delete
      */
-    public WootOperation(TraceOperation o, WootIdentifier id) {
+    public WootOperation(SequenceOperation o, WootIdentifier id) {
         super(o);
         this.id = id;
         this.ip = null;

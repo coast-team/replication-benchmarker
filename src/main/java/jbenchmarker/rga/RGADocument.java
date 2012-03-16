@@ -20,7 +20,7 @@ package jbenchmarker.rga;
 
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import java.util.HashMap;
 import java.util.NoSuchElementException; 
 
@@ -56,10 +56,10 @@ public class RGADocument implements Document {
 	public void apply(SequenceMessage op) {
 		RGAOperation rgaop = (RGAOperation)op;
 //		if(rgaop.getLoR() == RGAOperation.LOCAL){
-//			if(rgaop.getType() == TraceOperation.OpType.del) LocalDelete(rgaop);
+//			if(rgaop.getType() == SequenceOperation.OpType.del) LocalDelete(rgaop);
 //			else LocalInsert(rgaop);			
 //		} else {
-			if(rgaop.getType() == TraceOperation.OpType.del) RemoteDelete(rgaop);
+			if(rgaop.getType() == SequenceOperation.OpType.del) RemoteDelete(rgaop);
 			else RemoteInsert(rgaop);			
 //		}
 	}

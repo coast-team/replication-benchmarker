@@ -20,7 +20,7 @@ package jbenchmarker.trace;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import jbenchmarker.core.VectorClock;
+import collect.VectorClock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +34,8 @@ import static org.junit.Assert.*;
 public class TraceGeneratorTest {
 
 
-    private static List<TraceOperation> it2list(Iterator<TraceOperation> t) {
-        List<TraceOperation> l = new ArrayList<TraceOperation>();
+    private static List<SequenceOperation> it2list(Iterator<SequenceOperation> t) {
+        List<SequenceOperation> l = new ArrayList<SequenceOperation>();
         while (t.hasNext()) l.add(t.next());
         return l;
     }
@@ -52,8 +52,8 @@ public class TraceGeneratorTest {
     /**
      * Helper to construct an op with a 3 entries VC
      */
-    public static TraceOperation op(int r, int a, int b, int c) {
-        return TraceOperation.insert(r, 0, null, vc(a, b, c));
+    public static SequenceOperation op(int r, int a, int b, int c) {
+        return SequenceOperation.insert(r, 0, null, vc(a, b, c));
     } 
 
     /**
@@ -87,14 +87,14 @@ public class TraceGeneratorTest {
     @Test
     public void testTraceFromXML() throws Exception {
         System.out.println("traceFromXML");
-        List<TraceOperation> trace = it2list(TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1));
+        List<SequenceOperation> trace = it2list(TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1));
         
         assertEquals(5, trace.size());
-        assertEquals(TraceOperation.OpType.ins, trace.get(0).getType());
+        assertEquals(SequenceOperation.OpType.ins, trace.get(0).getType());
         assertEquals(14, trace.get(1).getPosition());
         assertEquals(" Mehdi", trace.get(2).getContent());
         assertEquals(2, (long)trace.get(2).getVC().get(2));
-        assertEquals(TraceOperation.OpType.del, trace.get(3).getType());
+        assertEquals(SequenceOperation.OpType.del, trace.get(3).getType());
         assertEquals(4, trace.get(3).getReplica());
         assertEquals(3, trace.get(3).getOffset());        
         assertEquals(1, (long)trace.get(3).getVC().get(4));

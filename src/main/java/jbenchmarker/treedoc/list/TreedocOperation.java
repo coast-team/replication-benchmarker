@@ -20,7 +20,7 @@ package jbenchmarker.treedoc.list;
 
 import citi.treedoc.TreedocId;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 /**
  * 
@@ -30,13 +30,13 @@ public class TreedocOperation extends SequenceMessage {
 	private final TreedocId id;
 	private final char content;
 
-	public TreedocOperation(TraceOperation o, TreedocId id) {
+	public TreedocOperation(SequenceOperation o, TreedocId id) {
 		super(o);
 		this.id = id;
 		this.content = (char) 0;
 	}
 
-	public TreedocOperation(TraceOperation o, TreedocId id, char content) {
+	public TreedocOperation(SequenceOperation o, TreedocId id, char content) {
 		super(o);
 		this.id = id;
 		this.content = content;

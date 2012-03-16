@@ -275,7 +275,7 @@ public class Trace2XML {
             if (checkCausality) {
                 org.jdom.Element opl = builder.build(racine);
                 for (int d : docs) {
-                    Iterator<TraceOperation> trace = new TraceGenerator.TraceIterator(d, opl.getChildren().iterator());
+                    Iterator<SequenceOperation> trace = new TraceGenerator.TraceIterator(d, opl.getChildren().iterator());
                     OldCausalDispatcher cd = new OldCausalDispatcher(new CausalCheckerFactory());
                     cd.run(trace);
                 }

@@ -20,7 +20,7 @@ package jbenchmarker.sim;
 
 import jbenchmarker.trace.CausalCheckerFactory;
 import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

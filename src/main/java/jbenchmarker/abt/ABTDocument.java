@@ -23,7 +23,7 @@ import java.util.List;
 
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.TraceOperation.OpType;
+import jbenchmarker.trace.SequenceOperation.OpType;
 
 /**
 *

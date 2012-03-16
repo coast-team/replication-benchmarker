@@ -22,7 +22,7 @@ import jbenchmarker.rga.RGAFactory;
 import jbenchmarker.core.MergeAlgorithm;
 import java.util.Iterator;
 import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -34,7 +34,7 @@ public class IntegrationRGA {
     @Test
     public void testRGAExempleRun() throws Exception {
         System.out.println("Integration test with RGA");        
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
         
         OldCausalDispatcher cd = new OldCausalDispatcher(new RGAFactory());
 
@@ -48,7 +48,7 @@ public class IntegrationRGA {
     // @Ignore
     @Test
     public void testRGAG1Run() throws Exception {
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
         OldCausalDispatcher cd = new OldCausalDispatcher(new RGAFactory());
 
         cd.run(trace);
@@ -60,7 +60,7 @@ public class IntegrationRGA {
     
     @Test
     public void testRGAG2Run() throws Exception {
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1,16);
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1,16);
         OldCausalDispatcher cd = new OldCausalDispatcher(new RGAFactory());
 
         cd.run(trace);
@@ -72,7 +72,7 @@ public class IntegrationRGA {
     
     @Test
     public void testRGAG3Run() throws Exception {
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
         OldCausalDispatcher cd = new OldCausalDispatcher(new RGAFactory());
 
         cd.run(trace);
@@ -84,7 +84,7 @@ public class IntegrationRGA {
     
     @Test
     public void testRGASerieRun() throws Exception {
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
         OldCausalDispatcher cd = new OldCausalDispatcher(new RGAFactory());
 
         cd.run(trace);
@@ -92,5 +92,17 @@ public class IntegrationRGA {
         for (MergeAlgorithm m : cd.getReplicas().values()) {
             assertEquals(r, m.getDoc().view());
         }
+    }
+    
+    @Test
+    public void testRGARandom() throws Exception {
+        Iterator<SequenceOperation> trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
+        OldCausalDispatcher cd = new OldCausalDispatcher(new RGAFactory());
+
+        cd.run(trace);
+        String r = cd.getReplicas().get(0).getDoc().view();
+        for (MergeAlgorithm m : cd.getReplicas().values()) {
+            assertEquals(r, m.getDoc().view());
+        }     
     }
 }

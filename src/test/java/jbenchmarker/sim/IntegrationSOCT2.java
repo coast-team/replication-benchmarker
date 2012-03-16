@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 import jbenchmarker.ot.SOCT2Factory;
 import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -36,8 +36,8 @@ public class IntegrationSOCT2 {
    
     //@Ignore   // 231,986 s  on rev 105
     @Test
-    public void testSOCtestSOCT2ExempleRunT2G1Run() throws Exception {
-        Iterator<TraceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
+    public void testSOCT2RunG1() throws Exception {
+        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
         OldCausalDispatcher cd = new OldCausalDispatcher(new SOCT2Factory());
 
         long startTime = System.currentTimeMillis();
@@ -50,5 +50,17 @@ public class IntegrationSOCT2 {
         for (MergeAlgorithm m : cd.getReplicas().values()) {
             assertEquals(r, m.getDoc().view());
         }
+    }
+    
+    @Test
+    public void testSOCT2Random() throws Exception {
+        Iterator<SequenceOperation> trace = new RandomTrace(5000, RandomTrace.FLAT, new StandardOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
+        OldCausalDispatcher cd = new OldCausalDispatcher(new SOCT2Factory());
+
+        cd.run(trace);
+        String r = cd.getReplicas().get(0).getDoc().view();
+        for (MergeAlgorithm m : cd.getReplicas().values()) {
+            assertEquals(r, m.getDoc().view());
+        }     
     }
 }

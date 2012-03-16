@@ -20,6 +20,7 @@ package crdt.simulator.random;
 
 import crdt.CRDT;
 import crdt.Operation;
+import collect.VectorClock;
 
 /**
  * Profile to generate random operations.
@@ -32,4 +33,6 @@ public interface OperationProfile {
      * @return 
      */
     Operation nextOperation(CRDT crdt);
+
+    public Operation nextOperation(CRDT a, VectorClock vectorClock);
 }

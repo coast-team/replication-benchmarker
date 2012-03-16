@@ -26,9 +26,9 @@ import java.util.Map;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.core.VectorClock;
+import collect.VectorClock;
 import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.TraceOperation;
+import jbenchmarker.trace.SequenceOperation;
 
 /**
 *
@@ -64,7 +64,7 @@ public class ABTMerge extends MergeAlgorithm {
 	}
 
 	@Override
-	protected List<SequenceMessage> generateLocal(TraceOperation opt)
+	protected List<SequenceMessage> generateLocal(SequenceOperation opt)
 			throws IncorrectTrace {
 		// TODO Auto-generated method stub
 		List<SequenceMessage> lop		= new ArrayList<SequenceMessage>();
@@ -74,13 +74,13 @@ public class ABTMerge extends MergeAlgorithm {
 
 		int offset;
 		int p = opt.getPosition();
-		if(opt.getType() ==  TraceOperation.OpType.del) offset = opt.getOffset();
+		if(opt.getType() ==  SequenceOperation.OpType.del) offset = opt.getOffset();
 		else offset = opt.getContent().length();
 		
 		for(int i=0;i<offset;i++){
 			this.siteVC.inc(this.getReplicaNumber());
 			
-			if(opt.getType() == TraceOperation.OpType.del){
+			if(opt.getType() == SequenceOperation.OpType.del){
 				abtop = new ABTOperation(opt,p+1, siteVC);
 			} else {
 				abtop = new ABTOperation(opt,p+i, opt.getContent().charAt(i), siteVC);

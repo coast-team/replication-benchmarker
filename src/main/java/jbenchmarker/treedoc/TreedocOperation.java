@@ -19,8 +19,8 @@
 package jbenchmarker.treedoc;
 
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.TraceOperation;
-import jbenchmarker.trace.TraceOperation.OpType;
+import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.trace.SequenceOperation.OpType;
 
 /**
  * 
@@ -38,7 +38,7 @@ public class TreedocOperation extends SequenceMessage {
 	 * @param id
 	 *            treedoc position identifier.
 	 */
-	public TreedocOperation(final TraceOperation o, final TreedocIdentifier id) {
+	public TreedocOperation(final SequenceOperation o, final TreedocIdentifier id) {
 		super(o);
 		this.id = id;
 		this.content = null; // Dummy.
@@ -54,7 +54,7 @@ public class TreedocOperation extends SequenceMessage {
 	 * @param content
 	 *            content expressed as a single character.
 	 */
-	public TreedocOperation(final TraceOperation o, final TreedocIdentifier id,
+	public TreedocOperation(final SequenceOperation o, final TreedocIdentifier id,
 			final String content) {
 		super(o);
 		this.id = id;
