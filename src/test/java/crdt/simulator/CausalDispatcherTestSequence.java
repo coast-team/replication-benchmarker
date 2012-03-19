@@ -4,7 +4,7 @@
  */
 package crdt.simulator;
 
-import jbenchmarker.sim.StandardOpProfile;
+import crdt.simulator.random.StandardSeqOpProfile;
 import crdt.CRDT;
 import crdt.Factory;
 import crdt.PreconditionException;
@@ -12,12 +12,9 @@ import crdt.simulator.random.OperationProfile;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import crdt.simulator.CausalDispatcher.IncorrectTrace;
-import jbenchmarker.abt.ABTFactory;
 import jbenchmarker.logoot.LogootFactory;
 import jbenchmarker.ot.SOCT2Factory;
 import jbenchmarker.rga.RGAFactory;
-import jbenchmarker.treedoc.TreedocFactory;
 import jbenchmarker.woot.WootFactories.WootFactory;
 import jbenchmarker.woot.WootFactories.WootHFactory;
 import jbenchmarker.woot.WootFactories.WootOFactory;
@@ -31,7 +28,8 @@ public class CausalDispatcherTestSequence {
 
     Factory s[] = { new LogootFactory(), //new TreedocFactory(), new jbenchmarker.treedoc.list.TreedocFactory(),
         new WootFactory(), new WootOFactory(), new WootHFactory(), // new ABTFactory(),
-        new SOCT2Factory(), new RGAFactory()};
+    //    new SOCT2Factory(), new RGAFactory()
+    };
     
     
     //Vector<LinkedList<TimeBench>> result = new Vector<LinkedList<TimeBench>>();
@@ -51,12 +49,12 @@ public class CausalDispatcherTestSequence {
     }
 
     static final int vocabularySize = 100;
-    static final OperationProfile seqopp = new StandardOpProfile(0.8, 0.1, 40, 5.0);
-    static final OperationProfile uopp = new StandardOpProfile(0.8, 0, 1, 0);
+    static final OperationProfile seqopp = new StandardSeqOpProfile(0.8, 0.1, 40, 5.0);
+    static final OperationProfile uopp = new StandardSeqOpProfile(0.8, 0, 1, 0);
     
     @Ignore
     @Test
-    public void stress() throws PreconditionException, IncorrectTrace {
+    public void stress() throws PreconditionException, IncorrectTraceException {
         int i = 0;
         while (true) {
             System.out.println(" i :" + i++);
@@ -65,7 +63,7 @@ public class CausalDispatcherTestSequence {
     }
     
     @Test
-    public void testRunSequencesOneCharacter() throws IncorrectTrace, PreconditionException {
+    public void testRunSequencesOneCharacter() throws IncorrectTraceException, PreconditionException {
         
         for (Factory<CRDT> sf : s) {
             CausalDispatcherTest.testRun(sf, 1000, 10, uopp);
@@ -73,7 +71,7 @@ public class CausalDispatcherTestSequence {
     }
     
     @Test
-    public void testRunSequences() throws IncorrectTrace, PreconditionException {
+    public void testRunSequences() throws IncorrectTraceException, PreconditionException {
         
         for (Factory<CRDT> sf : s) {
             CausalDispatcherTest.testRun(sf, 1000, 10, seqopp);

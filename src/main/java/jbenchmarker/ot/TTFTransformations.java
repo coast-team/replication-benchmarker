@@ -18,7 +18,7 @@
  */
 package jbenchmarker.ot;
 
-import jbenchmarker.trace.SequenceOperation.OpType;
+import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  *

@@ -21,7 +21,7 @@ package jbenchmarker.woot.wooth;
 import java.util.Map;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;
 

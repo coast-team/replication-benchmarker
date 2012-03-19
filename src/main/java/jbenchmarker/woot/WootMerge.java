@@ -26,8 +26,8 @@ import java.util.Map;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.SequenceOperation;
+import crdt.simulator.IncorrectTraceException;
+import jbenchmarker.core.SequenceOperation;
 
 /**
  *
@@ -53,7 +53,7 @@ public class WootMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTrace {
+    protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
         WootDocument<? extends WootNode> wdoc = (WootDocument<? extends WootNode>) (this.getDoc());
         int p = opt.getPosition();

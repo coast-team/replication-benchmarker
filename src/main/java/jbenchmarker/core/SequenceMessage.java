@@ -19,7 +19,6 @@
 package jbenchmarker.core;
 
 import crdt.CommutativeMessage;
-import jbenchmarker.trace.SequenceOperation;
 
 /**
  * An operation for a replication algorithm.

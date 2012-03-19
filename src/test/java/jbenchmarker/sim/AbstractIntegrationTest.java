@@ -18,6 +18,10 @@
  */
 package jbenchmarker.sim;
 
+import crdt.CRDT;
+import crdt.Factory;
+import crdt.simulator.CausalSimulator;
+import java.lang.String;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import jbenchmarker.core.MergeAlgorithm;
@@ -32,19 +36,19 @@ import org.junit.Test;
  * @author mzawirski
  */
 public abstract class AbstractIntegrationTest {
-	protected OldCausalDispatcher cd;
+	protected CausalSimulator cd;
 
 	@Before
 	public void setUp() {
-		cd = new OldCausalDispatcher(createFactory());
+		cd = new CausalSimulator(createFactory());
 	}
 
 	protected abstract ReplicaFactory createFactory();
 
 	protected void assertConsistentViews() {
 		String referenceView = null;
-		for (final MergeAlgorithm replica : cd.getReplicas().values()) {
-			final String view = replica.getDoc().view();
+		for (final CRDT replica : cd.getReplicas().values()) {
+			final String view = ((MergeAlgorithm) replica).lookup();
 			if (referenceView == null)
 				referenceView = view;
 			else

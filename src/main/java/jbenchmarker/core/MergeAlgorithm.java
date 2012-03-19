@@ -21,10 +21,9 @@ package jbenchmarker.core;
 import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.PreconditionException;
+import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
 import java.util.List;
-import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.SequenceOperation;
 
 /**
  *
@@ -40,6 +39,9 @@ public abstract class MergeAlgorithm extends CRDT<String>{
 
     // All operations executed
     final private List<SequenceMessage> history;
+    
+    final private List<String> states;  
+    
     
     // Local operations generated time
     final private List<Long> geneExecTime;
@@ -57,17 +59,19 @@ public abstract class MergeAlgorithm extends CRDT<String>{
         this.geneHistory = new ArrayList<SequenceOperation>();
         this.setReplicaNumber(r);
         this.doc = doc;
+        
+        this.states = new ArrayList<String>();
     }
 
     /**
      * To be define by the concrete merge algorithm
      */
-    protected abstract void integrateLocal(SequenceMessage op) throws IncorrectTrace;
+    protected abstract void integrateLocal(SequenceMessage op) throws IncorrectTraceException;
     
     /**
      * To be define by the concrete merge algorithm
      */
-    protected abstract List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTrace;
+    protected abstract List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException;
     
    
     
@@ -76,19 +80,21 @@ public abstract class MergeAlgorithm extends CRDT<String>{
      * Adds operation in history and execution time
      */
     @Deprecated
-    public void integrate(SequenceMessage op) throws IncorrectTrace {
+    public void integrate(SequenceMessage op) throws IncorrectTraceException {
         history.add(op);
         long startTime = System.nanoTime();
         integrateLocal(op); 
         execTime.add(System.nanoTime() - startTime);
+        
+        states.add(doc.view());
     }
     
     /**
      *  Generation of a local trace operation, returns a patch of operation
-     * Throws IncorrectTrace iff operation is not generable in the context.
+     * Throws IncorrectTraceException iff operation is not generable in the context.
      **/    
     @Deprecated
-    public List<SequenceMessage> generate(SequenceOperation opt) throws IncorrectTrace {
+    public List<SequenceMessage> generate(SequenceOperation opt) throws IncorrectTraceException {
         geneHistory.add(opt);
         long startTime = System.nanoTime();
         List<SequenceMessage> l = generateLocal(opt);
@@ -100,6 +106,9 @@ public abstract class MergeAlgorithm extends CRDT<String>{
             history.add(o);
             i++;
         }        
+        
+        states.add(doc.view());
+        
         return l;
     }
 
@@ -126,7 +135,7 @@ public abstract class MergeAlgorithm extends CRDT<String>{
     public void reset() {
         this.execTime.clear();
         this.geneExecTime.clear();
-        this.history.clear();
+        this.getHistory().clear();
         this.geneHistory.clear();       
     }
 
@@ -146,6 +155,9 @@ public abstract class MergeAlgorithm extends CRDT<String>{
                 m.concat(n);
             }
         }
+        
+        states.add(doc.view());
+
         return m;
     }
 
@@ -157,9 +169,11 @@ public abstract class MergeAlgorithm extends CRDT<String>{
             for (Object m : s.getMsgs()) {
                 integrateLocal((SequenceMessage) m);
             }
-        } catch (IncorrectTrace ex) {
+        } catch (IncorrectTraceException ex) {
             throw new IllegalStateException(ex);
         }
+        
+        states.add(doc.view());
     }
 
     @Override

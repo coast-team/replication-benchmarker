@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.logoot;
-import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.core.SequenceOperation;
 
 
 

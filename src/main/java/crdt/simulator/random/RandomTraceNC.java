@@ -102,12 +102,12 @@ public class RandomTraceNC implements Iterator<TraceOperation> {
             VectorClock vc = states[rindex];
             NavigableSet <VectorClock> ds = delivery[rindex].get(time);
             if (ds != null) {
-                next = TraceOperation.receive(rindex, ds.pollFirst());
+//                next = TraceOperation.receive(rindex, ds.pollFirst());
             } else {
                 if (rp.willGenerate(rindex, time, duration, probability)) {
                     vc.inc(rindex);
                     VectorClock opc = (VectorClock) vc.clone();
-                    next = TraceOperation.random(rindex, opc);
+                    next = new RandomOperation(null, rindex, opc);
                     for (int i = 0; i < replicas; i++) {
                         long rt = time + r.nextLongGaussian(delay, sdv);
                         NavigableSet<VectorClock> x = delivery[i].get(rt);

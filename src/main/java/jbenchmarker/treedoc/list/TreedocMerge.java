@@ -28,8 +28,8 @@ import citi.treedoc.TreedocId;
 
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.SequenceOperation;
+import crdt.simulator.IncorrectTraceException;
+import jbenchmarker.core.SequenceOperation;
 
 /**
  * 
@@ -42,13 +42,13 @@ public class TreedocMerge extends MergeAlgorithm {
 	}
 
 	@Override
-	protected void integrateLocal(SequenceMessage op) throws IncorrectTrace {
+	protected void integrateLocal(SequenceMessage op) throws IncorrectTraceException {
 		getDoc().apply(op);
 	}
 
 	@Override
 	protected List<SequenceMessage> generateLocal(SequenceOperation opt)
-			throws IncorrectTrace {
+			throws IncorrectTraceException {
 		final TreedocDocument treedoc = (TreedocDocument) getDoc();
 		final String content = opt.getContent();
 		final List<SequenceMessage> ops = new LinkedList<SequenceMessage>();
@@ -81,7 +81,7 @@ public class TreedocMerge extends MergeAlgorithm {
 			}
 			break;
 		default:
-			throw new IncorrectTrace("Unsupported operation type");
+			throw new IncorrectTraceException("Unsupported operation type");
 		}
 		return ops;
 	}

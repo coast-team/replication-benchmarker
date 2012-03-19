@@ -18,11 +18,13 @@
  */
 package jbenchmarker.sim;
 
+import crdt.PreconditionException;
+import crdt.simulator.TraceOperation;
+import crdt.simulator.random.RandomTrace;
+import crdt.simulator.random.StandardSeqOpProfile;
+import crdt.simulator.CausalSimulator;
+import java.util.Enumeration;
 import jbenchmarker.trace.CausalCheckerFactory;
-import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.SequenceOperation;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -39,12 +41,13 @@ public class RandomTraceTest {
     @Test
     public void testNext() {
         System.out.println("next");
-        RandomTrace instance = new RandomTrace(42, RandomTrace.FLAT, new StandardOpProfile(0.5, 0.5, 10, 1.0), 1.0, 10, 1.0, 13);
-        assertTrue(instance.hasNext());
+        RandomTrace instance = new RandomTrace(42, RandomTrace.FLAT, new StandardSeqOpProfile(0.5, 0.5, 10, 1.0), 1.0, 10, 1.0, 13);
+        Enumeration<TraceOperation> en = instance.enumeration();
+        assertTrue(en.hasMoreElements());
         int n = 0;
-        while (instance.hasNext()) {
+        while (en.hasMoreElements()) {
             n++;
-            instance.next();
+            en.nextElement();
         }
         assertEquals(42*13, n);
     }
@@ -53,10 +56,10 @@ public class RandomTraceTest {
      * Test of causality, of class RandomTrace.
      */
     @Test
-    public void Causality() throws IncorrectTrace {
+    public void Causality() throws PreconditionException {
         System.out.println("causality");
-        RandomTrace instance = new RandomTrace(240, RandomTrace.FLAT, new StandardOpProfile(0.5, 0.5, 10, 1.0), 0.2, 10, 3.0, 13);
-        OldCausalDispatcher cd = new OldCausalDispatcher(new CausalCheckerFactory());
+        RandomTrace instance = new RandomTrace(240, RandomTrace.FLAT, new StandardSeqOpProfile(0.5, 0.5, 10, 1.0), 0.2, 10, 3.0, 13);
+        CausalSimulator cd = new CausalSimulator(new CausalCheckerFactory());
         cd.run(instance);
     }    
 }

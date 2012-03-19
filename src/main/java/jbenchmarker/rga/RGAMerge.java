@@ -25,8 +25,8 @@ import collect.VectorClock;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.SequenceOperation;
+import crdt.simulator.IncorrectTraceException;
+import jbenchmarker.core.SequenceOperation;
 
 /**
 *
@@ -44,18 +44,18 @@ public class RGAMerge extends MergeAlgorithm {
 	}
 	
 	@Override
-	protected void integrateLocal(SequenceMessage op) throws IncorrectTrace {
+	protected void integrateLocal(SequenceMessage op) throws IncorrectTraceException {
 		RGAOperation rgaop  = (RGAOperation) op;
 		RGADocument	 rgadoc = (RGADocument)(this.getDoc());
 		this.siteVC.inc(rgaop.getOriginalOp().getReplica());
 		rgadoc.apply(rgaop);
-		purger.setLastVC(rgaop.getS4VTms().sid, rgaop.getOriginalOp().getVC());
+		purger.setLastVC(rgaop.getS4VTms().sid, rgaop.getOriginalOp().getVectorClock());
 		//RGANode tau = purger.tryPurge();
 		//if(tau != null) rgadoc.purge(tau);
 	}
 
 	@Override
-	protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTrace {
+	protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
 		List<SequenceMessage> lop 		= new ArrayList<SequenceMessage>();
 		RGADocument 	rgadoc 	= (RGADocument)(this.getDoc());
 		RGAS4Vector 	s4vtms, s4vpos = null;

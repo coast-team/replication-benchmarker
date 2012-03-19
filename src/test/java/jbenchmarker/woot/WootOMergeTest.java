@@ -18,12 +18,12 @@
  */
 package jbenchmarker.woot;
 
+import crdt.simulator.IncorrectTraceException;
 import java.util.NoSuchElementException;
 import jbenchmarker.woot.wooto.WootOptimizedDocument;
 import java.util.List;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.core.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -45,41 +45,41 @@ public class WootOMergeTest {
      * Test of generateLocal method, of class WootMerge.
      */
     @Test
-    public void testGenerateLocal() throws IncorrectTrace {
+    public void testGenerateLocal() throws IncorrectTraceException {
         System.out.println("generateLocal");
         WootMerge instance = new WootMerge(new WootOptimizedDocument(), 1);
         
         List<SequenceMessage> r = instance.generateLocal(insert(0,"a"));
         assertEquals(1, r.size());
         assertEquals('a', ((WootOperation) r.get(0)).getContent());
-        assertEquals("a", instance.getDoc().view());        
+        assertEquals("a", instance.lookup());        
 
         r = instance.generateLocal(insert(0,"bc"));
         assertEquals(2, r.size());
-        assertEquals("bca", instance.getDoc().view());         
+        assertEquals("bca", instance.lookup());         
 
         r = instance.generateLocal(delete(0,1));
         assertEquals(1, r.size());
-        assertEquals("ca", instance.getDoc().view()); 
+        assertEquals("ca", instance.lookup()); 
 
         r = instance.generateLocal(insert(1,"efg"));
         assertEquals(3, r.size());
-        assertEquals("cefga", instance.getDoc().view()); 
+        assertEquals("cefga", instance.lookup()); 
 
         r = instance.generateLocal(delete(1,2));
         assertEquals(2, r.size());
-        assertEquals("cga", instance.getDoc().view()); 
+        assertEquals("cga", instance.lookup()); 
 
         r = instance.generateLocal(delete(1,2));
         assertEquals(2, r.size());
-        assertEquals("c", instance.getDoc().view()); 
+        assertEquals("c", instance.lookup()); 
     }
     
     /**
      * Testing out of bound insert.
      */
     @Test(expected=NoSuchElementException.class)
-    public void testGenerateInsIncorrect() throws IncorrectTrace {
+    public void testGenerateInsIncorrect() throws IncorrectTraceException {
         WootMerge instance = new WootMerge(new WootOptimizedDocument(), 1);
         
         instance.generateLocal(insert(10,"a"));
@@ -90,7 +90,7 @@ public class WootOMergeTest {
      * Testing out of bound del.
      */
     @Test(expected=NoSuchElementException.class)
-    public void testGenerateDelIncorrect() throws IncorrectTrace {
+    public void testGenerateDelIncorrect() throws IncorrectTraceException {
         WootMerge instance = new WootMerge(new WootOptimizedDocument(), 1);
         
         instance.generateLocal(delete(0,1));
@@ -99,7 +99,7 @@ public class WootOMergeTest {
     
     
     @Test
-    public void accent() throws IncorrectTrace {
+    public void accent() throws IncorrectTraceException {
         WootMerge instance = new WootMerge(new WootOptimizedDocument(), 1);
         List<SequenceMessage> r = instance.generateLocal(insert(0,"à"));
         assertEquals(1, r.size());

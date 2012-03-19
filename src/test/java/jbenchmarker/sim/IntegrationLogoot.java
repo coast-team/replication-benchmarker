@@ -18,12 +18,13 @@
  */
 package jbenchmarker.sim;
 
-import org.junit.Ignore;
-import jbenchmarker.core.MergeAlgorithm;
+import crdt.CRDT;
+import crdt.simulator.Trace;
+import crdt.simulator.random.RandomTrace;
+import crdt.simulator.random.StandardSeqOpProfile;
+import crdt.simulator.CausalSimulator;
 import jbenchmarker.logoot.LogootFactory;
-import java.util.Iterator;
 import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.trace.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -35,78 +36,78 @@ public class IntegrationLogoot {
     @Test
     public void testLogootExempleRun() throws Exception {
         System.out.println("Integration test with logoot");
-        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
-        OldCausalDispatcher cd = new OldCausalDispatcher(new LogootFactory());
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
+        CausalSimulator cd = new CausalSimulator(new LogootFactory());
 
         cd.run(trace);
         String r = "Salut Monsieurjour MehdiFin";
-        assertEquals(r, cd.getReplicas().get(0).getDoc().view());
-        assertEquals(r, cd.getReplicas().get(2).getDoc().view());
-        assertEquals(r, cd.getReplicas().get(4).getDoc().view());
+        assertEquals(r, cd.getReplicas().get(0).lookup());
+        assertEquals(r, cd.getReplicas().get(2).lookup());
+        assertEquals(r, cd.getReplicas().get(4).lookup());
     }
     
 //    @Ignore
     @Test
     public void testLogootG1Run() throws Exception {
-        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
-        OldCausalDispatcher cd = new OldCausalDispatcher(new LogootFactory());
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
+        CausalSimulator cd = new CausalSimulator(new LogootFactory());
 
         cd.run(trace);
-        String r = cd.getReplicas().get(0).getDoc().view();
-        for (MergeAlgorithm m : cd.getReplicas().values()) {
-            assertEquals(r, m.getDoc().view());
+        String r = (String) cd.getReplicas().get(0).lookup();
+        for (CRDT m : cd.getReplicas().values()) {
+            assertEquals(r, m.lookup());
         }
     }
     
 //    @Ignore
     @Test
     public void testLogootG2Run() throws Exception {
-        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
-        OldCausalDispatcher cd = new OldCausalDispatcher(new LogootFactory());
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
+        CausalSimulator cd = new CausalSimulator(new LogootFactory());
 
         cd.run(trace);
-        String r = cd.getReplicas().get(0).getDoc().view();
-        for (MergeAlgorithm m : cd.getReplicas().values()) {
-            assertEquals(r, m.getDoc().view());
+        String r = (String) cd.getReplicas().get(0).lookup();
+        for (CRDT m : cd.getReplicas().values()) {
+            assertEquals(r, m.lookup());
         }
     }
     
 //    @Ignore
     @Test
     public void testLogootG3Run() throws Exception {
-        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
-        OldCausalDispatcher cd = new OldCausalDispatcher(new LogootFactory());
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
+        CausalSimulator cd = new CausalSimulator(new LogootFactory());
 
         cd.run(trace);
-        String r = cd.getReplicas().get(0).getDoc().view();
-        for (MergeAlgorithm m : cd.getReplicas().values()) {
-            assertEquals(r, m.getDoc().view());
+        String r = (String) cd.getReplicas().get(0).lookup();
+        for (CRDT m : cd.getReplicas().values()) {
+            assertEquals(r, m.lookup());
         }
     }
     
 //    @Ignore
     @Test
     public void testLogootSerieRun() throws Exception {
-        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
-        OldCausalDispatcher cd = new OldCausalDispatcher(new LogootFactory());
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
+        CausalSimulator cd = new CausalSimulator(new LogootFactory());
 
         cd.run(trace);
-        String r = cd.getReplicas().get(0).getDoc().view();
-        for (MergeAlgorithm m : cd.getReplicas().values()) {
-            assertEquals(r, m.getDoc().view());
+        String r = (String) cd.getReplicas().get(0).lookup();
+        for (CRDT m : cd.getReplicas().values()) {
+            assertEquals(r, m.lookup());
         }
     }
     
     //    @Ignore
     @Test
     public void testLogootRandom() throws Exception {
-        Iterator<SequenceOperation> trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
-        OldCausalDispatcher cd = new OldCausalDispatcher(new LogootFactory());
+        Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
+        CausalSimulator cd = new CausalSimulator(new LogootFactory());
 
         cd.run(trace);
-        String r = cd.getReplicas().get(0).getDoc().view();
-        for (MergeAlgorithm m : cd.getReplicas().values()) {
-            assertEquals(r, m.getDoc().view());
+        String r = (String) cd.getReplicas().get(0).lookup();
+        for (CRDT m : cd.getReplicas().values()) {
+            assertEquals(r, m.lookup());
         }     
     }
 }

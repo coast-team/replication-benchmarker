@@ -49,7 +49,7 @@ public abstract class TreeOperationProfile<T> implements OperationProfile {
     }
     
     @Override
-    public TreeOperation<T> nextOperation(CRDT crdt) {
+    public TreeOperation<T> nextOperation(CRDT crdt, VectorClock vectorClock) {
         Iterator<? extends Node<T>> it = ((CRDTTree<T>) crdt).lookup().getBFSIterator(null);
         ArrayList<Node<T>> l = new ArrayList<Node<T>>();  
         while (it.hasNext()) {
@@ -76,9 +76,4 @@ public abstract class TreeOperationProfile<T> implements OperationProfile {
     abstract public T nextElement(T elem);
 
     abstract public boolean full(Node<T> s);
-    
-    @Override
-    public Operation nextOperation(CRDT a, VectorClock vectorClock) {
-        return nextOperation(a);
-    }
 }

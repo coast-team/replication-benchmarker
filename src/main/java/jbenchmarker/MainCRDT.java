@@ -7,7 +7,6 @@ package jbenchmarker;
 import collect.Node;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.LinkedList;
 import crdt.tree.wordtree.policy.WordCompact;
 import crdt.tree.wordtree.policy.WordRoot;
 import crdt.tree.wordtree.policy.WordReappear;
@@ -15,14 +14,14 @@ import crdt.CRDT;
 import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.set.observedremove.CommutativeOrSet;
-import crdt.simulator.CausalDispatcher;
+import crdt.simulator.CausalSimulator;
 import crdt.simulator.random.OperationProfile;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.SetOperationProfile;
 import crdt.simulator.random.TreeOperationProfile;
 import crdt.tree.wordtree.WordTree;
 import crdt.tree.wordtree.policy.WordSkip;
-import crdt.simulator.CausalDispatcher.IncorrectTrace;
+import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.Trace;
 import java.util.Map;
 import java.util.Set;
@@ -82,8 +81,8 @@ public class MainCRDT {
 
     }
 
-    static CausalDispatcher testRun(Factory<CRDT> factory, int duration, int rn, OperationProfile opp, double prob, long delay) throws PreconditionException, CausalDispatcher.IncorrectTrace {
-        CausalDispatcher cd = new CausalDispatcher(factory);
+    static CausalSimulator testRun(Factory<CRDT> factory, int duration, int rn, OperationProfile opp, double prob, long delay) throws PreconditionException {
+        CausalSimulator cd = new CausalSimulator(factory);
         Trace tr = new RandomTrace(duration, RandomTrace.FLAT, opp, prob, delay, 3, rn);
 
         cd.run(tr);
@@ -103,8 +102,8 @@ public class MainCRDT {
                     sf.append("**** ").append(r.getValue().toString()).append('\n');
                     for (Map.Entry<Integer, CRDT> e : cd.replicas.entrySet()) {
                         int j = e.getKey();
-                        sf.append("Local ").append(j).append(":\n").append(cd.history.get(j)).
-                                append("\nMessages ").append(":\n").append(cd.genHistory.get(j)).
+                        sf.append("Local ").append(j).append(":\n").append(cd.getHistory().get(j)).
+                                append("\nMessages ").append(":\n").append(cd.getGenHistory().get(j)).
                                 append("\nResult ").append(":\n").append(cd.replicas.get(j).lookup()).
                                 //                                append("\nSet ").append(":\n").append(((WordTree) cd.replicas.get(j)).words.lookup()).
                                 append("\n---------\n");
@@ -138,7 +137,7 @@ public class MainCRDT {
         };
     }
 
-    static void testRunSetsNbReplique() throws IncorrectTrace, PreconditionException, IOException {
+    static void testRunSetsNbReplique() throws IncorrectTraceException, PreconditionException, IOException {
         OperationProfile opp = getOperationProfileSet();
         Stat stat=new Stat();
         for (Factory<CRDT> sf : s) {
@@ -187,7 +186,7 @@ public class MainCRDT {
         }
     };
 
-    static void testRunTreeNbReplique() throws IncorrectTrace, PreconditionException, IOException {
+    static void testRunTreeNbReplique() throws IncorrectTraceException, PreconditionException, IOException {
 
         OperationProfile opp = getOperationProfileSet();
         Stat stat = new Stat();
@@ -223,7 +222,7 @@ public class MainCRDT {
         }
     }
 
-    static void testRunSetsDuration() throws IncorrectTrace, PreconditionException, IOException {
+    static void testRunSetsDuration() throws IncorrectTraceException, PreconditionException, IOException {
         OperationProfile opp = getOperationProfileSet();
         Stat stat = new Stat();
 
@@ -255,7 +254,7 @@ public class MainCRDT {
         }
     }
 
-    static void testRunTreeDuration() throws IncorrectTrace, PreconditionException, IOException {
+    static void testRunTreeDuration() throws IncorrectTraceException, PreconditionException, IOException {
         Stat st = new Stat();
         OperationProfile opp = getOperationProfileSet();
         for (int k = 0; k < p.length; k++) {
@@ -289,7 +288,7 @@ public class MainCRDT {
         long timeLocal = 0L;
         long nbLocal = 0L;
 
-        public void addCD(CausalDispatcher cd) {
+        public void addCD(CausalSimulator cd) {
             timeLocal += cd.getLocalSum();
             nbLocal += cd.getNbLocal();
             timeRemote += cd.getRemoteSum();

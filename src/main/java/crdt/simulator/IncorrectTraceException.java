@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.trace;
+package crdt.simulator;
 
 import crdt.PreconditionException;
 
@@ -24,8 +24,8 @@ import crdt.PreconditionException;
  *
  * @author urso
  */
-public class IncorrectTrace extends PreconditionException {
-    public IncorrectTrace(String string) {
+public class IncorrectTraceException extends PreconditionException {
+    public IncorrectTraceException(String string) {
         super(string);
     }
 

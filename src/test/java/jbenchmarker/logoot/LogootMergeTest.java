@@ -17,16 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.logoot;
-import java.util.ArrayList;
+import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.core.SequenceOperation;
 import java.util.List;
 
 
 
 import org.junit.Test;
 import static org.junit.Assert.*;
-import jbenchmarker.trace.IncorrectTrace;
 
 /**
  *
@@ -49,24 +48,24 @@ public class LogootMergeTest
 
         List<SequenceMessage> a = LM.generateLocal(insert(0, "a"));  //a
         assertEquals(1, a.size());
-        assertEquals("a", LM.getDoc().view());
+        assertEquals("a", LM.lookup());
 
 
         a = LM.generateLocal(insert(0, "gf")); //gfa
         assertEquals(2, a.size());
-        assertEquals("gfa", LM.getDoc().view());
+        assertEquals("gfa", LM.lookup());
 
         a = LM.generateLocal(delete(0, 1));//gf
         assertEquals(1, a.size());
-        assertEquals("fa", LM.getDoc().view());
+        assertEquals("fa", LM.lookup());
 
         a = LM.generateLocal(insert(1, "EKL"));//fEKLa
         assertEquals(3, a.size());
-        assertEquals("fEKLa", LM.getDoc().view());
+        assertEquals("fEKLa", LM.lookup());
 
 
         a = LM.generateLocal(delete(1, 3));
-        assertEquals("fa", LM.getDoc().view());
+        assertEquals("fa", LM.lookup());
     }
         
     @Test
@@ -78,7 +77,7 @@ public class LogootMergeTest
         
         List<SequenceMessage> a = LM.generateLocal(insert(0, "aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib"));
         assertEquals(80, a.size());
-        assertEquals("aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib", LM.getDoc().view());
+        assertEquals("aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib", LM.lookup());
 
 
         for(int i =1;i<lg.getIdTable().size()-1;i++)
@@ -88,20 +87,20 @@ public class LogootMergeTest
         }
         
         a = LM.generateLocal(delete(1, 78));
-        assertEquals("ab", LM.getDoc().view());
+        assertEquals("ab", LM.lookup());
         
         
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void testIns() throws IncorrectTrace {
+    public void testIns() throws IncorrectTraceException {
         LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 2, new BoundaryStrategy(1000000000));
         LM.generateLocal(insert(10, "a"));
         fail("Out of bound insert not detected.");
     }
 
     @Test(expected = java.lang.AssertionError.class) //contrairement à IndexOutOfBoundsException
-    public void testDel() throws IncorrectTrace {
+    public void testDel() throws IncorrectTraceException {
         LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 2, new BoundaryStrategy(1000000000));
         LM.generateLocal(delete(0, 1));
         fail("Out of bound delete not detected.");

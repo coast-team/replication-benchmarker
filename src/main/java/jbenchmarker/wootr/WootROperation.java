@@ -19,8 +19,8 @@
 package jbenchmarker.wootr;
 
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.SequenceOperation;
-import jbenchmarker.trace.SequenceOperation.OpType;
+import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  *

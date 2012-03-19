@@ -23,8 +23,8 @@ import java.util.Formatter;
 import jbenchmarker.core.SequenceMessage;
 import collect.VectorClock;
 import collect.VectorClock.Causality;
-import jbenchmarker.trace.SequenceOperation;
-import jbenchmarker.trace.SequenceOperation.OpType;
+import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
 *

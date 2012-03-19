@@ -7,7 +7,7 @@ package jbenchmarker.logoot;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.core.SequenceOperation;
 
 /**
  * Logoot document for counting concurrent deletes. 

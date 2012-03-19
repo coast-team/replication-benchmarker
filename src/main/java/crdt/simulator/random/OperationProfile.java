@@ -32,7 +32,5 @@ public interface OperationProfile {
      * Ramdonly generate a new CRDT operation
      * @return 
      */
-    Operation nextOperation(CRDT crdt);
-
     public Operation nextOperation(CRDT a, VectorClock vectorClock);
 }

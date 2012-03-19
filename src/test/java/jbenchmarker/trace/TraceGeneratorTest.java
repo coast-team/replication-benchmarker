@@ -18,8 +18,12 @@
  */
 package jbenchmarker.trace;
 
+import jbenchmarker.core.SequenceOperation;
+import crdt.simulator.IncorrectTraceException;
+import crdt.simulator.Trace;
+import crdt.simulator.TraceOperation;
+import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import collect.VectorClock;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +38,10 @@ import static org.junit.Assert.*;
 public class TraceGeneratorTest {
 
 
-    private static List<SequenceOperation> it2list(Iterator<SequenceOperation> t) {
+    private static List<SequenceOperation> it2list(Trace t) {
         List<SequenceOperation> l = new ArrayList<SequenceOperation>();
-        while (t.hasNext()) l.add(t.next());
+        Enumeration<TraceOperation> rn = t.enumeration();
+        while (rn.hasMoreElements()) l.add((SequenceOperation) rn.nextElement());
         return l;
     }
     
@@ -60,7 +65,7 @@ public class TraceGeneratorTest {
      * Tests of causalHistoryPerReplica method, of class TraceGenerator.
      * tests only exceptions.
      */
-    @Test(expected=IncorrectTrace.class)
+    @Test(expected=IncorrectTraceException.class)
     public void testOrderMissing() throws Exception {
         System.out.println("causalHistoryPerReplica");
         Map<Integer, VectorClock> vcs = new HashMap<Integer, VectorClock>();
@@ -69,7 +74,7 @@ public class TraceGeneratorTest {
         fail("Missing operation not detected.");
     }
     
-    @Test(expected=IncorrectTrace.class)
+    @Test(expected=IncorrectTraceException.class)
     public void testOrderCausalMissing() throws Exception {
         Map<Integer, VectorClock> vcs = new HashMap<Integer, VectorClock>();
         vcs.put(1, vc(3, 1, 0)); vcs.put(2, vc(0, 1, 0)); vcs.put(3, vc(0, 0, 0));
@@ -93,10 +98,10 @@ public class TraceGeneratorTest {
         assertEquals(SequenceOperation.OpType.ins, trace.get(0).getType());
         assertEquals(14, trace.get(1).getPosition());
         assertEquals(" Mehdi", trace.get(2).getContent());
-        assertEquals(2, (long)trace.get(2).getVC().get(2));
+        assertEquals(2, (long)trace.get(2).getVectorClock().get(2));
         assertEquals(SequenceOperation.OpType.del, trace.get(3).getType());
         assertEquals(4, trace.get(3).getReplica());
         assertEquals(3, trace.get(3).getOffset());        
-        assertEquals(1, (long)trace.get(3).getVC().get(4));
+        assertEquals(1, (long)trace.get(3).getVectorClock().get(4));
     }
 }

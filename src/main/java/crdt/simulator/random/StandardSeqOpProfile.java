@@ -16,20 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.sim;
+package crdt.simulator.random;
 
+import crdt.simulator.random.SequenceOperationProfile;
 import crdt.CRDT;
 import crdt.Operation;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.trace.SequenceOperation;
-import jbenchmarker.trace.SequenceOperation.OpType;
+import jbenchmarker.sim.RandomGauss;
+import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  * A profile that generates operation.
  * @author urso
  */
-public class StandardOpProfile extends SequenceOperationProfile {
+public class StandardSeqOpProfile extends SequenceOperationProfile {
  
     private final double perIns, perBlock, sdvBlockSize;
     private final int avgBlockSize;
@@ -42,7 +44,7 @@ public class StandardOpProfile extends SequenceOperationProfile {
      * @param avgBlockSize average size of block operation
      * @param sdvBlockSize standard deviation of block operations' size.
      */
-    public StandardOpProfile(double perIns, double perBlock, int avgBlockSize, double sdvBlockSize) {
+    public StandardSeqOpProfile(double perIns, double perBlock, int avgBlockSize, double sdvBlockSize) {
         this.perIns = perIns;
         this.perBlock = perBlock;
         this.avgBlockSize = avgBlockSize;
@@ -77,21 +79,5 @@ public class StandardOpProfile extends SequenceOperationProfile {
         int length = (r.nextDouble() < perBlock) ? 
                (int) r.nextLongGaussian(avgBlockSize-1, sdvBlockSize) : 1;
         return Math.min(l-position, length);
-    }
-
-    @Override
-    public Operation nextOperation(CRDT crdt) {
-        Document replica = ((MergeAlgorithm) crdt).getDoc();
-
-        int l = replica.view().length();
-        int position = nextPosition(l);
-
-        if (l == 0 || nextType() == OpType.ins) {
-            String content = nextContent();
-            return SequenceOperation.insert(crdt.getReplicaNumber(), position, content, null);
-        } else {
-            int offset = nextOffset(position, l);
-            return SequenceOperation.delete(crdt.getReplicaNumber(), position, offset, null);
-        }
     }
 }

@@ -18,16 +18,12 @@
  */
 package jbenchmarker.sim;
 
+import crdt.simulator.random.StandardSeqOpProfile;
+import crdt.simulator.CausalSimulator;
+import crdt.simulator.Trace;
+import crdt.simulator.random.RandomTrace;
 import jbenchmarker.logoot.LogootCounter;
-import org.junit.Ignore;
-import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.logoot.LogootFactory;
-import java.util.Iterator;
-import jbenchmarker.logoot.LogootCounter;
-import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.trace.SequenceOperation;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -39,25 +35,25 @@ public class IntegrationDelCount {
 //    @Ignore
     @Test
     public void testLogootG1Run() throws Exception {
-        Iterator<SequenceOperation> trace;
-        OldCausalDispatcher cd;
+        Trace trace;
+        CausalSimulator cd;
         
-//        trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
-//        cd = new OldCausalDispatcher(new LogootFactory());
+//        trsace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
+//        cd = new CausalSimulator(new LogootFactory());
 //
 //        cd.run(trace);
 //        System.out.println(LogootCounter.count / cd.getReplicas().keySet().size());
 //        LogootCounter.count = 0;
 //        
 //        trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
-//        cd = new OldCausalDispatcher(new LogootFactory());
+//        cd = new CausalSimulator(new LogootFactory());
 //
 //        cd.run(trace);
 //        System.out.println(LogootCounter.count / cd.getReplicas().keySet().size());
 //        LogootCounter.count = 0;
 //        
 //        trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
-//        cd = new OldCausalDispatcher(new LogootFactory());
+//        cd = new CausalSimulator(new LogootFactory());
 //        LogootCounter.count = 0;
 //
 //        cd.run(trace);
@@ -65,7 +61,7 @@ public class IntegrationDelCount {
 //        LogootCounter.count = 0;
 //        
 //        trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
-//        cd = new OldCausalDispatcher(new LogootFactory());
+//        cd = new CausalSimulator(new LogootFactory());
 //        LogootCounter.count = 0;
 //
 //        cd.run(trace);
@@ -73,11 +69,11 @@ public class IntegrationDelCount {
 //        LogootCounter.count = 0;
         
         int nb = 10;
-        cd = new OldCausalDispatcher(new LogootCounter.Factory());
+        cd = new CausalSimulator(new LogootCounter.Factory());
 
         for (int i = 0; i < nb; i++) {
             cd.reset();
-            trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardOpProfile(0.8, 0.1, 40, 5.0), 0.2, 10, 3.0, 13);
+            trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.2, 10, 3.0, 13);
             cd.run(trace);
         }
         System.out.println((LogootCounter.count / nb) / cd.getReplicas().keySet().size());
@@ -85,7 +81,7 @@ public class IntegrationDelCount {
         
         for (int i = 0; i < nb; i++) {
             cd.reset();
-            trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardOpProfile(0.8, 0.1, 40, 5.0), 0.05, 40, 3.0, 13);
+            trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.05, 40, 3.0, 13);
             cd.run(trace);
         }
         System.out.println((LogootCounter.count / nb) / cd.getReplicas().keySet().size());
@@ -93,7 +89,7 @@ public class IntegrationDelCount {
         
         for (int i = 0; i < nb; i++) {
             cd.reset();
-            trace = new RandomTrace(4000, RandomTrace.FLAT, new StandardOpProfile(0.8, 0.1, 40, 5.0), 0.05, 10, 3.0, 13);
+            trace = new RandomTrace(4000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.05, 10, 3.0, 13);
             cd.run(trace);
         }
         System.out.println((LogootCounter.count / nb) / cd.getReplicas().keySet().size());
@@ -101,7 +97,7 @@ public class IntegrationDelCount {
         
         for (int i = 0; i < nb; i++) {
             cd.reset();
-            trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardOpProfile(0.8, 0.1, 40, 5.0), 0.05, 10, 3.0, 13);
+            trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.05, 10, 3.0, 13);
             cd.run(trace);
         }
         System.out.println((LogootCounter.count / nb) / cd.getReplicas().keySet().size());

@@ -18,13 +18,14 @@
  */
 package jbenchmarker.sim;
 
-import org.junit.Ignore;
-import jbenchmarker.core.MergeAlgorithm;
-import java.util.Iterator;
+import crdt.CRDT;
+import crdt.simulator.Trace;
+import crdt.simulator.random.RandomTrace;
+import crdt.simulator.random.StandardSeqOpProfile;
+import crdt.simulator.CausalSimulator;
 import java.util.logging.Logger;
 import jbenchmarker.ot.SOCT2Factory;
 import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.trace.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -37,8 +38,8 @@ public class IntegrationSOCT2 {
     //@Ignore   // 231,986 s  on rev 105
     @Test
     public void testSOCT2RunG1() throws Exception {
-        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
-        OldCausalDispatcher cd = new OldCausalDispatcher(new SOCT2Factory());
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
+        CausalSimulator cd = new CausalSimulator(new SOCT2Factory());
 
         long startTime = System.currentTimeMillis();
         cd.run(trace);
@@ -46,21 +47,21 @@ public class IntegrationSOCT2 {
          
         Logger.getLogger(getClass().getCanonicalName()).info("computation time: "+(endTime-startTime)+" ms");
         
-        String r = cd.getReplicas().get(0).getDoc().view();
-        for (MergeAlgorithm m : cd.getReplicas().values()) {
-            assertEquals(r, m.getDoc().view());
+        String r = (String) cd.getReplicas().get(0).lookup();
+        for (CRDT m : cd.getReplicas().values()) {
+            assertEquals(r, m.lookup());
         }
     }
     
     @Test
     public void testSOCT2Random() throws Exception {
-        Iterator<SequenceOperation> trace = new RandomTrace(5000, RandomTrace.FLAT, new StandardOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
-        OldCausalDispatcher cd = new OldCausalDispatcher(new SOCT2Factory());
+        Trace trace = new RandomTrace(5000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
+        CausalSimulator cd = new CausalSimulator(new SOCT2Factory());
 
         cd.run(trace);
-        String r = cd.getReplicas().get(0).getDoc().view();
-        for (MergeAlgorithm m : cd.getReplicas().values()) {
-            assertEquals(r, m.getDoc().view());
+        String r = (String) cd.getReplicas().get(0).lookup();
+        for (CRDT m : cd.getReplicas().values()) {
+            assertEquals(r, m.lookup());
         }     
     }
 }

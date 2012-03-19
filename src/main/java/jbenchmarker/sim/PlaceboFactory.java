@@ -19,10 +19,10 @@
 package jbenchmarker.sim;
 
 import crdt.CRDT;
+import crdt.simulator.IncorrectTraceException;
 import java.util.List;
 import jbenchmarker.core.*;
-import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.core.SequenceOperation;
 
 
 /**
@@ -61,12 +61,12 @@ public class PlaceboFactory extends ReplicaFactory {
         }
 
         @Override
-        protected void integrateLocal(SequenceMessage op) throws IncorrectTrace {
+        protected void integrateLocal(SequenceMessage op) throws IncorrectTraceException {
             this.getDoc().apply(op);
         }
 
         @Override
-        protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTrace {
+        protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
             int nbop = (opt.getType() == SequenceOperation.OpType.del) ? opt.getOffset() : opt.getContent().length();
             List<SequenceMessage> l = new java.util.ArrayList<SequenceMessage>(nbop);
             for (int i = 0; i < nbop; i++) {

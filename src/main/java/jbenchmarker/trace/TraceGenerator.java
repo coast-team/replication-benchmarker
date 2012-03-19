@@ -18,6 +18,8 @@
  */
 package jbenchmarker.trace;
 
+import jbenchmarker.core.SequenceOperation;
+import crdt.simulator.IncorrectTraceException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,15 +27,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import collect.VectorClock;
+import crdt.simulator.Trace;
+import crdt.simulator.TraceOperation;
+import java.util.Enumeration;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import org.xml.sax.SAXException;
 
 
 /**
@@ -84,89 +85,112 @@ public class TraceGenerator {
         }
     }
     
-    
-    public static class TraceIterator implements Iterator<SequenceOperation> {
-        Iterator children;
-        int docnum;
-        SequenceOperation next;
-        boolean goNext;
-        int size;
-        int line;
-        
+    static class XMLTrace implements Trace {
 
-        public TraceIterator(int docnum, Iterator children) {
-            this.children = children;
+        int docnum;
+        Iterator children;
+        int size;
+
+        XMLTrace(int docnum, Iterator children) {
             this.docnum = docnum;
-            this.goNext = true;
+            this.children = children;
             this.size = -1;
         }
 
-        private TraceIterator(int docnum, Iterator children, int size) {
-            this.children = children;
+        public XMLTrace(int docnum, Iterator children, int size) {
             this.docnum = docnum;
-            this.goNext = true;
+            this.children = children;
             this.size = size;
         }
 
-        public boolean hasNext() {
-            if (line == size) return false;
-            if (!children.hasNext()) return false;
-            if (goNext) {
-                Element e = (Element) children.next();
-                while (children.hasNext() && Integer.parseInt(e.getChildText("NumDocument")) != docnum) {
-                    e = (Element) children.next();
-                }
-                if (Integer.parseInt(e.getChildText("NumDocument")) != docnum) return false;
-                next = oneXML2OP(e);  
-                goNext = false;
-                return true;
+        private static class TraceIterator implements Enumeration<TraceOperation> {
+
+            Iterator children;
+            int docnum;
+            SequenceOperation next;
+            boolean goNext;
+            int size;
+            int line;
+
+            private TraceIterator(int docnum, Iterator children, int size) {
+                this.children = children;
+                this.docnum = docnum;
+                this.goNext = true;
+                this.size = size;
             }
-            return children.hasNext();
+
+            @Override
+            public boolean hasMoreElements() {
+                if (line == size) {
+                    return false;
+                }
+                if (!children.hasNext()) {
+                    return false;
+                }
+                if (goNext) {
+                    Element e = (Element) children.next();
+                    while (children.hasNext() && Integer.parseInt(e.getChildText("NumDocument")) != docnum) {
+                        e = (Element) children.next();
+                    }
+                    if (Integer.parseInt(e.getChildText("NumDocument")) != docnum) {
+                        return false;
+                    }
+                    next = oneXML2OP(e);
+                    goNext = false;
+                    return true;
+                }
+                return children.hasNext();
+            }
+
+            @Override
+            public TraceOperation nextElement() {
+                if (goNext && !hasMoreElements()) {
+                    throw new NoSuchElementException();
+                }
+                goNext = true;
+                line++;
+                return next;
+            }
         }
 
-        public SequenceOperation next() {
-            if (goNext && !hasNext()) throw new NoSuchElementException();
-            goNext = true;
-            line++;
-            return next;
+        @Override
+        public Enumeration<TraceOperation> enumeration() {
+            return new TraceIterator(docnum, children, size);
         }
-
-        public void remove() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
     }
+
+
     
     /**
      *  Extract trace form XML JDOM document
      */
-    public static Iterator<SequenceOperation> traceFromXML(Document document, int docnum) throws JDOMException, IOException  {
+    public static Trace traceFromXML(Document document, int docnum) throws JDOMException, IOException  {
         List trace = document.getRootElement().getChild("Trace").getChildren();
         
-        return new TraceIterator(docnum, trace.iterator()); 
+        return new XMLTrace(docnum, trace.iterator()); 
     }
 
     /**
      *  Extract trace form XML JDOM document up to size operations
      */
-    public static Iterator<SequenceOperation> traceFromXML(Document document, int docnum, int size) throws JDOMException, IOException  {
+    public static Trace traceFromXML(Document document, int docnum, int size) throws JDOMException, IOException  {
         List trace = document.getRootElement().getChild("Trace").getChildren();
         
-        return new TraceIterator(docnum, trace.iterator(), size); 
+        return new XMLTrace(docnum, trace.iterator(), size); 
     }
     
     
     /**
      * Extract trace form XML uri.
      */
-    public static Iterator<SequenceOperation> traceFromXML(String uri, int docnum) throws JDOMException, IOException  {        
+    public static Trace traceFromXML(String uri, int docnum) throws JDOMException, IOException  {        
         return traceFromXML((new SAXBuilder()).build(uri), docnum);
     }
 
     /**
      * Extract trace form XML uri.
      */
-    public static Iterator<SequenceOperation> traceFromXML(String uri, int docnum, int size) throws JDOMException, IOException  {        
+    public static Trace traceFromXML(String uri, int docnum, int size) throws JDOMException, IOException  {        
         return traceFromXML((new SAXBuilder()).build(uri), docnum, size);
     }
     
@@ -174,24 +198,24 @@ public class TraceGenerator {
     /**
      * Verifies causality of an operation according to replicas VectorClock.
      */
-    public static void causalCheck(SequenceOperation opt, Map<Integer, VectorClock> vcs) throws IncorrectTrace {
+    public static void causalCheck(SequenceOperation opt, Map<Integer, VectorClock> vcs) throws IncorrectTraceException {
         int r = opt.getReplica();
-        if (opt.getVC().getSafe(r) == 0) {
-            throw new IncorrectTrace("Zero/no entry in VC for replica" + opt);
+        if (opt.getVectorClock().getSafe(r) == 0) {
+            throw new IncorrectTraceException("Zero/no entry in VC for replica" + opt);
         }
         VectorClock clock = vcs.get(r);
-        if (clock.getSafe(r) > opt.getVC().get(r) - 1) {
-            throw new IncorrectTrace("Already seen clock operation " + opt);
+        if (clock.getSafe(r) > opt.getVectorClock().get(r) - 1) {
+            throw new IncorrectTraceException("Already seen clock operation " + opt);
         }
-        if (clock.getSafe(r) < opt.getVC().getSafe(r) - 1) {
-            throw new IncorrectTrace("Missing operation before " + opt);
+        if (clock.getSafe(r) < opt.getVectorClock().getSafe(r) - 1) {
+            throw new IncorrectTraceException("Missing operation before " + opt);
         }
-        for (int i : opt.getVC().keySet()) {
-            if ((i != r) && (opt.getVC().get(i) > 0)) {
+        for (int i : opt.getVectorClock().keySet()) {
+            if ((i != r) && (opt.getVectorClock().get(i) > 0)) {
                 if (vcs.get(i)==null) 
-                    throw new IncorrectTrace("Missing replica " + i + " for " + opt);
-                if (vcs.get(i).getSafe(i) < opt.getVC().get(i))
-                    throw new IncorrectTrace("Missing causal operation before " + opt + " on replica " + i);
+                    throw new IncorrectTraceException("Missing replica " + i + " for " + opt);
+                if (vcs.get(i).getSafe(i) < opt.getVectorClock().get(i))
+                    throw new IncorrectTraceException("Missing causal operation before " + opt + " on replica " + i);
             }
         }
     }

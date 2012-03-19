@@ -22,7 +22,7 @@ import java.util.Collections;
 
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.core.SequenceOperation;
 import citi.treedoc.Treedoc;
 import citi.treedoc.TreedocId;
 import citi.treedoc.TreedocIdFactory;

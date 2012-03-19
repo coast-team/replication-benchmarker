@@ -18,15 +18,15 @@
  */
 package jbenchmarker.ot;
 
+import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
-import jbenchmarker.trace.SequenceOperation.OpType;
+import jbenchmarker.core.SequenceOperation.OpType;
 import java.util.Map;
 import java.util.Iterator;
 import collect.VectorClock;
 import java.util.List;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.core.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -37,7 +37,7 @@ import static org.junit.Assert.*;
 public class SOCT2Test {
 
     @Test
-    public void testGenerateLocalInsertCharByChar() throws IncorrectTrace {
+    public void testGenerateLocalInsertCharByChar() throws IncorrectTraceException {
         int siteId = 0;
         SOCT2MergeAlgorithm merger = new SOCT2MergeAlgorithm(new TTFDocument(), siteId);
 
@@ -48,7 +48,7 @@ public class SOCT2Test {
         assertEquals('b', opg.getChar());
         assertEquals(0, opg.getPosition());
         assertEquals("[]", vcToString(opg.getClock()));
-        assertEquals("b", merger.getDoc().view());
+        assertEquals("b", merger.lookup());
 
 
         ops = merger.generateLocal(insert(siteId, 0, "a"));
@@ -57,7 +57,7 @@ public class SOCT2Test {
         assertEquals('a', opg.getChar());
         assertEquals(0, opg.getPosition());
         assertEquals("[<0,1>]", vcToString(opg.getClock()));
-        assertEquals("ab", merger.getDoc().view());
+        assertEquals("ab", merger.lookup());
 
         ops = merger.generateLocal(insert(siteId, 2, "c"));
         assertEquals(1, ops.size());
@@ -65,11 +65,11 @@ public class SOCT2Test {
         assertEquals('c', opg.getChar());
         assertEquals("[<0,2>]", vcToString(opg.getClock()));
         assertEquals(2, opg.getPosition());
-        assertEquals("abc", merger.getDoc().view());
+        assertEquals("abc", merger.lookup());
     }
 
     @Test
-    public void testGenerateLocalInsertString() throws IncorrectTrace {
+    public void testGenerateLocalInsertString() throws IncorrectTraceException {
         int siteId = 0;
         SOCT2MergeAlgorithm merger = new SOCT2MergeAlgorithm(new TTFDocument(), siteId);
 
@@ -92,11 +92,11 @@ public class SOCT2Test {
         assertEquals("[<0,2>]", vcToString(opg.getClock()));
         assertEquals(2, opg.getPosition());
 
-        assertEquals("abc", merger.getDoc().view());
+        assertEquals("abc", merger.lookup());
     }
 
     @Test
-    public void testGenerateLocalDeleteCharByChar() throws IncorrectTrace {
+    public void testGenerateLocalDeleteCharByChar() throws IncorrectTraceException {
         int siteId = 0;
         SOCT2MergeAlgorithm merger = new SOCT2MergeAlgorithm(new TTFDocument(), siteId);
         merger.generateLocal(insert(siteId, 0, "abcd"));
@@ -108,7 +108,7 @@ public class SOCT2Test {
         assertEquals(OpType.del, opg.getType());
         assertEquals(0, opg.getPosition());
         assertEquals("[<0,4>]", vcToString(opg.getClock()));
-        assertEquals("bcd", merger.getDoc().view());
+        assertEquals("bcd", merger.lookup());
 
         // remove 'd'
         ops = merger.generateLocal(delete(siteId, 2, 1));
@@ -117,7 +117,7 @@ public class SOCT2Test {
         assertEquals(OpType.del, opg.getType());
         assertEquals(3, opg.getPosition());
         assertEquals("[<0,5>]", vcToString(opg.getClock()));
-        assertEquals("bc", merger.getDoc().view());
+        assertEquals("bc", merger.lookup());
 
         // remove 'c'
         ops = merger.generateLocal(delete(siteId, 1, 1));
@@ -126,7 +126,7 @@ public class SOCT2Test {
         assertEquals(OpType.del, opg.getType());
         assertEquals(2, opg.getPosition());
         assertEquals("[<0,6>]", vcToString(opg.getClock()));
-        assertEquals("b", merger.getDoc().view());
+        assertEquals("b", merger.lookup());
 
         // remove 'b'
         ops = merger.generateLocal(delete(siteId, 0, 1));
@@ -135,11 +135,11 @@ public class SOCT2Test {
         assertEquals(OpType.del, opg.getType());
         assertEquals(1, opg.getPosition());
         assertEquals("[<0,7>]", vcToString(opg.getClock()));
-        assertEquals("", merger.getDoc().view());
+        assertEquals("", merger.lookup());
     }
 
     @Test
-    public void testGenerateLocalDeleteString() throws IncorrectTrace {
+    public void testGenerateLocalDeleteString() throws IncorrectTraceException {
         int siteId = 0;
         SOCT2MergeAlgorithm merger = new SOCT2MergeAlgorithm(new TTFDocument(), siteId);
         merger.generateLocal(insert(siteId, 0, "abcd"));
@@ -168,11 +168,11 @@ public class SOCT2Test {
         assertEquals(3, opg.getPosition());
         assertEquals("[<0,7>]", vcToString(opg.getClock()));
 
-        assertEquals("", merger.getDoc().view());
+        assertEquals("", merger.lookup());
     }
 
     @Test
-    public void testVectorClockEvolution() throws IncorrectTrace {
+    public void testVectorClockEvolution() throws IncorrectTraceException {
         int siteId = 0;
         SOCT2MergeAlgorithm merger = new SOCT2MergeAlgorithm(new TTFDocument(), siteId);
         assertEquals(vc(0), merger.getClock());
@@ -188,7 +188,7 @@ public class SOCT2Test {
     }
 
     @Test
-    public void testTP2PuzzleAtSite0() throws IncorrectTrace {
+    public void testTP2PuzzleAtSite0() throws IncorrectTraceException {
         SOCT2MergeAlgorithm site0 = new SOCT2MergeAlgorithm(new TTFDocument(), 0);
         site0.generateLocal(insert(0, 0, "abc"));
 
@@ -198,15 +198,15 @@ public class SOCT2Test {
         TTFOperation op3 = TTFOperation.from(delete(2, 1, 1, vc(3, 0, 0)));
 
         site0.integrate(op1);
-        assertEquals("axbc", site0.getDoc().view());
+        assertEquals("axbc", site0.lookup());
         site0.integrate(op2);
-        assertEquals("axbyc", site0.getDoc().view());
+        assertEquals("axbyc", site0.lookup());
         site0.integrate(op3);
-        assertEquals("axyc", site0.getDoc().view());
+        assertEquals("axyc", site0.lookup());
     }
 
     @Test
-    public void testTP2PuzzleAtSite0bis() throws IncorrectTrace {
+    public void testTP2PuzzleAtSite0bis() throws IncorrectTraceException {
         SOCT2MergeAlgorithm site0 = new SOCT2MergeAlgorithm(new TTFDocument(), 0);
         site0.generateLocal(insert(0, 0, "abc"));
 
@@ -215,15 +215,15 @@ public class SOCT2Test {
         TTFOperation op3 = TTFOperation.from(delete(2, 1, 1, vc(3, 0, 0)));
 
         site0.integrate(op1);
-        assertEquals("axbc", site0.getDoc().view());
+        assertEquals("axbc", site0.lookup());
         site0.integrate(op3);
-        assertEquals("axc", site0.getDoc().view());
+        assertEquals("axc", site0.lookup());
         site0.integrate(op2);
-        assertEquals("axyc", site0.getDoc().view());
+        assertEquals("axyc", site0.lookup());
     }
 
     @Test
-    public void testTP2PuzzleAtSite1() throws IncorrectTrace {
+    public void testTP2PuzzleAtSite1() throws IncorrectTraceException {
         SOCT2MergeAlgorithm site0 = new SOCT2MergeAlgorithm(new TTFDocument(), 0);
         List<SequenceMessage> ops = site0.generateLocal(insert(0, 0, "abc"));
 
@@ -236,15 +236,15 @@ public class SOCT2Test {
             site1.integrate(op);
         }
         site1.integrate(op2);
-        assertEquals("abyc", site1.getDoc().view());
+        assertEquals("abyc", site1.lookup());
         site1.integrate(op1);
-        assertEquals("axbyc", site1.getDoc().view());
+        assertEquals("axbyc", site1.lookup());
         site1.integrate(op3);
-        assertEquals("axyc", site1.getDoc().view());
+        assertEquals("axyc", site1.lookup());
     }
 
     @Test
-    public void testTP2PuzzleAtSite1bis() throws IncorrectTrace {
+    public void testTP2PuzzleAtSite1bis() throws IncorrectTraceException {
         SOCT2MergeAlgorithm site0 = new SOCT2MergeAlgorithm(new TTFDocument(), 0);
         List<SequenceMessage> ops = site0.generateLocal(insert(0, 0, "abc"));
 
@@ -257,15 +257,15 @@ public class SOCT2Test {
             site1.integrate(op);
         }
         site1.integrate(op2);
-        assertEquals("abyc", site1.getDoc().view());
+        assertEquals("abyc", site1.lookup());
         site1.integrate(op3);
-        assertEquals("ayc", site1.getDoc().view());
+        assertEquals("ayc", site1.lookup());
         site1.integrate(op1);
-        assertEquals("axyc", site1.getDoc().view());
+        assertEquals("axyc", site1.lookup());
     }
 
     @Test
-    public void testTP2PuzzleAtSite2() throws IncorrectTrace {
+    public void testTP2PuzzleAtSite2() throws IncorrectTraceException {
         SOCT2MergeAlgorithm site0 = new SOCT2MergeAlgorithm(new TTFDocument(), 0);
         List<SequenceMessage> ops = site0.generateLocal(insert(0, 0, "abc"));
 
@@ -278,15 +278,15 @@ public class SOCT2Test {
             site2.integrate(op);
         }
         site2.integrate(op3);
-        assertEquals("ac", site2.getDoc().view());
+        assertEquals("ac", site2.lookup());
         site2.integrate(op1);
-        assertEquals("axc", site2.getDoc().view());
+        assertEquals("axc", site2.lookup());
         site2.integrate(op2);
-        assertEquals("axyc", site2.getDoc().view());
+        assertEquals("axyc", site2.lookup());
     }
 
     @Test
-    public void testTP2PuzzleAtSite2bis() throws IncorrectTrace {
+    public void testTP2PuzzleAtSite2bis() throws IncorrectTraceException {
         SOCT2MergeAlgorithm site0 = new SOCT2MergeAlgorithm(new TTFDocument(), 0);
         List<SequenceMessage> ops = site0.generateLocal(insert(0, 0, "abc"));
 
@@ -299,15 +299,15 @@ public class SOCT2Test {
             site2.integrate(op);
         }
         site2.integrate(op3);
-        assertEquals("ac", site2.getDoc().view());
+        assertEquals("ac", site2.lookup());
         site2.integrate(op2);
-        assertEquals("ayc", site2.getDoc().view());
+        assertEquals("ayc", site2.lookup());
         site2.integrate(op1);
-        assertEquals("axyc", site2.getDoc().view());
+        assertEquals("axyc", site2.lookup());
     }
 
     @Test
-    public void testTP2Puzzle() throws IncorrectTrace {
+    public void testTP2Puzzle() throws IncorrectTraceException {
         SOCT2MergeAlgorithm site1 = new SOCT2MergeAlgorithm(new TTFDocument(), 1);
         SOCT2MergeAlgorithm site2 = new SOCT2MergeAlgorithm(new TTFDocument(), 2);
         SOCT2MergeAlgorithm site3 = new SOCT2MergeAlgorithm(new TTFDocument(), 3);
@@ -321,59 +321,59 @@ public class SOCT2Test {
         
         integrateSeqAtSite(ops2, site1);
         integrateSeqAtSite(ops3, site1);        
-        assertEquals("axyc", site1.getDoc().view());
+        assertEquals("axyc", site1.lookup());
 
         integrateSeqAtSite(ops3, site2);
         integrateSeqAtSite(ops1, site2);
-        assertEquals("axyc", site2.getDoc().view());
+        assertEquals("axyc", site2.lookup());
 
         integrateSeqAtSite(ops2, site3);
         integrateSeqAtSite(ops1, site3);
-        assertEquals("axyc", site3.getDoc().view());
+        assertEquals("axyc", site3.lookup());
     }
 
     @Test
-    public void testBasicScenario() throws IncorrectTrace {
+    public void testBasicScenario() throws IncorrectTraceException {
         SOCT2MergeAlgorithm site0 = new SOCT2MergeAlgorithm(new TTFDocument(), 0);
         SOCT2MergeAlgorithm site2 = new SOCT2MergeAlgorithm(new TTFDocument(), 2);
         SOCT2MergeAlgorithm site4 = new SOCT2MergeAlgorithm(new TTFDocument(), 4);
 
         List<SequenceMessage> ops0 = duplicate(site0.generateLocal(insert(0, 0, "ABC")));
-        assertEquals("ABC", site0.getDoc().view());
+        assertEquals("ABC", site0.lookup());
         
         integrateSeqAtSite(ops0, site2);
-        assertEquals("ABC", site2.getDoc().view());
+        assertEquals("ABC", site2.lookup());
         
         List<SequenceMessage> ops2 = duplicate(site2.generateLocal(insert(2, 2, "vw")));
-        assertEquals("ABvwC", site2.getDoc().view());
+        assertEquals("ABvwC", site2.lookup());
         List<SequenceMessage> ops2b = duplicate(site2.generateLocal(insert(2, 4, "xyz")));
-        assertEquals("ABvwxyzC", site2.getDoc().view());
+        assertEquals("ABvwxyzC", site2.lookup());
 
         integrateSeqAtSite(ops0, site4);
-        assertEquals("ABC", site4.getDoc().view());
+        assertEquals("ABC", site4.lookup());
 
         List<SequenceMessage> ops4 = duplicate(site4.generateLocal(delete(4, 1, 2)));
-        assertEquals("A", site4.getDoc().view());
+        assertEquals("A", site4.lookup());
 
         integrateSeqAtSite(ops4, site2);
-        assertEquals("Avwxyz", site2.getDoc().view());
+        assertEquals("Avwxyz", site2.lookup());
 
         integrateSeqAtSite(ops2, site4);
         integrateSeqAtSite(ops2b, site4);
-        assertEquals("Avwxyz", site4.getDoc().view());
+        assertEquals("Avwxyz", site4.lookup());
 
-        assertEquals("ABC", site0.getDoc().view()); //
+        assertEquals("ABC", site0.lookup()); //
         integrateSeqAtSite(ops2, site0);
-        assertEquals("ABvwC", site0.getDoc().view()); //
+        assertEquals("ABvwC", site0.lookup()); //
         integrateSeqAtSite(ops2b, site0);        
-        assertEquals("ABvwxyzC", site0.getDoc().view());
+        assertEquals("ABvwxyzC", site0.lookup());
 
         integrateSeqAtSite(ops4, site0);
-        assertEquals("Avwxyz", site0.getDoc().view());
+        assertEquals("Avwxyz", site0.lookup());
     }
 
     @Test
-    public void testBasicScenario2() throws IncorrectTrace {
+    public void testBasicScenario2() throws IncorrectTraceException {
         SOCT2MergeAlgorithm site0 = new SOCT2MergeAlgorithm(new TTFDocument(), 0);
         SOCT2MergeAlgorithm site2 = new SOCT2MergeAlgorithm(new TTFDocument(), 2);
         SOCT2MergeAlgorithm site4 = new SOCT2MergeAlgorithm(new TTFDocument(), 4);
@@ -389,22 +389,22 @@ public class SOCT2Test {
         integrateSeqAtSite(ops0, site2);
         List<SequenceMessage> ops2 = site2.generateLocal(insert(2, 14, "Bonjour")); // [<2,1><0,1>]        
         List<SequenceMessage> ops2b = site2.generateLocal(insert(2, 21, " Mehdi")); // [<2,2><0,1>]
-        assertEquals("Salut MonsieurBonjour Mehdi  \nFin", site2.getDoc().view());
+        assertEquals("Salut MonsieurBonjour Mehdi  \nFin", site2.lookup());
         
         integrateSeqAtSite(ops0, site4);
         List<SequenceMessage> ops4 = duplicate(site4.generateLocal(delete(4, 14, 3))); // [<0,1><4,1>]
 
         integrateSeqAtSite(ops4, site2);
-        assertEquals("Salut MonsieurBonjour MehdiFin", site2.getDoc().view());
+        assertEquals("Salut MonsieurBonjour MehdiFin", site2.lookup());
         
         integrateSeqAtSite(ops2, site4);        
         integrateSeqAtSite(ops2b, site4);
-        assertEquals("Salut MonsieurBonjour MehdiFin", site4.getDoc().view());
+        assertEquals("Salut MonsieurBonjour MehdiFin", site4.lookup());
         
         integrateSeqAtSite(ops2, site0);        
         integrateSeqAtSite(ops2b, site0);
         integrateSeqAtSite(ops4, site0);
-        assertEquals("Salut MonsieurBonjour MehdiFin", site0.getDoc().view());
+        assertEquals("Salut MonsieurBonjour MehdiFin", site0.lookup());
     }
 
     // helpers
@@ -456,7 +456,7 @@ public class SOCT2Test {
         return res;
     }
 
-    private static void integrateSeqAtSite(List<SequenceMessage> seq, SOCT2MergeAlgorithm site) throws IncorrectTrace {
+    private static void integrateSeqAtSite(List<SequenceMessage> seq, SOCT2MergeAlgorithm site) throws IncorrectTraceException {
         for (SequenceMessage op : duplicate(seq)) {
             site.integrate(op);
         }

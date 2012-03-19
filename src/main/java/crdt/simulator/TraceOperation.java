@@ -19,29 +19,21 @@
 package crdt.simulator;
 
 import collect.VectorClock;
+import crdt.CRDT;
 import crdt.Operation;
 
 /**
  *
  * @author urso
  */
-public class TraceOperation {
+abstract public class TraceOperation implements Operation {
 
-    public enum Type {emit, receive, random};
-    final private Type type; 
     final private int replica;
     final private VectorClock VC;
-    final private Operation op;
 
-    public TraceOperation(Type type, int replica, VectorClock VC, Operation op) {
-        this.type = type;
+    public TraceOperation(int replica, VectorClock VC) {
         this.replica = replica;
         this.VC = VC;
-        this.op = op;
-    }
-
-    public Type getType() {
-        return type;
     }
 
     public VectorClock getVectorClock() {
@@ -52,24 +44,36 @@ public class TraceOperation {
         return replica;
     }
 
-    public Operation getOperation() {
-        return op;
-    }
-   
-    static public TraceOperation receive(int replica, VectorClock VC) {
-        return new TraceOperation(Type.receive, replica, VC, null);
-    }
-    
-    static public TraceOperation emit(int replica, VectorClock VC, Operation op) {
-        return new TraceOperation(Type.emit, replica, VC, op);
-    }
-    
-    static public TraceOperation random(int replica, VectorClock VC) {
-        return new TraceOperation(Type.random, replica, VC, null);
-    }
+    abstract public Operation getOperation(CRDT replica);
 
     @Override
     public String toString() {
         return "TO{VC=" + VC + '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TraceOperation other = (TraceOperation) obj;
+        if (this.replica != other.replica) {
+            return false;
+        }
+        if (this.VC != other.VC && (this.VC == null || !this.VC.equals(other.VC))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 23 * hash + this.replica;
+        hash = 23 * hash + (this.VC != null ? this.VC.hashCode() : 0);
+        return hash;
     }
 }

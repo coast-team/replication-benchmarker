@@ -18,6 +18,8 @@
  */
 package jbenchmarker.trace;
 
+import jbenchmarker.core.SequenceOperation;
+import crdt.simulator.IncorrectTraceException;
 import crdt.CRDT;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,14 +44,14 @@ public class CausalCheckerFactory extends ReplicaFactory {
         private VectorClock vc = new VectorClock();
 
         @Override
-        protected void integrateLocal(SequenceMessage op) throws IncorrectTrace {
+        protected void integrateLocal(SequenceMessage op) throws IncorrectTraceException {
             check(op.getOriginalOp());
             this.getDoc().apply(op);
             vc.inc(op.getOriginalOp().getReplica());
         }
 
         @Override
-        protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTrace {
+        protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
             check(opt);
             List<SequenceMessage> l = new ArrayList<SequenceMessage>(1);
             SequenceMessage op = new SequenceMessage(opt) {
@@ -64,9 +66,9 @@ public class CausalCheckerFactory extends ReplicaFactory {
             return l;
         }
 
-        private void check(SequenceOperation op) throws IncorrectTrace {
-            if (!vc.readyFor(op.getReplica(), op.getVC())) {
-                throw new IncorrectTrace("Replica " + this.getReplicaNumber() + " not ready for " + op);
+        private void check(SequenceOperation op) throws IncorrectTraceException {
+            if (!vc.readyFor(op.getReplica(), op.getVectorClock())) {
+                throw new IncorrectTraceException("Replica " + this.getReplicaNumber() + " not ready for " + op);
             }
         }
 

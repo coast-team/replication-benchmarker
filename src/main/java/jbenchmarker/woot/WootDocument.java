@@ -25,7 +25,7 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.core.SequenceOperation;
 
 /**
  *

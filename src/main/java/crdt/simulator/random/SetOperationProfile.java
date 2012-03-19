@@ -19,7 +19,6 @@
 package crdt.simulator.random;
 
 import crdt.CRDT;
-import crdt.Operation;
 import crdt.set.CRDTSet;
 import crdt.set.SetOperation;
 import collect.VectorClock;
@@ -47,7 +46,7 @@ public abstract class SetOperationProfile<T> implements OperationProfile {
     }
     
     @Override
-    public SetOperation nextOperation(CRDT crdt) {
+    public SetOperation nextOperation(CRDT crdt, VectorClock vectorClock) {
         Set<T> s = ((CRDTSet<T>) crdt).lookup();       
         if (!full(s) && (s.isEmpty()  || r.nextDouble() < perIns)) {
             T elem = nextElement();
@@ -66,9 +65,4 @@ public abstract class SetOperationProfile<T> implements OperationProfile {
     abstract public T nextElement(T elem);
 
     abstract public boolean full(Set<T> s);
-
-    @Override
-    public Operation nextOperation(CRDT a, VectorClock vectorClock) {
-        return nextOperation(a);
-    }
 }

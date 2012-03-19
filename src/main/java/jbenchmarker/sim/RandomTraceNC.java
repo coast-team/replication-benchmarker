@@ -18,13 +18,14 @@
  */
 package jbenchmarker.sim;
 
+import crdt.simulator.random.SequenceOperationProfile;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.Random;
 import java.util.Set;
 import collect.VectorClock;
-import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.core.SequenceOperation;
 
 /**
  * An iterator to generate caussally consistent trace of operation. 
@@ -32,6 +33,7 @@ import jbenchmarker.trace.SequenceOperation;
  * should be instanciate by the targeted simulator.
  * @author urso
  */
+@Deprecated
 public class RandomTraceNC implements Iterator<SequenceOperation> {
     private long time;
     private final long duration, delay;
@@ -105,12 +107,12 @@ public class RandomTraceNC implements Iterator<SequenceOperation> {
             VectorClock vc = states[rindex];
             NavigableSet <VectorClock> ds = delivery[rindex].get(time);
             if (ds != null) {
-                next = SequenceOperation.receive(rindex, ds.pollFirst());
+//                next = SequenceOperation.receive(rindex, ds.pollFirst());
             } else {
                 if (rp.willGenerate(rindex, time, duration, probability)) {
                     vc.inc(rindex);
                     VectorClock opc = (VectorClock) vc.clone();
-                    next = SequenceOperation.random(rindex, opc, op);
+//                    next = SequenceOperation.random(rindex, opc, op);
                     for (int i = 0; i < replicas; i++) {
                         long rt = time + r.nextLongGaussian(delay, sdv);
                         NavigableSet<VectorClock> x = delivery[i].get(rt);

@@ -112,7 +112,7 @@ public class RandomTrace implements Trace  {
                     if (rp.willGenerate(rindex, time, duration, probability)) {
                         vc.inc(rindex);
                         VectorClock opc = (VectorClock) vc.clone();
-                        next = TraceOperation.random(rindex, opc);
+                        next = new RandomOperation(op, rindex, opc);
                         for (int i = 0; i < replicas; i++) {
                             long rt = time + r.nextLongGaussian(delay, sdv);
                             VectorClock x = delivery[i].get(rt);

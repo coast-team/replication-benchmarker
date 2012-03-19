@@ -24,8 +24,8 @@ import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.SequenceOperation;
+import crdt.simulator.IncorrectTraceException;
+import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;
 
@@ -48,7 +48,7 @@ public class WootHashMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTrace {
+    protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
         WootHashDocument wdoc = (WootHashDocument) (this.getDoc());
         int p = opt.getPosition();

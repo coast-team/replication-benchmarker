@@ -18,7 +18,7 @@
  */
 package jbenchmarker.woot.wooth;
 
-import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.woot.WootIdentifier;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

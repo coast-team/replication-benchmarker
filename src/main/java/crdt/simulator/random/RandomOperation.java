@@ -16,26 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package crdt.simulator;
+package crdt.simulator.random;
+
+import crdt.simulator.*;
+import collect.VectorClock;
+import crdt.CRDT;
+import crdt.Operation;
 
 /**
  *
  * @author urso
  */
-public class IncorrectTrace extends Exception {
-    public IncorrectTrace() {
-    }
-    
-    public IncorrectTrace(Throwable thrwbl) {
-        super(thrwbl);
+public class RandomOperation extends TraceOperation {
+
+    final private OperationProfile opp;
+
+    public RandomOperation(OperationProfile opp, int replica, VectorClock VC) {
+        super(replica, VC);
+        this.opp = opp;
     }
 
-    public IncorrectTrace(String string, Throwable thrwbl) {
-        super(string, thrwbl);
+    @Override
+    public Operation getOperation(CRDT replica) {
+        return opp.nextOperation(replica, getVectorClock());
     }
-
-    public IncorrectTrace(String string) {
-        super(string);
-    }
-
 }

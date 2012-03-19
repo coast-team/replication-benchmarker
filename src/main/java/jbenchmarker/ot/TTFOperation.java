@@ -20,8 +20,8 @@ package jbenchmarker.ot;
 
 import jbenchmarker.core.SequenceMessage;
 import collect.VectorClock;
-import jbenchmarker.trace.SequenceOperation;
-import jbenchmarker.trace.SequenceOperation.OpType;
+import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  *
@@ -105,7 +105,7 @@ public class TTFOperation extends SequenceMessage {
 
     public static TTFOperation from(SequenceOperation opt) {
         TTFOperation op = new TTFOperation(opt);
-        op.clock = opt.getVC();
+        op.clock = opt.getVectorClock();
         op.pos = opt.getPosition();
         if (opt.getType() == OpType.ins) {
             op.content = opt.getContent().charAt(0);

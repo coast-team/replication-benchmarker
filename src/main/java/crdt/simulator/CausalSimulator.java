@@ -36,15 +36,23 @@ import java.util.TreeSet;
  *
  * @author urso
  */
-public class CausalDispatcher extends Simulator {
+public class CausalSimulator extends Simulator {
 
-    public CausalDispatcher(Factory<CRDT> rf) {
+    public CausalSimulator(Factory<CRDT> rf) {
         super(rf);
     }
 
-    public Map<Integer, List<TraceOperation>> history;
-    public Map<Integer, List<CRDTMessage>> genHistory;
-    long localSum = 0L, nbLocal = 0L, remoteSum = 0L, nbRemote = 0L;
+    private Map<Integer, List<TraceOperation>> history;
+    private Map<Integer, List<CRDTMessage>> genHistory;
+    private long localSum = 0L, nbLocal = 0L, remoteSum = 0L, nbRemote = 0L;
+
+    public Map<Integer, List<CRDTMessage>> getGenHistory() {
+        return genHistory;
+    }
+
+    public Map<Integer, List<TraceOperation>> getHistory() {
+        return history;
+    }
 
     public long getLocalSum() {
         return localSum;
@@ -82,7 +90,7 @@ public class CausalDispatcher extends Simulator {
         
     }
     @Override
-    public void run(Trace trace) throws IncorrectTrace, PreconditionException {
+    public void run(Trace trace) throws IncorrectTraceException, PreconditionException {
         //int nb = 0;
         long tmp;
         
@@ -161,9 +169,8 @@ public class CausalDispatcher extends Simulator {
                 }
             }
 
-            Operation op = (opt.getType() == TraceOperation.Type.random)
-                    ? ((RandomTrace) trace).getOperationProfile().nextOperation(a, opt.getVectorClock())
-                    : opt.getOperation();
+            Operation op = opt.getOperation(a);
+            
             /*
              * ---------------
              */
@@ -260,45 +267,27 @@ public class CausalDispatcher extends Simulator {
         replicas.clear();
     }
 
-    private void causalCheck(TraceOperation opt, Map<Integer, VectorClock> vcs) throws IncorrectTrace {
+    private void causalCheck(TraceOperation opt, Map<Integer, VectorClock> vcs) throws IncorrectTraceException {
         int r = opt.getReplica();
         if (opt.getVectorClock().getSafe(r) == 0) {
-            throw new IncorrectTrace("Zero/no entry in VC for replica" + opt);
+            throw new IncorrectTraceException("Zero/no entry in VC for replica" + opt);
         }
         VectorClock clock = vcs.get(r);
         if (clock.getSafe(r) > opt.getVectorClock().get(r) - 1) {
-            throw new IncorrectTrace("Already seen clock operation " + opt);
+            throw new IncorrectTraceException("Already seen clock operation " + opt);
         }
         if (clock.getSafe(r) < opt.getVectorClock().getSafe(r) - 1) {
-            throw new IncorrectTrace("Missing operation before " + opt);
+            throw new IncorrectTraceException("Missing operation before " + opt);
         }
         for (int i : opt.getVectorClock().keySet()) {
             if ((i != r) && (opt.getVectorClock().get(i) > 0)) {
                 if (vcs.get(i) == null) {
-                    throw new IncorrectTrace("Missing replica " + i + " for " + opt);
+                    throw new IncorrectTraceException("Missing replica " + i + " for " + opt);
                 }
                 if (vcs.get(i).getSafe(i) < opt.getVectorClock().get(i)) {
-                    throw new IncorrectTrace("Missing causal operation before " + opt + " on replica " + i);
+                    throw new IncorrectTraceException("Missing causal operation before " + opt + " on replica " + i);
                 }
             }
-        }
-    }
-
-    public class IncorrectTrace extends Exception {
-
-        public IncorrectTrace() {
-        }
-
-        public IncorrectTrace(Throwable thrwbl) {
-            super(thrwbl);
-        }
-
-        public IncorrectTrace(String string, Throwable thrwbl) {
-            super(string, thrwbl);
-        }
-
-        public IncorrectTrace(String string) {
-            super(string);
         }
     }
 }

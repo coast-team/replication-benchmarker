@@ -26,8 +26,8 @@ import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
 import collect.VectorClock;
-import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.SequenceOperation;
+import crdt.simulator.IncorrectTraceException;
+import jbenchmarker.core.SequenceOperation;
 
 /**
  *
@@ -71,7 +71,7 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTrace {
+    protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
         TTFDocument doc = (TTFDocument) this.getDoc();
         List<SequenceMessage> generatedOperations = new ArrayList<SequenceMessage>();
 

@@ -20,7 +20,7 @@ package jbenchmarker.rga;
 
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.core.SequenceOperation;
 import java.util.HashMap;
 import java.util.NoSuchElementException; 
 

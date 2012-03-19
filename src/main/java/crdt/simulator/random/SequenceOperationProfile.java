@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.sim;
+package crdt.simulator.random;
 
 import crdt.CRDT;
 import crdt.Operation;
@@ -24,8 +24,8 @@ import collect.VectorClock;
 import crdt.simulator.random.OperationProfile;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.trace.SequenceOperation;
-import jbenchmarker.trace.SequenceOperation.OpType;
+import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  * A profile that generates operation.
@@ -42,7 +42,7 @@ public abstract class SequenceOperationProfile implements OperationProfile {
     abstract public int nextOffset(int position, int l);
 
     @Override
-    public Operation nextOperation(CRDT crdt) {
+    public Operation nextOperation(CRDT crdt, VectorClock vectorClock) {
         Document replica = ((MergeAlgorithm) crdt).getDoc();
 
         int l = replica.view().length();
@@ -50,17 +50,10 @@ public abstract class SequenceOperationProfile implements OperationProfile {
 
         if (l == 0 || nextType() == OpType.ins) {
             String content = nextContent();
-            return SequenceOperation.insert(crdt.getReplicaNumber(), position, content, null);
+            return SequenceOperation.insert(crdt.getReplicaNumber(), position, content, vectorClock);
         } else {
             int offset = nextOffset(position, l);
-            return SequenceOperation.delete(crdt.getReplicaNumber(), position, offset, null);
+            return SequenceOperation.delete(crdt.getReplicaNumber(), position, offset, vectorClock);
         }
-    }
-
-    @Override
-    public Operation nextOperation(CRDT a, VectorClock vectorClock) {
-        SequenceOperation op = (SequenceOperation) nextOperation(a);
-        op.setVC(vectorClock);
-        return op;
     }
 }

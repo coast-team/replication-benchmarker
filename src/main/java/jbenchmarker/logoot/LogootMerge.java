@@ -22,7 +22,7 @@ import crdt.CRDT;
 import java.math.BigInteger;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.Document;
 
 import java.util.*;

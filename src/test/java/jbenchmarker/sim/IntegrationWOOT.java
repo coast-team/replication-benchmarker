@@ -18,13 +18,13 @@
  */
 package jbenchmarker.sim;
 
+import crdt.CRDT;
+import crdt.simulator.Trace;
+import crdt.simulator.CausalSimulator;
 import static jbenchmarker.woot.WootFactories.WootOFactory;
 import static jbenchmarker.woot.WootFactories.WootFactory;
 import org.junit.Ignore;
-import java.util.Iterator;
-import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.trace.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -35,92 +35,92 @@ import static org.junit.Assert.*;
 public class IntegrationWOOT {
 
     /**
-     * Test of run method, WOOT class OldCausalDispatcher; exemple.xml.
+     * Test of run method, WOOT class CausalSimulator; exemple.xml.
      */
     @Test
     public void testWootExempleRun() throws Exception {
         System.out.println("Integration test with causal + WOOT");
-        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1, 100);
-        OldCausalDispatcher cd = new OldCausalDispatcher(new WootFactory());
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1, 100);
+        CausalSimulator cd = new CausalSimulator(new WootFactory());
 
         cd.run(trace);
         String r = "Salut Monsieurjour MehdiFin";
-        assertEquals(r, cd.getReplicas().get(0).getDoc().view());
-        assertEquals(r, cd.getReplicas().get(2).getDoc().view());
-        assertEquals(r, cd.getReplicas().get(4).getDoc().view());
+        assertEquals(r, cd.getReplicas().get(0).lookup());
+        assertEquals(r, cd.getReplicas().get(2).lookup());
+        assertEquals(r, cd.getReplicas().get(4).lookup());
     }
     
     /**
-     * Test of run method on WOOT , of class OldCausalDispatcher; whole traces
+     * Test of run method on WOOT , of class CausalSimulator; whole traces
      */
     @Ignore // Too long -- Passes on revision 96 -- 1800s
     @Test
     public void testWootG1Run() throws Exception {
-        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1, 2000);         
-        OldCausalDispatcher cd = new OldCausalDispatcher(new WootFactory());
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1, 2000);         
+        CausalSimulator cd = new CausalSimulator(new WootFactory());
 
         cd.run(trace);
-        String r = cd.getReplicas().get(0).getDoc().view();
-        for (MergeAlgorithm m : cd.getReplicas().values()) {
-            assertEquals(r, m.getDoc().view());
+        String r = (String) cd.getReplicas().get(0).lookup();
+        for (CRDT m : cd.getReplicas().values()) {
+            assertEquals(r, m.lookup());
         }
     }
     
     @Ignore // Too long -- Passess on revision 98 -- 9500s !
     @Test
     public void testWootG2Run() throws Exception {
-        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
-        OldCausalDispatcher cd = new OldCausalDispatcher(new WootFactory());
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
+        CausalSimulator cd = new CausalSimulator(new WootFactory());
 
         cd.run(trace);
-        String r = cd.getReplicas().get(0).getDoc().view();
-        for (MergeAlgorithm m : cd.getReplicas().values()) {
-            assertEquals(r, m.getDoc().view());
+        String r = (String) cd.getReplicas().get(0).lookup();
+        for (CRDT m : cd.getReplicas().values()) {
+            assertEquals(r, m.lookup());
         }
     }
 
     @Ignore // Too long -- G3 pass on revision 86 -- 100s
     @Test
     public void testWootG3Run() throws Exception {
-        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);         
-        OldCausalDispatcher cd = new OldCausalDispatcher(new WootFactory());
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);         
+        CausalSimulator cd = new CausalSimulator(new WootFactory());
         
         cd.run(trace);  
-        String r = cd.getReplicas().get(0).getDoc().view();
-        for (MergeAlgorithm m : cd.getReplicas().values())
-            assertEquals(r, m.getDoc().view());
+        String r = (String) cd.getReplicas().get(0).lookup();
+        for (CRDT m : cd.getReplicas().values())
+            assertEquals(r, m.lookup());
     }
 
     /**
-     * Test of run method on WOOTO, OldCausalDispatcher; whole traces
+     * Test of run method on WOOTO, CausalSimulator; whole traces
      */
      @Ignore // (Only) 11 s 
     @Test
     public void testWootOG1Run() throws Exception {        
         System.out.println("Integration test with causal + WOOTO");
-        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
-        OldCausalDispatcher cd = new OldCausalDispatcher(new WootOFactory());
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
+        CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
         cd.run(trace);
-        String r = cd.getReplicas().get(0).getDoc().view();
-        for (MergeAlgorithm m : cd.getReplicas().values()) {
-            assertEquals(r, m.getDoc().view());
+        String r = (String) cd.getReplicas().get(0).lookup();
+        for (CRDT m : cd.getReplicas().values()) {
+            assertEquals(r, m.lookup());
         }
     }
         
     /**
-     * Test of run method, of class OldCausalDispatcher; WOOTO tail lines of G1.xml 
+     * Test of run method, of class CausalSimulator; WOOTO tail lines of G1.xml 
      */
     
     @Test
     public void testWootOG1RunSubset() throws Exception {
-        Iterator<SequenceOperation> trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1, 2000);
-        OldCausalDispatcher cd = new OldCausalDispatcher(new WootOFactory());
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1, 2000);
+        CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
         cd.run(trace);
-        String r = cd.getReplicas().get(0).getDoc().view();
-        for (MergeAlgorithm m : cd.getReplicas().values()) {
-            assertEquals(r, m.getDoc().view());
+        String r = (String) cd.getReplicas().get(0).lookup();
+        for (CRDT m : cd.getReplicas().values()) {
+            assertEquals(r, m.lookup());
         }
     }
 

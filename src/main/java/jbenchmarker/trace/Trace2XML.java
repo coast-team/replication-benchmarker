@@ -25,6 +25,9 @@ package jbenchmarker.trace;
  */
 
 
+import crdt.simulator.IncorrectTraceException;
+import crdt.CRDT;
+import crdt.Factory;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,7 +35,6 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -47,7 +49,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import jbenchmarker.sim.OldCausalDispatcher;
+import crdt.simulator.CausalSimulator;
+import crdt.simulator.Trace;
 import org.jdom.input.DOMBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -175,10 +178,10 @@ public class Trace2XML {
      * @param stream IO input stream of trace
      * @param document DOM doc to be generated
      * @param racine racine of trace 
-     * @param checkCausality can throw IncorrectTrace if true
-     * @param checkPosition can throw IncorrectTrace if operation are incorrect (out of bounds) on trace 
+     * @param checkCausality can throw IncorrectTraceException if true
+     * @param checkPosition can throw IncorrectTraceException if operation are incorrect (out of bounds) on trace 
      * @param out output produced by log
-     * @throws Exception IO or IncorrectTrace
+     * @throws Exception IO or IncorrectTraceException
      */
     static void decompose(InputStreamReader stream, Document document, Element racine, 
             boolean checkCausality, boolean checkPosition, BufferedWriter out, int docToKeep) throws Exception {
@@ -260,7 +263,7 @@ public class Trace2XML {
                             s.delete(p, e);
                         }
                     } catch (StringIndexOutOfBoundsException e) { // Position error
-                       throw new IncorrectTrace("Operation position " + pos + " out of bound " + s.length() + " in \n" + s.toString());
+                       throw new IncorrectTraceException("Operation position " + pos + " out of bound " + s.length() + " in \n" + s.toString());
                     }
                 }
                 if (docToKeep==0 || doc==1) racine.appendChild(OP);
@@ -275,8 +278,8 @@ public class Trace2XML {
             if (checkCausality) {
                 org.jdom.Element opl = builder.build(racine);
                 for (int d : docs) {
-                    Iterator<SequenceOperation> trace = new TraceGenerator.TraceIterator(d, opl.getChildren().iterator());
-                    OldCausalDispatcher cd = new OldCausalDispatcher(new CausalCheckerFactory());
+                    Trace trace = new TraceGenerator.XMLTrace(d, opl.getChildren().iterator());
+                    CausalSimulator cd = new CausalSimulator((Factory<CRDT>)new CausalCheckerFactory());
                     cd.run(trace);
                 }
             }

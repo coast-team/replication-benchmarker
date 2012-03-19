@@ -36,7 +36,6 @@ import java.util.Map.Entry;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import crdt.simulator.CausalDispatcher.IncorrectTrace;
 import static org.junit.Assert.*;
 
 /**
@@ -65,8 +64,8 @@ public class CausalDispatcherTest {
     public static void tearDownClass() throws Exception {
     }
 
-    static CausalDispatcher testRun(Factory<CRDT> factory, int duration, int rn, OperationProfile opp) throws PreconditionException, IncorrectTrace {
-        CausalDispatcher cd = new CausalDispatcher(factory);
+    static CausalSimulator testRun(Factory<CRDT> factory, int duration, int rn, OperationProfile opp) throws PreconditionException, IncorrectTraceException {
+        CausalSimulator cd = new CausalSimulator(factory);
         cd.run(new RandomTrace(duration, RandomTrace.FLAT, opp, 0.2, 10, 3, rn));
         //System.out.println(cd.getlTime());
 
@@ -86,8 +85,8 @@ public class CausalDispatcherTest {
                     sf.append("**** ").append(r.getValue().toString()).append('\n');
                     for (Entry<Integer, CRDT> e : cd.replicas.entrySet()) {
                         int j = e.getKey();
-                        sf.append("Local ").append(j).append(":\n").append(cd.history.get(j)).
-                                append("\nMessages ").append(":\n").append(cd.genHistory.get(j)).
+                        sf.append("Local ").append(j).append(":\n").append(cd.getHistory().get(j)).
+                                append("\nMessages ").append(":\n").append(cd.getGenHistory().get(j)).
                                 append("\nResult ").append(":\n").append(cd.replicas.get(j).lookup()).
                                 //                                append("\nSet ").append(":\n").append(((WordTree) cd.replicas.get(j)).words.lookup()).
                                 append("\n---------\n");
@@ -140,11 +139,11 @@ public class CausalDispatcherTest {
     
 //    @Ignore
     @Test
-    public void testRunSets() throws IncorrectTrace, PreconditionException {
+    public void testRunSets() throws IncorrectTraceException, PreconditionException {
 
 //        long l = 0, r = 0, nl = 0, nr = 0;
 //        for (int i = 0; i < 50; i++) {
-//            CausalDispatcher cd = testRun(new CommutativeCounterSet(), 200, 20, seqopp);
+//            CausalSimulator cd = testRun(new CommutativeCounterSet(), 200, 20, seqopp);
 //            l += cd.getLocalSum(); r += cd.getRemoteSum(); nl += cd.getNbLocal(); nr += cd.getNbRemote();
 //        }
 //        System.out.println("local : " + (l/nl) + "\nRemote : " + (r/nr));
@@ -156,7 +155,7 @@ public class CausalDispatcherTest {
     
 //    @Ignore
     @Test
-    public void testRunWord() throws IncorrectTrace, PreconditionException {
+    public void testRunWord() throws IncorrectTraceException, PreconditionException {
         for (Factory<CRDT> sf : s) {
             for (Factory<WordPolicy> pf : p) {
                 //System.out.println(new WordTree(sf, pf));
@@ -167,7 +166,7 @@ public class CausalDispatcherTest {
 
     @Ignore
     @Test
-    public void stress() throws PreconditionException, IncorrectTrace, IOException {
+    public void stress() throws PreconditionException, IncorrectTraceException, IOException {
         int i = 0;
         while (i <1) {
             //System.out.println(" i :"+i++);

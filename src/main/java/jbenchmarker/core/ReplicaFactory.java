@@ -18,6 +18,7 @@
  */
 package jbenchmarker.core;
 
+import crdt.CRDT;
 import crdt.Factory;
 
 /**
@@ -26,7 +27,7 @@ import crdt.Factory;
  * @author urso
  */
 @Deprecated
-public abstract class ReplicaFactory implements Factory<MergeAlgorithm>{
+public abstract class ReplicaFactory implements Factory<CRDT>{
    abstract public MergeAlgorithm create(int r);
 
     @Override

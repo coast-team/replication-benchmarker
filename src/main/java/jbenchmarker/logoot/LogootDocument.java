@@ -21,7 +21,7 @@ package jbenchmarker.logoot;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceMessage;
 
-import jbenchmarker.trace.SequenceOperation;
+import jbenchmarker.core.SequenceOperation;
 
 /**
  * A Logoot document. Contains a list of Charater and the corresponding list of LogootIndentitifer.

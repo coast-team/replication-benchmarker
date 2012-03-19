@@ -26,7 +26,7 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 import collect.VectorClock.Causality;
-import jbenchmarker.trace.SequenceOperation.OpType;
+import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
 *

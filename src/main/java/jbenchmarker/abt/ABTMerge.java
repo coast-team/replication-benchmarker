@@ -27,8 +27,8 @@ import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
 import collect.VectorClock;
-import jbenchmarker.trace.IncorrectTrace;
-import jbenchmarker.trace.SequenceOperation;
+import crdt.simulator.IncorrectTraceException;
+import jbenchmarker.core.SequenceOperation;
 
 /**
 *
@@ -48,7 +48,7 @@ public class ABTMerge extends MergeAlgorithm {
 	}
 	
 	@Override
-	protected void integrateLocal(SequenceMessage op) throws IncorrectTrace {
+	protected void integrateLocal(SequenceMessage op) throws IncorrectTraceException {
 		// TODO Auto-generated method stub
 		
 		ABTOperation abtop = (ABTOperation)op;		
@@ -65,7 +65,7 @@ public class ABTMerge extends MergeAlgorithm {
 
 	@Override
 	protected List<SequenceMessage> generateLocal(SequenceOperation opt)
-			throws IncorrectTrace {
+			throws IncorrectTraceException {
 		// TODO Auto-generated method stub
 		List<SequenceMessage> lop		= new ArrayList<SequenceMessage>();
 		ABTDocument		abtdoc	= (ABTDocument)(this.getDoc());
