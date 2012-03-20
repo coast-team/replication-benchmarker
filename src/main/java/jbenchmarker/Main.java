@@ -59,8 +59,6 @@ public class Main {
             Trace trace = TraceGenerator.traceFromXML(args[1], 1);
             CausalSimulator cd = new CausalSimulator(rf);
             cd.run(trace);
-
-            
             // TODO : correct it
             
             if (ltime == null) {

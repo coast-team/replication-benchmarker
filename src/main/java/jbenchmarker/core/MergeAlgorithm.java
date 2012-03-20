@@ -149,6 +149,7 @@ public abstract class MergeAlgorithm extends CRDT<String>{
         List<SequenceMessage> l = generateLocal((SequenceOperation) op);
         SequenceMessage m = null;
         for (SequenceMessage n : l) {
+            history.add(n);
             if (m == null) { 
                 m = n;
             } else {
@@ -165,6 +166,7 @@ public abstract class MergeAlgorithm extends CRDT<String>{
     public void applyRemote(CRDTMessage msg) {
         try {
             SequenceMessage s = (SequenceMessage) msg;
+            history.add(s);
             integrateLocal(s);    
             for (Object m : s.getMsgs()) {
                 integrateLocal((SequenceMessage) m);

@@ -20,7 +20,9 @@ package crdt.simulator;
 
 import collect.VectorClock;
 import crdt.*;
-import crdt.simulator.random.RandomTrace;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -45,7 +47,8 @@ public class CausalSimulator extends Simulator {
     private Map<Integer, List<TraceOperation>> history;
     private Map<Integer, List<CRDTMessage>> genHistory;
     private long localSum = 0L, nbLocal = 0L, remoteSum = 0L, nbRemote = 0L;
-
+    private int nbrTrace = 0;
+    
     public Map<Integer, List<CRDTMessage>> getGenHistory() {
         return genHistory;
     }
@@ -89,12 +92,11 @@ public class CausalSimulator extends Simulator {
         nbRemote = 0L;
         
     }
+    
     @Override
-    public void run(Trace trace) throws IncorrectTraceException, PreconditionException {
-        //int nb = 0;
+    public void run(Trace trace) throws IncorrectTraceException, PreconditionException, IOException {
         long tmp;
-        
-        
+        int tr = 0;
         final Map<Integer, VectorClock> clocks = new HashMap<Integer, VectorClock>();
         final VectorClock globalClock = new VectorClock();
         final List<TraceOperation> concurrentOps = new LinkedList<TraceOperation>();
@@ -103,6 +105,7 @@ public class CausalSimulator extends Simulator {
         history = new HashMap<Integer, List<TraceOperation>>();
         genHistory = new HashMap<Integer, List<CRDTMessage>>();
         while (it.hasMoreElements()) {
+            tr++;
             final TraceOperation opt = it.nextElement();
             final int r = opt.getReplica();
             CRDT a = this.getReplicas().get(r);
@@ -138,65 +141,34 @@ public class CausalSimulator extends Simulator {
                     CRDTMessage op = genHistory.get(e).get(t.getVectorClock().get(e) - 1);
                     CRDTMessage optime = op.clone();
 
-
-                    /*
-                     * -------------------
-                     */
-                    /*
-                     * time.setRemoteMessage(optime);
-                     * time.takeTimeRemoteStart();
-                     */
                     tmp = System.nanoTime();
                     a.applyRemote(optime);
+                    insertRemoteTime(e, System.nanoTime() - tmp);
                     remoteSum += (System.nanoTime() - tmp);
                     nbRemote++;
-                    //time.takeTimeRemoteStop();
 
-                    /*
-                     * ----------------------
-                     */
-
-
-                    /*
-                     * if (view != null) { view.addMessage(clocks.get(e),
-                     * clocks.get(a.getReplicaNumber()), e,
-                     * a.getReplicaNumber(), op); }
-                     */
-                    /*
-                     * Sequence here
-                     */
                     vc.inc(e);
                 }
             }
 
             Operation op = opt.getOperation(a);
-            
-            /*
-             * ---------------
-             */
-
-            // System.out.println(opt);
-            /*
-             * time.setLocalOp(op); time.takeTimeLocalStart();
-             */
 
             tmp = System.nanoTime();
             final CRDTMessage m = a.applyLocal(op);
+            genTime.add(System.nanoTime() - tmp);
             localSum += (System.nanoTime() - tmp);
             nbLocal++;
-
-
-
-
-            //time.takeTimeLocalStop();
-            /*
-             * ---------------
-             */
 
             final CRDTMessage msg = m.clone();
             genHistory.get(r).add(msg);
             clocks.get(r).inc(r);
             globalClock.inc(r);
+            
+            if(tr == nbrTrace)
+            {
+                tr= 0;
+                serializ(a);
+            }
         }
 
         Set<Integer> notComplete = new TreeSet<Integer>();
@@ -204,10 +176,7 @@ public class CausalSimulator extends Simulator {
 
         // Final : applyRemote all pending remote CRDTMessage (not the best complexity)
         while (!notComplete.isEmpty()) {
-            /*
-             * time = new TimeBench(); lTime.add(time);
-             * time.takeTimeLoopStart();
-             */
+
             Iterator<Integer> i = notComplete.iterator();
             while (i.hasNext()) {
                 int r = i.next();
@@ -221,29 +190,30 @@ public class CausalSimulator extends Simulator {
                                 && vc.readyFor(s, history.get(s).get(j).getVectorClock()); j++) {
                             CRDTMessage op = genHistory.get(s).get(j);
                             CRDTMessage optime = op.clone();
-                            /*
-                             * ------------------- Debut Time
-                             */
-                            /*
-                             * time.setRemoteMessage(optime);
-                             * time.takeTimeRemoteStart();
-                             */
 
                             tmp = System.nanoTime();
                             a.applyRemote(optime);
+                            insertRemoteTime(s, System.nanoTime() - tmp);
                             remoteSum += (System.nanoTime() - tmp);
                             nbRemote++;
-                            //time.takeTimeRemoteStop();
-                            /*
-                             * ------------------- End Time
-                             */
 
                             vc.inc(s);
                         }
                     }
                 }
             }
-            //   time.takeTimeLoopStop();
+        }
+    }
+    
+    void insertRemoteTime(Integer r, Long t)
+    {
+        if(remoteTime.containsKey(r))
+            remoteTime.get(r).add(t);
+        else
+        {
+            List<Long> l = new ArrayList();
+            l.add(t);
+            remoteTime.put(r, l);
         }
     }
 
@@ -289,5 +259,20 @@ public class CausalSimulator extends Simulator {
                 }
             }
         }
+    }
+    
+    public void runWithMemory(Trace trace, int nbrTrace) throws IncorrectTraceException, PreconditionException, IOException
+    {
+        this.nbrTrace = nbrTrace;
+        run(trace);
+    }
+    
+    public void serializ(CRDT m) throws IOException {
+        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+        ObjectOutputStream stream = new ObjectOutputStream(byteOutput);
+        stream.writeObject(m);
+        stream.close();
+        
+        //System.out.println("Bytes = " + byteOutput.toByteArray().length);
     }
 }
