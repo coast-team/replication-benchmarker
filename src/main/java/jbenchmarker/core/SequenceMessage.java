@@ -19,12 +19,13 @@
 package jbenchmarker.core;
 
 import crdt.CommutativeMessage;
+import java.io.Serializable;
 
 /**
  * An operation for a replication algorithm.
  * @author urso
  */
-public abstract class SequenceMessage extends CommutativeMessage {
+public abstract class SequenceMessage extends CommutativeMessage implements Serializable {
     final private SequenceOperation originalOp;       // Trace operation issuing this one
 
     public SequenceOperation getOriginalOp() {

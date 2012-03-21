@@ -22,12 +22,13 @@ import collect.VectorClock;
 import crdt.CRDT;
 import crdt.Operation;
 import crdt.simulator.TraceOperation;
+import java.io.Serializable;
 
 /**
  *
  * @author urso
  */
-public class SequenceOperation extends TraceOperation implements crdt.Operation {
+public class SequenceOperation extends TraceOperation implements crdt.Operation, Serializable {
 
     @Override
     public Operation getOperation(CRDT replica) {

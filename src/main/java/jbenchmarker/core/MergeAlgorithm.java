@@ -22,6 +22,7 @@ import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.PreconditionException;
 import crdt.simulator.IncorrectTraceException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ import java.util.List;
  *
  * @author urso
  */
-public abstract class MergeAlgorithm extends CRDT<String>{
+public abstract class MergeAlgorithm extends CRDT<String> implements Serializable{
     
     // Supported Document
     final private Document doc;

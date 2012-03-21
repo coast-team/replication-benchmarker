@@ -81,7 +81,7 @@ public class MainCRDT {
 
     }
 
-    static CausalSimulator testRun(Factory<CRDT> factory, int duration, int rn, OperationProfile opp, double prob, long delay) throws PreconditionException {
+    static CausalSimulator testRun(Factory<CRDT> factory, int duration, int rn, OperationProfile opp, double prob, long delay) throws PreconditionException, IncorrectTraceException, IOException {
         CausalSimulator cd = new CausalSimulator(factory);
         Trace tr = new RandomTrace(duration, RandomTrace.FLAT, opp, prob, delay, 3, rn);
 

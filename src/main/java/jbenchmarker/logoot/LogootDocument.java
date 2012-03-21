@@ -27,7 +27,7 @@ import jbenchmarker.core.SequenceOperation;
  * A Logoot document. Contains a list of Charater and the corresponding list of LogootIndentitifer.
  * @author urso mehdi
  */
-public class LogootDocument implements Document {
+public class LogootDocument implements Document{
 
     final private RangeList<LogootIdentifier> idTable;
     final private RangeList<Character> document;

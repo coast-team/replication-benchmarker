@@ -19,8 +19,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.List;
-import jbenchmarker.core.MergeAlgorithm;
-
 /**
  *
  * @author score
@@ -31,7 +29,7 @@ public class MainSimulation {
 
     public static void main(String[] args) throws Exception {
 
-        if (args.length < 12) {
+        if (args.length < 13) {
             System.err.println("Arguments :");
             System.err.println("- Factory : a jbenchmaker.core.ReplicaFactory implementation ");
             System.err.println("- Number of execu : ");
@@ -45,6 +43,7 @@ public class MainSimulation {
             System.err.println("- sdv : ");
             System.err.println("- replicas : ");
             System.err.println("- thresold : ");
+            System.err.println("- scale for serealization : ");
             System.exit(1);
         }
 
@@ -65,44 +64,56 @@ public class MainSimulation {
         int replicas = Integer.valueOf(args[10]);
         int thresold = Integer.valueOf(args[11]);
         int scaleMemory = Integer.valueOf(args[12]);
+        
         long ltime[][] = null, rtime[][] = null, mem[][] = null;
-        int minSizeGen = 0, minSizeInteg = 0;
-        int cop = 0, uop = 0;
+        int minSizeGen = 0, minSizeInteg = 0, minSizeMem = 0;
+        int cop = 0, uop = 0, mop = 0;
         String[] nameUsr = args[0].split("\\.");
         
         for (int ex = 0; ex < nbExec; ex++) {
+            System.out.println("execution"+ ex);
             Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
                     new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
             CausalSimulator cd = new CausalSimulator(rf);
             cd.runWithMemory(trace, scaleMemory);
 
             if (ltime == null) {
-                cop = ((MergeAlgorithm)cd.getReplicas().get(0)).getHistory().size();
+                cop = cd.replicaRemoteTimes().get(0).size();
                 uop = cd.replicaGenerationTimes().size();
+                mop = cd.getMemUsed().size();
                 ltime = new long[nb][uop];
                 rtime = new long[nb][cop];
+                mem = new long[nb][mop];
                 minSizeGen = uop;
                 minSizeInteg = cop;
+                minSizeMem = mop;
             }
             
             List<Long> l = cd.replicaGenerationTimes();
             if(l.size() < minSizeGen)
                 minSizeGen = l.size();
             toArrayLong(ltime[ex], l, minSizeGen);  
+            computeAverage(ltime, thresold, minSizeGen);
             
-
+            List<Long> m = cd.getMemUsed();
+            if(m.size() < minSizeMem)
+                minSizeMem = m.size();
+            toArrayLong(mem[ex], m, minSizeMem);
+            computeAverage(mem, thresold, minSizeMem);
+            
             for (int r : cd.replicaRemoteTimes().keySet()) {
-                if (minSizeInteg > ((MergeAlgorithm) cd.getReplicas().get(0)).getHistory().size()) {
-                    minSizeInteg = ((MergeAlgorithm) cd.getReplicas().get(0)).getHistory().size();
+                if (minSizeInteg > cd.replicaRemoteTimes().get(r).size()) {
+                    minSizeInteg = cd.replicaRemoteTimes().get(r).size();
                 }
-                for (int i = 0; i < minSizeInteg; i++) {
+                for (int i = 0; i < minSizeInteg-1; i++) {
                     rtime[ex][i] += cd.replicaRemoteTimes().get(r).get(i);
                 }
             }
-            for (int i = 0; i < minSizeInteg; i++) {
+            for (int i = 0; i < minSizeInteg-1; i++) {
                 rtime[ex][i] /= replicas;
             }
-
+            computeAverage(rtime, thresold, minSizeInteg);
+            
             cd = null;
             trace = null;
             System.gc();
@@ -112,9 +123,8 @@ public class MainSimulation {
         treatFile(nameUsr[1], file, "usr");
         String file2 = writeToFile(rtime, nameUsr[1], "local", minSizeInteg);
         treatFile(nameUsr[1], file2, "local");
-        
-//        String file3 = writeToFile(mem, nameUsr[1], "mem");
-//        treatFile(nameUsr[1], file3, "mem");
+        String file3 = writeToFile(mem,nameUsr[1], "mem", minSizeMem);
+        treatFile(nameUsr[1], file3, "mem");
     }
     
     
@@ -130,7 +140,7 @@ public class MainSimulation {
     private static String writeToFile(long[][] data, String algo, String type, int minSize) throws IOException {
         String nameFile = algo + '-' + type + ".res";
         BufferedWriter out = new BufferedWriter(new FileWriter(nameFile));
-        for (int op = 0; op < minSize; op++) {
+        for (int op = 0; op < minSize-1; op++) {
             for (int ex = 0; ex < data.length; ex++) {
                 out.append(data[ex][op] + "\t");
             }
@@ -167,7 +177,11 @@ public class MainSimulation {
                         break;
                 }
                Tmoyen = Tmoyen/cmpt;
-               float tMicro = Tmoyen/1000; // microSeconde
+               float tMicro  = Tmoyen;
+               
+                if (result.equals("mem"))
+                    tMicro = Tmoyen / 1000; // microSeconde
+               
                ecrivain.println(tMicro);
                Tmoyen=0;cmpt = 0;
             }
@@ -189,7 +203,7 @@ public class MainSimulation {
 
     public static void computeAverage(long[][] data, double thresold, int minSize) {
         int nbExpe = data.length - 1;//une colonne réserver à la moyenne
-        for (int op = 0; op < minSize; op++) {
+        for (int op = 0; op < minSize-1; op++) {
             long sum = 0;
             for (int ex = 0; ex < nbExpe; ex++) { // calculer moyenne de la ligne
                 sum += data[ex][op];
@@ -205,6 +219,5 @@ public class MainSimulation {
                 data[nbExpe][op] = sum2 /k;
         }
     }
-    
     
 }

@@ -18,7 +18,9 @@
  */
 package jbenchmarker.logoot;
 
-public class Component implements Comparable<Component> {
+import java.io.Serializable;
+
+public class Component implements Comparable<Component>,Serializable {
 
     final private long digit;
     final private int peerID;

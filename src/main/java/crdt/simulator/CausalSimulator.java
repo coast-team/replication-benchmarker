@@ -48,7 +48,7 @@ public class CausalSimulator extends Simulator {
     private Map<Integer, List<CRDTMessage>> genHistory;
     private long localSum = 0L, nbLocal = 0L, remoteSum = 0L, nbRemote = 0L;
     private int nbrTrace = 0;
-    
+    private long sumMemory = 0L;
     public Map<Integer, List<CRDTMessage>> getGenHistory() {
         return genHistory;
     }
@@ -56,7 +56,15 @@ public class CausalSimulator extends Simulator {
     public Map<Integer, List<TraceOperation>> getHistory() {
         return history;
     }
-
+    
+    public long getSumMem() {
+        return sumMemory;
+    }
+    
+    public long getAvgMem() {
+        return sumMemory/this.getReplicas().keySet().size();
+    }
+    
     public long getLocalSum() {
         return localSum;
     }
@@ -90,7 +98,6 @@ public class CausalSimulator extends Simulator {
         nbLocal = 0L;
         remoteSum = 0L;
         nbRemote = 0L;
-        
     }
     
     @Override
@@ -109,7 +116,7 @@ public class CausalSimulator extends Simulator {
             final TraceOperation opt = it.nextElement();
             final int r = opt.getReplica();
             CRDT a = this.getReplicas().get(r);
-
+            
             if (a == null) {
                 a = this.newReplica(r);
                 clocks.put(r, new VectorClock());
@@ -164,13 +171,24 @@ public class CausalSimulator extends Simulator {
             clocks.get(r).inc(r);
             globalClock.inc(r);
             
-            if(tr == nbrTrace)
-            {
-                tr= 0;
-                serializ(a);
+            if (tr == nbrTrace) {
+                for (int rep : this.getReplicas().keySet()) {
+                    serializ(this.getReplicas().get(rep));
+                }
+                memUsed.add(this.getAvgMem());
+                 sumMemory = 0;
+                tr = 0;
             }
         }
-
+        if (tr != nbrTrace) {
+            for (int rep : this.getReplicas().keySet()) {
+                serializ(this.getReplicas().get(rep));
+            }
+            memUsed.add(this.getAvgMem());
+            sumMemory = 0;
+            tr = 0;
+        }
+        
         Set<Integer> notComplete = new TreeSet<Integer>();
         notComplete.addAll(replicas.keySet());
 
@@ -196,12 +214,29 @@ public class CausalSimulator extends Simulator {
                             insertRemoteTime(s, System.nanoTime() - tmp);
                             remoteSum += (System.nanoTime() - tmp);
                             nbRemote++;
-
+                            tr++;
                             vc.inc(s);
+                            
+                            if (tr == nbrTrace) {
+                                for (int rep : this.getReplicas().keySet()) {
+                                    serializ(this.getReplicas().get(rep));
+                                }
+                                memUsed.add(this.getAvgMem());
+                                sumMemory = 0;
+                                tr = 0;
+                            }
                         }
                     }
                 }
             }
+        }
+        if (tr != nbrTrace) {
+            for (int rep : this.getReplicas().keySet()) {
+                serializ(this.getReplicas().get(rep));
+            }
+            memUsed.add(this.getAvgMem());
+            sumMemory = 0;
+            tr =0;
         }
     }
     
@@ -267,12 +302,12 @@ public class CausalSimulator extends Simulator {
         run(trace);
     }
     
-    public void serializ(CRDT m) throws IOException {
+    public void serializ(CRDT m ) throws IOException {
         ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(byteOutput);
         stream.writeObject(m);
         stream.close();
         
-        //System.out.println("Bytes = " + byteOutput.toByteArray().length);
+        sumMemory +=  byteOutput.toByteArray().length;
     }
 }

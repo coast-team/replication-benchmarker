@@ -18,9 +18,10 @@
  */
 package jbenchmarker.logoot;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class LogootIdentifier implements Comparable<LogootIdentifier> {
+public class LogootIdentifier implements Comparable<LogootIdentifier>, Serializable {
 
     final private ArrayList<Component> id;
 

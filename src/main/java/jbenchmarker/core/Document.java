@@ -18,11 +18,13 @@
  */
 package jbenchmarker.core;
 
+import java.io.Serializable;
+
 /**
  * Interface for a document. 
  * @author urso
  */
-public interface Document {
+public interface Document extends Serializable {
     
     /* 
      * View of the document (without metadata)

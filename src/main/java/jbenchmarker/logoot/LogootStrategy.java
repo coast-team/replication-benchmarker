@@ -18,6 +18,7 @@
  */
 package jbenchmarker.logoot;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ import java.util.List;
  *
  * @author urso
  */
-public abstract class LogootStrategy {
+public abstract class LogootStrategy implements Serializable{
 
 
 

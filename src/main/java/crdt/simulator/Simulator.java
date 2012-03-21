@@ -32,7 +32,7 @@ import java.util.Map;
 public abstract class Simulator {
     final public Map<Integer,CRDT> replicas;
 
-    // Local operations generated
+    // memoryUsed
     final protected List<Long> memUsed; 
 
     // replica's generation time
