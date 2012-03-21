@@ -19,11 +19,12 @@
 package jbenchmarker.rga;
 
 import collect.VectorClock; 
+import java.io.Serializable;
 /**
 *
 * @author Roh
 */
-public class RGAS4Vector implements Comparable<RGAS4Vector> {
+public class RGAS4Vector implements Comparable<RGAS4Vector>, Serializable {
 	public static final int AFTER 	= 1;
 	public static final int EQUAL 	= 0;
 	public static final int BEFORE	= -1;

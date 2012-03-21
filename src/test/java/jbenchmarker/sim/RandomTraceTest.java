@@ -23,6 +23,8 @@ import crdt.simulator.TraceOperation;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
 import crdt.simulator.CausalSimulator;
+import crdt.simulator.IncorrectTraceException;
+import java.io.IOException;
 import java.util.Enumeration;
 import jbenchmarker.trace.CausalCheckerFactory;
 import org.junit.Test;
@@ -56,7 +58,7 @@ public class RandomTraceTest {
      * Test of causality, of class RandomTrace.
      */
     @Test
-    public void Causality() throws PreconditionException {
+    public void Causality() throws PreconditionException, IncorrectTraceException, IOException {
         System.out.println("causality");
         RandomTrace instance = new RandomTrace(240, RandomTrace.FLAT, new StandardSeqOpProfile(0.5, 0.5, 10, 1.0), 0.2, 10, 3.0, 13);
         CausalSimulator cd = new CausalSimulator(new CausalCheckerFactory());

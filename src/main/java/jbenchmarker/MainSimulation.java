@@ -120,11 +120,11 @@ public class MainSimulation {
         }
 
         String file = writeToFile(ltime, nameUsr[1], "usr", minSizeGen);
-        treatFile(nameUsr[1], file, "usr");
+        treatFile(nameUsr[1], file, "usr", base);
         String file2 = writeToFile(rtime, nameUsr[1], "local", minSizeInteg);
-        treatFile(nameUsr[1], file2, "local");
+        treatFile(nameUsr[1], file2, "local", base);
         String file3 = writeToFile(mem,nameUsr[1], "mem", minSizeMem);
-        treatFile(nameUsr[1], file3, "mem");
+        treatFile(nameUsr[1], file3, "mem", 1);
     }
     
     
@@ -151,7 +151,7 @@ public class MainSimulation {
     }
     
     
-    static void treatFile(String Algo,String File,String result) throws IOException
+    static void treatFile(String Algo,String File,String result, int baz) throws IOException
     {
         int Tmoyen = 0;
         int cmpt = 0;
@@ -165,7 +165,7 @@ public class MainSimulation {
            Line= br1.readLine();
             while (Line != null)
             {
-                for(int i=0 ; i<base; i++)
+                for(int i=0 ; i<baz; i++)
                 {
                     if(Line != null)
                     {

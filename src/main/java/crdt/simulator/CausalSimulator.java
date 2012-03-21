@@ -171,7 +171,7 @@ public class CausalSimulator extends Simulator {
             clocks.get(r).inc(r);
             globalClock.inc(r);
             
-            if (tr == nbrTrace) {
+            if (nbrTrace > 0 && tr == nbrTrace) {
                 for (int rep : this.getReplicas().keySet()) {
                     serializ(this.getReplicas().get(rep));
                 }
@@ -180,7 +180,7 @@ public class CausalSimulator extends Simulator {
                 tr = 0;
             }
         }
-        if (tr != nbrTrace) {
+        if (nbrTrace > 0 && tr > 0) {
             for (int rep : this.getReplicas().keySet()) {
                 serializ(this.getReplicas().get(rep));
             }
@@ -217,7 +217,7 @@ public class CausalSimulator extends Simulator {
                             tr++;
                             vc.inc(s);
                             
-                            if (tr == nbrTrace) {
+                            if (nbrTrace > 0 && tr == nbrTrace) {
                                 for (int rep : this.getReplicas().keySet()) {
                                     serializ(this.getReplicas().get(rep));
                                 }
@@ -230,7 +230,7 @@ public class CausalSimulator extends Simulator {
                 }
             }
         }
-        if (tr != nbrTrace) {
+        if (tr > 0 && nbrTrace >0) {
             for (int rep : this.getReplicas().keySet()) {
                 serializ(this.getReplicas().get(rep));
             }

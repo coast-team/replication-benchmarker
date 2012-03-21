@@ -9,14 +9,15 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import collect.VectorClock;
+import java.io.Serializable;
 
-public class RGAPurger {
+public class RGAPurger implements Serializable{
 
 	private Map<Integer, VectorClock> m_lastVC;
 	private Map<Integer, Integer>	  m_minseq;	
 	private Map<Integer, Integer>	  m_sums;
 	private Map<Integer, Boolean>	  m_purgable;
-	private int 					  m_minsum = Integer.MAX_VALUE;
+	private int m_minsum = Integer.MAX_VALUE;
 
 	private RGADocument 	doc;
 	//private Map<Integer, LinkedList<RGANode>> cemetery;

@@ -9,6 +9,7 @@ import crdt.CRDT;
 import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.simulator.random.OperationProfile;
+import java.io.IOException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -54,7 +55,7 @@ public class CausalDispatcherTestSequence {
     
     @Ignore
     @Test
-    public void stress() throws PreconditionException, IncorrectTraceException {
+    public void stress() throws PreconditionException, IncorrectTraceException, IOException {
         int i = 0;
         while (true) {
             System.out.println(" i :" + i++);
@@ -63,7 +64,7 @@ public class CausalDispatcherTestSequence {
     }
     
     @Test
-    public void testRunSequencesOneCharacter() throws IncorrectTraceException, PreconditionException {
+    public void testRunSequencesOneCharacter() throws IncorrectTraceException, PreconditionException, IOException {
         
         for (Factory<CRDT> sf : s) {
             CausalDispatcherTest.testRun(sf, 1000, 10, uopp);
@@ -71,7 +72,7 @@ public class CausalDispatcherTestSequence {
     }
     
     @Test
-    public void testRunSequences() throws IncorrectTraceException, PreconditionException {
+    public void testRunSequences() throws IncorrectTraceException, PreconditionException, IOException {
         
         for (Factory<CRDT> sf : s) {
             CausalDispatcherTest.testRun(sf, 1000, 10, seqopp);
