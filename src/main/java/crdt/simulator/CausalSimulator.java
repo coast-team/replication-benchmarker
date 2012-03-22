@@ -316,12 +316,12 @@ public class CausalSimulator extends Simulator {
 //    }
     
     public void serializ(CRDT m) throws IOException {
-        FileOutputStream fichier = new FileOutputStream(m.getClass().getName()+".ser");
+        FileOutputStream fichier = new FileOutputStream("File.ser");
         ObjectOutputStream oos = new ObjectOutputStream(fichier);
         
         oos.writeObject(m);
         sumMemory +=  fichier.getChannel().size();
-        System.out.println(sumMemory);
+        //System.out.println(sumMemory);
         oos.flush();
         oos.close();
     }
