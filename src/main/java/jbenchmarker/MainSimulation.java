@@ -71,7 +71,7 @@ public class MainSimulation {
         String[] nameUsr = args[0].split("\\.");
         
         for (int ex = 0; ex < nbExec; ex++) {
-            System.out.println("execution"+ ex);
+            System.out.println("execution : "+ ex);
             Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
                     new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
             CausalSimulator cd = new CausalSimulator(rf);

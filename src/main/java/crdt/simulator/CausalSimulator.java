@@ -21,6 +21,7 @@ package crdt.simulator;
 import collect.VectorClock;
 import crdt.*;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -302,12 +303,26 @@ public class CausalSimulator extends Simulator {
         run(trace);
     }
     
-    public void serializ(CRDT m ) throws IOException {
-        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-        ObjectOutputStream stream = new ObjectOutputStream(byteOutput);
-        stream.writeObject(m);
-        stream.close();
+//    public void serializ(CRDT m ) throws IOException {
+//        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream(999999999);
+//        ObjectOutputStream stream = new ObjectOutputStream(byteOutput);
+//        stream.writeObject(m);
+//        sumMemory +=  byteOutput.toByteArray().length;
+//        
+//        stream.flush();
+//        stream.close();
+//        byteOutput.flush();
+//        byteOutput.close();        
+//    }
+    
+    public void serializ(CRDT m) throws IOException {
+        FileOutputStream fichier = new FileOutputStream(m.getClass().getName()+".ser");
+        ObjectOutputStream oos = new ObjectOutputStream(fichier);
         
-        sumMemory +=  byteOutput.toByteArray().length;
+        oos.writeObject(m);
+        sumMemory +=  fichier.getChannel().size();
+        System.out.println(sumMemory);
+        oos.flush();
+        oos.close();
     }
 }
