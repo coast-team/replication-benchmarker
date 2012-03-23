@@ -18,6 +18,7 @@
  */
 package jbenchmarker.treedoc;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -34,7 +35,7 @@ import java.util.NoSuchElementException;
  * 
  * @author mzawirski
  */
-public class TreedocIdentifier {
+public class TreedocIdentifier implements Serializable{
 	enum EdgeDirection {
 		LEFT, RIGHT
 	};

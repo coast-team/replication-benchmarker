@@ -18,11 +18,13 @@
  */
 package jbenchmarker.woot;
 
+import java.io.Serializable;
+
 /**
  *
  * @author urso
  */
-public abstract class WootNode { 
+public abstract class WootNode implements Serializable{ 
     
     final private WootIdentifier id; // own identifier
     final private char content;

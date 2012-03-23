@@ -18,6 +18,7 @@
  */
 package jbenchmarker.sim;
 
+import org.junit.Ignore;
 import crdt.CRDT;
 import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
@@ -33,6 +34,7 @@ import static org.junit.Assert.*;
  * @author Roh
  */
 public class IntegrationRGA {
+    @Ignore
     @Test
     public void testRGAExempleRun() throws Exception {
         System.out.println("Integration test with RGA");        
@@ -47,7 +49,7 @@ public class IntegrationRGA {
         assertEquals(r, cd.getReplicas().get(4).lookup());
     }
     
-    // @Ignore
+//     @Ignore
 //    @Test
 //    public void testRGAG1Run() throws Exception {
 //        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);

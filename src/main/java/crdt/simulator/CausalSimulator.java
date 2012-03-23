@@ -303,26 +303,26 @@ public class CausalSimulator extends Simulator {
         run(trace);
     }
     
-//    public void serializ(CRDT m ) throws IOException {
-//        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream(999999999);
-//        ObjectOutputStream stream = new ObjectOutputStream(byteOutput);
-//        stream.writeObject(m);
-//        sumMemory +=  byteOutput.toByteArray().length;
-//        
-//        stream.flush();
-//        stream.close();
-//        byteOutput.flush();
-//        byteOutput.close();        
-//    }
-    
-    public void serializ(CRDT m) throws IOException {
-        FileOutputStream fichier = new FileOutputStream("File.ser");
-        ObjectOutputStream oos = new ObjectOutputStream(fichier);
+    public void serializ(CRDT m ) throws IOException {
+        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+        ObjectOutputStream stream = new ObjectOutputStream(byteOutput);
+        stream.writeObject(m);
+        sumMemory +=  byteOutput.toByteArray().length;
         
-        oos.writeObject(m);
-        sumMemory +=  fichier.getChannel().size();
-        //System.out.println(sumMemory);
-        oos.flush();
-        oos.close();
+        stream.flush();
+        stream.close();
+        byteOutput.flush();
+        byteOutput.close();        
     }
+    
+//    public void serializ(CRDT m) throws IOException {
+//
+//        FileOutputStream fichier = new FileOutputStream("File.ser");
+//        //long s = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+//        ObjectOutputStream oos = new ObjectOutputStream(fichier);
+//        oos.writeObject(m);
+//        sumMemory +=  fichier.getChannel().size();
+//        oos.flush();
+//        oos.close();
+//    }
 }

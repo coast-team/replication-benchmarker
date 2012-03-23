@@ -56,7 +56,7 @@ public abstract class AbstractIntegrationTest {
 		}
 		assertNotNull(referenceView);
 	}
-
+        
 	@Test
 	public void testExempleRun() throws Exception {
 		cd.run(TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1));

@@ -24,12 +24,13 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import collect.VectorClock;
+import java.io.Serializable;
 
 /**
  *
  * @author oster
  */
-public class OperationGarbageCollector {
+public class OperationGarbageCollector implements Serializable{
 
     private SOCT2MergeAlgorithm mergeAlgorithm;
     private Map<Integer, VectorClock> clocksOfAllSites = new TreeMap<Integer, VectorClock>();

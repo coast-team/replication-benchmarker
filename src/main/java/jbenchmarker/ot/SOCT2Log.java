@@ -18,6 +18,7 @@
  */
 package jbenchmarker.ot;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +27,7 @@ import java.util.List;
  *
  * @author oster
  */
-public class SOCT2Log implements Iterable<TTFOperation> {
+public class SOCT2Log implements Iterable<TTFOperation>, Serializable {
 
     protected List<TTFOperation> operations = new ArrayList<TTFOperation>();
 

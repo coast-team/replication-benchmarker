@@ -18,11 +18,13 @@
  */
 package jbenchmarker.ot;
 
+import java.io.Serializable;
+
 /**
  *
  * @author oster
  */
-public class TTFChar {
+public class TTFChar implements Serializable{
 
     private char character;
     private boolean visible;

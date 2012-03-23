@@ -18,6 +18,7 @@
  */
 package jbenchmarker.sim;
 
+import org.junit.Ignore;
 import crdt.CRDT;
 import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
@@ -35,7 +36,7 @@ import static org.junit.Assert.*;
  */
 public class IntegrationSOCT2 {
    
-    //@Ignore   // 231,986 s  on rev 105
+    @Ignore   // 231,986 s  on rev 105
     @Test
     public void testSOCT2RunG1() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         

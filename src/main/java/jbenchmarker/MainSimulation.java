@@ -27,7 +27,7 @@ public class MainSimulation {
 
     static int base = 100;
 
-    public static void main(String[] args) throws Exception {
+    static public void main(String[] args) throws Exception {
 
         if (args.length < 13) {
             System.err.println("Arguments :");
@@ -46,8 +46,8 @@ public class MainSimulation {
             System.err.println("- scale for serealization : ");
             System.exit(1);
         }
-
         Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[0]).newInstance();
+        
         int nbExec = Integer.valueOf(args[1]);
         int nb = 1;
         if (nbExec > 1) {
@@ -105,7 +105,7 @@ public class MainSimulation {
                 if (minSizeInteg > cd.replicaRemoteTimes().get(r).size()) {
                     minSizeInteg = cd.replicaRemoteTimes().get(r).size();
                 }
-                for (int i = 0; i < minSizeInteg-1; i++) {
+                for (int i = 0; i < minSizeInteg - 1; i++) {
                     rtime[ex][i] += cd.replicaRemoteTimes().get(r).get(i);
                 }
             }
@@ -117,6 +117,7 @@ public class MainSimulation {
             cd = null;
             trace = null;
             System.gc();
+            
         }
 
         String file = writeToFile(ltime, nameUsr[1], "usr", minSizeGen);
@@ -208,7 +209,11 @@ public class MainSimulation {
             for (int ex = 0; ex < nbExpe; ex++) { // calculer moyenne de la ligne
                 sum += data[ex][op];
             }
-            long moy = sum / nbExpe, sum2 = 0, k = 0;
+            long moy = 0, sum2 = 0, k = 0;
+            if(nbExpe == 0)
+            moy =sum;
+            else moy = sum / nbExpe;
+            
             for (int ex = 0; ex < nbExpe; ex++) {
                 if (data[ex][op] < thresold * moy) {
                     sum2 += data[ex][op];
