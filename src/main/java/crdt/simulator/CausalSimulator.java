@@ -314,7 +314,7 @@ public class CausalSimulator extends Simulator {
         byteOutput.flush();
         byteOutput.close();        
     }
-    
+//    
 //    public void serializ(CRDT m) throws IOException {
 //
 //        FileOutputStream fichier = new FileOutputStream("File.ser");

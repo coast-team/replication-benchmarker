@@ -29,7 +29,7 @@ public class MainSimulation {
 
     static public void main(String[] args) throws Exception {
 
-        if (args.length < 13) {
+        if (args.length < 14) {
             System.err.println("Arguments :");
             System.err.println("- Factory : a jbenchmaker.core.ReplicaFactory implementation ");
             System.err.println("- Number of execu : ");
@@ -44,6 +44,7 @@ public class MainSimulation {
             System.err.println("- replicas : ");
             System.err.println("- thresold : ");
             System.err.println("- scale for serealization : ");
+            System.err.println("- name File : ");
             System.exit(1);
         }
         Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[0]).newInstance();
@@ -68,7 +69,7 @@ public class MainSimulation {
         long ltime[][] = null, rtime[][] = null, mem[][] = null;
         int minSizeGen = 0, minSizeInteg = 0, minSizeMem = 0;
         int cop = 0, uop = 0, mop = 0;
-        String[] nameUsr = args[0].split("\\.");
+        String nameUsr = args[13];
         
         for (int ex = 0; ex < nbExec; ex++) {
             System.out.println("execution : "+ ex);
@@ -120,12 +121,12 @@ public class MainSimulation {
             
         }
 
-        String file = writeToFile(ltime, nameUsr[1], "usr", minSizeGen);
-        treatFile(nameUsr[1], file, "usr", base);
-        String file2 = writeToFile(rtime, nameUsr[1], "local", minSizeInteg);
-        treatFile(nameUsr[1], file2, "local", base);
-        String file3 = writeToFile(mem,nameUsr[1], "mem", minSizeMem);
-        treatFile(nameUsr[1], file3, "mem", 1);
+        String file = writeToFile(ltime, nameUsr, "usr", minSizeGen);
+        treatFile(nameUsr, file, "usr", base);
+        String file2 = writeToFile(rtime, nameUsr, "local", minSizeInteg);
+        treatFile(nameUsr, file2, "local", base);
+        String file3 = writeToFile(mem,nameUsr, "mem", minSizeMem);
+        treatFile(nameUsr, file3, "mem", 10);
     }
     
     
@@ -154,7 +155,7 @@ public class MainSimulation {
     
     static void treatFile(String Algo,String File,String result, int baz) throws IOException
     {
-        int Tmoyen = 0;
+        double Tmoyen = 0L;
         int cmpt = 0;
         String Line;
         String fileName = Algo+"-"+result+".data";
@@ -178,7 +179,7 @@ public class MainSimulation {
                         break;
                 }
                Tmoyen = Tmoyen/cmpt;
-               float tMicro  = Tmoyen;
+               double tMicro  = Tmoyen;
                
                 if (result.equals("mem"))
                     tMicro = Tmoyen / 1000; // microSeconde
@@ -194,11 +195,11 @@ public class MainSimulation {
         }
         
     }
-    static int getLastValue(String ligne)
+    static double getLastValue(String ligne)
     {
        String tab[] = ligne.split("\t");
-       float t = Float.parseFloat(tab[(tab.length)-1]);
-       return ((int)t);
+       double t = Double.parseDouble(tab[(tab.length)-1]);
+       return (t);
     }
     
 
