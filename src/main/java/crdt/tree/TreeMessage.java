@@ -50,4 +50,9 @@ public class TreeMessage implements CRDTMessage {
     public TreeOperationType getType() {
         return type;
     }
+
+    @Override
+    public int size() {
+        return -1;
+    }
 }

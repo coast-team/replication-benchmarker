@@ -36,11 +36,16 @@ public abstract class Simulator {
     // memoryUsed
     final protected List<Long> memUsed; 
 
-    // replica's generation time
+    // operation's generation time
     final protected List<Long> genTime;
     
-    // replica's integrate time for each replica
-    final protected Hashtable<Integer, ArrayList<Hashtable<Integer, Long>>> remoteTime;
+    // operation's integrate time 
+    final protected List<Long> remoteTime;
+    
+    // operation's generation size
+    final protected List<Integer> genSize;
+
+   
     //final protected Map<Integer, List<Long>> remoteTime;
     
     final private Factory<CRDT> rf;
@@ -55,7 +60,8 @@ public abstract class Simulator {
         this.replicas = new HashMap<Integer,CRDT>();
         this.memUsed = new ArrayList<Long>();
         this.genTime = new ArrayList<Long>();
-        this.remoteTime = new Hashtable<Integer, ArrayList<Hashtable<Integer, Long>>>();
+        this.remoteTime = new ArrayList<Long>();
+        this.genSize = new ArrayList<Integer>();
         this.rf = rf;
     }
 
@@ -98,7 +104,7 @@ public abstract class Simulator {
      * Time for execution remote operation
      * @return 
      */
-    public Hashtable<Integer, ArrayList<Hashtable<Integer, Long>>> replicaRemoteTimes() {
+    public List<Long> getRemoteTimes() {
         return remoteTime;
     }
 }

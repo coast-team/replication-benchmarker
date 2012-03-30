@@ -12,4 +12,6 @@ public interface CRDTMessage extends Cloneable {
     public CRDTMessage concat(CRDTMessage msg);
 
     public CRDTMessage clone();
+    
+    public int size();
 }

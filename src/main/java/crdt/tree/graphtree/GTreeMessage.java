@@ -43,5 +43,10 @@ public class GTreeMessage implements CRDTMessage {
     public CRDTMessage clone() {
         return new GTreeMessage(node.clone(), edge.clone());
     }
+
+    @Override
+    public int size() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
 }

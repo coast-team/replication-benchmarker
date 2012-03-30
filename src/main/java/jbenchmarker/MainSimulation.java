@@ -81,7 +81,7 @@ public class MainSimulation {
             cd.runWithMemory(trace, scaleMemory);
 
             if (ltime == null) {
-                cop = cd.replicaRemoteTimes().get(0).size();
+                cop = cd.getRemoteTimes().get(0).size();
                 uop = cd.replicaGenerationTimes().size();
                 mop = cd.getMemUsed().size();
                 ltime = new long[nb][uop];
@@ -90,7 +90,7 @@ public class MainSimulation {
                 minSizeGen = uop;
                 minSizeInteg = cop;
                 minSizeMem = mop;
-                nbrReplica = cd.replicaRemoteTimes().keySet().size();
+                nbrReplica = cd.getRemoteTimes().keySet().size();
             }
             
             List<Long> l = cd.replicaGenerationTimes();
@@ -103,19 +103,19 @@ public class MainSimulation {
                 minSizeMem = m.size();
             toArrayLong(mem[ex], m, minSizeMem);
             
-//            for (int r : cd.replicaRemoteTimes().keySet()) {
-//                if (minSizeInteg > cd.replicaRemoteTimes().get(r).size()) {
-//                    minSizeInteg = cd.replicaRemoteTimes().get(r).size();
+//            for (int r : cd.getRemoteTimes().keySet()) {
+//                if (minSizeInteg > cd.getRemoteTimes().get(r).size()) {
+//                    minSizeInteg = cd.getRemoteTimes().get(r).size();
 //                }
 //                for (int i = 0; i < minSizeInteg - 1; i++) {
-//                    rtime[ex][i] += cd.replicaRemoteTimes().get(r).get(i);
+//                    rtime[ex][i] += cd.getRemoteTimes().get(r).get(i);
 //                }
 //            }
 //            for (int i = 0; i < minSizeInteg-1; i++) {
 //                rtime[ex][i] /= replicas;
 //            }
             
-            List<Hashtable<Integer, Long>> listHash = cd.replicaRemoteTimes().get(0);
+            List<Hashtable<Integer, Long>> listHash = cd.getRemoteTimes().get(0);
             Iterator<Hashtable<Integer, Long>> iterator = listHash.iterator();
             int num = 0;
             while (iterator.hasNext()) {
@@ -123,8 +123,8 @@ public class MainSimulation {
                 if(num < minSizeInteg)
                 {
                     int repRec = table.keys().nextElement();
-                    for (int r : cd.replicaRemoteTimes().keySet()) {
-                        List<Hashtable<Integer, Long>> list = cd.replicaRemoteTimes().get(r);
+                    for (int r : cd.getRemoteTimes().keySet()) {
+                        List<Hashtable<Integer, Long>> list = cd.getRemoteTimes().get(r);
                         Iterator<Hashtable<Integer, Long>> it = list.iterator();
                         boolean find = false;
                         while (it.hasNext()) {

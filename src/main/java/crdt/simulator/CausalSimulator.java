@@ -111,6 +111,8 @@ public class CausalSimulator extends Simulator {
         final VectorClock globalClock = new VectorClock();
         final List<TraceOperation> concurrentOps = new LinkedList<TraceOperation>();
         final Enumeration<TraceOperation> it = trace.enumeration();
+        final HashMap<TraceOperation, Integer> orderTrace = new HashMap();        
+        int numTrace = 0;
         
         setOp = new HashSet();
         history = new HashMap<Integer, List<TraceOperation>>();
@@ -128,6 +130,7 @@ public class CausalSimulator extends Simulator {
                 history.put(r, new ArrayList<TraceOperation>());
             }
             history.get(r).add(opt);
+            orderTrace.put(opt, numTrace++);
 
             // For testing can be removed
             causalCheck(opt, clocks);
@@ -154,8 +157,10 @@ public class CausalSimulator extends Simulator {
 
                     tmp = System.nanoTime();
                     a.applyRemote(optime);
-                    insertRemoteTime(r, e, System.nanoTime() - tmp);
-                    remoteSum += (System.nanoTime() - tmp);
+                    long after = System.nanoTime(); 
+                    int num = orderTrace.get(t);                            
+                    remoteTime.set(num, remoteTime.get(num) + after - tmp);
+                    remoteSum += (after - tmp);
                     nbRemote++;
                     vc.inc(e);
                 }
@@ -165,9 +170,11 @@ public class CausalSimulator extends Simulator {
 
             tmp = System.nanoTime();
             final CRDTMessage m = a.applyLocal(op);
-            insertRemoteTime(r, r, 0L);
-            genTime.add(System.nanoTime() - tmp);
-            localSum += (System.nanoTime() - tmp);
+            long after = System.nanoTime(); 
+            genTime.add(after - tmp);
+            localSum += (after - tmp);
+            genSize.add(m.size());
+            remoteTime.add(0L);
             nbLocal++;
 
             final CRDTMessage msg = m.clone();
@@ -201,8 +208,10 @@ public class CausalSimulator extends Simulator {
 
                             tmp = System.nanoTime();
                             a.applyRemote(optime);
-                            insertRemoteTime(r, s, System.nanoTime() - tmp);
-                            remoteSum += (System.nanoTime() - tmp);
+                            long after = System.nanoTime(); 
+                            int num = orderTrace.get(history.get(s).get(j));                            
+                            remoteTime.set(num, remoteTime.get(num) + after - tmp);
+                            remoteSum += (after - tmp);
                             nbRemote++;
                             tour++;
                             vc.inc(s);
@@ -213,21 +222,6 @@ public class CausalSimulator extends Simulator {
             }
         }
         ifSerializ();
-    }
-
-    void insertRemoteTime(Integer r, Integer e, Long t) {
-        if (remoteTime.containsKey(r)) {
-            ArrayList p = remoteTime.get(r);
-            Hashtable hs = new Hashtable();
-            hs.put(e, t);
-            p.add(hs);
-        } else {
-            ArrayList<Hashtable<Integer, Long>> l = new ArrayList();
-            Hashtable<Integer, Long> hs = new Hashtable();
-            hs.put(e, t);
-            l.add(hs);
-            remoteTime.put(r, l);
-        }
     }
 
     public static void insertCausalOrder(List<TraceOperation> concurrentOps, TraceOperation opt) {
@@ -308,6 +302,18 @@ public class CausalSimulator extends Simulator {
         }
     }
 
+    public List<Long> splittedGenTime() {
+        List<Long> l = new ArrayList();
+        for (int i = 0; i < remoteTime.size(); ++i) {
+            int gs = genSize.get(i);
+            long t = remoteTime.get(i) / gs;
+            for (int j = 0; j < gs; ++j) {
+                l.add(t);
+            }
+        }
+        return l;
+    }
+    
 //    public void serializ(CRDT m) throws IOException {
 //
 //        FileOutputStream fichier = new FileOutputStream("File.ser");

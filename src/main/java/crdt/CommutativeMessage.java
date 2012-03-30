@@ -45,4 +45,13 @@ public abstract class CommutativeMessage<T> implements CRDTMessage, Cloneable {
     abstract protected String visu();
     
     abstract protected CommutativeMessage copy();
+
+    @Override
+    public int size() {
+        int s = 1;
+        for (CommutativeMessage<T> m : msgs) {
+            s += m.size();
+        }
+        return s;
+    }
 }

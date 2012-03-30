@@ -25,4 +25,9 @@ public abstract class ConvergentSet<T> extends CRDTSet<T> implements CRDTMessage
     
     @Override
     abstract public ConvergentSet<T> clone();
+
+    @Override
+    public int size() {
+        return 1;
+    }
 }

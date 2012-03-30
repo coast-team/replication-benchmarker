@@ -27,7 +27,7 @@ import crdt.Operation;
  * @author urso
  */
 abstract public class TraceOperation implements Operation {
-
+    
     final private int replica;
     final private VectorClock VC;
 
