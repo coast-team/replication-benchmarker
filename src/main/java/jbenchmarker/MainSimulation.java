@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 /**
  *
@@ -26,7 +28,7 @@ import java.util.List;
 public class MainSimulation {
 
     static int base = 100;
-
+    static int baseSerializ = 10;
     static public void main(String[] args) throws Exception {
 
         if (args.length < 14) {
@@ -67,7 +69,7 @@ public class MainSimulation {
         int scaleMemory = Integer.valueOf(args[12]);
         
         long ltime[][] = null, rtime[][] = null, mem[][] = null;
-        int minSizeGen = 0, minSizeInteg = 0, minSizeMem = 0;
+        int minSizeGen = 0, minSizeInteg = 0, minSizeMem = 0, nbrReplica = 0;
         int cop = 0, uop = 0, mop = 0;
         String nameUsr = args[13];
         
@@ -88,45 +90,80 @@ public class MainSimulation {
                 minSizeGen = uop;
                 minSizeInteg = cop;
                 minSizeMem = mop;
+                nbrReplica = cd.replicaRemoteTimes().keySet().size();
             }
             
             List<Long> l = cd.replicaGenerationTimes();
             if(l.size() < minSizeGen)
                 minSizeGen = l.size();
             toArrayLong(ltime[ex], l, minSizeGen);  
-            computeAverage(ltime, thresold, minSizeGen);
             
             List<Long> m = cd.getMemUsed();
             if(m.size() < minSizeMem)
                 minSizeMem = m.size();
             toArrayLong(mem[ex], m, minSizeMem);
-            computeAverage(mem, thresold, minSizeMem);
             
-            for (int r : cd.replicaRemoteTimes().keySet()) {
-                if (minSizeInteg > cd.replicaRemoteTimes().get(r).size()) {
-                    minSizeInteg = cd.replicaRemoteTimes().get(r).size();
-                }
-                for (int i = 0; i < minSizeInteg - 1; i++) {
-                    rtime[ex][i] += cd.replicaRemoteTimes().get(r).get(i);
+//            for (int r : cd.replicaRemoteTimes().keySet()) {
+//                if (minSizeInteg > cd.replicaRemoteTimes().get(r).size()) {
+//                    minSizeInteg = cd.replicaRemoteTimes().get(r).size();
+//                }
+//                for (int i = 0; i < minSizeInteg - 1; i++) {
+//                    rtime[ex][i] += cd.replicaRemoteTimes().get(r).get(i);
+//                }
+//            }
+//            for (int i = 0; i < minSizeInteg-1; i++) {
+//                rtime[ex][i] /= replicas;
+//            }
+            
+            List<Hashtable<Integer, Long>> listHash = cd.replicaRemoteTimes().get(0);
+            Iterator<Hashtable<Integer, Long>> iterator = listHash.iterator();
+            int num = 0;
+            while (iterator.hasNext()) {
+                Hashtable<Integer, Long> table = iterator.next();
+                if(num < minSizeInteg)
+                {
+                    int repRec = table.keys().nextElement();
+                    for (int r : cd.replicaRemoteTimes().keySet()) {
+                        List<Hashtable<Integer, Long>> list = cd.replicaRemoteTimes().get(r);
+                        Iterator<Hashtable<Integer, Long>> it = list.iterator();
+                        boolean find = false;
+                        while (it.hasNext()) {
+                            Hashtable<Integer, Long> hs = it.next();
+                            if (hs.containsKey(repRec) && !find) {
+                                rtime[ex][num] += hs.get(repRec);
+                                if (r != 0) {
+                                    it.remove();
+                                }
+                                find = true;
+                            }
+                        }
+                    }
+                    num++;
+                    iterator.remove();
                 }
             }
-            for (int i = 0; i < minSizeInteg-1; i++) {
-                rtime[ex][i] /= replicas;
+
+            for (int i = 0; i < cop - 1; i++) {
+                rtime[ex][i] /= nbrReplica;
             }
-            computeAverage(rtime, thresold, minSizeInteg);
-            
+                        
             cd = null;
             trace = null;
             System.gc();
             
         }
-
+        if (nbExec > 1) {
+            computeAverage(ltime, thresold, minSizeGen);
+            computeAverage(mem, thresold, minSizeMem);
+            computeAverage(rtime, thresold, minSizeInteg);
+        }
+        
         String file = writeToFile(ltime, nameUsr, "usr", minSizeGen);
-        treatFile(nameUsr, file, "usr", base);
-        String file2 = writeToFile(rtime, nameUsr, "local", minSizeInteg);
-        treatFile(nameUsr, file2, "local", base);
+        treatFile(file, "usr", base);
+        String file2 = writeToFile(rtime, nameUsr, "gen", minSizeInteg);
+        treatFile(file2, "gen", base);
         String file3 = writeToFile(mem,nameUsr, "mem", minSizeMem);
-        treatFile(nameUsr, file3, "mem", 10);
+        treatFile(file3, "mem", baseSerializ);
     }
     
     
@@ -153,12 +190,13 @@ public class MainSimulation {
     }
     
     
-    static void treatFile(String Algo,String File,String result, int baz) throws IOException
+    static void treatFile(String File,String result, int baz) throws IOException
     {
         double Tmoyen = 0L;
         int cmpt = 0;
         String Line;
-        String fileName = Algo+"-"+result+".data";
+         String[] fData = File.split("\\.");
+        String fileName = fData[0] +".data";
         PrintWriter ecrivain =  new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
         InputStream ips1=new FileInputStream(File);
         InputStreamReader ipsr1=new InputStreamReader(ips1);
@@ -181,7 +219,7 @@ public class MainSimulation {
                Tmoyen = Tmoyen/cmpt;
                double tMicro  = Tmoyen;
                
-                if (result.equals("mem"))
+                if (!result.equals("mem"))
                     tMicro = Tmoyen / 1000; // microSeconde
                
                ecrivain.println(tMicro);

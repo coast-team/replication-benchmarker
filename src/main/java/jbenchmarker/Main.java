@@ -27,7 +27,15 @@ import java.util.List;
 import jbenchmarker.core.MergeAlgorithm;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.Hashtable;
+import java.util.Iterator;
 import jbenchmarker.trace.TraceGenerator;
+
 /**
  *
  * @author urso
@@ -37,14 +45,16 @@ public class Main {
     /**
      * @param args the command line arguments
      */
+    static int baseSerializ = 10, base = 100;
     public static void main(String[] args) throws Exception {
 
-        if (args.length < 2 || args.length > 4) {
+        if (args.length < 3 || args.length > 5) {
             System.err.println("Arguments : Factory Trace [nb_exec [thresold]]");
             System.err.println("- Factory : a jbenchmaker.core.ReplicaFactory implementation ");
             System.err.println("- Trace : a xml file of a trace ");
             System.err.println("- nb_exec : the number of execution (default 1)");
             System.err.println("- thresold : the proportional thresold for not counting a result in times the average (default 2.0)");
+            System.err.println("- number of serialization");
             System.exit(1);
         }
 
@@ -53,36 +63,68 @@ public class Main {
         int nb = (nbExec > 1) ? nbExec + 1 : nbExec;
         double thresold = (args.length > 3) ? Double.valueOf(args[3]) : 2.0;
         long ltime[][] = null, mem[][] = null, rtime[][] = null;
-        int cop = 0, uop = 0, nbReplica = 0;
+        int cop = 0, uop = 0, nbReplica = 0, mop = 0;
         long st = System.currentTimeMillis();
         for (int ex = 0; ex < nbExec; ex++) {
+            System.out.println("execution ::: " + ex);
             Trace trace = TraceGenerator.traceFromXML(args[1], 1);
             CausalSimulator cd = new CausalSimulator(rf);
-            cd.run(trace);
-            // TODO : correct it
-            
+            cd.runWithMemory(trace, Integer.valueOf(args[4]));
+
             if (ltime == null) {
-//                cop = cd.getReplicas().get(0).getHistory().size();
+                cop = cd.replicaRemoteTimes().get(0).size();
                 uop = cd.replicaGenerationTimes().size();
+                mop = cd.getMemUsed().size();
                 nbReplica = cd.getReplicas().entrySet().size();
                 ltime = new long[nb][uop];
                 rtime = new long[nb][cop];
-                mem = new long[nb][uop];
+                mem = new long[nb][mop];
             }
             toArrayLong(ltime[ex], cd.replicaGenerationTimes());
             toArrayLong(mem[ex], cd.getMemUsed());
+
+//            for (int r : cd.replicaRemoteTimes().keySet()) {
+//                for (int i = 0; i < cop - 1; i++) {
+//                    rtime[ex][i] += cd.replicaRemoteTimes().get(r).get(i);
+//                }
+//            }
+//            for (int i = 0; i < cop; i++) {
+//                rtime[ex][i] /= nbReplica;
+//            }
             
-            for (CRDT m : cd.getReplicas().values()) {
-                for (int i = 0; i < cop; i++) {
-//                    rtime[ex][i] += m.getExecTime().get(i);
+            List<Hashtable<Integer, Long>> l = cd.replicaRemoteTimes().get(0);
+            Iterator<Hashtable<Integer, Long>> iterator = l.iterator();
+            int num = 0;
+            while (iterator.hasNext()) {
+                Hashtable<Integer, Long> table = iterator.next();
+                int repRec = table.keys().nextElement();
+                for (int r : cd.replicaRemoteTimes().keySet()) {
+                    List<Hashtable<Integer, Long>> list = cd.replicaRemoteTimes().get(r);
+                    Iterator<Hashtable<Integer, Long>> it = list.iterator();
+                    boolean find = false;
+                    while (it.hasNext()) {
+                        Hashtable<Integer, Long> hs = it.next();
+                        if (hs.containsKey(repRec) && !find) {
+                            rtime[ex][num] += hs.get(repRec);
+                            if (r != 0) {
+                                it.remove();
+                            }
+                            find = true;
+                        }
+                    }
                 }
+                num++;
+                iterator.remove();
             }
-            for (int i = 0; i < cop; i++) {
+
+            for (int i = 0; i < cop - 1; i++) {
                 rtime[ex][i] /= nbReplica;
             }
-            cd = null; trace = null;
+            
+            
+            cd = null;
+            trace = null;
             System.gc();
-            if (nbExec > 1) System.out.print(ex + " . ");
         }
 
 
@@ -96,35 +138,47 @@ public class Main {
         if (i == -1) {
             i = args[1].lastIndexOf('\\');
         }
-        String fileName = args[0].substring(k + 1, l) + "-" + args[1].substring(i + 1, j);
+        String n = args[0].substring(k + 1, l);
+        String[] c;
+        if (n.contains("$")) {
+            c = n.split("\\$");
+            n = c[1];
+        }
 
-        System.out.println("---------------------------------------------\nTotal time : " 
+        String fileName = n + "-" + args[1].substring(i + 1, j);
+
+        System.out.println("---------------------------------------------\nTotal time : "
                 + (ft - st) / 1000.0 + " s");
         System.out.println("---------------------------------------------\n");
         System.out.flush();
-//            System.out.println(R0.lookup());
-        
+
         if (nbExec > 1) {
             computeAverage(ltime, thresold);
             computeAverage(rtime, thresold);
             computeAverage(mem, thresold);
         }
+
+        String file1 =  writeToFile(ltime, fileName, "usr");
+        String file2 =  writeToFile(rtime, fileName, "gen");
+        String file3 =  writeToFile(mem, fileName, "mem");
         
-        writeToFile(ltime, fileName, "usr");
-        writeToFile(rtime, fileName, "gen");
-        writeToFile(mem, fileName, "mem");
+        treatFile(file1, base, "usr");
+        treatFile(file2, base, "gen");
+        treatFile(file3, baseSerializ, "mem");
     }
-    
+
     private static void toArrayLong(long[] t, List<Long> l) {
-        for (int i = 0; i < l.size(); ++i) 
+        for (int i = 0; i < l.size(); ++i) {
             t[i] = l.get(i);
+        }
     }
 
     /**
      * Write all array in a file
      */
-    private static void writeToFile(long[][] data, String fileName, String type) throws IOException {
-        BufferedWriter out = new BufferedWriter(new FileWriter(fileName + '-' + type + ".res"));
+    private static String writeToFile(long[][] data, String fileName, String type) throws IOException {
+        String nameFile = fileName + '-' + type + ".res";
+        BufferedWriter out = new BufferedWriter(new FileWriter(nameFile));
         for (int op = 0; op < data[0].length; ++op) {
             for (int ex = 0; ex < data.length; ++ex) {
                 out.append(data[ex][op] + "\t");
@@ -132,9 +186,9 @@ public class Main {
             out.append("\n");
         }
         out.close();
+        return nameFile;
     }
-    
-    
+
     public static void computeAverage(long[][] data, double thresold) {
         int nbExpe = data.length - 1;
         for (int op = 0; op < data[0].length; ++op) {
@@ -149,7 +203,55 @@ public class Main {
                     k++;
                 }
             }
-            data[nbExpe][op] = sum2 / (k - 1);
+            if (k != 0) {
+                data[nbExpe][op] = sum2 / k;
+            }
         }
+    }
+
+    static void treatFile(String File, int baz, String result) throws IOException {
+        int Tmoyen = 0;
+        int cmpt = 0;
+        String Line;
+        String[] fData = File.split("\\.");
+        String fileName = fData[0] + ".data";
+        PrintWriter ecrivain = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
+        InputStream ips1 = new FileInputStream(File);
+        InputStreamReader ipsr1 = new InputStreamReader(ips1);
+        BufferedReader br1 = new BufferedReader(ipsr1);
+        try {
+            Line = br1.readLine();
+            while (Line != null) {
+                for (int i = 0; i < baz; i++) {
+                    if (Line != null) {
+                        Tmoyen += getLastValue(Line);
+                        Line = br1.readLine();
+                        cmpt++;
+                    } else {
+                        break;
+                    }
+                }
+                Tmoyen = Tmoyen / cmpt;
+                float tMicro = Tmoyen;
+
+                if (!result.equals("mem")) {
+                    tMicro = Tmoyen / 1000; // microSeconde
+                }
+                ecrivain.println(tMicro);
+                Tmoyen = 0;
+                cmpt = 0;
+            }
+            br1.close();
+            ecrivain.close();
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+
+    }
+
+    static int getLastValue(String ligne) {
+        String tab[] = ligne.split("\t");
+        float t = Float.parseFloat(tab[(tab.length) - 1]);
+        return ((int) t);
     }
 }

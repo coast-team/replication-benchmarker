@@ -22,6 +22,7 @@ import crdt.CRDT;
 import crdt.Factory;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +40,8 @@ public abstract class Simulator {
     final protected List<Long> genTime;
     
     // replica's integrate time for each replica
-    final protected Map<Integer, List<Long>> remoteTime;
+    final protected Hashtable<Integer, ArrayList<Hashtable<Integer, Long>>> remoteTime;
+    //final protected Map<Integer, List<Long>> remoteTime;
     
     final private Factory<CRDT> rf;
     
@@ -53,7 +55,7 @@ public abstract class Simulator {
         this.replicas = new HashMap<Integer,CRDT>();
         this.memUsed = new ArrayList<Long>();
         this.genTime = new ArrayList<Long>();
-        this.remoteTime = new HashMap<Integer, List<Long>>();
+        this.remoteTime = new Hashtable<Integer, ArrayList<Hashtable<Integer, Long>>>();
         this.rf = rf;
     }
 
@@ -96,7 +98,7 @@ public abstract class Simulator {
      * Time for execution remote operation
      * @return 
      */
-    public Map<Integer,List<Long>> replicaRemoteTimes() {
+    public Hashtable<Integer, ArrayList<Hashtable<Integer, Long>>> replicaRemoteTimes() {
         return remoteTime;
     }
 }

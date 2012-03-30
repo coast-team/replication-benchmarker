@@ -27,6 +27,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,7 +46,8 @@ public class CausalSimulator extends Simulator {
     public CausalSimulator(Factory<CRDT> rf) {
         super(rf);
     }
-
+    int tour = 0;
+    HashSet<CRDTMessage> setOp;
     private Map<Integer, List<TraceOperation>> history;
     private Map<Integer, List<CRDTMessage>> genHistory;
     private long localSum = 0L, nbLocal = 0L, remoteSum = 0L, nbRemote = 0L;
@@ -104,16 +107,16 @@ public class CausalSimulator extends Simulator {
     @Override
     public void run(Trace trace) throws IncorrectTraceException, PreconditionException, IOException {
         long tmp;
-        int tr = 0;
         final Map<Integer, VectorClock> clocks = new HashMap<Integer, VectorClock>();
         final VectorClock globalClock = new VectorClock();
         final List<TraceOperation> concurrentOps = new LinkedList<TraceOperation>();
         final Enumeration<TraceOperation> it = trace.enumeration();
-
+        
+        setOp = new HashSet();
         history = new HashMap<Integer, List<TraceOperation>>();
         genHistory = new HashMap<Integer, List<CRDTMessage>>();
         while (it.hasMoreElements()) {
-            tr++;
+            tour++;
             final TraceOperation opt = it.nextElement();
             final int r = opt.getReplica();
             CRDT a = this.getReplicas().get(r);
@@ -151,10 +154,9 @@ public class CausalSimulator extends Simulator {
 
                     tmp = System.nanoTime();
                     a.applyRemote(optime);
-                    insertRemoteTime(e, System.nanoTime() - tmp);
+                    insertRemoteTime(r, e, System.nanoTime() - tmp);
                     remoteSum += (System.nanoTime() - tmp);
                     nbRemote++;
-
                     vc.inc(e);
                 }
             }
@@ -163,6 +165,7 @@ public class CausalSimulator extends Simulator {
 
             tmp = System.nanoTime();
             final CRDTMessage m = a.applyLocal(op);
+            insertRemoteTime(r, r, 0L);
             genTime.add(System.nanoTime() - tmp);
             localSum += (System.nanoTime() - tmp);
             nbLocal++;
@@ -172,23 +175,9 @@ public class CausalSimulator extends Simulator {
             clocks.get(r).inc(r);
             globalClock.inc(r);
             
-            if (nbrTrace > 0 && tr == nbrTrace) {
-                for (int rep : this.getReplicas().keySet()) {
-                    serializ(this.getReplicas().get(rep));
-                }
-                memUsed.add(this.getAvgMem());
-                 sumMemory = 0;
-                tr = 0;
-            }
+            ifSerializ();
         }
-        if (nbrTrace > 0 && tr > 0) {
-            for (int rep : this.getReplicas().keySet()) {
-                serializ(this.getReplicas().get(rep));
-            }
-            memUsed.add(this.getAvgMem());
-            sumMemory = 0;
-            tr = 0;
-        }
+        ifSerializ();
         
         Set<Integer> notComplete = new TreeSet<Integer>();
         notComplete.addAll(replicas.keySet());
@@ -212,43 +201,31 @@ public class CausalSimulator extends Simulator {
 
                             tmp = System.nanoTime();
                             a.applyRemote(optime);
-                            insertRemoteTime(s, System.nanoTime() - tmp);
+                            insertRemoteTime(r, s, System.nanoTime() - tmp);
                             remoteSum += (System.nanoTime() - tmp);
                             nbRemote++;
-                            tr++;
+                            tour++;
                             vc.inc(s);
-                            
-                            if (nbrTrace > 0 && tr == nbrTrace) {
-                                for (int rep : this.getReplicas().keySet()) {
-                                    serializ(this.getReplicas().get(rep));
-                                }
-                                memUsed.add(this.getAvgMem());
-                                sumMemory = 0;
-                                tr = 0;
-                            }
+                            ifSerializ();                                
                         }
                     }
                 }
             }
         }
-        if (tr > 0 && nbrTrace >0) {
-            for (int rep : this.getReplicas().keySet()) {
-                serializ(this.getReplicas().get(rep));
-            }
-            memUsed.add(this.getAvgMem());
-            sumMemory = 0;
-            tr =0;
-        }
+        ifSerializ();
     }
-    
-    void insertRemoteTime(Integer r, Long t)
-    {
-        if(remoteTime.containsKey(r))
-            remoteTime.get(r).add(t);
-        else
-        {
-            List<Long> l = new ArrayList();
-            l.add(t);
+
+    void insertRemoteTime(Integer r, Integer e, Long t) {
+        if (remoteTime.containsKey(r)) {
+            ArrayList p = remoteTime.get(r);
+            Hashtable hs = new Hashtable();
+            hs.put(e, t);
+            p.add(hs);
+        } else {
+            ArrayList<Hashtable<Integer, Long>> l = new ArrayList();
+            Hashtable<Integer, Long> hs = new Hashtable();
+            hs.put(e, t);
+            l.add(hs);
             remoteTime.put(r, l);
         }
     }
@@ -314,7 +291,23 @@ public class CausalSimulator extends Simulator {
         byteOutput.flush();
         byteOutput.close();        
     }
-//    
+    
+    public void ifSerializ() throws IOException {
+        if (nbrTrace > 0 && tour == nbrTrace) {
+            for (int rep : this.getReplicas().keySet()) {
+                serializ(this.getReplicas().get(rep));
+            }
+            memUsed.add(this.getAvgMem());
+            sumMemory = 0;
+            tour = 0;
+            
+            //debug
+            if (memUsed.size() % 100 == 0) {
+                System.out.println("Serialized :" + memUsed.size() + " x");
+            }
+        }
+    }
+
 //    public void serializ(CRDT m) throws IOException {
 //
 //        FileOutputStream fichier = new FileOutputStream("File.ser");
@@ -324,5 +317,34 @@ public class CausalSimulator extends Simulator {
 //        sumMemory +=  fichier.getChannel().size();
 //        oos.flush();
 //        oos.close();
+//    }
+    
+    
+//    void insertRemoteTime(Integer r, Integer e, Long t) {
+//        Map m = new Hashtable();
+//        m.put(e, t);
+//        if (remoteTime.containsKey(r)) {
+//            ArrayList p = remoteTime.get(r);
+//            p.add(m);
+//        } else {
+//            ArrayList<Hashtable<Integer, Long>> ar = new ArrayList();
+//            Hashtable<Integer, Long> h = new Hashtable();
+//            h.put(e, t);
+//            ar.add(h);
+//            remoteTime.put(r, ar);
+//        }
+//    }    
+    
+//    public void addOpLocal(int e) {
+//        Hashtable<Integer, Long> table = new Hashtable();
+//        table.put(e, (long) 0);
+//        if (remoteTime.containsKey(e)) {
+//            ArrayList p = remoteTime.get(e);
+//            p.add(table);
+//        } else {
+//            ArrayList<Hashtable<Integer, Long>> ar = new ArrayList();
+//            ar.add(table);
+//            remoteTime.put(e, ar);
+//        }
 //    }
 }
