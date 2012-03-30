@@ -72,10 +72,10 @@ public class Main {
             cd.runWithMemory(trace, Integer.valueOf(args[4]));
 
             if (ltime == null) {
-                cop = cd.getRemoteTimes().get(0).size();
+                cop =  cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
                 mop = cd.getMemUsed().size();
-                nbReplica = cd.getReplicas().entrySet().size();
+                nbReplica = cd.replicas.size();
                 ltime = new long[nb][uop];
                 rtime = new long[nb][cop];
                 mem = new long[nb][mop];
@@ -83,44 +83,10 @@ public class Main {
             toArrayLong(ltime[ex], cd.replicaGenerationTimes());
             toArrayLong(mem[ex], cd.getMemUsed());
 
-//            for (int r : cd.getRemoteTimes().keySet()) {
-//                for (int i = 0; i < cop - 1; i++) {
-//                    rtime[ex][i] += cd.getRemoteTimes().get(r).get(i);
-//                }
-//            }
-//            for (int i = 0; i < cop; i++) {
-//                rtime[ex][i] /= nbReplica;
-//            }
-            
-            List<Hashtable<Integer, Long>> l = cd.getRemoteTimes().get(0);
-            Iterator<Hashtable<Integer, Long>> iterator = l.iterator();
-            int num = 0;
-            while (iterator.hasNext()) {
-                Hashtable<Integer, Long> table = iterator.next();
-                int repRec = table.keys().nextElement();
-                for (int r : cd.getRemoteTimes().keySet()) {
-                    List<Hashtable<Integer, Long>> list = cd.getRemoteTimes().get(r);
-                    Iterator<Hashtable<Integer, Long>> it = list.iterator();
-                    boolean find = false;
-                    while (it.hasNext()) {
-                        Hashtable<Integer, Long> hs = it.next();
-                        if (hs.containsKey(repRec) && !find) {
-                            rtime[ex][num] += hs.get(repRec);
-                            if (r != 0) {
-                                it.remove();
-                            }
-                            find = true;
-                        }
-                    }
-                }
-                num++;
-                iterator.remove();
+            toArrayLong(rtime[ex], cd.splittedGenTime());
+            for (int i = 0; i < cop-1; i++) {
+                rtime[ex][i] /= nbReplica-1;
             }
-
-            for (int i = 0; i < cop - 1; i++) {
-                rtime[ex][i] /= nbReplica;
-            }
-            
             
             cd = null;
             trace = null;

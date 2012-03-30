@@ -34,7 +34,7 @@ public class mainSimulatorTest {
         String logoot = "jbenchmarker.logoot.LogootFactory";
         //String rga = "jbenchmarker.rga.RGAFactory";
         //String wootH = "jbenchmarker.woot.WootFactories$WootHFactory";
-        String trace = "../../traces/xml/G.xml";
+        String trace = "../../traces/xml/exemple.xml";
         String[] args = new String[]{logoot, trace, "5", "2", "10"};
         Main mn = new Main();
         mn.main(args);

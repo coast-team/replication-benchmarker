@@ -324,33 +324,4 @@ public class CausalSimulator extends Simulator {
 //        oos.flush();
 //        oos.close();
 //    }
-    
-    
-//    void insertRemoteTime(Integer r, Integer e, Long t) {
-//        Map m = new Hashtable();
-//        m.put(e, t);
-//        if (remoteTime.containsKey(r)) {
-//            ArrayList p = remoteTime.get(r);
-//            p.add(m);
-//        } else {
-//            ArrayList<Hashtable<Integer, Long>> ar = new ArrayList();
-//            Hashtable<Integer, Long> h = new Hashtable();
-//            h.put(e, t);
-//            ar.add(h);
-//            remoteTime.put(r, ar);
-//        }
-//    }    
-    
-//    public void addOpLocal(int e) {
-//        Hashtable<Integer, Long> table = new Hashtable();
-//        table.put(e, (long) 0);
-//        if (remoteTime.containsKey(e)) {
-//            ArrayList p = remoteTime.get(e);
-//            p.add(table);
-//        } else {
-//            ArrayList<Hashtable<Integer, Long>> ar = new ArrayList();
-//            ar.add(table);
-//            remoteTime.put(e, ar);
-//        }
-//    }
 }

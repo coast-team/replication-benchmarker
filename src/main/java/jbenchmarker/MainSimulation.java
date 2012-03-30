@@ -81,7 +81,7 @@ public class MainSimulation {
             cd.runWithMemory(trace, scaleMemory);
 
             if (ltime == null) {
-                cop = cd.getRemoteTimes().get(0).size();
+                cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
                 mop = cd.getMemUsed().size();
                 ltime = new long[nb][uop];
@@ -90,7 +90,7 @@ public class MainSimulation {
                 minSizeGen = uop;
                 minSizeInteg = cop;
                 minSizeMem = mop;
-                nbrReplica = cd.getRemoteTimes().keySet().size();
+                nbrReplica = cd.replicas.size();
             }
             
             List<Long> l = cd.replicaGenerationTimes();
@@ -103,48 +103,12 @@ public class MainSimulation {
                 minSizeMem = m.size();
             toArrayLong(mem[ex], m, minSizeMem);
             
-//            for (int r : cd.getRemoteTimes().keySet()) {
-//                if (minSizeInteg > cd.getRemoteTimes().get(r).size()) {
-//                    minSizeInteg = cd.getRemoteTimes().get(r).size();
-//                }
-//                for (int i = 0; i < minSizeInteg - 1; i++) {
-//                    rtime[ex][i] += cd.getRemoteTimes().get(r).get(i);
-//                }
-//            }
-//            for (int i = 0; i < minSizeInteg-1; i++) {
-//                rtime[ex][i] /= replicas;
-//            }
-            
-            List<Hashtable<Integer, Long>> listHash = cd.getRemoteTimes().get(0);
-            Iterator<Hashtable<Integer, Long>> iterator = listHash.iterator();
-            int num = 0;
-            while (iterator.hasNext()) {
-                Hashtable<Integer, Long> table = iterator.next();
-                if(num < minSizeInteg)
-                {
-                    int repRec = table.keys().nextElement();
-                    for (int r : cd.getRemoteTimes().keySet()) {
-                        List<Hashtable<Integer, Long>> list = cd.getRemoteTimes().get(r);
-                        Iterator<Hashtable<Integer, Long>> it = list.iterator();
-                        boolean find = false;
-                        while (it.hasNext()) {
-                            Hashtable<Integer, Long> hs = it.next();
-                            if (hs.containsKey(repRec) && !find) {
-                                rtime[ex][num] += hs.get(repRec);
-                                if (r != 0) {
-                                    it.remove();
-                                }
-                                find = true;
-                            }
-                        }
-                    }
-                    num++;
-                    iterator.remove();
-                }
+            if (minSizeInteg > cd.splittedGenTime().size()) {
+                minSizeInteg = cd.splittedGenTime().size();
             }
-
+            toArrayLong(rtime[ex], cd.splittedGenTime(), minSizeInteg);
             for (int i = 0; i < cop - 1; i++) {
-                rtime[ex][i] /= nbrReplica;
+                rtime[ex][i] /= nbrReplica - 1;
             }
                         
             cd = null;
