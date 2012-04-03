@@ -158,11 +158,11 @@ public class CausalSimulator extends Simulator {
                     tmp = System.nanoTime();
                     a.applyRemote(optime);
                     long after = System.nanoTime(); 
+                    remoteSum += (after - tmp);
                     if (detail) {
                         int num = orderTrace.get(t);                            
                         remoteTime.set(num, remoteTime.get(num) + after - tmp);
                     }
-                    remoteSum += (after - tmp);
                     nbRemote++;
                     vc.inc(e);
                 }
@@ -173,12 +173,12 @@ public class CausalSimulator extends Simulator {
             tmp = System.nanoTime();
             final CRDTMessage m = a.applyLocal(op);
             long after = System.nanoTime(); 
+            localSum += (after - tmp);
             if (detail) {
                 genTime.add(after - tmp);
                 genSize.add(m.size());
                 remoteTime.add(0L);
             }
-            localSum += (after - tmp);
             nbLocal++;
 
             final CRDTMessage msg = m.clone();
