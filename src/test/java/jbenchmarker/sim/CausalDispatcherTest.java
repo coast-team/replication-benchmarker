@@ -130,7 +130,7 @@ public class CausalDispatcherTest {
         List<SequenceMessage> o1 = new ArrayList<SequenceMessage>();
         o1.add(new OpMock(op1));  
 
-        cd.run(trace);
+        cd.run(trace, false);
         assertEquals(cd.getGenHistory().get(2), lop);        
         assertEquals(o1, cd.getHistory().get(2));        
         
@@ -141,7 +141,7 @@ public class CausalDispatcherTest {
         o2.add(new OpMock(op2)); o2.add(new OpMock(op1));
         o1.add(new OpMock(op2));
         
-        cd.run(trace);
+        cd.run(trace, false);
         assertEquals(cd.getGenHistory().get(2), lop.subList(0, 1));
         assertEquals(cd.getGenHistory().get(1), lop.subList(1, 2));
         assertEquals(o1, cd.getHistory().get(2));        
@@ -153,7 +153,7 @@ public class CausalDispatcherTest {
         o1.add(new OpMock(op3));
         o2.add(new OpMock(op3));
         
-        cd.run(trace);
+        cd.run(trace, false);
         assertEquals(cd.getGenHistory().get(2), lop.subList(0, 1));
         assertEquals(cd.getGenHistory().get(1), lop.subList(1, 3));
         assertEquals(o1, cd.getHistory().get(2));        
@@ -169,7 +169,7 @@ public class CausalDispatcherTest {
         o1.add(new OpMock(op4));
         o2.add(new OpMock(op4));
         
-        cd.run(trace);
+        cd.run(trace, false);
         assertEquals(cd.getGenHistory().get(2), lop.subList(0, 1));
         assertEquals(cd.getGenHistory().get(1), lop.subList(1, 3));
         assertEquals(cd.getGenHistory().get(3), lop.subList(3, 4));        

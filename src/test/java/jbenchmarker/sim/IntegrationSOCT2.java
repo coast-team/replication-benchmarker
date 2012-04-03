@@ -43,7 +43,7 @@ public class IntegrationSOCT2 {
         CausalSimulator cd = new CausalSimulator(new SOCT2Factory());
 
         long startTime = System.currentTimeMillis();
-        cd.run(trace);
+        cd.run(trace, false);
         long endTime = System.currentTimeMillis();
          
         Logger.getLogger(getClass().getCanonicalName()).info("computation time: "+(endTime-startTime)+" ms");
@@ -59,7 +59,7 @@ public class IntegrationSOCT2 {
         Trace trace = new RandomTrace(5000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
         CausalSimulator cd = new CausalSimulator(new SOCT2Factory());
 
-        cd.run(trace);
+        cd.run(trace, false);
         String r = (String) cd.getReplicas().get(0).lookup();
         for (CRDT m : cd.getReplicas().values()) {
             assertEquals(r, m.lookup());

@@ -66,7 +66,7 @@ public class CausalDispatcherTest {
 
     static CausalSimulator testRun(Factory<CRDT> factory, int duration, int rn, OperationProfile opp) throws PreconditionException, IncorrectTraceException, IOException {
         CausalSimulator cd = new CausalSimulator(factory);
-        cd.run(new RandomTrace(duration, RandomTrace.FLAT, opp, 0.2, 10, 3, rn));
+        cd.run(new RandomTrace(duration, RandomTrace.FLAT, opp, 0.2, 10, 3, rn), false);
         //System.out.println(cd.getlTime());
 
         //result.add(cd.getlTime());

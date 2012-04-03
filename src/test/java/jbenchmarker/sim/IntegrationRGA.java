@@ -42,7 +42,7 @@ public class IntegrationRGA {
         
         CausalSimulator cd = new CausalSimulator(new RGAFactory());
 
-        cd.run(trace);
+        cd.run(trace, false);
         String r = "Salut Monsieurjour MehdiFin";
         assertEquals(r, cd.getReplicas().get(0).lookup());
         assertEquals(r, cd.getReplicas().get(2).lookup());
@@ -103,7 +103,7 @@ public class IntegrationRGA {
         while (true) {
             Trace trace = new RandomTrace(10, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 4, 3.0, 3);
             CausalSimulator cd = new CausalSimulator(new RGAFactory());
-            cd.run(trace);
+            cd.run(trace, false);
             String r = null;
             for (CRDT m : cd.getReplicas().values()) {
                 if (r == null) {

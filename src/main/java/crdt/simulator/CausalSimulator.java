@@ -105,7 +105,7 @@ public class CausalSimulator extends Simulator {
     }
     
     @Override
-    public void run(Trace trace) throws IncorrectTraceException, PreconditionException, IOException {
+    public void run(Trace trace, boolean detail) throws IncorrectTraceException, PreconditionException, IOException {
         long tmp;
         final Map<Integer, VectorClock> clocks = new HashMap<Integer, VectorClock>();
         final VectorClock globalClock = new VectorClock();
@@ -158,8 +158,10 @@ public class CausalSimulator extends Simulator {
                     tmp = System.nanoTime();
                     a.applyRemote(optime);
                     long after = System.nanoTime(); 
-                    int num = orderTrace.get(t);                            
-                    remoteTime.set(num, remoteTime.get(num) + after - tmp);
+                    if (detail) {
+                        int num = orderTrace.get(t);                            
+                        remoteTime.set(num, remoteTime.get(num) + after - tmp);
+                    }
                     remoteSum += (after - tmp);
                     nbRemote++;
                     vc.inc(e);
@@ -171,10 +173,12 @@ public class CausalSimulator extends Simulator {
             tmp = System.nanoTime();
             final CRDTMessage m = a.applyLocal(op);
             long after = System.nanoTime(); 
-            genTime.add(after - tmp);
+            if (detail) {
+                genTime.add(after - tmp);
+                genSize.add(m.size());
+                remoteTime.add(0L);
+            }
             localSum += (after - tmp);
-            genSize.add(m.size());
-            remoteTime.add(0L);
             nbLocal++;
 
             final CRDTMessage msg = m.clone();
@@ -209,8 +213,10 @@ public class CausalSimulator extends Simulator {
                             tmp = System.nanoTime();
                             a.applyRemote(optime);
                             long after = System.nanoTime(); 
-                            int num = orderTrace.get(history.get(s).get(j));                            
-                            remoteTime.set(num, remoteTime.get(num) + after - tmp);
+                            if (detail) {
+                                int num = orderTrace.get(history.get(s).get(j));                            
+                                remoteTime.set(num, remoteTime.get(num) + after - tmp);
+                            }
                             remoteSum += (after - tmp);
                             nbRemote++;
                             tour++;
@@ -271,14 +277,14 @@ public class CausalSimulator extends Simulator {
     public void runWithMemory(Trace trace, int nbrTrace) throws IncorrectTraceException, PreconditionException, IOException
     {
         this.nbrTrace = nbrTrace;
-        run(trace);
+        run(trace, false);
     }
     
     public void serializ(CRDT m ) throws IOException {
         ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(byteOutput);
         stream.writeObject(m);
-        sumMemory +=  byteOutput.toByteArray().length;
+        sumMemory +=  byteOutput.size();
         
         stream.flush();
         stream.close();
