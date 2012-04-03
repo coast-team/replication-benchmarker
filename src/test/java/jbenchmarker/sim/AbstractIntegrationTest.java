@@ -19,8 +19,9 @@
 package jbenchmarker.sim;
 
 import crdt.CRDT;
-import crdt.Factory;
 import crdt.simulator.CausalSimulator;
+import crdt.simulator.random.RandomTrace;
+import crdt.simulator.random.StandardSeqOpProfile;
 import java.lang.String;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -86,4 +87,10 @@ public abstract class AbstractIntegrationTest {
 		cd.run(TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1), false);
 		assertConsistentViews();
 	}
+        
+    @Test
+    public void testRandom() throws Exception {
+        cd.run(new RandomTrace(20, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 1, 10, 3.0, 5), false);
+	assertConsistentViews();
+    }
 }

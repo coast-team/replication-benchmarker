@@ -18,6 +18,7 @@
  */
 package jbenchmarker.sim;
 
+import org.junit.Ignore;
 import crdt.CRDT;
 import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
@@ -46,7 +47,7 @@ public class IntegrationWOOTH {
         assertEquals(r, cd.getReplicas().get(4).lookup());
     }
     
-    // @Ignore
+    @Ignore
     @Test
     public void testWootHG1Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
@@ -61,6 +62,7 @@ public class IntegrationWOOTH {
         }
     }
     
+    @Ignore
     @Test
     public void testWootHG2Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
@@ -73,6 +75,7 @@ public class IntegrationWOOTH {
         }
     }
     
+    @Ignore
     @Test
     public void testWootHG3Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
@@ -85,6 +88,7 @@ public class IntegrationWOOTH {
         }
     }
     
+    @Ignore
     @Test
     public void testWootHSerieRun() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
@@ -99,7 +103,7 @@ public class IntegrationWOOTH {
     
     @Test
     public void testWootHRandom() throws Exception {
-        Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
+        Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 1, 10, 3.0, 5);
         CausalSimulator cd = new CausalSimulator(new WootHFactory());
 
         cd.run(trace, false);
