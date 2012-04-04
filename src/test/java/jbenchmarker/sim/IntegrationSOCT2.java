@@ -25,6 +25,7 @@ import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
 import crdt.simulator.CausalSimulator;
 import java.util.logging.Logger;
+import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.ot.SOCT2Factory;
 import jbenchmarker.trace.TraceGenerator;
 import org.junit.Test;
@@ -65,4 +66,5 @@ public class IntegrationSOCT2 {
             assertEquals(r, m.lookup());
         }     
     }
+    
 }

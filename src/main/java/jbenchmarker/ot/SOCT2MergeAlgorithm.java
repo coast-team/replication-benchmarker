@@ -55,7 +55,7 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
     }
 
     @Override
-    protected void integrateLocal(SequenceMessage op) {
+    protected void integrateLocal(SequenceMessage op) {        
         TTFOperation oop = (TTFOperation) op;
 
         if (this.readyFor(oop.getSiteId(), oop.getClock())) {

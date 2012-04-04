@@ -45,6 +45,18 @@ public class TTFDocument implements Document {
         }
         return sb.toString();
     }
+    
+    public String extendedView() {
+        StringBuilder sb = new StringBuilder();
+        for (TTFChar c : this.model) {
+            if (c.isVisible()) {
+                sb.append(c.getChar());
+            } else {
+                sb.append("[" + c.getChar() + "]");
+            }
+        }
+        return sb.toString();
+    }
 
     public void apply(SequenceMessage op) {
         TTFOperation oop = (TTFOperation) op;

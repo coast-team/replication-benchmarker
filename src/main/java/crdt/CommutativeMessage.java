@@ -29,7 +29,9 @@ public abstract class CommutativeMessage<T> implements CRDTMessage, Cloneable {
     @Override
     public CommutativeMessage clone() {
         CommutativeMessage clone = copy();
-        clone.msgs = (LinkedList<CommutativeMessage>) msgs.clone();
+        for (CommutativeMessage m : msgs) {
+            clone.msgs.add(m.copy());
+        }
         return clone;
     }
 
