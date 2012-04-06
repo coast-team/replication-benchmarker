@@ -69,7 +69,7 @@ public class Main {
             System.out.println("execution ::: " + ex);
             Trace trace = TraceGenerator.traceFromXML(args[1], 1);
             CausalSimulator cd = new CausalSimulator(rf);
-            cd.runWithMemory(trace, Integer.valueOf(args[4]));
+            cd.runWithMemory(trace, Integer.valueOf(args[4]), false);
 
             if (ltime == null) {
                 cop =  cd.splittedGenTime().size();

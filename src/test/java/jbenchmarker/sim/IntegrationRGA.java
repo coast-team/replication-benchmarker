@@ -100,8 +100,7 @@ public class IntegrationRGA {
     
     @Test
     public void testRGARandom() throws Exception {
-        while (true) {
-            Trace trace = new RandomTrace(10, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 4, 3.0, 3);
+            Trace trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 4, 3.0, 3);
             CausalSimulator cd = new CausalSimulator(new RGAFactory());
             cd.run(trace, false);
             String r = null;
@@ -113,5 +112,4 @@ public class IntegrationRGA {
                 }
             }
         }
-    }
 }

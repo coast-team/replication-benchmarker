@@ -65,7 +65,7 @@ public class MainSimulaReplica {
             Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
                     new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
             CausalSimulator cd = new CausalSimulator(rf);
-            cd.runWithMemory(trace, scaleMemory);
+            cd.runWithMemory(trace, scaleMemory, false);
 
             if (ltime == null) {
                 ltime = new double[nbExec];
