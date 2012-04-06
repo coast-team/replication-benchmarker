@@ -55,7 +55,7 @@ public class RGAS4Vector implements Comparable<RGAS4Vector>, Serializable {
 		else if (this.ssn < s4v.ssn) return BEFORE;
 		else { // this.ssn==s4v.ssn
 			if(this.sum > s4v.sum) return AFTER;
-			else if(this.sum < s4v.ssn) return BEFORE;
+			else if(this.sum < s4v.sum) return BEFORE;
 			else { // this.sum == s4v.sum
 				if(this.sid > s4v.sid) return AFTER;
 				else if(this.sid < s4v.sid) return BEFORE;
