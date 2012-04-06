@@ -35,12 +35,12 @@ import jbenchmarker.core.SequenceOperation;
 public class RGAMerge extends MergeAlgorithm {
 
 	private VectorClock siteVC;
-	private RGAPurger	purger;
+//	private RGAPurger	purger;
 	
 	public RGAMerge(Document doc, int r){
 		super(doc, r);
 		siteVC = new VectorClock();
-		purger = new RGAPurger((RGADocument)this.getDoc());
+//		purger = new RGAPurger((RGADocument)this.getDoc());
 	}
 	
 	@Override
@@ -49,7 +49,7 @@ public class RGAMerge extends MergeAlgorithm {
 		RGADocument	 rgadoc = (RGADocument)(this.getDoc());
 		this.siteVC.inc(rgaop.getOriginalOp().getReplica());
 		rgadoc.apply(rgaop);
-		purger.setLastVC(rgaop.getS4VTms().sid, rgaop.getOriginalOp().getVectorClock());
+//		purger.setLastVC(rgaop.getS4VTms().sid, rgaop.getOriginalOp().getVectorClock());
 		//RGANode tau = purger.tryPurge();
 		//if(tau != null) rgadoc.purge(tau);
 	}
@@ -87,7 +87,7 @@ public class RGAMerge extends MergeAlgorithm {
 			lop.add(rgaop);
 			rgadoc.apply(rgaop);
 			
-			purger.setLastVC(this.getReplicaNumber(),this.siteVC);
+//			purger.setLastVC(this.getReplicaNumber(),this.siteVC);
 		}
 
 		return lop;
