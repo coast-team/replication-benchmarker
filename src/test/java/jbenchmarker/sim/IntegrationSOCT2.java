@@ -57,7 +57,7 @@ public class IntegrationSOCT2 {
     
     @Test
     public void testSOCT2Random() throws Exception {
-        Trace trace = new RandomTrace(5000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
+        Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
         CausalSimulator cd = new CausalSimulator(new SOCT2Factory());
 
         cd.run(trace, false);

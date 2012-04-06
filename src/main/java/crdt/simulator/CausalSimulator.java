@@ -274,10 +274,10 @@ public class CausalSimulator extends Simulator {
         }
     }
     
-    public void runWithMemory(Trace trace, int nbrTrace) throws IncorrectTraceException, PreconditionException, IOException
+    public void runWithMemory(Trace trace, int nbrTrace, boolean b) throws IncorrectTraceException, PreconditionException, IOException
     {
         this.nbrTrace = nbrTrace;
-        run(trace, false);
+        run(trace, b);
     }
     
     public void serializ(CRDT m ) throws IOException {
