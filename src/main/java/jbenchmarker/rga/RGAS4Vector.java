@@ -50,7 +50,6 @@ public class RGAS4Vector implements Comparable<RGAS4Vector>, Serializable {
 	}
 	
 	public int compareTo(RGAS4Vector s4v) {
-		// TODO Auto-generated method stub
 		if(this.ssn > s4v.ssn) return  AFTER;
 		else if (this.ssn < s4v.ssn) return BEFORE;
 		else { // this.ssn==s4v.ssn

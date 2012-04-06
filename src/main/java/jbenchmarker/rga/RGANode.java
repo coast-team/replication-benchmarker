@@ -25,6 +25,7 @@ import java.io.Serializable;
 * @author Roh
 */ 
 public class RGANode implements Serializable{
+	
 	private RGAS4Vector 	key;
 	private RGAS4Vector 	tomb;	//used for visible and tombstone purging if null, then not tombstone 		 
 	private char 			content;
