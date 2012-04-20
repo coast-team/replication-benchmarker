@@ -72,15 +72,26 @@ public class MainSimulation {
         int minSizeGen = 0, minSizeInteg = 0, minSizeMem = 0, nbrReplica = 0;
         int cop = 0, uop = 0, mop = 0;
         String nameUsr = args[13];
-        
+      
+        long worst = 0L, best = 0L;
+        int execWorst = 0, execBest = 0;
         for (int ex = 0; ex < nbExec; ex++) {
             System.out.println("execution : "+ ex);
             Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
                     new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
             CausalSimulator cd = new CausalSimulator(rf);
-            cd.runWithMemory(trace, scaleMemory, true);
-
+            long befor = System.nanoTime();
+            /*
+             * trace : trace xml
+             * args[4] : scalle for serialization
+             * boolean : calculate time execution
+             * boolean : calculate document with overhead
+             */
+            cd.runWithMemory(trace, scaleMemory, true, false);
+            long after = System.nanoTime();
             if (ltime == null) {
+                worst = after-befor;
+                best = after-befor;
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
                 mop = cd.getMemUsed().size();
@@ -91,6 +102,14 @@ public class MainSimulation {
                 minSizeInteg = cop;
                 minSizeMem = mop;
                 nbrReplica = cd.replicas.size();
+            }
+            
+            if (after - befor > worst) {
+                execWorst = ex;
+                worst = after - befor;
+            } else {
+                execBest = ex;
+                best = after - befor;
             }
             
             List<Long> l = cd.replicaGenerationTimes();
@@ -115,7 +134,11 @@ public class MainSimulation {
             trace = null;
             System.gc();
             
+            
         }
+        System.out.println("Best execution time in :"+execBest+", with : "+(best/Math.pow(10, 9)) +" second");
+        System.out.println("Worst execution time in :"+execWorst+", with : "+worst/Math.pow(10, 9) +" second");
+        
         if (nbExec > 1) {
             computeAverage(ltime, thresold, minSizeGen);
             computeAverage(mem, thresold, minSizeMem);

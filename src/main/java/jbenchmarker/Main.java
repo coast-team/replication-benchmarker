@@ -65,13 +65,25 @@ public class Main {
         long ltime[][] = null, mem[][] = null, rtime[][] = null;
         int cop = 0, uop = 0, nbReplica = 0, mop = 0;
         long st = System.currentTimeMillis();
+        long worst = 0L, best = 0L;
+        int execWorst = 0, execBest = 0;
         for (int ex = 0; ex < nbExec; ex++) {
             System.out.println("execution ::: " + ex);
             Trace trace = TraceGenerator.traceFromXML(args[1], 1);
             CausalSimulator cd = new CausalSimulator(rf);
-            cd.runWithMemory(trace, Integer.valueOf(args[4]), false);
-
+            long befor = System.nanoTime();
+            /*
+             * trace : trace xml
+             * args[4] : scalle for serialization
+             * boolean : calculate time execution
+             * boolean : calculate document with overhead
+             */
+            cd.runWithMemory(trace, Integer.parseInt(args[4]), false, true);//0 sans serialisation
+            long after = System.nanoTime();
+            System.out.println("time"+(after-befor));
             if (ltime == null) {
+                worst = after-befor;
+                best = after-befor;
                 cop =  cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
                 mop = cd.getMemUsed().size();
@@ -80,6 +92,15 @@ public class Main {
                 rtime = new long[nb][cop];
                 mem = new long[nb][mop];
             }
+            
+            if (after - befor > worst) {
+                execWorst = ex;
+                worst = after - befor;
+            } else {
+                execBest = ex;
+                best = after - befor;
+            }
+            
             toArrayLong(ltime[ex], cd.replicaGenerationTimes());
             toArrayLong(mem[ex], cd.getMemUsed());
 
@@ -87,12 +108,15 @@ public class Main {
             for (int i = 0; i < cop-1; i++) {
                 rtime[ex][i] /= nbReplica-1;
             }
-            
+
             cd = null;
             trace = null;
             System.gc();
         }
-
+        
+        System.out.println("Best execution time in : "+execBest+", with : "+(best/Math.pow(10, 9)) +" second");
+        System.out.println("Worst execution time in : "+execWorst+", with : "+worst/Math.pow(10, 9) +" second");
+        
 
         System.out.println();
 

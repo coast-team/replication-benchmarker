@@ -21,62 +21,67 @@ package jbenchmarker.rga;
 import java.io.Serializable;
 
 /**
-*
-* @author Roh
-*/ 
-public class RGANode implements Serializable{
-	
-	private RGAS4Vector 	key;
-	private RGAS4Vector 	tomb;	//used for visible and tombstone purging if null, then not tombstone 		 
-	private char 			content;
-	private RGANode			next;
-	
-	public RGANode(){
-		this.key 	= null;
-		this.next 	= null;		
-		this.tomb 	= null;
-	}
-	public RGANode(RGAS4Vector s4v, char c){
-		this.key 		= s4v;
-		this.content 	= c;
-		this.tomb		= null;
-		this.next		= null;
-	}
-	
-	public RGAS4Vector getKey(){
-		return key;
-	}
-	
-	public char getContent(){
-		return content;
-	}
-	
-	public boolean isVisible(){
-		if(this.tomb==null) return true;
-		return false;
-	}
-	
-	public void makeTombstone(RGAS4Vector s4v){
-		this.tomb = s4v;
-	}
-	
-	public void setNext(RGANode nd){
-		this.next = nd;
-	}
-	
-	public RGANode getNext(){
-		return next;
-	}
-	
-	public RGAS4Vector getTomb(){
-		return this.tomb;
-	}
-	
-	public RGANode getNextVisible(){
-		RGANode node = next;
-		while(node != null && !node.isVisible()) node = node.getNext();
-		return node;
-	}
+ *
+ * @author Roh
+ */
+public class RGANode implements Serializable {
+
+    private RGAS4Vector key;
+    private RGAS4Vector tomb;	//used for visible and tombstone purging if null, then not tombstone 		 
+    private char content;
+    private RGANode next;
+
+    public RGANode() {
+        this.key = null;
+        this.next = null;
+        this.tomb = null;
+    }
+
+    public RGANode(RGAS4Vector s4v, char c) {
+        this.key = s4v;
+        this.content = c;
+        this.tomb = null;
+        this.next = null;
+    }
+
+    public RGAS4Vector getKey() {
+        return key;
+    }
+
+    public char getContent() {
+        return content;
+    }
+
+    public boolean isVisible() {
+        if (this.tomb == null) {
+            return true;
+        }
+        return false;
+    }
+
+    public void makeTombstone(RGAS4Vector s4v) {
+        this.tomb = s4v;
+    }
+
+    public void setNext(RGANode nd) {
+        this.next = nd;
+    }
+
+    public RGANode getNext() {
+        return next;
+    }
+
+    public RGAS4Vector getTomb() {
+        return this.tomb;
+    }
+
+    public RGANode getNextVisible() {
+        RGANode node = next;
+        while (node != null && !node.isVisible()) {
+            node = node.getNext();
+        }
+        return node;
+    }
 
     @Override
     public boolean equals(Object obj) {

@@ -36,6 +36,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import jbenchmarker.core.MergeAlgorithm;
 
 /**
  *
@@ -47,6 +48,7 @@ public class CausalSimulator extends Simulator {
         super(rf);
     }
     int tour = 0;
+    boolean overhead = false;
     HashSet<CRDTMessage> setOp;
     private Map<Integer, List<TraceOperation>> history;
     private Map<Integer, List<CRDTMessage>> genHistory;
@@ -186,7 +188,7 @@ public class CausalSimulator extends Simulator {
             clocks.get(r).inc(r);
             globalClock.inc(r);
             
-            ifSerializ();
+           ifSerializ();
         }
         ifSerializ();
         
@@ -274,16 +276,23 @@ public class CausalSimulator extends Simulator {
         }
     }
     
-    public void runWithMemory(Trace trace, int nbrTrace, boolean b) throws IncorrectTraceException, PreconditionException, IOException
+    
+    
+    
+    public void runWithMemory(Trace trace, int nbrTrace, boolean b, boolean o) throws IncorrectTraceException, PreconditionException, IOException
     {
         this.nbrTrace = nbrTrace;
+        overhead = o;
         run(trace, b);
     }
     
-    public void serializ(CRDT m ) throws IOException {
+    public void serializ(CRDT m) throws IOException {
         ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(byteOutput);
-        stream.writeObject(m);
+        if(overhead)
+            stream.writeObject(m);
+        else
+            stream.writeObject(m.lookup());
         sumMemory +=  byteOutput.size();
         
         stream.flush();

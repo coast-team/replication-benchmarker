@@ -37,13 +37,11 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
 
     private VectorClock siteVC;
     private SOCT2Log log;
-    private OperationGarbageCollector gc;
 
     public SOCT2MergeAlgorithm(Document doc, int r) {
         super(doc, r);
         this.siteVC = new VectorClock();
         this.log = new SOCT2Log();
-        this.gc = new OperationGarbageCollector(this);
     }
 
     public VectorClock getClock() {
@@ -64,7 +62,6 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
             this.log.add(oop);
             this.siteVC.inc(oop.getSiteId());
             
-            this.gc.collect(oop);
         } else {
             throw new RuntimeException("it seems causal reception is broken");
         }

@@ -60,25 +60,48 @@ public class MainSimulaReplica {
         String nameUsr = args[13];
 
         double ltime[] = null, rtime[] = null, mem[] = null;
+        long worst = 0L, best = 0L;
+        int execWorst = 0, execBest = 0;
         for (int ex = 0; ex < nbExec; ex++) {
             System.out.println("algorithm : "+nameUsr+",execution : " + ex + ", with " + replicas + " replica");
             Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
                     new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
             CausalSimulator cd = new CausalSimulator(rf);
-            cd.runWithMemory(trace, scaleMemory, false);
-
+            long befor = System.nanoTime();
+            /*
+             * trace : trace xml
+             * args[4] : scalle for serialization
+             * boolean : calculate time execution
+             * boolean : calculate document with overhead
+             */
+            cd.runWithMemory(trace, scaleMemory, false, false);
+            long after = System.nanoTime();
             if (ltime == null) {
+                worst = after-befor;
+                best = after-befor;
                 ltime = new double[nbExec];
                 rtime = new double[nbExec];
                 mem = new double[nbExec];
             }
+            
+            if (after - befor > worst) {
+                execWorst = ex;
+                worst = after - befor;
+            } else {
+                execBest = ex;
+                best = after - befor;
+            }
+            
             ltime[ex] = cd.getLocalAvg();
             rtime[ex] = cd.getRemoteAvg();
             double tab[] = new double[cd.getMemUsed().size()];
             toArrayDouble(tab, cd.getMemUsed());
             mem[ex] = calculAverag(tab);
-        }
 
+        }
+        System.out.println("Best execution time in :"+execBest+", with : "+(best/Math.pow(10, 9)) +" second");
+        System.out.println("Worst execution time in :"+execWorst+", with : "+worst/Math.pow(10, 9) +" second");
+        
         writeFile(calculAverag(ltime), "usr", nameUsr);
         writeFile(calculAverag(rtime), "gen", nameUsr);
         writeFile(calculAverag(mem), "mem", nameUsr);
