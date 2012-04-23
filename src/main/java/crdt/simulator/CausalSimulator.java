@@ -20,8 +20,11 @@ package crdt.simulator;
 
 import collect.VectorClock;
 import crdt.*;
+import crdt.set.SetOperation;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -37,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import jbenchmarker.core.MergeAlgorithm;
+import jbenchmarker.core.SequenceOperation;
 
 /**
  *
@@ -115,6 +119,7 @@ public class CausalSimulator extends Simulator {
         final Enumeration<TraceOperation> it = trace.enumeration();
         final HashMap<TraceOperation, Integer> orderTrace = new HashMap();        
         int numTrace = 0;
+        ArrayList<String> log = new ArrayList<String>(); 
         
         setOp = new HashSet();
         history = new HashMap<Integer, List<TraceOperation>>();
@@ -122,15 +127,17 @@ public class CausalSimulator extends Simulator {
         while (it.hasMoreElements()) {
             tour++;
             final TraceOperation opt = it.nextElement();
+                        
             final int r = opt.getReplica();
             CRDT a = this.getReplicas().get(r);
-            
+
             if (a == null) {
                 a = this.newReplica(r);
                 clocks.put(r, new VectorClock());
                 genHistory.put(r, new ArrayList<CRDTMessage>());
                 history.put(r, new ArrayList<TraceOperation>());
             }
+                
             history.get(r).add(opt);
             orderTrace.put(opt, numTrace++);
 
@@ -171,7 +178,7 @@ public class CausalSimulator extends Simulator {
             }
 
             Operation op = opt.getOperation(a);
-
+            storeOp(op, log);
             tmp = System.nanoTime();
             final CRDTMessage m = a.applyLocal(op);
             long after = System.nanoTime(); 
@@ -230,6 +237,7 @@ public class CausalSimulator extends Simulator {
             }
         }
         ifSerializ();
+        writeFile(log);
     }
 
     public static void insertCausalOrder(List<TraceOperation> concurrentOps, TraceOperation opt) {
@@ -275,9 +283,6 @@ public class CausalSimulator extends Simulator {
             }
         }
     }
-    
-    
-    
     
     public void runWithMemory(Trace trace, int nbrTrace, boolean b, boolean o) throws IncorrectTraceException, PreconditionException, IOException
     {
@@ -327,6 +332,25 @@ public class CausalSimulator extends Simulator {
             }
         }
         return l;
+    }
+    
+    public void storeOp(Operation op, ArrayList<String> listTrace)
+    {
+        String trace = "";
+        SequenceOperation sOp = (SequenceOperation) op;
+        if (sOp.getType() == SequenceOperation.OpType.ins) {
+           trace = "Ins|"+sOp.getContent()+"|"+sOp.getPosition()+"|"+sOp.getVectorClock()+"|"+sOp.getReplica();
+        } else {
+           trace = "del|"+sOp.getOffset()+"|"+sOp.getPosition()+"|"+sOp.getVectorClock()+"|"+sOp.getReplica();
+        }
+        listTrace.add(trace);
+    }
+    public void writeFile(ArrayList<String> log) throws IOException
+    {
+        FileWriter file = new FileWriter("trace.log", true);
+        for(int i=0; i< log.size(); i++)
+        file.write(log.get(i) + "\n");
+        file.close();
     }
     
 //    public void serializ(CRDT m) throws IOException {

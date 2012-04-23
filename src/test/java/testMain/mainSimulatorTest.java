@@ -31,11 +31,11 @@ public class mainSimulatorTest {
     @Ignore
     @Test
     public void mainTest() throws Exception {
-        //String logoot = "jbenchmarker.logoot.LogootFactory";
-        String rga = "jbenchmarker.rga.RGAFactory";
+        String logoot = "jbenchmarker.logoot.LogootFactory";
+        //String rga = "jbenchmarker.rga.RGAFactory";
         //String wootH = "jbenchmarker.woot.WootFactories$WootHFactory";
         String trace = "../../traces/xml/SerieDoc2.xml";
-        String[] args = new String[]{rga, trace, "5", "2", "10"};
+        String[] args = new String[]{logoot, trace, "5", "2", "10"};
         Main mn = new Main();
         mn.main(args);
     }
@@ -47,7 +47,7 @@ public class mainSimulatorTest {
         String rga = "jbenchmarker.rga.RGAFactory";
         String wootH = "jbenchmarker.woot.WootFactories$WootHFactory";
 
-        String[] args = new String[]{rga, "2", "200", "0.88", "2.39", "30", "64.0", "0.1", "50", "10", "4", "2", "100","Logoot-G1"};
+        String[] args = new String[]{logoot, "2", "200", "0.88", "0.02", "30", "64.0", "0.1", "50", "10", "4", "2", "100","Logoot-G1"};
         MainSimulation mn = new MainSimulation();
         mn.main(args);
     }
