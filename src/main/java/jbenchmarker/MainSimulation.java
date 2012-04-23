@@ -87,7 +87,7 @@ public class MainSimulation {
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.runWithMemory(trace, scaleMemory, true, false);
+            cd.runWithMemory(trace, scaleMemory, false, false);
             long after = System.nanoTime();
             if (ltime == null) {
                 worst = after-befor;

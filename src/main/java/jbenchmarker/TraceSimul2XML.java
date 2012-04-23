@@ -15,6 +15,7 @@ import org.jdom.output.*;
 public class TraceSimul2XML {
     
     static Element racine = new Element("Traces");
+    static Element trace = new Element("Trace");
     static org.jdom.Document document = new Document(racine);
     
     public static void main(String[] args) throws Exception {
@@ -24,7 +25,7 @@ public class TraceSimul2XML {
             System.err.println("- xml : file xml to produce");
             System.exit(1);
         }
-
+        racine.addContent(trace);
         try {
             InputStream ips = new FileInputStream(args[0]);
             InputStreamReader ipsr = new InputStreamReader(ips);
@@ -52,11 +53,12 @@ public class TraceSimul2XML {
     
     static void transformerXML(String[] data, String[] vh) {
          Element operation = new Element("Operation");
-         racine.addContent(operation);
+         trace.addContent(operation);
          
          Element type = new Element("Type");
          Element pos = new Element("Position");
          Element replica = new Element("NumReplica");
+         Element doc = new Element("NumDocument");
          Element c;
          if (data[0].equals("Ins")) {
             c = new Element("Text");
@@ -67,14 +69,16 @@ public class TraceSimul2XML {
         c.setText(data[1]);
         pos.setText(data[2]);
         replica.setText(data[4]);
-
+        doc.addContent("1");
+        
         operation.addContent(type);
         operation.addContent(c);
         operation.addContent(pos);
         operation.addContent(replica);
+        operation.addContent(doc);
 
         Element vecteurClock = new Element("VectorClock");
-        for (int i = 0; i < vh.length-1; i++) {//last is {
+        for (int i = 0; i < vh.length-1; i++) {//last is "{"
             Element entry = new Element("Entry");
             Element rep = new Element("Replica");
             Element clock = new Element("Clock");

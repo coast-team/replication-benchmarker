@@ -126,8 +126,9 @@ public class CausalSimulator extends Simulator {
         genHistory = new HashMap<Integer, List<CRDTMessage>>();
         while (it.hasMoreElements()) {
             tour++;
+
             final TraceOperation opt = it.nextElement();
-                        
+            
             final int r = opt.getReplica();
             CRDT a = this.getReplicas().get(r);
 
@@ -176,7 +177,6 @@ public class CausalSimulator extends Simulator {
                     vc.inc(e);
                 }
             }
-
             Operation op = opt.getOperation(a);
             storeOp(op, log);
             tmp = System.nanoTime();
