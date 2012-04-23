@@ -334,22 +334,22 @@ public class CausalSimulator extends Simulator {
         return l;
     }
     
-    public void storeOp(Operation op, ArrayList<String> listTrace)
-    {
+    public void storeOp(Operation op, ArrayList<String> listTrace) {
         String trace = "";
         SequenceOperation sOp = (SequenceOperation) op;
         if (sOp.getType() == SequenceOperation.OpType.ins) {
-           trace = "Ins|"+sOp.getContent()+"|"+sOp.getPosition()+"|"+sOp.getVectorClock()+"|"+sOp.getReplica();
+            trace = "Ins|" + sOp.getContent() + "|" + sOp.getPosition() + "|" + sOp.getVectorClock() + "|" + sOp.getReplica();
         } else {
-           trace = "del|"+sOp.getOffset()+"|"+sOp.getPosition()+"|"+sOp.getVectorClock()+"|"+sOp.getReplica();
+            trace = "del|" + sOp.getOffset() + "|" + sOp.getPosition() + "|" + sOp.getVectorClock() + "|" + sOp.getReplica();
         }
         listTrace.add(trace);
     }
-    public void writeFile(ArrayList<String> log) throws IOException
-    {
+
+    public void writeFile(ArrayList<String> log) throws IOException {
         FileWriter file = new FileWriter("trace.log", true);
-        for(int i=0; i< log.size(); i++)
-        file.write(log.get(i) + "\n");
+        for (int i = 0; i < log.size(); i++) {
+            file.write(log.get(i) + "\n");
+        }
         file.close();
     }
     
