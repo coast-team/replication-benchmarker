@@ -18,6 +18,7 @@
  */
 package jbenchmarker.sim;
 
+import jbenchmarker.TraceSimul2XML;
 import org.junit.Ignore;
 import crdt.CRDT;
 import crdt.simulator.Trace;
@@ -34,6 +35,8 @@ import static org.junit.Assert.*;
  * @author urso
  */
 public class IntegrationWOOTH {
+
+    @Ignore
     @Test
     public void testWootHExempleRun() throws Exception {
         System.out.println("Integration test with WootH");
@@ -101,6 +104,7 @@ public class IntegrationWOOTH {
         }
     }
     
+    //@Ignore
     @Test
     public void testWootHRandom() throws Exception {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 1, 10, 3.0, 5);
@@ -111,5 +115,31 @@ public class IntegrationWOOTH {
         for (CRDT m : cd.getReplicas().values()) {
             assertEquals(r, m.lookup());
         }     
+    }
+    
+    @Test
+    public void testWootHSimulXML() throws Exception {
+        Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 1, 10, 3.0, 5);
+        CausalSimulator cdSim = new CausalSimulator(new WootHFactory());
+        cdSim.run(trace, false);
+         
+        TraceSimul2XML mn = new TraceSimul2XML();
+        String[] args = new String[]{"trace.log", "trace.xml"};
+        mn.main(args);
+        
+        Trace real = TraceGenerator.traceFromXML("trace.xml", 1);
+        CausalSimulator cdReal = new CausalSimulator(new WootHFactory());
+        cdReal.run(real, false);
+        
+        String s = (String) cdSim.getReplicas().get(0).lookup();
+        String r = (String) cdReal.getReplicas().get(0).lookup();
+        assertEquals(s,r); //compare only first replica
+        
+        //compare all replica
+        for (CRDT crdtSim : cdSim.getReplicas().values()) {
+            for (CRDT crdtReal : cdReal.getReplicas().values()) {
+                assertEquals(crdtSim.lookup(), crdtReal.lookup());
+            }
+        }
     }
 }

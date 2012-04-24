@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -346,11 +347,17 @@ public class CausalSimulator extends Simulator {
     }
 
     public void writeFile(ArrayList<String> log) throws IOException {
-        FileWriter file = new FileWriter("trace.log", true);
+        PrintWriter write;
+        write = new PrintWriter(new BufferedWriter(new FileWriter("trace.log")));
         for (int i = 0; i < log.size(); i++) {
-            file.write(log.get(i) + "\n");
+            write.println(log.get(i));
         }
-        file.close();
+        write.close();
+//        FileWriter file = new FileWriter("trace.log", true);
+//        for (int i = 0; i < log.size(); i++) {
+//            file.write(log.get(i) + "\n");
+//        }
+//        file.close();
     }
     
 //    public void serializ(CRDT m) throws IOException {
