@@ -19,28 +19,59 @@ public class TraceSimul2XML {
     static org.jdom.Document document = new Document(racine);
     
     public static void main(String[] args) throws Exception {
-        if (args.length < 1 || args.length > 2) {
+        if (args.length < 1 || args.length > 10) {
             System.err.println("Arguments : ");
             System.err.println("- trace : file of traces ");
             System.err.println("- xml : file xml to produce");
+            
+            System.err.println("- duration ");
+            System.err.println("- probability  ");
+            System.err.println("- perIns  ");
+            System.err.println("- perBlock  ");
+            System.err.println("- avgBlockSize  ");
+            System.err.println("- sdvBlockSize  ");
+            System.err.println("- delay  ");
+            System.err.println("- replicas  ");
+            
             System.exit(1);
         }
+        
+//        long duration = Long.valueOf(args[2]);
+//        double probability = Double.valueOf(args[3]);
+//        double perIns = Double.valueOf(args[4]);
+//        double perBlock = Double.valueOf(args[5]);
+//        int avgBlockSize = Integer.valueOf(args[6]);
+//        double sdvBlockSize = Double.valueOf(args[7]);
+//        long delay = Long.valueOf(args[8]);
+//        int replicas = Integer.valueOf(args[9]);
+        
+        creationTraceLog(args);
+        
         racine.addContent(trace);
         try {
             InputStream ips = new FileInputStream(args[0]);
             InputStreamReader ipsr = new InputStreamReader(ips);
             BufferedReader br = new BufferedReader(ipsr);
-            String line;
+            String line = "";
+            int i=0;
             while ((line = br.readLine()) != null) {
+                
                 String[] data = line.split("\\|");
                 String[] vh = ExtraireVH(data[3]);
                 transformerXML(data, vh);
-                save(args[1]);
             }
+            save(args[1]);
             br.close();
         } catch (Exception e) {
             System.out.println(e.toString());
         }
+    }
+    
+    static void creationTraceLog(String[] arg) throws Exception {
+        String logoot = "jbenchmarker.logoot.LogootFactory";
+        String[] args = new String[]{logoot, "1", arg[2] , arg[4], arg[5], arg[6], arg[7], arg[3], arg[8], "10", arg[9], "2", "0", "Logoot-G1"};
+        MainSimulation mn = new MainSimulation();
+        mn.main(args);
     }
     
     static void save(String fileOutPut) {

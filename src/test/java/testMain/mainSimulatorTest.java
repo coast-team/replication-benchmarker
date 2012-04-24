@@ -47,7 +47,7 @@ public class mainSimulatorTest {
         String rga = "jbenchmarker.rga.RGAFactory";
         String wootH = "jbenchmarker.woot.WootFactories$WootHFactory";
 
-        String[] args = new String[]{logoot, "2", "200", "0.88", "0.02", "30", "64.0", "0.1", "50", "10", "4", "2", "100","Logoot-G1"};
+        String[] args = new String[]{logoot, "1", "200", "0.88", "0.02", "30", "64.0", "0.1", "50", "10", "4", "2", "100","Logoot-G1"};
         MainSimulation mn = new MainSimulation();
         mn.main(args);
     }

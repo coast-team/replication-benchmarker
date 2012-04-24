@@ -78,7 +78,7 @@ public class Main {
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.runWithMemory(trace, Integer.parseInt(args[4]), false, true);//0 sans serialisation
+            cd.runWithMemory(trace, Integer.parseInt(args[4]), true, true);//0 sans serialisation
             long after = System.nanoTime();
             System.out.println("time"+(after-befor));
             if (ltime == null) {
