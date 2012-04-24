@@ -137,7 +137,9 @@ public class CausalSimulator extends Simulator {
                 genHistory.put(r, new ArrayList<CRDTMessage>());
                 history.put(r, new ArrayList<TraceOperation>());
             }
-                
+            
+            storeOp(opt.getOperation(a), log);   
+            
             history.get(r).add(opt);
             orderTrace.put(opt, numTrace++);
 
@@ -177,8 +179,7 @@ public class CausalSimulator extends Simulator {
                 }
             }
             Operation op = opt.getOperation(a);
-            
-            storeOp(op, log);
+            //storeOp(op, log);
             
             tmp = System.nanoTime();
             final CRDTMessage m = a.applyLocal(op);

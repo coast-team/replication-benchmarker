@@ -123,9 +123,9 @@ public class IntegrationWOOTO {
         CausalSimulator cdReal = new CausalSimulator(new WootOFactory());
         cdReal.run(real, false);
         
-        String s = (String) cdSim.getReplicas().get(0).lookup();
-        String r = (String) cdReal.getReplicas().get(0).lookup();
-        assertEquals(s,r); //compare only first replica
+//        String s = (String) cdSim.getReplicas().get(0).lookup();
+//        String r = (String) cdReal.getReplicas().get(0).lookup();
+//        assertEquals(s,r); 
         
         //compare all replica
         for (CRDT crdtSim : cdSim.getReplicas().values()) {

@@ -119,7 +119,7 @@ public class IntegrationWOOTH {
     
     @Test
     public void testWootHSimulXML() throws Exception {
-        Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 1, 10, 3.0, 5);
+        Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);
         CausalSimulator cdSim = new CausalSimulator(new WootHFactory());
         cdSim.run(trace, false);
          
@@ -131,11 +131,11 @@ public class IntegrationWOOTH {
         CausalSimulator cdReal = new CausalSimulator(new WootHFactory());
         cdReal.run(real, false);
         
-        String s = (String) cdSim.getReplicas().get(0).lookup();
-        String r = (String) cdReal.getReplicas().get(0).lookup();
-        assertEquals(s,r); //compare only first replica
+//        String s = (String) cdSim.getReplicas().get(0).lookup();
+//        String r = (String) cdReal.getReplicas().get(0).lookup();
+//        assertEquals(s,r);
         
-        //compare all replica
+//        compare all replica
         for (CRDT crdtSim : cdSim.getReplicas().values()) {
             for (CRDT crdtReal : cdReal.getReplicas().values()) {
                 assertEquals(crdtSim.lookup(), crdtReal.lookup());

@@ -116,7 +116,7 @@ public class IntegrationRGA {
     
     @Test
     public void testRGASimulXML() throws Exception {
-        Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 1, 10, 3.0, 5);
+        Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);
         CausalSimulator cdSim = new CausalSimulator(new RGAFactory());
         cdSim.run(trace, false);
          
@@ -128,9 +128,9 @@ public class IntegrationRGA {
         CausalSimulator cdReal = new CausalSimulator(new RGAFactory());
         cdReal.run(real, false);
         
-        String s = (String) cdSim.getReplicas().get(0).lookup();
-        String r = (String) cdReal.getReplicas().get(0).lookup();
-        assertEquals(s,r); //compare only first replica
+//        String s = (String) cdSim.getReplicas().get(0).lookup();
+//        String r = (String) cdReal.getReplicas().get(0).lookup();
+//        assertEquals(s,r); 
         
         //compare all replica
         for (CRDT crdtSim : cdSim.getReplicas().values()) {

@@ -35,6 +35,7 @@ import static org.junit.Assert.*;
  * @author urso
  */
 public class IntegrationLogoot {
+    @Ignore
     @Test
     public void testLogootExempleRun() throws Exception {
         System.out.println("Integration test with logoot");
@@ -48,7 +49,7 @@ public class IntegrationLogoot {
         assertEquals(r, cd.getReplicas().get(4).lookup());
     }
     
-//    @Ignore
+    @Ignore
     @Test
     public void testLogootG1Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
@@ -61,7 +62,7 @@ public class IntegrationLogoot {
         }
     }
     
-//    @Ignore
+    @Ignore
     @Test
     public void testLogootG2Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
@@ -74,7 +75,7 @@ public class IntegrationLogoot {
         }
     }
     
-//    @Ignore
+    @Ignore
     @Test
     public void testLogootG3Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
@@ -87,7 +88,7 @@ public class IntegrationLogoot {
         }
     }
     
-//    @Ignore
+    @Ignore
     @Test
     public void testLogootSerieRun() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
@@ -100,7 +101,7 @@ public class IntegrationLogoot {
         }
     }
     
-    //@Ignore
+    @Ignore
     @Test
     public void testLogootRandom() throws Exception {
         Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
@@ -113,10 +114,10 @@ public class IntegrationLogoot {
         }     
     }
     
-    @Ignore
+    //@Ignore
     @Test
     public void testLogootSimulXML() throws Exception {
-        Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 1, 10, 3.0, 5);
+        Trace trace = new RandomTrace(20, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);
         CausalSimulator cdSim = new CausalSimulator(new LogootFactory());
         cdSim.run(trace, false);
          
@@ -128,15 +129,16 @@ public class IntegrationLogoot {
         CausalSimulator cdReal = new CausalSimulator(new LogootFactory());
         cdReal.run(real, false);
         
-        String s = (String) cdSim.getReplicas().get(0).lookup();
-        String r = (String) cdReal.getReplicas().get(0).lookup();
-        assertEquals(s,r); 
+//        String s = (String) cdSim.getReplicas().get(0).lookup();
+//        String r = (String) cdReal.getReplicas().get(0).lookup();
+//          assertEquals(s,r);
         
-        //compare all replica
+//        compare all replica
         for (CRDT crdtSim : cdSim.getReplicas().values()) {
             for (CRDT crdtReal : cdReal.getReplicas().values()) {
                 assertEquals(crdtSim.lookup(), crdtReal.lookup());
             }
         }
     }
+    
 }
