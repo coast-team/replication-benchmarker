@@ -36,7 +36,7 @@ public class TraceSimul2XML {
             
             System.exit(1);
         }
-        
+         System.out.println("-----------------------");
         //creationTraceLog(args);
         
         racine.addContent(trace);

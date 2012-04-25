@@ -176,9 +176,9 @@ public class CausalSimulator extends Simulator {
                     vc.inc(e);
                 }
             }
+            
             Operation op = opt.getOperation(a);
             storeOp(op, log);
-            
             tmp = System.nanoTime();
             final CRDTMessage m = a.applyLocal(op);
             long after = System.nanoTime(); 
