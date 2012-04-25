@@ -18,6 +18,7 @@
  */
 package jbenchmarker.sim;
 
+import jbenchmarker.TraceSimul2XML;
 import org.junit.Ignore;
 import crdt.CRDT;
 import crdt.simulator.Trace;
@@ -65,6 +66,32 @@ public class IntegrationSOCT2 {
         for (CRDT m : cd.getReplicas().values()) {
             assertEquals(r, m.lookup());
         }     
+    }
+    
+    @Test
+    public void testSOCT2SimulXML() throws Exception {
+        Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);
+        CausalSimulator cdSim = new CausalSimulator(new SOCT2Factory());
+        cdSim.run(trace, false);
+         
+        TraceSimul2XML mn = new TraceSimul2XML();
+        String[] args = new String[]{"trace.log", "trace.xml"};
+        mn.main(args);
+        
+        Trace real = TraceGenerator.traceFromXML("trace.xml", 1);
+        CausalSimulator cdReal = new CausalSimulator(new SOCT2Factory());
+        cdReal.run(real, false);
+        
+//        String s = (String) cdSim.getReplicas().get(0).lookup();
+//        String r = (String) cdReal.getReplicas().get(0).lookup();
+//        assertEquals(s,r); 
+        
+        //compare all replica
+        for (CRDT crdtSim : cdSim.getReplicas().values()) {
+            for (CRDT crdtReal : cdReal.getReplicas().values()) {
+                assertEquals(crdtSim.lookup(), crdtReal.lookup());
+            }
+        }
     }
     
 }

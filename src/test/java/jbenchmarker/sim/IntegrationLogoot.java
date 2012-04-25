@@ -117,7 +117,7 @@ public class IntegrationLogoot {
     //@Ignore
     @Test
     public void testLogootSimulXML() throws Exception {
-        Trace trace = new RandomTrace(20, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);
+        Trace trace = new RandomTrace(200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);
         CausalSimulator cdSim = new CausalSimulator(new LogootFactory());
         cdSim.run(trace, false);
          
