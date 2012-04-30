@@ -51,6 +51,17 @@ public abstract class Simulator {
     final private Factory<CRDT> rf;
     
 
+    // logging file (null if no log)
+    protected String logging = null;
+
+    public String getLogging() {
+        return logging;
+    }
+
+    public void setLogging(String logging) {
+        this.logging = logging;
+    }
+    
     
     /**
      * Constructor of a Simulator. Replicas and Document will be instaciated at run time.

@@ -122,6 +122,12 @@ public class CausalSimulator extends Simulator {
         int numTrace = 0;
         ArrayList<String> log = new ArrayList<String>(); 
         
+        PrintWriter writer = null;
+        if (logging != null){
+            writer = new PrintWriter(new BufferedWriter(new FileWriter(logging)));
+        }
+        
+        
         setOp = new HashSet();
         history = new HashMap<Integer, List<TraceOperation>>();
         genHistory = new HashMap<Integer, List<CRDTMessage>>();
@@ -178,7 +184,9 @@ public class CausalSimulator extends Simulator {
             }
             
             Operation op = opt.getOperation(a);
-            storeOp(op, log);
+            if (writer != null) {
+                storeOp(writer, op);
+            }
             tmp = System.nanoTime();
             final CRDTMessage m = a.applyLocal(op);
             long after = System.nanoTime(); 
@@ -237,7 +245,9 @@ public class CausalSimulator extends Simulator {
             }
         }
         ifSerializ();
-        writeFile(log);
+        if (writer != null) {
+            writer.close();
+        }
     }
 
     public static void insertCausalOrder(List<TraceOperation> concurrentOps, TraceOperation opt) {
@@ -334,7 +344,7 @@ public class CausalSimulator extends Simulator {
         return l;
     }
     
-    public void storeOp(Operation op, ArrayList<String> listTrace) {
+    public void storeOp(PrintWriter writer, Operation op) {
         String trace = "";
         SequenceOperation sOp = (SequenceOperation) op;
         if (sOp.getType() == SequenceOperation.OpType.ins) {
@@ -342,21 +352,7 @@ public class CausalSimulator extends Simulator {
         } else {
             trace = "del|" + sOp.getOffset() + "|" + sOp.getPosition() + "|" + sOp.getVectorClock() + "|" + sOp.getReplica();
         }
-        listTrace.add(trace);
-    }
-
-    public void writeFile(ArrayList<String> log) throws IOException {
-        PrintWriter write;
-        write = new PrintWriter(new BufferedWriter(new FileWriter("trace.log")));
-        for (int i = 0; i < log.size(); i++) {
-            write.println(log.get(i));
-        }
-        write.close();
-//        FileWriter file = new FileWriter("trace.log", true);
-//        for (int i = 0; i < log.size(); i++) {
-//            file.write(log.get(i) + "\n");
-//        }
-//        file.close();
+        writer.append(trace);
     }
     
 //    public void serializ(CRDT m) throws IOException {

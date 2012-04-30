@@ -72,6 +72,7 @@ public class IntegrationSOCT2 {
     public void testSOCT2SimulXML() throws Exception {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);
         CausalSimulator cdSim = new CausalSimulator(new SOCT2Factory());
+        cdSim.setLogging("trace.log");
         cdSim.run(trace, false);
          
         TraceSimul2XML mn = new TraceSimul2XML();

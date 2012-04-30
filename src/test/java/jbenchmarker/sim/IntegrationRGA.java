@@ -35,12 +35,13 @@ import static org.junit.Assert.*;
  * @author Roh
  */
 public class IntegrationRGA {
+
     @Ignore
     @Test
     public void testRGAExempleRun() throws Exception {
-        System.out.println("Integration test with RGA");        
+        System.out.println("Integration test with RGA");
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
-        
+
         CausalSimulator cd = new CausalSimulator(new RGAFactory());
 
         cd.run(trace, false);
@@ -49,7 +50,7 @@ public class IntegrationRGA {
         assertEquals(r, cd.getReplicas().get(2).lookup());
         assertEquals(r, cd.getReplicas().get(4).lookup());
     }
-    
+
 //     @Ignore
 //    @Test
 //    public void testRGAG1Run() throws Exception {
@@ -98,40 +99,40 @@ public class IntegrationRGA {
 //            assertEquals(r, m.lookup());
 //        }
 //    }
-    
     @Test
     public void testRGARandom() throws Exception {
-            Trace trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 4, 3.0, 3);
-            CausalSimulator cd = new CausalSimulator(new RGAFactory());
-            cd.run(trace, false);
-            String r = null;
-            for (CRDT m : cd.getReplicas().values()) {
-                if (r == null) {
-                    r = (String) m.lookup();
-                } else if (!r.equals(m.lookup())) {
-                    fail("divergence\n-" + r + "\n-" + m.lookup());
-                }
+        Trace trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 4, 3.0, 3);
+        CausalSimulator cd = new CausalSimulator(new RGAFactory());
+        cd.run(trace, false);
+        String r = null;
+        for (CRDT m : cd.getReplicas().values()) {
+            if (r == null) {
+                r = (String) m.lookup();
+            } else if (!r.equals(m.lookup())) {
+                fail("divergence\n-" + r + "\n-" + m.lookup());
             }
         }
-    
+    }
+
     @Test
     public void testRGASimulXML() throws Exception {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);
         CausalSimulator cdSim = new CausalSimulator(new RGAFactory());
+        cdSim.setLogging("trace.log");
         cdSim.run(trace, false);
-         
+
         TraceSimul2XML mn = new TraceSimul2XML();
         String[] args = new String[]{"trace.log", "trace.xml"};
         mn.main(args);
-        
+
         Trace real = TraceGenerator.traceFromXML("trace.xml", 1);
         CausalSimulator cdReal = new CausalSimulator(new RGAFactory());
         cdReal.run(real, false);
-        
+
 //        String s = (String) cdSim.getReplicas().get(0).lookup();
 //        String r = (String) cdReal.getReplicas().get(0).lookup();
 //        assertEquals(s,r); 
-        
+
         //compare all replica
         for (CRDT crdtSim : cdSim.getReplicas().values()) {
             for (CRDT crdtReal : cdReal.getReplicas().values()) {

@@ -103,8 +103,8 @@ public class IntegrationABT {
      
     //    @Ignore
     @Test
-    public void testLogootRandom() throws Exception {
-        Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
+    public void testABTRandom() throws Exception {
+        Trace trace = new RandomTrace(200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
         CausalSimulator cd = new CausalSimulator(new ABTFactory());
 
         cd.run(trace, false);

@@ -86,7 +86,7 @@ public class SequenceOperation extends TraceOperation implements crdt.Operation,
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (!(obj instanceof SequenceOperation)) {
             return false;
         }
         final SequenceOperation other = (SequenceOperation) obj;
