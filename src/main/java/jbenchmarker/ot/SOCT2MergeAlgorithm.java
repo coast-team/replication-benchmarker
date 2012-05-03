@@ -74,8 +74,13 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
 
         int mpos = doc.viewToModel(opt.getPosition());
         if (opt.getType() == SequenceOperation.OpType.del) {
+            int visibleIndex = 0;
             for (int i = 0; i < opt.getOffset(); i++) {
-                TTFOperation op = TTFOperation.delete(opt, mpos + i, new VectorClock(this.siteVC));
+                // TODO: could be improved with an iterator on only visible characters
+                while (! doc.getChar(mpos+visibleIndex).isVisible()) {
+                    visibleIndex++;
+                }
+                TTFOperation op = TTFOperation.delete(opt, mpos + visibleIndex, new VectorClock(this.siteVC));
                 this.siteVC.inc(this.getReplicaNumber());
                 generatedOperations.add(op);
                 this.log.add(op);

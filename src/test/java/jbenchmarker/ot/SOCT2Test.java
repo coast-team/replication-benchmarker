@@ -173,7 +173,7 @@ public class SOCT2Test {
 
     
     @Test
-    public void testGenerateLocalDeleteStringWhichContainsDeletedChar() throws IncorrectTraceException {
+    public void testGenerateLocalDeleteStringWhichContainsDeletedChars() throws IncorrectTraceException {
         int siteId = 0;
         SOCT2MergeAlgorithm merger = new SOCT2MergeAlgorithm(new TTFDocument(), siteId);
         merger.generateLocal(insert(siteId, 0, "abcdefg"));
