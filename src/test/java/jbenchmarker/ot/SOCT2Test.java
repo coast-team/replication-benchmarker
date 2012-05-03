@@ -171,6 +171,35 @@ public class SOCT2Test {
         assertEquals("", merger.lookup());
     }
 
+    
+    @Test
+    public void testGenerateLocalDeleteStringWhichContainsDeletedChar() throws IncorrectTraceException {
+        int siteId = 0;
+        SOCT2MergeAlgorithm merger = new SOCT2MergeAlgorithm(new TTFDocument(), siteId);
+        merger.generateLocal(insert(siteId, 0, "abcdefg"));
+
+        merger.generateLocal(delete(siteId, 2, 2));
+        assertEquals("abefg", merger.lookup());
+        
+        // remove "bef"
+        List<SequenceMessage> ops = merger.generateLocal(delete(siteId, 1, 3));
+
+        assertEquals(3, ops.size());
+        TTFOperation opg = (TTFOperation) ops.get(0);
+        assertEquals(OpType.del, opg.getType());
+        assertEquals(1, opg.getPosition());
+
+        opg = (TTFOperation) ops.get(1);
+        assertEquals(OpType.del, opg.getType());
+        assertEquals(4, opg.getPosition());
+
+        opg = (TTFOperation) ops.get(2);
+        assertEquals(OpType.del, opg.getType());
+        assertEquals(5, opg.getPosition());
+        
+        assertEquals("ag", merger.lookup());         
+    }
+    
     @Test
     public void testVectorClockEvolution() throws IncorrectTraceException {
         int siteId = 0;
