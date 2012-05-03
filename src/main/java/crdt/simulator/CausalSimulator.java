@@ -120,13 +120,11 @@ public class CausalSimulator extends Simulator {
         final Enumeration<TraceOperation> it = trace.enumeration();
         final HashMap<TraceOperation, Integer> orderTrace = new HashMap();        
         int numTrace = 0;
-        ArrayList<String> log = new ArrayList<String>(); 
         
         PrintWriter writer = null;
         if (logging != null){
             writer = new PrintWriter(new BufferedWriter(new FileWriter(logging)));
         }
-        
         
         setOp = new HashSet();
         history = new HashMap<Integer, List<TraceOperation>>();
@@ -169,7 +167,6 @@ public class CausalSimulator extends Simulator {
                     int e = t.getReplica();
                     CRDTMessage op = genHistory.get(e).get(t.getVectorClock().get(e) - 1);
                     CRDTMessage optime = op.clone();
-
                     tmp = System.nanoTime();
                     a.applyRemote(optime);
                     long after = System.nanoTime(); 
@@ -188,6 +185,7 @@ public class CausalSimulator extends Simulator {
                 storeOp(writer, op);
             }
             tmp = System.nanoTime();
+
             final CRDTMessage m = a.applyLocal(op);
             long after = System.nanoTime(); 
             localSum += (after - tmp);
@@ -202,7 +200,6 @@ public class CausalSimulator extends Simulator {
             genHistory.get(r).add(msg);
             clocks.get(r).inc(r);
             globalClock.inc(r);
-            
            ifSerializ();
         }
         ifSerializ();
@@ -228,7 +225,8 @@ public class CausalSimulator extends Simulator {
                             CRDTMessage optime = op.clone();
 
                             tmp = System.nanoTime();
-                            a.applyRemote(optime);
+                            a.applyRemote(optime);;
+                                
                             long after = System.nanoTime(); 
                             if (detail) {
                                 int num = orderTrace.get(history.get(s).get(j));                            
@@ -238,7 +236,7 @@ public class CausalSimulator extends Simulator {
                             nbRemote++;
                             tour++;
                             vc.inc(s);
-                            ifSerializ();                                
+                            ifSerializ();    
                         }
                     }
                 }
@@ -352,17 +350,6 @@ public class CausalSimulator extends Simulator {
         } else {
             trace = "del|" + sOp.getOffset() + "|" + sOp.getPosition() + "|" + sOp.getVectorClock() + "|" + sOp.getReplica();
         }
-        writer.append(trace);
+        writer.append(trace+"\n");
     }
-    
-//    public void serializ(CRDT m) throws IOException {
-//
-//        FileOutputStream fichier = new FileOutputStream("File.ser");
-//        //long s = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-//        ObjectOutputStream oos = new ObjectOutputStream(fichier);
-//        oos.writeObject(m);
-//        sumMemory +=  fichier.getChannel().size();
-//        oos.flush();
-//        oos.close();
-//    }
 }

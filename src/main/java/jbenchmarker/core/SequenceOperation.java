@@ -32,6 +32,17 @@ public class SequenceOperation extends TraceOperation implements crdt.Operation,
 
     @Override
     public Operation getOperation(CRDT replica) {
+        if (replica.lookup() instanceof String) { //Set is an Object(may be String too)
+            int sizeDoc = ((String) replica.lookup()).length();//not especially String 
+            if (this.getType() == OpType.ins
+                    && this.position > sizeDoc) {
+                position = sizeDoc;//a position exceeds document size
+
+            } else if ((this.position + this.offset) > sizeDoc) {
+                this.offset = sizeDoc - this.position; //delete document at position exceeds document size
+            }
+        }
+
         return this;
     }
 
