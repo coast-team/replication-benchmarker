@@ -23,12 +23,14 @@ import crdt.CRDT;
 import crdt.Operation;
 import crdt.simulator.TraceOperation;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author urso
  */
-public class SequenceOperation extends TraceOperation implements crdt.Operation, Serializable {
+public class SequenceOperation<T> extends TraceOperation implements crdt.Operation, Serializable {
 
     @Override
     public Operation getOperation(CRDT replica) {
@@ -52,10 +54,18 @@ public class SequenceOperation extends TraceOperation implements crdt.Operation,
     private OpType type;                  // type of operation : insert or delete
     private int position;                 // position in the document
     private int offset;                   // length of a del
-    private String content;          // content of an ins
+    private List<T> content;          // content of an ins
     
-    public String getContent() {
+    public List<T> getContent() {
         return content;
+    }
+    
+    public String getContentAsString() {
+        StringBuilder s = new StringBuilder();
+        for (T t : content) {
+            s.append(t.toString());
+        }
+        return s.toString();
     }
 
     public int getOffset() {
@@ -70,7 +80,7 @@ public class SequenceOperation extends TraceOperation implements crdt.Operation,
         return type;
     }
 
-    SequenceOperation(OpType type, int replica, int position, int offset, String content, VectorClock VC) {
+    SequenceOperation(OpType type, int replica, int position, int offset, List<T> content, VectorClock VC) {
         super(replica, VC);
         this.type = type;
         this.position = position;
@@ -79,14 +89,18 @@ public class SequenceOperation extends TraceOperation implements crdt.Operation,
     }
 
     /*
-     * Construction of an insert operation 
+     * Construction of an insert operation (character)
      */
-    static public SequenceOperation insert(int replica, int position, String content, VectorClock VC) {
-        return new SequenceOperation(OpType.ins, replica, position, 0, content, VC);
+    static public SequenceOperation<Character> insert(int replica, int position, String content, VectorClock VC) {
+        List<Character> l = new ArrayList<Character>();
+        for (int i = 0; i < content.length(); ++i) {
+            l.add(content.charAt(i));
+        }        
+        return new SequenceOperation(OpType.ins, replica, position, 0, l, VC);
     }
     
     /*
-     * Construction of an insert operation 
+     * Construction of an delete operation
      */
     static public SequenceOperation delete(int replica, int position, int offset, VectorClock VC) {
         return new SequenceOperation(OpType.del, replica, position, offset, null, VC);
@@ -134,6 +148,6 @@ public class SequenceOperation extends TraceOperation implements crdt.Operation,
     }    
     
     public int getRange() {
-        return (type == OpType.ins) ? content.length() : offset;  
+        return (type == OpType.ins) ? content.size() : offset;  
     }
 }

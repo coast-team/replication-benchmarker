@@ -27,10 +27,10 @@ import jbenchmarker.core.SequenceOperation.OpType;
  *
  * @author oster
  */
-public class TTFOperation extends SequenceMessage {
+public class TTFOperation<T> extends SequenceMessage {
 
     private int pos;
-    private char content;
+    private T content;
     private VectorClock clock;
     private final int siteId;
 
@@ -52,7 +52,7 @@ public class TTFOperation extends SequenceMessage {
         this.pos = pos;
     }
 
-    public char getChar() {
+    public T getChar() {
         return this.content;
     }
 
@@ -95,7 +95,7 @@ public class TTFOperation extends SequenceMessage {
         return op;
     }
 
-    public static TTFOperation insert(SequenceOperation o, int pos, char content, VectorClock vc) {
+    public static <T> TTFOperation insert(SequenceOperation o, int pos, T content, VectorClock vc) {
         TTFOperation op = new TTFOperation(o);
         op.pos = pos;
         op.content = content;
@@ -108,7 +108,7 @@ public class TTFOperation extends SequenceMessage {
         op.clock = opt.getVectorClock();
         op.pos = opt.getPosition();
         if (opt.getType() == OpType.ins) {
-            op.content = opt.getContent().charAt(0);
+            op.content = opt.getContent().get(0);
         }
         return op;
     }

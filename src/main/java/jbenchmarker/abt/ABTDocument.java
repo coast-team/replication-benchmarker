@@ -29,17 +29,17 @@ import jbenchmarker.core.SequenceOperation.OpType;
 *
 * @author Roh
 */
-public class ABTDocument implements Document{
-	protected String model;
+public class ABTDocument<T> implements Document{
+	protected List<T> model;
 	
 	public ABTDocument(){
-		model = new String();
+		model = new ArrayList<T>();
 	}
 	
 	@Override
 	public String view() {
 		// TODO Auto-generated method stub
-		return model;
+		return model.toString();
 	}
 
 	@Override
@@ -48,33 +48,33 @@ public class ABTDocument implements Document{
 		ABTOperation abtop = (ABTOperation)op;
 		try{
 			if(abtop.getType()==OpType.del){
-				if(abtop.c=='\0') abtop.c = model.charAt(abtop.pos-1);
-				else {
-					if(abtop.c != model.charAt(abtop.pos-1)) {
+//				if(abtop.c=='\0') abtop.c = model.charAt(abtop.pos-1);
+//				else {
+					if(abtop.c != model.get(abtop.pos-1)) {
 						System.err.println("Intention violation:"+abtop);						
 						System.err.println("intention:"+abtop.c);
-						System.err.println("but:"+model.charAt(abtop.pos-1));						
-						System.err.println("["+model.substring(0,abtop.pos-1)+"]"+model.charAt(abtop.pos-1)+"["+model.substring(abtop.pos)+"]");
+						System.err.println("but:"+model.get(abtop.pos-1));						
+//						System.err.println("["+model.subList(0,abtop.pos-1)+"]"+model.get(abtop.pos-1)+"["+model.subList(abtop.pos)+"]");
 						throw new RuntimeException(abtop+" ");
 					}
-				}
+//				}
 				if(abtop.pos<1){
 					throw new RuntimeException("Incorrect parameter");
-				} else if(abtop.pos>model.length()){
+				} else if(abtop.pos>model.size()){
 					throw new RuntimeException("Incorrect parameter");
 				} else {
-					model = model.substring(0,abtop.pos-1)+model.substring(abtop.pos);
+//					model = model.subList(0,abtop.pos-1)+model.subList(abtop.pos);
 				}
 
 			} else {
 				if(abtop.pos<0){
 					throw new RuntimeException("Incorrect parameter");
 				} else if(abtop.pos==0){
-					model = abtop.c+model;				 
-				} else if(abtop.pos>model.length()) {					
+//					model = abtop.c+model;				 
+				} else if(abtop.pos>model.size()) {					
 					throw new RuntimeException("Incorrect parameter");
 				} else {					
-					model = model.substring(0,abtop.pos)+abtop.c+model.substring(abtop.pos);					
+//					model = model.subList(0,abtop.pos)+abtop.c+model.subList(abtop.pos);					
 				}
 			}
 		} catch(StringIndexOutOfBoundsException sioobe){

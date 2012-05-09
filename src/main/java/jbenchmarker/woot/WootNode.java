@@ -24,13 +24,13 @@ import java.io.Serializable;
  *
  * @author urso
  */
-public abstract class WootNode implements Serializable{ 
+public abstract class WootNode<T> implements Serializable{ 
     
     final private WootIdentifier id; // own identifier
-    final private char content;
+    final private T content;
     private boolean visible;
 
-    public WootNode(WootIdentifier id, char content, boolean visible) {
+    public WootNode(WootIdentifier id, T content, boolean visible) {
         this.id = id;
         this.content = content;
         this.visible = visible;
@@ -40,7 +40,7 @@ public abstract class WootNode implements Serializable{
         return id;
     }
 
-    public char getContent() {
+    public T getContent() {
         return content;
     }
 

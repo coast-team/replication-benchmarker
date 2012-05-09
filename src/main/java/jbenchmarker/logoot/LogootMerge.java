@@ -31,7 +31,7 @@ import java.util.*;
  *
  * @author mehdi urso
  */
-public class LogootMerge extends MergeAlgorithm {
+public class LogootMerge<T> extends MergeAlgorithm {
 
     final private int nbBit;
     final private long max; // MAX = 2^nbBit - 1
@@ -65,21 +65,20 @@ public class LogootMerge extends MergeAlgorithm {
     @Override
     protected List<SequenceMessage> generateLocal(SequenceOperation opt) {
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
-        LogootDocument lg = (LogootDocument) (this.getDoc());
-        String content = "";
+        LogootDocument<T> lg = (LogootDocument<T>) (this.getDoc());
         int N = 0, offset = 0;
         int position = opt.getPosition();
 
         if (opt.getType() == SequenceOperation.OpType.ins) {
-            N = opt.getContent().length();
-            content = opt.getContent();
+            N = opt.getContent().size();
+            List<T> content = opt.getContent();
             ArrayList<LogootIdentifier> patch = strategy.generateLineIdentifiers(this, lg.getIdTable().get(position),
                     lg.getIdTable().get(position + 1), N);
 
-            ArrayList<Character> lc = new ArrayList<Character>(patch.size());
+            ArrayList<T> lc = new ArrayList<T>(patch.size());
             for (int cmpt = 0; cmpt < patch.size(); cmpt++) {
-                char c = content.charAt(cmpt);
-                LogootOperation log = LogootOperation.insert(opt, patch.get(cmpt), c);
+                T c = content.get(cmpt);
+                LogootOperation<T> log = LogootOperation.insert(opt, patch.get(cmpt), c);
                 lop.add(log);
                 lc.add(c);
             }
@@ -89,7 +88,7 @@ public class LogootMerge extends MergeAlgorithm {
         } else {
             offset = opt.getOffset();
             for (int k = 1; k <= offset; k++) {
-                LogootOperation wop = LogootOperation.Delete(opt, lg.getIdTable().get(position + k));
+                LogootOperation<T> wop = LogootOperation.Delete(opt, lg.getIdTable().get(position + k));
                 lop.add(wop);
             }
             lg.getIdTable().removeRangeOffset(position + 1, offset);

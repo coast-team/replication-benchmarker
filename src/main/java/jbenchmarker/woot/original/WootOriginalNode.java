@@ -25,14 +25,14 @@ import jbenchmarker.woot.WootNode;
  *
  * @author urso
  */
-public class WootOriginalNode extends WootNode {
+public class WootOriginalNode<T> extends WootNode<T> {
     final private WootOriginalNode cp; // previous node
     final private WootOriginalNode cn; // next node
     
     public static final WootOriginalNode CB = new WootOriginalNode(WootIdentifier.IB, null, null, ' ', false);
     public static final WootOriginalNode CE = new WootOriginalNode(WootIdentifier.IE, null, null, ' ', false);
 
-    public WootOriginalNode(WootIdentifier id, WootOriginalNode cp, WootOriginalNode cn, char content, boolean visible) {
+    public WootOriginalNode(WootIdentifier id, WootOriginalNode cp, WootOriginalNode cn, T content, boolean visible) {
         super(id, content, visible);
         this.cp = cp;
         this.cn = cn;

@@ -26,17 +26,17 @@ import jbenchmarker.core.SequenceOperation;
  * 
  * @author mzawirski
  */
-public class TreedocOperation extends SequenceMessage {
+public class TreedocOperation<T> extends SequenceMessage {
 	private final TreedocId id;
-	private final char content;
+	private final T content;
 
 	public TreedocOperation(SequenceOperation o, TreedocId id) {
 		super(o);
 		this.id = id;
-		this.content = (char) 0;
+		this.content = null;
 	}
 
-	public TreedocOperation(SequenceOperation o, TreedocId id, char content) {
+	public TreedocOperation(SequenceOperation o, TreedocId id, T content) {
 		super(o);
 		this.id = id;
 		this.content = content;
@@ -46,7 +46,7 @@ public class TreedocOperation extends SequenceMessage {
 		return id;
 	}
 
-	public char getContent() {
+	public T getContent() {
 		return content;
 	}
 

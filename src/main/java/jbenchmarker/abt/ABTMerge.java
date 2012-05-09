@@ -75,7 +75,7 @@ public class ABTMerge extends MergeAlgorithm {
 		int offset;
 		int p = opt.getPosition();
 		if(opt.getType() ==  SequenceOperation.OpType.del) offset = opt.getOffset();
-		else offset = opt.getContent().length();
+		else offset = opt.getContent().size();
 		
 		for(int i=0;i<offset;i++){
 			this.siteVC.inc(this.getReplicaNumber());
@@ -83,7 +83,7 @@ public class ABTMerge extends MergeAlgorithm {
 			if(opt.getType() == SequenceOperation.OpType.del){
 				abtop = new ABTOperation(opt,p+1, siteVC);
 			} else {
-				abtop = new ABTOperation(opt,p+i, opt.getContent().charAt(i), siteVC);
+				abtop = new ABTOperation(opt,p+i, opt.getContent().get(i), siteVC);
 			}
 			
 			abtdoc.apply(abtop);

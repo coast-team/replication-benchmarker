@@ -29,15 +29,15 @@ import jbenchmarker.woot.WootOperation;
  *
  * @author urso
  */
-public class WootHashDocument implements Document {
-    final protected WootHashNode first;
-    final protected Map<WootIdentifier, WootHashNode> map;
+public class WootHashDocument<T> implements Document {
+    final protected WootHashNode<T> first;
+    final protected Map<WootIdentifier, WootHashNode<T>> map;
 
     public WootHashDocument() {
         super();
         WootHashNode end = new WootHashNode(WootIdentifier.IE, ' ', false, null, 0);
         this.first = new WootHashNode(WootIdentifier.IB, ' ', false, end, 0);
-        this.map = new java.util.HashMap<WootIdentifier, WootHashNode>();
+        this.map = new java.util.HashMap<WootIdentifier, WootHashNode<T>>();
         this.map.put(WootIdentifier.IB, first);
         this.map.put(WootIdentifier.IE, end);
     }
@@ -119,7 +119,7 @@ public class WootHashDocument implements Document {
         return new WootOperation(o, id);
     }
     
-    public WootOperation insert(SequenceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, char content) {
+    public WootOperation insert(SequenceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, T content) {
         return new WootOperation(o, id, ip, in, content);
     }
 

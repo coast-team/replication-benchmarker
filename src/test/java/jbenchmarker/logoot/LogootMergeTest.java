@@ -71,8 +71,8 @@ public class LogootMergeTest
     @Test
     public void testDeleteBloc() {
         
-        LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 64, new BoundaryStrategy(1000000000));
-        LogootDocument lg = (LogootDocument) (LM.getDoc());
+        LogootMerge<Character> LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 64, new BoundaryStrategy(1000000000));
+        LogootDocument<Character> lg = (LogootDocument) (LM.getDoc());
         
         
         List<SequenceMessage> a = LM.generateLocal(insert(0, "aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib"));

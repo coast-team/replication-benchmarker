@@ -28,12 +28,12 @@ import jbenchmarker.core.SequenceOperation;
  *
  * @author oster
  */
-public class TTFDocument implements Document {
+public class TTFDocument<T> implements Document {
 
-    protected List<TTFChar> model;
+    protected List<TTFChar<T>> model;
 
     public TTFDocument() {
-        this.model = new ArrayList<TTFChar>();
+        this.model = new ArrayList<TTFChar<T>>();
     }
 
     public String view() {
@@ -52,12 +52,13 @@ public class TTFDocument implements Document {
             if (c.isVisible()) {
                 sb.append(c.getChar());
             } else {
-                sb.append("[" + c.getChar() + "]");
+                sb.append("[").append(c.getChar()).append("]");
             }
         }
         return sb.toString();
     }
 
+    @Override
     public void apply(SequenceMessage op) {
         TTFOperation oop = (TTFOperation) op;
         int pos = oop.getPosition();

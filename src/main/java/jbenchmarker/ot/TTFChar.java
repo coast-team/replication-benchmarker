@@ -24,12 +24,12 @@ import java.io.Serializable;
  *
  * @author oster
  */
-public class TTFChar implements Serializable{
+public class TTFChar<T> implements Serializable{
 
-    private char character;
+    private T character;
     private boolean visible;
 
-    public TTFChar(char c) {
+    public TTFChar(T c) {
         this.character = c;
         this.visible = true;
     }
@@ -42,7 +42,7 @@ public class TTFChar implements Serializable{
         this.visible = false;
     }
 
-    public char getChar() {
+    public T getChar() {
         return this.character;
     }
 

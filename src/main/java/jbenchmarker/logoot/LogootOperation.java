@@ -26,14 +26,14 @@ import jbenchmarker.core.SequenceOperation.OpType;
  *
  * @author mehdi urso
  */
-public class LogootOperation extends SequenceMessage
+public class LogootOperation<T> extends SequenceMessage
 {
 
     final private LogootIdentifier identif;
     
-    final private char content;
+    final private T content;
 
-    private LogootOperation(SequenceOperation o, LogootIdentifier identif, char content) {
+    private LogootOperation(SequenceOperation o, LogootIdentifier identif, T content) {
         super(o);
         this.identif = identif;
         this.content = content;
@@ -47,11 +47,11 @@ public class LogootOperation extends SequenceMessage
         return identif;
     }
     
-    public char getContent() {
+    public T getContent() {
         return content;
     }
 
-    static LogootOperation insert(SequenceOperation o, LogootIdentifier idf, char cont) {
+    static <T> LogootOperation insert(SequenceOperation o, LogootIdentifier idf, T cont) {
         return new LogootOperation(o, idf, cont);
     }
 

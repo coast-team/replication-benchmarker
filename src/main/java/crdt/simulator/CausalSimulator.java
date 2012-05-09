@@ -20,10 +20,8 @@ package crdt.simulator;
 
 import collect.VectorClock;
 import crdt.*;
-import crdt.set.SetOperation;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -32,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +37,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceOperation;
 
 /**
@@ -343,10 +339,11 @@ public class CausalSimulator extends Simulator {
     }
     
     public void storeOp(PrintWriter writer, Operation op) {
+        // TODO : generalize for any kind of operation
         String trace = "";
         SequenceOperation sOp = (SequenceOperation) op;
         if (sOp.getType() == SequenceOperation.OpType.ins) {
-            trace = "Ins|" + sOp.getContent() + "|" + sOp.getPosition() + "|" + sOp.getVectorClock() + "|" + sOp.getReplica();
+            trace = "Ins|" + sOp.getContentAsString() + "|" + sOp.getPosition() + "|" + sOp.getVectorClock() + "|" + sOp.getReplica();
         } else {
             trace = "del|" + sOp.getOffset() + "|" + sOp.getPosition() + "|" + sOp.getVectorClock() + "|" + sOp.getReplica();
         }

@@ -28,16 +28,16 @@ import java.util.NoSuchElementException;
  *
  * @author Roh
  */
-public class RGADocument implements Document {
+public class RGADocument<T> implements Document {
 
-    private HashMap<RGAS4Vector, RGANode> hash;
+    private HashMap<RGAS4Vector, RGANode<T>> hash;
     private RGANode head;
     //private RGAPurger	purger;
 
     public RGADocument() {
         super();
         head = new RGANode();
-        hash = new HashMap<RGAS4Vector, RGANode>();
+        hash = new HashMap<RGAS4Vector, RGANode<T>>();
         //purger= new RGAPurger(this);
     }
 

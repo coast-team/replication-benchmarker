@@ -29,6 +29,7 @@ import static jbenchmarker.woot.WootFactories.WootHFactory;
 import jbenchmarker.trace.TraceGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static jbenchmarker.sim.CausalDispatcherTest.assertConsistency;
 
 /**
  *
@@ -56,13 +57,7 @@ public class IntegrationWOOTH {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
         CausalSimulator cd = new CausalSimulator(new WootHFactory());
 
-        cd.run(trace, false);
-//        for (Object o : ((WootHDocument) cd.getReplicas().get(0).getDoc()).getIdTable())                      
-//             System.out.println(o);
-        String r = (String) cd.getReplicas().get(0).lookup();
-        for (CRDT m : cd.getReplicas().values()) {
-            assertEquals(r, m.lookup());
-        }
+        assertConsistency(cd,trace);
     }
     
     @Ignore
@@ -71,11 +66,7 @@ public class IntegrationWOOTH {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
         CausalSimulator cd = new CausalSimulator(new WootHFactory());
 
-        cd.run(trace, false);
-        String r = (String) cd.getReplicas().get(0).lookup();
-        for (CRDT m : cd.getReplicas().values()) {
-            assertEquals(r, m.lookup());
-        }
+        assertConsistency(cd,trace);
     }
     
     @Ignore
@@ -84,11 +75,7 @@ public class IntegrationWOOTH {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
         CausalSimulator cd = new CausalSimulator(new WootHFactory());
 
-        cd.run(trace, false);
-        String r = (String) cd.getReplicas().get(0).lookup();
-        for (CRDT m : cd.getReplicas().values()) {
-            assertEquals(r, m.lookup());
-        }
+        assertConsistency(cd,trace);
     }
     
     @Ignore
@@ -97,12 +84,30 @@ public class IntegrationWOOTH {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
         CausalSimulator cd = new CausalSimulator(new WootHFactory());
 
-        cd.run(trace, false);
-        String r = (String) cd.getReplicas().get(0).lookup();
-        for (CRDT m : cd.getReplicas().values()) {
-            assertEquals(r, m.lookup());
+        assertConsistency(cd,trace);
+    }
+    
+    @Test
+    public void testWootHT2Run() throws Exception {
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Trace2.xml", 1);
+        CausalSimulator cd = new CausalSimulator(new WootHFactory());
+
+        assertConsistency(cd,trace);
+    }
+    
+    @Ignore
+    @Test
+    public void testWootHStress() throws Exception {
+        int i = 0;
+        while (true) {
+            System.out.println(i++);
+            Trace trace = new RandomTrace(100, RandomTrace.FLAT, new StandardSeqOpProfile(0.6, 1, 10, 5.0), 1, 10, 3.0, 5);
+            CausalSimulator cd = new CausalSimulator(new WootHFactory());
+
+            assertConsistency(cd,trace);
         }
     }
+    
     
     //@Ignore
     @Test

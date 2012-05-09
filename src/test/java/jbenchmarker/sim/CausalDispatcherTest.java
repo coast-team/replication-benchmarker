@@ -18,6 +18,7 @@
  */
 package jbenchmarker.sim;
 
+import crdt.simulator.Simulator;
 import java.util.Iterator;
 import crdt.simulator.Trace;
 import crdt.simulator.CausalSimulator;
@@ -41,6 +42,19 @@ import static jbenchmarker.trace.TraceGeneratorTest.op;
  */
 public class CausalDispatcherTest {
 
+    static public void assertConsistency(Simulator sim, Trace trace) throws Exception {
+        sim.run(trace, false);
+        Object referenceView = null;
+	for (final CRDT replica : sim.getReplicas().values()) {
+            final Object view = replica.lookup();
+            if (referenceView == null)
+		referenceView = view;
+            else
+		assertEquals(referenceView, view);
+	}
+	assertNotNull(referenceView);
+    }
+    
     // SequenceMessage mock
     static private class OpMock extends SequenceMessage {
         OpMock(SequenceOperation opt) {

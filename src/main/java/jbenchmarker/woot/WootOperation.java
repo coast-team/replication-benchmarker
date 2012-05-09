@@ -26,11 +26,11 @@ import jbenchmarker.core.SequenceOperation.OpType;
  *
  * @author urso
  */
-public class WootOperation extends SequenceMessage {
+public class WootOperation<T> extends SequenceMessage {
     final private WootIdentifier id;
     final private WootIdentifier ip;   // previous
     final private WootIdentifier in;   // next   
-    final private char content;
+    final private T content;
         
     /**
      * Constructor for insert operation
@@ -40,7 +40,7 @@ public class WootOperation extends SequenceMessage {
      * @param in identifier of next element
      * @param content content of element
      */
-    public WootOperation(SequenceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, char content) {
+    public WootOperation(SequenceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, T content) {
         super(o);
         this.id = id;
         this.ip = ip;
@@ -58,7 +58,7 @@ public class WootOperation extends SequenceMessage {
         this.id = id;
         this.ip = null;
         this.in = null;
-        this.content = (char) 0;        
+        this.content = null;        
     }
 
 
@@ -78,7 +78,7 @@ public class WootOperation extends SequenceMessage {
         return ip;
     }
 
-    public char getContent() {
+    public T getContent() {
         return content;
     }
 

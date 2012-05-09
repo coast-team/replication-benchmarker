@@ -33,7 +33,7 @@ import jbenchmarker.core.SequenceOperation;
  *
  * @author urso
  */
-public class WootMerge extends MergeAlgorithm {
+public class WootMerge<T> extends MergeAlgorithm {
     Map<WootIdentifier, WootOperation> pending;
     
     private int clock;
@@ -70,9 +70,9 @@ public class WootMerge extends MergeAlgorithm {
            int in = wdoc.getNext(ip);
            WootIdentifier idp =  wdoc.getElements().get(ip).getId(),
                    idn =  wdoc.getElements().get(in).getId();
-           for (int i = 0; i < opt.getContent().length(); i++) {
+           for (int i = 0; i < opt.getContent().size(); i++) {
                 WootIdentifier id = nextIdentifier();
-                WootOperation wop = wdoc.insert(opt, id, idp, idn, opt.getContent().charAt(i));
+                WootOperation wop = wdoc.insert(opt, id, idp, idn, opt.getContent().get(i));
                 wdoc.insertLocal(wop, ip, idp, in+i);
                 idp = id;
                 lop.add(wop);

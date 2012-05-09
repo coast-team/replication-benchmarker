@@ -69,7 +69,7 @@ public class RGAMerge extends MergeAlgorithm {
 			offset = opt.getOffset();
 			target = rgadoc.getVisibleNode(p+1);
 		} else {
-			offset = opt.getContent().length();
+			offset = opt.getContent().size();
 			if(p==0) s4vpos = null;
 			else s4vpos	= rgadoc.getVisibleS4V(p); // if head, s4vpos = null; if after tail, s4vpos= the last one. 		
 		}		
@@ -81,7 +81,7 @@ public class RGAMerge extends MergeAlgorithm {
 				rgaop = new RGAOperation(opt, p+1, target.getKey(), s4vtms);
 				target = target.getNextVisible();
 			} else {
-				rgaop = new RGAOperation(opt, p+i, s4vpos, opt.getContent().charAt(i), s4vtms);
+				rgaop = new RGAOperation(opt, p+i, s4vpos, opt.getContent().get(i), s4vtms);
 				s4vpos = s4vtms; // The s4v of the current insert becomes the s4vpos of next insert.
 			}
 			lop.add(rgaop);

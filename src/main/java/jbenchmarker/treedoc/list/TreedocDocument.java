@@ -31,7 +31,7 @@ import citi.treedoc.TreedocIdFactory;
  * 
  * @author mzawirski
  */
-public class TreedocDocument extends Treedoc<TreedocId, Character> implements
+public class TreedocDocument<T> extends Treedoc<TreedocId, T> implements
 		Document {
 
 	public TreedocDocument() {
@@ -50,14 +50,14 @@ public class TreedocDocument extends Treedoc<TreedocId, Character> implements
 	@Override
 	public String view() {
 		final StringBuilder buffer = new StringBuilder(size());
-		for (final Character ch : data)
+		for (final T ch : data)
 			buffer.append(ch);
 		return buffer.toString();
 	}
 
 	@Override
 	public void apply(SequenceMessage op) {
-		final TreedocOperation treedocOp = (TreedocOperation) op;
+		final TreedocOperation<T> treedocOp = (TreedocOperation<T>) op;
 		if (treedocOp.getOriginalOp().getType() == SequenceOperation.OpType.ins) {
 			insert(treedocOp.getId(), treedocOp.getContent());
 		} else {

@@ -30,9 +30,9 @@ import jbenchmarker.core.SequenceOperation.OpType;
 *
 * @author Roh
 */
-public class ABTOperation extends SequenceMessage{
+public class ABTOperation<T> extends SequenceMessage{
 
-	protected char 			c;
+	protected T 			c;
 	protected int 			pos;
 	protected VectorClock 	vc;
 	protected final int		sid;	
@@ -40,7 +40,7 @@ public class ABTOperation extends SequenceMessage{
 	public ABTOperation(SequenceOperation o){
 		super(o);
 		this.sid = this.getOriginalOp().getReplica();
-		this.c	 ='\0';
+//		this.c	 ='\0';
 	}
 	
 	//delete
@@ -50,11 +50,11 @@ public class ABTOperation extends SequenceMessage{
 		this.sid = this.getOriginalOp().getReplica();
 		this.pos = p;		
 		this.vc  = new VectorClock(vc);
-		this.c   = '\0';
+//		this.c   = '\0';
 	}
 	
 	//insert
-	public ABTOperation(SequenceOperation o, int p, char c, VectorClock vc) {
+	public ABTOperation(SequenceOperation o, int p, T c, VectorClock vc) {
 		super(o);
 		// TODO Auto-generated constructor stub
 		this.sid = this.getOriginalOp().getReplica();
@@ -98,6 +98,7 @@ public class ABTOperation extends SequenceMessage{
 		return op;
 	}
 	
+    @Override
 	public String toString(){
 		String ret = new String();
 		Formatter fmt = new Formatter();
@@ -111,10 +112,11 @@ public class ABTOperation extends SequenceMessage{
 		} else if(getType()==OpType.del) {
 			ret+="del("+fmt+",\'";			
 		}
-		if(this.c=='\0') ret+="\\0";
-		else if(this.c=='\n') ret+="\\n";
-		else if(this.c=='\t') ret+="\\t";
-		else ret+=this.c;
+//		if(this.c=='\0') ret+="\\0";
+//		else if(this.c=='\n') ret+="\\n";
+//		else if(this.c=='\t') ret+="\\t";
+//		else 
+                    ret+=this.c;
 		ret+="\')";
 		return ret;
 	}

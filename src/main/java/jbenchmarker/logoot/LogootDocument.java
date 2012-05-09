@@ -27,14 +27,14 @@ import jbenchmarker.core.SequenceOperation;
  * A Logoot document. Contains a list of Charater and the corresponding list of LogootIndentitifer.
  * @author urso mehdi
  */
-public class LogootDocument implements Document{
+public class LogootDocument<T> implements Document{
 
     final private RangeList<LogootIdentifier> idTable;
-    final private RangeList<Character> document;
+    final private RangeList<T> document;
 
     public LogootDocument(long max) {
         super();
-        document = new RangeList<Character>();
+        document = new RangeList<T>();
         idTable = new RangeList<LogootIdentifier>();
 
         LogootIdentifier Begin = new LogootIdentifier(1), End = new LogootIdentifier(1);
@@ -42,14 +42,14 @@ public class LogootDocument implements Document{
         End.addComponent(new Component(max, -1, -1));
 
         idTable.add(Begin);
-        document.add(' ');
+        document.add(null);
         idTable.add(End);
-        document.add(' ');
+        document.add(null);
     }
     
     public String view() {
         StringBuilder s = new StringBuilder();
-        for (char c : document) {
+        for (T c : document) {
             s.append(c);
         }
         return s.substring(1, s.length() - 1);
@@ -79,7 +79,7 @@ public class LogootDocument implements Document{
         //Insertion et Delete
         if (lg.getType() == SequenceOperation.OpType.ins) {
             idTable.add(pos, idToSearch);
-            document.add(pos, lg.getContent());
+            document.add(pos, (T) lg.getContent());
         } else if (idTable.get(pos).equals(idToSearch)) {
             idTable.remove(pos);
             document.remove(pos);
@@ -90,7 +90,7 @@ public class LogootDocument implements Document{
         return idTable;
     }
 
-    public RangeList<Character> getDocument() {
+    public RangeList<T> getDocument() {
         return document;
     }
 }

@@ -26,7 +26,7 @@ import jbenchmarker.woot.WootOperation;
  *
  * @author urso
  */
-public class WootOriginalDocument extends WootDocument<WootOriginalNode> {
+public class WootOriginalDocument<T> extends WootDocument<WootOriginalNode> {
 
     public WootOriginalDocument() {
         super(WootOriginalNode.CB, WootOriginalNode.CE);

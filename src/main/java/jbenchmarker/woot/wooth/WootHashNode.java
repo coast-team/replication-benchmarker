@@ -25,11 +25,11 @@ import jbenchmarker.woot.WootNode;
  * A linked list of WootNodes.
  * @author urso
  */
-public class WootHashNode extends WootNode {
+public class WootHashNode<T> extends WootNode<T> {
     private WootHashNode next;
     final private int degree;
 
-    public WootHashNode(WootIdentifier id, char content, boolean visible, WootHashNode next, int degree) {
+    public WootHashNode(WootIdentifier id, T content, boolean visible, WootHashNode next, int degree) {
         super(id, content, visible);
         this.next = next;
         this.degree = degree;

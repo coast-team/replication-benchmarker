@@ -33,7 +33,7 @@ import jbenchmarker.woot.WootOperation;
  *
  * @author urso
  */
-public class WootHashMerge extends MergeAlgorithm {
+public class WootHashMerge<T> extends MergeAlgorithm {
     // logical clock
     private int clock;
     
@@ -63,9 +63,9 @@ public class WootHashMerge extends MergeAlgorithm {
         } else {
            WootHashNode ip = wdoc.getPrevious(p), in = wdoc.getNext(ip);
            WootIdentifier idp =  ip.getId(), idn =  in.getId();
-           for (int i = 0; i < opt.getContent().length(); i++) {
+           for (int i = 0; i < opt.getContent().size(); i++) {
                 WootIdentifier id = nextIdentifier();
-                WootOperation wop = wdoc.insert(opt, id, idp, idn, opt.getContent().charAt(i));
+                WootOperation wop = wdoc.insert(opt, id, idp, idn, opt.getContent().get(i));
                 idp = id;
                 lop.add(wop);
                 wdoc.apply(wop);

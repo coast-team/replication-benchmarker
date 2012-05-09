@@ -87,8 +87,8 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
                 doc.apply(op);
             }
         } else {
-            for (int i = 0; i < opt.getContent().length(); i++) {
-                TTFOperation op = TTFOperation.insert(opt, mpos + i, opt.getContent().charAt(i), new VectorClock(this.siteVC));
+            for (int i = 0; i < opt.getContent().size(); i++) {
+                TTFOperation op = TTFOperation.insert(opt, mpos + i, opt.getContent().get(i), new VectorClock(this.siteVC));
                 this.siteVC.inc(this.getReplicaNumber());
                 generatedOperations.add(op);
                 this.log.add(op);

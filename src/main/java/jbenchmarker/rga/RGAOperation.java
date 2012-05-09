@@ -26,14 +26,14 @@ import jbenchmarker.core.SequenceOperation.OpType;
 *
 * @author Roh
 */
-public class RGAOperation extends SequenceMessage {
+public class RGAOperation<T> extends SequenceMessage {
 	
 	public static boolean LOCAL 		= true;
 	public static boolean REMOTE 	= false;
 	
 	private RGAS4Vector 	s4vpos;
 	private RGAS4Vector  s4vtms;
-	private char 				content;
+	private T 				content;
 	private boolean			lor;  // to be local or remote
 	private int					intpos;
 	
@@ -54,6 +54,7 @@ public class RGAOperation extends SequenceMessage {
 		return lor;
 	}
 	
+    @Override
 	public String toString(){
 		String ret =new String();
 		if(getType()==SequenceOperation.OpType.del) ret +="del(";
@@ -67,7 +68,7 @@ public class RGAOperation extends SequenceMessage {
 	/*
 	 * for insert
 	 */
-	public RGAOperation(SequenceOperation o, int pos, RGAS4Vector s4vpos, char c, RGAS4Vector s4vtms){
+	public RGAOperation(SequenceOperation o, int pos, RGAS4Vector s4vpos, T c, RGAS4Vector s4vtms){
 		super(o);
 		this.s4vpos 	= s4vpos;
 		this.s4vtms	= s4vtms;
@@ -99,7 +100,7 @@ public class RGAOperation extends SequenceMessage {
 		return this.s4vtms;
 	}
 	
-	public char getContent(){
+	public T getContent(){
 		return this.content;
 	}
 	

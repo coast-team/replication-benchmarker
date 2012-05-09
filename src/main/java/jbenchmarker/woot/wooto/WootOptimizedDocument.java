@@ -27,11 +27,12 @@ import jbenchmarker.woot.WootOperation;
  * WOOTO with degrees
  * @author urso
  */
-public class WootOptimizedDocument extends WootDocument<WootOptimizedNode> {
+public class WootOptimizedDocument<T> extends WootDocument<WootOptimizedNode<T>> {
     public WootOptimizedDocument() {
         super(WootOptimizedNode.CB, WootOptimizedNode.CE);
     }
 
+    @Override
     protected void insertBetween(int ip, int in, WootOperation wop) {
         WootOptimizedNode wn = new WootOptimizedNode(wop.getId(), Math.max(elements.get(ip).getDegree(), elements.get(in).getDegree())+1, wop.getContent(), true);
         woalgo(ip, in, wn);        
@@ -42,7 +43,7 @@ public class WootOptimizedDocument extends WootDocument<WootOptimizedNode> {
             elements.add(in, wn);
         } else {
             int d = ip, f = in, dMin = -1;
-            ListIterator<WootOptimizedNode> it = elements.listIterator(d + 1);
+            ListIterator<WootOptimizedNode<T>> it = elements.listIterator(d + 1);
             for (int i = d+1; i < f; i++) {
                 WootOptimizedNode e = it.next();
                 if (dMin == -1 || e.getDegree() < dMin) {

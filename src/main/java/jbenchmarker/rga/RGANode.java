@@ -24,11 +24,11 @@ import java.io.Serializable;
  *
  * @author Roh
  */
-public class RGANode implements Serializable {
+public class RGANode<T> implements Serializable {
 
     private RGAS4Vector key;
     private RGAS4Vector tomb;	//used for visible and tombstone purging if null, then not tombstone 		 
-    private char content;
+    private T content;
     private RGANode next;
 
     public RGANode() {
@@ -37,7 +37,7 @@ public class RGANode implements Serializable {
         this.tomb = null;
     }
 
-    public RGANode(RGAS4Vector s4v, char c) {
+    public RGANode(RGAS4Vector s4v, T c) {
         this.key = s4v;
         this.content = c;
         this.tomb = null;
@@ -48,7 +48,7 @@ public class RGANode implements Serializable {
         return key;
     }
 
-    public char getContent() {
+    public T getContent() {
         return content;
     }
 

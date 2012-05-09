@@ -35,7 +35,7 @@ import jbenchmarker.core.SequenceOperation;
  * 
  * @author mzawirski
  */
-public class TreedocMerge extends MergeAlgorithm {
+public class TreedocMerge<T> extends MergeAlgorithm {
 
 	public TreedocMerge(final TreedocDocument doc, int r) {
 		super(doc, r);
@@ -49,24 +49,24 @@ public class TreedocMerge extends MergeAlgorithm {
 	@Override
 	protected List<SequenceMessage> generateLocal(SequenceOperation opt)
 			throws IncorrectTraceException {
-		final TreedocDocument treedoc = (TreedocDocument) getDoc();
-		final String content = opt.getContent();
+		final TreedocDocument<T> treedoc = (TreedocDocument) getDoc();
+		final List<T> content = opt.getContent();
 		final List<SequenceMessage> ops = new LinkedList<SequenceMessage>();
 
 		switch (opt.getType()) {
 		case ins:
 			final int index = restrictedIndex(opt.getPosition(), true);
-			if (content.length() == 1) {
-				final TreedocId id = treedoc.insert(index, content.charAt(0),
+			if (content.size() == 1) {
+				final TreedocId id = treedoc.insert(index, content.get(0),
 						getReplicaNumber());
-				ops.add(new TreedocOperation(opt, id, content.charAt(0)));
+				ops.add(new TreedocOperation(opt, id, content.get(0)));
 			} else {
-				final List<Character> characters = new ArrayList<Character>(
-						content.length());
-				for (int i = 0; i < content.length(); i++)
-					characters.add(content.charAt(i));
+				final List<T> characters = new ArrayList<T>(
+						content.size());
+				for (int i = 0; i < content.size(); i++)
+					characters.add(content.get(i));
 				final List<TreedocId> ids = treedoc.insert(index,
-						content.length(), characters, getReplicaNumber());
+						content.size(), characters, getReplicaNumber());
 				for (int i = 0; i < characters.size(); i++)
 					ops.add(new TreedocOperation(opt, ids.get(i), characters
 							.get(i)));

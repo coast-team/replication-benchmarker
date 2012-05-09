@@ -18,6 +18,7 @@
  */
 package jbenchmarker.sim;
 
+import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.TraceSimul2XML;
 import org.junit.Ignore;
 import crdt.CRDT;
@@ -29,6 +30,7 @@ import jbenchmarker.rga.RGAFactory;
 import jbenchmarker.trace.TraceGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static jbenchmarker.sim.CausalDispatcherTest.assertConsistency;
 
 /**
  *
@@ -88,17 +90,15 @@ public class IntegrationRGA {
 //        }
 //    }
 //    
-//    @Test
-//    public void testRGASerieRun() throws Exception {
-//        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
-//        CausalSimulator cd = new CausalSimulator(new RGAFactory());
-//
-//        cd.run(trace);
-//        String r = cd.getReplicas().get(0).lookup();
-//        for (MergeAlgorithm m : cd.getReplicas().values()) {
-//            assertEquals(r, m.lookup());
-//        }
-//    }
+    @Test
+    public void testRGAT2Run() throws Exception {
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Trace2.xml", 1);
+        CausalSimulator cd = new CausalSimulator(new RGAFactory());
+
+        assertConsistency(cd, trace);
+    }
+    
+    
     @Test
     public void testRGARandom() throws Exception {
         Trace trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 4, 3.0, 3);

@@ -131,7 +131,7 @@ public abstract class WootDocument<N extends WootNode> implements Document, Fact
         return new WootOperation(o, id);
     }
     
-    public WootOperation insert(SequenceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, char content) {
+    public <T> WootOperation insert(SequenceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, T content) {
         return new WootOperation(o, id, ip, in, content);
     }
 
