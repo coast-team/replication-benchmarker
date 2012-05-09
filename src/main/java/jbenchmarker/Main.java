@@ -57,7 +57,7 @@ public class Main {
             System.err.println("- number of serialization");
             System.exit(1);
         }
-
+        Long sum = 0L;
         Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[0]).newInstance();
         int nbExec = (args.length > 2) ? Integer.valueOf(args[2]) : 1;
         int nb = (nbExec > 1) ? nbExec + 1 : nbExec;
@@ -65,25 +65,18 @@ public class Main {
         long ltime[][] = null, mem[][] = null, rtime[][] = null;
         int cop = 0, uop = 0, nbReplica = 0, mop = 0;
         long st = System.currentTimeMillis();
-        long worst = 0L, best = 0L;
-        int execWorst = 0, execBest = 0;
         for (int ex = 0; ex < nbExec; ex++) {
             System.out.println("execution ::: " + ex);
             Trace trace = TraceGenerator.traceFromXML(args[1], 1);
             CausalSimulator cd = new CausalSimulator(rf);
-            long befor = System.nanoTime();
             /*
              * trace : trace xml
              * args[4] : scalle for serialization
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.runWithMemory(trace, Integer.parseInt(args[4]), true, true);//0 sans serialisation
-            long after = System.nanoTime();
-            System.out.println("time"+(after-befor));
+            cd.runWithMemory(trace, 0, true, false);//0 sans serialisation
             if (ltime == null) {
-                worst = after-befor;
-                best = after-befor;
                 cop =  cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
                 mop = cd.getMemUsed().size();
@@ -92,14 +85,7 @@ public class Main {
                 rtime = new long[nb][cop];
                 mem = new long[nb][mop];
             }
-            
-            if (after - befor > worst) {
-                execWorst = ex;
-                worst = after - befor;
-            } else {
-                execBest = ex;
-                best = after - befor;
-            }
+
             
             toArrayLong(ltime[ex], cd.replicaGenerationTimes());
             toArrayLong(mem[ex], cd.getMemUsed());
@@ -108,14 +94,15 @@ public class Main {
             for (int i = 0; i < cop-1; i++) {
                 rtime[ex][i] /= nbReplica-1;
             }
-
+            sum += cd.getRemoteSum()+cd.getLocalSum();
             cd = null;
             trace = null;
             System.gc();
         }
+        sum = sum/nbReplica;
+        sum = sum /nbExec;
         
-        System.out.println("Best execution time in : "+execBest+", with : "+(best/Math.pow(10, 9)) +" second");
-        System.out.println("Worst execution time in : "+execWorst+", with : "+worst/Math.pow(10, 9) +" second");
+        System.out.println("average execution time in : "+(sum/Math.pow(10, 6)) +" Mili-second");
         
 
         System.out.println();
