@@ -34,7 +34,7 @@ public class SequenceOperation<T> extends TraceOperation implements crdt.Operati
 
     @Override
     public Operation getOperation(CRDT replica) {
-        int sizeDoc = ((String) replica.lookup()).length();
+        int sizeDoc = ((MergeAlgorithm) replica).getDoc().viewLength();
         if (this.getType() == OpType.ins && this.position > sizeDoc) {
             position = sizeDoc;//a position exceeds document size
         } else if (this.getType() == OpType.del) {
