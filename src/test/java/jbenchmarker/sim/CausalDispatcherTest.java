@@ -78,7 +78,7 @@ public class CausalDispatcherTest {
             return new MergeAlgorithm(new Document() {
 
                 public String view() {
-                    return null;
+                    return "";
                 }
 
                 public void apply(SequenceMessage op) {

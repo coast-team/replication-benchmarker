@@ -97,7 +97,7 @@ public class TraceGeneratorTest {
         assertEquals(5, trace.size());
         assertEquals(SequenceOperation.OpType.ins, trace.get(0).getType());
         assertEquals(14, trace.get(1).getPosition());
-        assertEquals(" Mehdi", trace.get(2).getContent());
+        assertEquals(" Mehdi", trace.get(2).getContentAsString());
         assertEquals(2, (long)trace.get(2).getVectorClock().get(2));
         assertEquals(SequenceOperation.OpType.del, trace.get(3).getType());
         assertEquals(4, trace.get(3).getReplica());

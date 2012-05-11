@@ -49,7 +49,7 @@ public class WootDocumentTest {
 
     // helpers
     WootOperation ins(WootOriginalDocument r, WootOriginalNode n) {
-        return r.insert(SequenceOperation.insert(0, 0, null, null), 
+        return r.insert(SequenceOperation.insert(0, 0, "", null), 
                 n.getId(), n.getCp().getId(), n.getCn().getId(), n.getContent());
     }
     WootOperation del(WootOriginalDocument r, WootOriginalNode n) {

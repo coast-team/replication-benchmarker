@@ -51,7 +51,7 @@ public class WootODocumentTest {
 
     // helpers
     WootOperation ins(WootDocument r, WootOptimizedNode n, WootIdentifier cp, WootIdentifier cn) {
-        return r.insert(SequenceOperation.insert(0, 0, null, null), 
+        return r.insert(SequenceOperation.insert(0, 0, "", null), 
                 n.getId(), cp, cn, n.getContent());
     }
     WootOperation del(WootDocument r, WootOptimizedNode n) {
