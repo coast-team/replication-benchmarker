@@ -18,6 +18,7 @@
  */
 package jbenchmarker.woot.original;
 
+import java.util.List;
 import java.util.ListIterator;
 import jbenchmarker.woot.WootDocument;
 import jbenchmarker.woot.WootOperation;
@@ -66,4 +67,7 @@ public class WootOriginalDocument<T> extends WootDocument<WootOriginalNode> {
         return new WootOriginalDocument();
     }
 
+    List<WootOriginalNode> getElements() {
+        return elements;
+    }
 }

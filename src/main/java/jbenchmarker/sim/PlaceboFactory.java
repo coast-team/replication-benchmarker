@@ -52,6 +52,11 @@ public class PlaceboFactory extends ReplicaFactory {
         @Override
         public void apply(SequenceMessage op) {
         }
+
+        @Override
+        public int viewLength() {
+            return 0;
+        }
     }
     
     private static class PlaceboMerge extends MergeAlgorithm {

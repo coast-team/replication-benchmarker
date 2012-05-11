@@ -31,6 +31,11 @@ public interface Document extends Serializable {
      */
     public String view();
     
+    /*
+     * Length of the view (to generate random operations)
+     */
+    public int viewLength();
+    
     /**
      * Applies a character operation
      */ 

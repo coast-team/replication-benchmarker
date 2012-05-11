@@ -31,6 +31,7 @@ import jbenchmarker.core.SequenceOperation;
 public class TTFDocument<T> implements Document {
 
     protected List<TTFChar<T>> model;
+    private int size = 0;
 
     public TTFDocument() {
         this.model = new ArrayList<TTFChar<T>>();
@@ -65,9 +66,11 @@ public class TTFDocument<T> implements Document {
 
         if (oop.getType() == SequenceOperation.OpType.del) {
             TTFChar c = this.model.get(pos);
+            if (c.isVisible()) { --size; }
             c.hide();
         } else {
             this.model.add(pos, new TTFChar(oop.getChar()));
+            ++size;
         }
     }
 
@@ -99,5 +102,10 @@ public class TTFDocument<T> implements Document {
          */
 
         return positionInModel;
+    }
+
+//    @Override
+    public int viewLength() {
+        return size;
     }
 }

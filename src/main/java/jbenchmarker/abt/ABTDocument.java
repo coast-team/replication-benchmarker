@@ -84,4 +84,9 @@ public class ABTDocument<T> implements Document{
 
 	}
 
+    @Override
+    public int viewLength() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

@@ -45,7 +45,7 @@ public abstract class SequenceOperationProfile implements OperationProfile {
     public Operation nextOperation(CRDT crdt, VectorClock vectorClock) {
         Document replica = ((MergeAlgorithm) crdt).getDoc();
 
-        int l = replica.view().length();
+        int l = replica.viewLength();
         int position = nextPosition(l);
 
         if (l == 0 || nextType() == OpType.ins) {

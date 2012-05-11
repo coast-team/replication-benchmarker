@@ -32,6 +32,7 @@ public class RGADocument<T> implements Document {
 
     private HashMap<RGAS4Vector, RGANode<T>> hash;
     private RGANode head;
+    private int size = 0;
     //private RGAPurger	purger;
 
     public RGADocument() {
@@ -82,6 +83,7 @@ public class RGADocument<T> implements Document {
             target.setNext(newnd);
         }
         hash.put(op.getS4VTms(), newnd);
+        ++size;
     }
 
     private void LocalDelete(RGAOperation op) {
@@ -89,6 +91,7 @@ public class RGADocument<T> implements Document {
         if (node == null) {
             throw new NoSuchElementException("Don't find " + op.getIntPos());
         }
+        if (node.isVisible()) { --size; }
         node.makeTombstone(op.getS4VTms());
         //	purger.enrol(node);
     }
@@ -118,6 +121,7 @@ public class RGADocument<T> implements Document {
         newnd.setNext(next);
         prev.setNext(newnd);
         hash.put(op.getS4VTms(), newnd);
+        ++size;
     }
 
     private void RemoteDelete(RGAOperation op) {
@@ -125,6 +129,7 @@ public class RGADocument<T> implements Document {
         if (node == null) {
             throw new NoSuchElementException("Cannot find" + op.getS4VPos());
         }
+        if (node.isVisible()) { --size; }
         node.makeTombstone(op.getS4VTms());
         //	purger.enrol(node);
     }
@@ -152,5 +157,10 @@ public class RGADocument<T> implements Document {
             throw new NoSuchElementException("getVisibleNode");
         }
         return node;
+    }
+
+    @Override
+    public int viewLength() {
+        return size;
     }
 }

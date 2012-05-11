@@ -33,6 +33,7 @@ import jbenchmarker.core.SequenceOperation;
  */
 public abstract class WootDocument<N extends WootNode> implements Document, Factory<Document> {
     final protected List<N> elements;
+    private int size = 0;
 
     public WootDocument(N CB, N CE) {
         super();
@@ -71,18 +72,15 @@ public abstract class WootDocument<N extends WootNode> implements Document, Fact
         WootOperation wop = (WootOperation) op;
         
         if (wop.getType() == SequenceOperation.OpType.del) {
-            elements.get(find(wop.getId())).setVisible(false);
+            setInvisible(find(wop.getId()));
         } else { 
             int ip = find(wop.getIp()), in = findAfter(ip, wop.getIn());               
             insertBetween(ip, in, wop);
-        }        
+            ++size;
+        }  
     }
     
     protected abstract void insertBetween(int ip, int in, WootOperation wop);
-
-    public List<N> getElements() {
-        return elements;
-    }
 
     /**
      * pth visible character
@@ -141,5 +139,20 @@ public abstract class WootDocument<N extends WootNode> implements Document, Fact
     void insertLocal(WootOperation wop, int ip, WootIdentifier idp, int in) {
         ip = findAfter(ip, idp);               
         insertBetween(ip, in, wop);
+    }
+
+    void setInvisible(int v) {
+        N e = elements.get(v);
+        if (e.isVisible()) { --size; }
+        e.setVisible(false);
+    }
+
+    N getElement(int v) {
+        return elements.get(v);
+    }
+
+    @Override
+    public int viewLength() {
+        return size;
     }
 }

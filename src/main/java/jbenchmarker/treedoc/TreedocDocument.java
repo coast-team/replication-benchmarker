@@ -50,4 +50,9 @@ public class TreedocDocument extends TreedocRoot implements Document {
 			throw new IllegalArgumentException("Unsupported operation type");
 		}
 	}
+
+    @Override
+    public int viewLength() {
+        return getContent().length();
+    }
 }

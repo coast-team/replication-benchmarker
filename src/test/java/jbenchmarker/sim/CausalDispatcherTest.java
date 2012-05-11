@@ -54,6 +54,12 @@ public class CausalDispatcherTest {
 	}
 	assertNotNull(referenceView);
     }
+     static public void assertGoodViewLength(Simulator sim) throws Exception {
+	for (final CRDT replica : sim.getReplicas().values()) {
+            final Document view = ((MergeAlgorithm) replica).getDoc();
+            assertEquals(view.view().length(), view.viewLength());
+	}
+    }
     
     // SequenceMessage mock
     static private class OpMock extends SequenceMessage {
@@ -82,6 +88,11 @@ public class CausalDispatcherTest {
                 }
 
                 public void apply(SequenceMessage op) {
+                }
+
+                @Override
+                public int viewLength() {
+                    return 0;
                 }
             }, r) {
 

@@ -72,8 +72,8 @@ public class LogootMerge<T> extends MergeAlgorithm {
         if (opt.getType() == SequenceOperation.OpType.ins) {
             N = opt.getContent().size();
             List<T> content = opt.getContent();
-            ArrayList<LogootIdentifier> patch = strategy.generateLineIdentifiers(this, lg.getIdTable().get(position),
-                    lg.getIdTable().get(position + 1), N);
+            ArrayList<LogootIdentifier> patch = strategy.generateLineIdentifiers(this, lg.getId(position),
+                    lg.getId(position + 1), N);
 
             ArrayList<T> lc = new ArrayList<T>(patch.size());
             for (int cmpt = 0; cmpt < patch.size(); cmpt++) {
@@ -82,17 +82,15 @@ public class LogootMerge<T> extends MergeAlgorithm {
                 lop.add(log);
                 lc.add(c);
             }
-            lg.getIdTable().addAll(position + 1, patch);
-            lg.getDocument().addAll(position + 1, lc);
+            lg.insert(position, patch, lc);
 
         } else {
             offset = opt.getOffset();
             for (int k = 1; k <= offset; k++) {
-                LogootOperation<T> wop = LogootOperation.Delete(opt, lg.getIdTable().get(position + k));
+                LogootOperation<T> wop = LogootOperation.Delete(opt, lg.getId(position + k));
                 lop.add(wop);
             }
-            lg.getIdTable().removeRangeOffset(position + 1, offset);
-            lg.getDocument().removeRangeOffset(position + 1, offset);
+            lg.remove(position, offset);
         }      
         return lop;
     }

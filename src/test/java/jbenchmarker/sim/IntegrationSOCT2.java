@@ -38,6 +38,19 @@ import static org.junit.Assert.*;
  */
 public class IntegrationSOCT2 {
    
+    @Test
+    public void testSOCT2ExempleRun() throws Exception {
+        System.out.println("Integration test with WootH");
+        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
+        CausalSimulator cd = new CausalSimulator(new SOCT2Factory());
+
+        cd.run(trace, false);
+        String r = "Salut Monsieurjour MehdiFin";
+        assertEquals(r, cd.getReplicas().get(0).lookup());
+        assertEquals(r, cd.getReplicas().get(2).lookup());
+        assertEquals(r, cd.getReplicas().get(4).lookup());
+    }
+    
     @Ignore   // 231,986 s  on rev 105
     @Test
     public void testSOCT2RunG1() throws Exception {

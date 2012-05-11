@@ -32,6 +32,7 @@ import jbenchmarker.woot.WootOperation;
 public class WootHashDocument<T> implements Document {
     final protected WootHashNode<T> first;
     final protected Map<WootIdentifier, WootHashNode<T>> map;
+    private int size = 0;
 
     public WootHashDocument() {
         super();
@@ -63,12 +64,15 @@ public class WootHashDocument<T> implements Document {
         WootOperation wop = (WootOperation) op;
         
         if (wop.getType() == SequenceOperation.OpType.del) {
-            map.get(wop.getId()).setVisible(false);
+            WootHashNode<T> e = map.get(wop.getId());
+            if (e.isVisible()) { --size; }
+            e.setVisible(false);
         } else { 
             WootHashNode wn = new WootHashNode(wop.getId(), wop.getContent(), true, null, 
                     Math.max(map.get(wop.getIp()).getDegree(), map.get(wop.getIn()).getDegree())+1);           
             insertBetween(wn, map.get(wop.getIp()), map.get(wop.getIn()));
             map.put(wop.getId(), wn);
+            ++size;
         }        
     }
 
@@ -156,5 +160,10 @@ public class WootHashDocument<T> implements Document {
     
     WootHashNode getFirst() {
         return first;
+    }
+
+    @Override
+    public int viewLength() {
+        return size;
     }
 }

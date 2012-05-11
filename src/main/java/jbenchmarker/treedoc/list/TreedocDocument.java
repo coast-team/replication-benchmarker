@@ -64,4 +64,9 @@ public class TreedocDocument<T> extends Treedoc<TreedocId, T> implements
 			remove(treedocOp.getId());
 		}
 	}
+
+    @Override
+    public int viewLength() {
+        return data.size();
+    }
 }

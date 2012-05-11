@@ -29,14 +29,14 @@ import jbenchmarker.logoot.LogootFactory;
 import jbenchmarker.trace.TraceGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import static jbenchmarker.sim.CausalDispatcherTest.assertConsistency;
+import static jbenchmarker.sim.CausalDispatcherTest.*;
 
 /**
  *
  * @author urso
  */
 public class IntegrationLogoot {
-    @Ignore
+//    @Ignore
     @Test
     public void testLogootExempleRun() throws Exception {
         System.out.println("Integration test with logoot");
@@ -50,7 +50,7 @@ public class IntegrationLogoot {
         assertEquals(r, cd.getReplicas().get(4).lookup());
     }
     
-    @Ignore
+//    @Ignore
     @Test
     public void testLogootG1Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
@@ -89,22 +89,12 @@ public class IntegrationLogoot {
     
     //@Ignore
     @Test
-    public void testLogootProfile() throws Exception {
-        for (int i = 0; i < 20; ++i) {
-            Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
-            CausalSimulator cd = new CausalSimulator(new LogootFactory());
-
-            cd.run(trace, false);
-        }    
-    }
-    
-    //@Ignore
-    @Test
     public void testLogootRandom() throws Exception {
         Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
         CausalSimulator cd = new CausalSimulator(new LogootFactory());
 
         assertConsistency(cd, trace);  
+        assertGoodViewLength(cd);
     }
     
 }

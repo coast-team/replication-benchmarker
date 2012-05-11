@@ -30,7 +30,7 @@ import jbenchmarker.rga.RGAFactory;
 import jbenchmarker.trace.TraceGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import static jbenchmarker.sim.CausalDispatcherTest.assertConsistency;
+import static jbenchmarker.sim.CausalDispatcherTest.*;
 
 /**
  *
@@ -38,7 +38,6 @@ import static jbenchmarker.sim.CausalDispatcherTest.assertConsistency;
  */
 public class IntegrationRGA {
 
-    @Ignore
     @Test
     public void testRGAExempleRun() throws Exception {
         System.out.println("Integration test with RGA");
@@ -103,15 +102,9 @@ public class IntegrationRGA {
     public void testRGARandom() throws Exception {
         Trace trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 4, 3.0, 3);
         CausalSimulator cd = new CausalSimulator(new RGAFactory());
-        cd.run(trace, false);
-        String r = null;
-        for (CRDT m : cd.getReplicas().values()) {
-            if (r == null) {
-                r = (String) m.lookup();
-            } else if (!r.equals(m.lookup())) {
-                fail("divergence\n-" + r + "\n-" + m.lookup());
-            }
-        }
+        
+        assertConsistency(cd, trace);
+        assertGoodViewLength(cd);
     }
 
     @Test

@@ -29,7 +29,7 @@ import static jbenchmarker.woot.WootFactories.WootHFactory;
 import jbenchmarker.trace.TraceGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import static jbenchmarker.sim.CausalDispatcherTest.assertConsistency;
+import static jbenchmarker.sim.CausalDispatcherTest.*;
 
 /**
  *
@@ -37,7 +37,7 @@ import static jbenchmarker.sim.CausalDispatcherTest.assertConsistency;
  */
 public class IntegrationWOOTH {
 
-    @Ignore
+//    @Ignore
     @Test
     public void testWootHExempleRun() throws Exception {
         System.out.println("Integration test with WootH");
@@ -51,7 +51,7 @@ public class IntegrationWOOTH {
         assertEquals(r, cd.getReplicas().get(4).lookup());
     }
     
-    @Ignore
+//    @Ignore
     @Test
     public void testWootHG1Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
@@ -105,6 +105,7 @@ public class IntegrationWOOTH {
             CausalSimulator cd = new CausalSimulator(new WootHFactory());
 
             assertConsistency(cd,trace);
+            assertGoodViewLength(cd);
         }
     }
     
@@ -114,12 +115,9 @@ public class IntegrationWOOTH {
     public void testWootHRandom() throws Exception {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 1, 10, 3.0, 5);
         CausalSimulator cd = new CausalSimulator(new WootHFactory());
-
-        cd.run(trace, false);
-        String r = (String) cd.getReplicas().get(0).lookup();
-        for (CRDT m : cd.getReplicas().values()) {
-            assertEquals(r, m.lookup());
-        }     
+        
+        assertConsistency(cd, trace);
+        assertGoodViewLength(cd);
     }
     
     @Test

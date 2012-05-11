@@ -18,6 +18,7 @@
  */
 package jbenchmarker.logoot;
 
+import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceMessage;
 
@@ -85,12 +86,23 @@ public class LogootDocument<T> implements Document{
             document.remove(pos);
         }
     }
-
-    public RangeList<LogootIdentifier> getIdTable() {
-        return idTable;
+    
+    public void insert(int position, List<LogootIdentifier> patch, List<T> lc) {
+        idTable.addAll(position + 1, patch);
+        document.addAll(position + 1, lc);
+    }
+    
+    public void remove(int position, int offset) {
+        idTable.removeRangeOffset(position + 1, offset);
+        document.removeRangeOffset(position + 1, offset);
+    }
+    
+    public LogootIdentifier getId(int pos) {
+        return idTable.get(pos);
     }
 
-    public RangeList<T> getDocument() {
-        return document;
+    @Override
+    public int viewLength() {
+        return document.size()-2;
     }
 }

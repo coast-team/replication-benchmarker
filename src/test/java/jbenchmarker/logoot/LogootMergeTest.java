@@ -80,10 +80,10 @@ public class LogootMergeTest
         assertEquals("aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib", LM.lookup());
 
 
-        for(int i =1;i<lg.getIdTable().size()-1;i++)
+        for(int i =1;i<=lg.viewLength();i++)
         {
-             assertTrue(lg.getIdTable().get(i).compareTo(lg.getIdTable().get(i-1)) > 0);
-             assertFalse(lg.getIdTable().get(i).compareTo(lg.getIdTable().get(i+1)) > 0);
+             assertTrue(lg.getId(i).compareTo(lg.getId(i-1)) > 0);
+             assertFalse(lg.getId(i).compareTo(lg.getId(i+1)) > 0);
         }
         
         a = LM.generateLocal(delete(1, 78));

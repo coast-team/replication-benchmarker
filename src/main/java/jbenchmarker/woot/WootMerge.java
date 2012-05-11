@@ -60,16 +60,16 @@ public class WootMerge<T> extends MergeAlgorithm {
         if (opt.getType() == SequenceOperation.OpType.del) {
             int v = wdoc.getVisible(p);
             for (int i = 0; i < opt.getOffset(); i++) {
-                WootOperation wop = wdoc.delete(opt, wdoc.getElements().get(v).getId());
-                wdoc.getElements().get(v).setVisible(false);
+                WootOperation wop = wdoc.delete(opt, wdoc.getElement(v).getId());
+                wdoc.setInvisible(v);
                 lop.add(wop);
                 if (i+1 < opt.getOffset()) v = wdoc.nextVisible(v);
             }         
         } else {
            int ip = wdoc.getPrevious(p);
            int in = wdoc.getNext(ip);
-           WootIdentifier idp =  wdoc.getElements().get(ip).getId(),
-                   idn =  wdoc.getElements().get(in).getId();
+           WootIdentifier idp =  wdoc.getElement(ip).getId(),
+                   idn =  wdoc.getElement(in).getId();
            for (int i = 0; i < opt.getContent().size(); i++) {
                 WootIdentifier id = nextIdentifier();
                 WootOperation wop = wdoc.insert(opt, id, idp, idn, opt.getContent().get(i));

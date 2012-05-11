@@ -40,20 +40,6 @@ public class LogootDocumentTest {
     }
 
     @Test
-    public void testview() {
-        System.out.println("Test LogootDocument ...");
-        LogootDocument LM = new LogootDocument(100);
-        assertEquals("", LM.view());
-
-        LM.getDocument().add(1, 'a');
-        assertEquals("a", LM.view());
-
-        LM.getDocument().add(2, 'b');
-        assertEquals("ab", LM.view());
-
-    }
-
-    @Test
     public void testapply() {
         LogootDocument LM = new LogootDocument(100);
 
