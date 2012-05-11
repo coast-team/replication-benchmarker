@@ -31,7 +31,7 @@ public class LogootDocumentTest {
 
     // helpers
     LogootOperation ins(LogootIdentifier n, char c) {
-        return LogootOperation.insert(SequenceOperation.insert(0, 0, null, null),
+        return LogootOperation.insert(SequenceOperation.insert(0, 0, "", null),
                 n, c);
     }
 

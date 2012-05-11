@@ -49,10 +49,10 @@ public class LogootDocument<T> implements Document{
     
     public String view() {
         StringBuilder s = new StringBuilder();
-        for (T c : document) {
-            s.append(c);
+        for (int i=1; i< document.size()-1; ++i) {
+            s.append(document.get(i));
         }
-        return s.substring(1, s.length() - 1);
+        return s.toString();
     }
 
     int dicho(LogootIdentifier idToSearch) {

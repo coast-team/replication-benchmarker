@@ -58,7 +58,7 @@ public class TraceGeneratorTest {
      * Helper to construct an op with a 3 entries VC
      */
     public static SequenceOperation op(int r, int a, int b, int c) {
-        return SequenceOperation.insert(r, 0, null, vc(a, b, c));
+        return SequenceOperation.insert(r, 0, "", vc(a, b, c));
     } 
 
     /**
