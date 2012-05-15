@@ -93,7 +93,7 @@ public class RandomTrace implements Trace  {
         Enumeration<TraceOperation> it = new Enumeration<TraceOperation>() {
             private TraceOperation next;
             private int rindex;
-            private long time;
+            private long nbop;
     
             @Override
             public boolean hasMoreElements() {
@@ -104,17 +104,17 @@ public class RandomTrace implements Trace  {
 //                System.out.println(time);
                 TraceOperation o = next;
                 next = null;
-                while (next == null && time < duration) {
-                    VectorClock vc = states[rindex], d = delivery[rindex].get(time);
+                while (next == null && nbop < duration) {
+                    VectorClock vc = states[rindex], d = delivery[rindex].get(nbop);
                     if (d != null) {
                         vc.upTo(d);
                     }
-                    if (rp.willGenerate(rindex, time, duration, probability)) {
+                    if (rp.willGenerate(rindex, nbop, duration, probability)) {
                         vc.inc(rindex);
                         VectorClock opc = (VectorClock) vc.clone();
                         next = new RandomOperation(op, rindex, opc);
                         for (int i = 0; i < replicas; i++) {
-                            long rt = time + r.nextLongGaussian(delay, sdv);
+                            long rt = nbop + r.nextLongGaussian(delay, sdv);
                             VectorClock x = delivery[i].get(rt);
                             if (x == null) {
                                 delivery[i].put(rt, opc);
@@ -124,12 +124,9 @@ public class RandomTrace implements Trace  {
                                 delivery[i].put(rt, x);
                             }
                         }
+                        nbop++;
                     }
-                    rindex++;
-                    if (rindex == replicas) {
-                        time++;
-                        rindex = 0;
-                    }
+                    rindex = (rindex + 1) % replicas;
                 }
                 return o;
             }
