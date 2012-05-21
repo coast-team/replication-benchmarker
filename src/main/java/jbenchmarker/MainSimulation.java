@@ -72,26 +72,21 @@ public class MainSimulation {
         int minSizeGen = 0, minSizeInteg = 0, minSizeMem = 0, nbrReplica = 0;
         int cop = 0, uop = 0, mop = 0;
         String nameUsr = args[13];
-      
-        long worst = 0L, best = 0L;
-        int execWorst = 0, execBest = 0;
+        Long sum = 0L;
         for (int ex = 0; ex < nbExec; ex++) {
             System.out.println("execution : "+ ex);
             Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
                     new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
             CausalSimulator cd = new CausalSimulator(rf);
-            long befor = System.nanoTime();
+            cd.setLogging(nameUsr);//file result
             /*
              * trace : trace xml
              * args[4] : scalle for serialization
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.runWithMemory(trace, scaleMemory, false, false);
-            long after = System.nanoTime();
+            cd.runWithMemory(trace, 0, false, false);
             if (ltime == null) {
-                worst = after-befor;
-                best = after-befor;
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
                 mop = cd.getMemUsed().size();
@@ -103,15 +98,7 @@ public class MainSimulation {
                 minSizeMem = mop;
                 nbrReplica = cd.replicas.size();
             }
-            
-            if (after - befor > worst) {
-                execWorst = ex;
-                worst = after - befor;
-            } else {
-                execBest = ex;
-                best = after - befor;
-            }
-            
+
             List<Long> l = cd.replicaGenerationTimes();
             if(l.size() < minSizeGen)
                 minSizeGen = l.size();
@@ -129,15 +116,14 @@ public class MainSimulation {
             for (int i = 0; i < cop - 1; i++) {
                 rtime[ex][i] /= nbrReplica - 1;
             }
-                        
+            sum += cd.getRemoteSum()+cd.getLocalSum();           
             cd = null;
             trace = null;
             System.gc();
-            
-            
         }
-        System.out.println("Best execution time in :"+execBest+", with : "+(best/Math.pow(10, 9)) +" second");
-        System.out.println("Worst execution time in :"+execWorst+", with : "+worst/Math.pow(10, 9) +" second");
+        sum = sum/nbrReplica;
+        sum = sum /nbExec;
+        System.out.println("Best execution time in :"+(sum/Math.pow(10, 9)) +" second");
         
         if (nbExec > 1) {
             computeAverage(ltime, thresold, minSizeGen);

@@ -51,7 +51,7 @@ public class IntegrationSOCT2 {
         assertEquals(r, cd.getReplicas().get(4).lookup());
     }
     
-    @Ignore   // 231,986 s  on rev 105
+//    @Ignore   // 231,986 s  on rev 105
     @Test
     public void testSOCT2RunG1() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
@@ -68,7 +68,7 @@ public class IntegrationSOCT2 {
             assertEquals(r, m.lookup());
         }
     }
-    
+//    @Ignore
     @Test
     public void testSOCT2Random() throws Exception {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
@@ -80,7 +80,7 @@ public class IntegrationSOCT2 {
             assertEquals(r, m.lookup());
         }     
     }
-    
+//    @Ignore
     @Test
     public void testSOCT2SimulXML() throws Exception {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);
@@ -94,11 +94,7 @@ public class IntegrationSOCT2 {
         
         Trace real = TraceGenerator.traceFromXML("trace.xml", 1);
         CausalSimulator cdReal = new CausalSimulator(new SOCT2Factory());
-        cdReal.run(real, false);
-        
-//        String s = (String) cdSim.getReplicas().get(0).lookup();
-//        String r = (String) cdReal.getReplicas().get(0).lookup();
-//        assertEquals(s,r); 
+        cdReal.run(real, true);
         
         //compare all replica
         for (CRDT crdtSim : cdSim.getReplicas().values()) {

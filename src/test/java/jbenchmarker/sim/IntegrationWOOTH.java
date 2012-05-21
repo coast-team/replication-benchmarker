@@ -46,6 +46,7 @@ public class IntegrationWOOTH {
 
         cd.run(trace, false);
         String r = "Salut Monsieurjour MehdiFin";
+
         assertEquals(r, cd.getReplicas().get(0).lookup());
         assertEquals(r, cd.getReplicas().get(2).lookup());
         assertEquals(r, cd.getReplicas().get(4).lookup());
@@ -60,7 +61,7 @@ public class IntegrationWOOTH {
         assertConsistency(cd,trace);
     }
     
-    @Ignore
+//    @Ignore
     @Test
     public void testWootHG2Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
@@ -69,7 +70,7 @@ public class IntegrationWOOTH {
         assertConsistency(cd,trace);
     }
     
-    @Ignore
+//    @Ignore
     @Test
     public void testWootHG3Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
@@ -78,7 +79,7 @@ public class IntegrationWOOTH {
         assertConsistency(cd,trace);
     }
     
-    @Ignore
+//    @Ignore
     @Test
     public void testWootHSerieRun() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
@@ -86,21 +87,12 @@ public class IntegrationWOOTH {
 
         assertConsistency(cd,trace);
     }
-    
-    @Test
-    public void testWootHT2Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Trace2.xml", 1);
-        CausalSimulator cd = new CausalSimulator(new WootHFactory());
 
-        assertConsistency(cd,trace);
-    }
-    
-    @Ignore
+//    @Ignore
     @Test
     public void testWootHStress() throws Exception {
         int i = 0;
         while (true) {
-            System.out.println(i++);
             Trace trace = new RandomTrace(100, RandomTrace.FLAT, new StandardSeqOpProfile(0.6, 1, 10, 5.0), 1, 10, 3.0, 5);
             CausalSimulator cd = new CausalSimulator(new WootHFactory());
 

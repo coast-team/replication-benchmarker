@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public abstract class Simulator {
     final public Map<Integer,CRDT> replicas;
-
+    
     // memoryUsed
     final protected List<Long> memUsed; 
 

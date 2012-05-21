@@ -75,7 +75,7 @@ public class Main {
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.runWithMemory(trace, 0, true, false);//0 sans serialisation
+            cd.runWithMemory(trace, Integer.valueOf(args[4]), true, true);//0 sans serialisation
             if (ltime == null) {
                 cop =  cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();

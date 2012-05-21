@@ -52,17 +52,14 @@ public class IntegrationRGA {
         assertEquals(r, cd.getReplicas().get(4).lookup());
     }
 
-//     @Ignore
+////     @Ignore
 //    @Test
 //    public void testRGAG1Run() throws Exception {
 //        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
 //        CausalSimulator cd = new CausalSimulator(new RGAFactory());
 //
-//        cd.run(trace);
-//        String r = cd.getReplicas().get(0).lookup();
-//        for (MergeAlgorithm m : cd.getReplicas().values()) {
-//            assertEquals(r, m.lookup());
-//        }
+//        cd.run(trace, true);
+//        assertConsistency(cd, trace);
 //    }
 //    
 //    @Test
@@ -70,11 +67,8 @@ public class IntegrationRGA {
 //        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1,16);
 //        CausalSimulator cd = new CausalSimulator(new RGAFactory());
 //
-//        cd.run(trace);
-//        String r = cd.getReplicas().get(0).lookup();
-//        for (MergeAlgorithm m : cd.getReplicas().values()) {
-//            assertEquals(r, m.lookup());
-//        }
+//        cd.run(trace, false);
+//        assertConsistency(cd, trace);
 //    }
 //    
 //    @Test
@@ -82,22 +76,13 @@ public class IntegrationRGA {
 //        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
 //        CausalSimulator cd = new CausalSimulator(new RGAFactory());
 //
-//        cd.run(trace);
-//        String r = cd.getReplicas().get(0).lookup();
-//        for (MergeAlgorithm m : cd.getReplicas().values()) {
-//            assertEquals(r, m.lookup());
-//        }
+//        cd.run(trace, false);
+//        assertConsistency(cd, trace);
 //    }
 //    
-    @Test
-    public void testRGAT2Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Trace2.xml", 1);
-        CausalSimulator cd = new CausalSimulator(new RGAFactory());
 
-        assertConsistency(cd, trace);
-    }
     
-    
+//    @Ignore
     @Test
     public void testRGARandom() throws Exception {
         Trace trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 4, 3.0, 3);
@@ -106,7 +91,7 @@ public class IntegrationRGA {
         assertConsistency(cd, trace);
         assertGoodViewLength(cd);
     }
-
+//    @Ignore
     @Test
     public void testRGASimulXML() throws Exception {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);
@@ -121,10 +106,6 @@ public class IntegrationRGA {
         Trace real = TraceGenerator.traceFromXML("trace.xml", 1);
         CausalSimulator cdReal = new CausalSimulator(new RGAFactory());
         cdReal.run(real, false);
-
-//        String s = (String) cdSim.getReplicas().get(0).lookup();
-//        String r = (String) cdReal.getReplicas().get(0).lookup();
-//        assertEquals(s,r); 
 
         //compare all replica
         for (CRDT crdtSim : cdSim.getReplicas().values()) {

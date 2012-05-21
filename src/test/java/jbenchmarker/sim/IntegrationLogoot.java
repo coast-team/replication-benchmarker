@@ -59,7 +59,7 @@ public class IntegrationLogoot {
         assertConsistency(cd, trace);
     }
     
-    @Ignore
+    //@Ignore
     @Test
     public void testLogootG2Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
@@ -68,7 +68,7 @@ public class IntegrationLogoot {
         assertConsistency(cd, trace);
     }
     
-    @Ignore
+    //@Ignore
     @Test
     public void testLogootG3Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
@@ -77,7 +77,7 @@ public class IntegrationLogoot {
         assertConsistency(cd, trace);
     }
     
-    @Ignore
+    //@Ignore
     @Test
     public void testLogootSerieRun() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
@@ -86,6 +86,17 @@ public class IntegrationLogoot {
         assertConsistency(cd, trace);
     }
     
+    
+    //@Ignore
+    @Test
+    public void testLogootProfile() throws Exception {
+        for (int i = 0; i < 20; ++i) {
+            Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
+            CausalSimulator cd = new CausalSimulator(new LogootFactory());
+
+            cd.run(trace, false);
+        }    
+    }
     
     //@Ignore
     @Test
