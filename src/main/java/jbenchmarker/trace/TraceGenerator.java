@@ -18,19 +18,18 @@
  */
 package jbenchmarker.trace;
 
-import jbenchmarker.core.SequenceOperation;
-import crdt.simulator.IncorrectTraceException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import collect.VectorClock;
+import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.Trace;
 import crdt.simulator.TraceOperation;
-import java.util.Enumeration;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.*;
+import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.trace.json.ElementJSON;
+import jbenchmarker.trace.json.JSONTrace;
+import jbenchmarker.trace.json.VectorClockCS;
+import jbenchmarker.trace.json.VectorClockCSMapper;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -158,8 +157,34 @@ public class TraceGenerator {
             return new TraceIterator(docnum, children, size);
         }
     }
-
-
+    
+    /**
+     * Parses one elmeent into a trace operation
+     * @param e JSON Element
+     * @return the parsed Trace operation 
+     */
+    public static SequenceOperation oneJSON2OP(ElementJSON e, VectorClockCSMapper vectorClockMapper) {
+        int pos = e.getVal().getPosition();
+        String ui = e.getVal().getUserId();
+        int repli = vectorClockMapper.userId(ui);
+        VectorClockCS vc = e.getVal().getVector_clock();
+        VectorClock v = vectorClockMapper.toVectorClock(vc);
+        
+        if (e.getVal().getOperation().equals("insertion")) {
+            return SequenceOperation.insert(repli, pos, e.getVal().getChars_inserted(), v);
+        } else if(e.getVal().getOperation().equals("suppression")){
+            return SequenceOperation.delete(repli, pos, e.getVal().getNumber_charDeleted(), v);
+        }else{
+           return SequenceOperation.update(repli,pos,e.getVal().getNumber_charDeleted(),e.getVal().getChars_inserted(), v);
+        }         
+    }
+    
+    /**
+     *  Extract trace form JSON document
+     */
+    public static Trace traceFromJson(String nomFichier) throws FileNotFoundException, IOException{
+        return new JSONTrace(nomFichier);
+    }
     
     /**
      *  Extract trace form XML JDOM document

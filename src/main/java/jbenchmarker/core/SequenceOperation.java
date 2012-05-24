@@ -51,7 +51,7 @@ public class SequenceOperation<T> extends TraceOperation implements crdt.Operati
     }
 
 
-    public enum OpType {ins, del}; 
+    public enum OpType {ins, del,up}; 
     
     private OpType type;                  // type of operation : insert or delete
     private int position;                 // position in the document
@@ -107,7 +107,18 @@ public class SequenceOperation<T> extends TraceOperation implements crdt.Operati
     static public SequenceOperation delete(int replica, int position, int offset, VectorClock VC) {
         return new SequenceOperation(OpType.del, replica, position, offset, null, VC);
     }
-
+    
+    /*
+     * Construction of an update operation
+     */
+     static public SequenceOperation<Character> update(int replica, int position, int offset, String content, VectorClock VC){
+         List<Character> l = new ArrayList<Character>();
+         for (int i = 0; i < content.length(); ++i) {
+            l.add(content.charAt(i));
+         }        
+         return new SequenceOperation(OpType.up, replica, position, offset,l, VC);
+     }    
+     
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
