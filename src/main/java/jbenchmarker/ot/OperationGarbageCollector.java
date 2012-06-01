@@ -54,7 +54,7 @@ public class OperationGarbageCollector implements Serializable{
     private void gc() {
         VectorClock commonAncestorVectorClock = mergeAlgorithm.getClock().min(this.clocksOfAllSites.values());
 
-        Iterator<TTFOperation> it = this.mergeAlgorithm.getHistoryLog().iterator();
+        Iterator<SOCT2OperationInterface> it = this.mergeAlgorithm.getHistoryLog().iterator();
         int count = 0;
         while (it.hasNext()) {
             if (!it.next().getClock().greaterThan(commonAncestorVectorClock)) {

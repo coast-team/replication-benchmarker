@@ -24,9 +24,9 @@ import jbenchmarker.core.SequenceOperation.OpType;
  *
  * @author oster
  */
-public class TTFTransformations {
+public class TTFTransformations implements SOCT2TranformationInterface {
 
-    public static TTFOperation transpose(TTFOperation op1, TTFOperation op2) {
+    public  TTFOperation transpose(TTFOperation op1, TTFOperation op2) {
 
         if (op1.getType() == OpType.ins && op2.getType() == OpType.ins) {
             if (op1.getPosition() < op2.getPosition()) {
@@ -51,7 +51,7 @@ public class TTFTransformations {
 
     }
 
-    public static TTFOperation transposeBackward(TTFOperation op1, TTFOperation op2) {
+    public  TTFOperation transposeBackward(TTFOperation op1, TTFOperation op2) {
         if (op1.getType() == OpType.ins && op2.getType() == OpType.ins) {
             if (op1.getPosition() < op2.getPosition()) {
                 return op1;
@@ -72,5 +72,15 @@ public class TTFTransformations {
         }
 
         return op1;
+    }
+
+    @Override
+    public SOCT2OperationInterface transpose(SOCT2OperationInterface op1, SOCT2OperationInterface op2) {
+        return this.transpose((TTFOperation)op1, (TTFOperation)op2);
+    }
+
+    @Override
+    public SOCT2OperationInterface transposeBackward(SOCT2OperationInterface op1, SOCT2OperationInterface op2) {
+        return this.transposeBackward((TTFOperation)op1, (TTFOperation)op2);
     }
 }

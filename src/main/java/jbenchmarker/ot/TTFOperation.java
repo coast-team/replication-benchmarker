@@ -27,7 +27,7 @@ import jbenchmarker.core.SequenceOperation.OpType;
  *
  * @author oster
  */
-public class TTFOperation<T> extends SequenceMessage {
+public class TTFOperation<T> extends SequenceMessage implements SOCT2OperationInterface{
 
     private int pos;
     private T content;

@@ -41,7 +41,7 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
     public SOCT2MergeAlgorithm(Document doc, int r) {
         super(doc, r);
         this.siteVC = new VectorClock();
-        this.log = new SOCT2Log();
+        this.log = new SOCT2Log(new TTFTransformations());
     }
 
     public VectorClock getClock() {

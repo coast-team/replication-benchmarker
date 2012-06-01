@@ -27,11 +27,20 @@ import java.util.List;
  *
  * @author oster
  */
-public class SOCT2Log implements Iterable<TTFOperation>, Serializable {
+public class SOCT2Log implements Iterable<SOCT2OperationInterface>, Serializable {
 
-    protected List<TTFOperation> operations = new ArrayList<TTFOperation>();
+    private SOCT2TranformationInterface tranforme;
+    
+    public SOCT2Log(SOCT2TranformationInterface t){
+        this.tranforme=t;
+    }
+    private SOCT2Log(){
+        
+    }
+    
+    protected List<SOCT2OperationInterface> operations = new ArrayList<SOCT2OperationInterface>();
 
-    public void add(TTFOperation operation) {
+    public void add(SOCT2OperationInterface operation) {
         this.operations.add(operation);
     }
 
@@ -39,16 +48,16 @@ public class SOCT2Log implements Iterable<TTFOperation>, Serializable {
         return this.operations.size();
     }
 
-    public Iterator<TTFOperation> iterator() {
+    public Iterator<SOCT2OperationInterface> iterator() {
         return this.operations.iterator();
     }
 
-    public TTFOperation merge(TTFOperation operation) {
-        TTFOperation opt = operation;
+    public SOCT2OperationInterface merge(TTFOperation operation) {
+        SOCT2OperationInterface opt = operation;
         int separationIndex = separatePrecedingAndConcurrentOperations(operation);
 
         for (int i = separationIndex; i < this.operations.size(); i++) {
-            opt = TTFTransformations.transpose(opt, operations.get(i));
+            opt = tranforme.transpose(opt, operations.get(i));
         }
 
         return opt;
@@ -59,7 +68,7 @@ public class SOCT2Log implements Iterable<TTFOperation>, Serializable {
         int logSize = operations.size();
 
         for (int i = 0; i < logSize; i++) {
-            TTFOperation localOperation = operations.get(i);
+            SOCT2OperationInterface localOperation = operations.get(i);
             int siteIdOfLocalOperation = localOperation.getSiteId();
 
             if (localOperation.getClock().getSafe(siteIdOfLocalOperation) < receivedOperation.getClock().getSafe(siteIdOfLocalOperation)) {
@@ -77,11 +86,11 @@ public class SOCT2Log implements Iterable<TTFOperation>, Serializable {
 
     // transpose backward the (index)th operation with the (index-1)th operation
     private void transposeBackward(int index) {
-        TTFOperation opj = operations.get(index);
-        TTFOperation opk = operations.get(index - 1);
+        SOCT2OperationInterface opj = operations.get(index);
+        SOCT2OperationInterface opk = operations.get(index - 1);
 
-        TTFOperation opi = TTFTransformations.transposeBackward(opj, opk);
-        opk = TTFTransformations.transpose(opk, opi);
+        SOCT2OperationInterface opi = tranforme.transposeBackward(opj, opk);
+        opk = tranforme.transpose(opk, opi);
 
         operations.set(index - 1, opi);
         operations.set(index, opk);
