@@ -45,7 +45,7 @@ import jbenchmarker.core.SequenceOperation;
  */
 public class CausalSimulator extends Simulator {
 
-    public CausalSimulator(Factory<CRDT> rf) {
+    public CausalSimulator(Factory<? extends CRDT> rf) {
         super(rf);
     }
     int tour = 0;

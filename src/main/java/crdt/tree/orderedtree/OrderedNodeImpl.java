@@ -18,11 +18,13 @@ import java.util.List;
 class OrderedNodeImpl<T> extends AbstractNode<T> implements OrderedNode<T> {    
     final private List<OrderedNodeImpl<T>> children;
     final PositionIdentifier pi;
+    final private Positioned<T> positioned;
 
     public OrderedNodeImpl(T value, AbstractNode<T> father, PositionIdentifier pi) {
         super(value, father);
         this.children = new ArrayList<OrderedNodeImpl<T>>();
         this.pi = pi;
+        this.positioned = pi == null ? null : new Positioned<T>(pi, value);
     }
     
     @Override
@@ -75,6 +77,28 @@ class OrderedNodeImpl<T> extends AbstractNode<T> implements OrderedNode<T> {
     }
     
     Positioned<T> getPositioned() {
-        return new Positioned<T>(pi, value);
+        return positioned;
     }
+
+    boolean same(OrderedNode<T> on) {
+        OrderedNodeImpl<T> o = (OrderedNodeImpl<T>) on;
+        if (value != o.value && !value.equals(o.value)) {
+            return false;
+        } 
+        if (children.size() != o.children.size()) {
+            return false;
+        }
+        for (int i = 0; i < children.size(); i++) {
+            if (!children.get(i).same(o.children.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "{" + value + children + '}';
+    }
+    
 }

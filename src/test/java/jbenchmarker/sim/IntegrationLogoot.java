@@ -18,18 +18,16 @@
  */
 package jbenchmarker.sim;
 
-import org.junit.Ignore;
-import jbenchmarker.TraceSimul2XML;
-import crdt.CRDT;
+import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
-import crdt.simulator.CausalSimulator;
 import jbenchmarker.logoot.LogootFactory;
+import static jbenchmarker.sim.CausalDispatcherTest.assertConsistency;
+import static jbenchmarker.sim.CausalDispatcherTest.assertGoodViewLength;
 import jbenchmarker.trace.TraceGenerator;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static jbenchmarker.sim.CausalDispatcherTest.*;
 
 /**
  *

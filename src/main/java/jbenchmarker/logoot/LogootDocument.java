@@ -58,8 +58,8 @@ public class LogootDocument<T> implements Document{
     }
 
     int dicho(List<LogootIdentifier> idTable, LogootIdentifier idToSearch) {
-        int startIndex = 0, endIndex = idTable.size() - 1, middleIndex;
-        do {
+        int startIndex = 1, endIndex = idTable.size() - 1, middleIndex;
+        while (startIndex < endIndex) {
             middleIndex = startIndex + (endIndex - startIndex) / 2;
             int c = idTable.get(middleIndex).compareTo(idToSearch);
             if (c == 0) {
@@ -67,11 +67,10 @@ public class LogootDocument<T> implements Document{
             } else if (c < 0) {
                 startIndex = middleIndex + 1;
             } else {
-                endIndex = middleIndex - 1;
+                endIndex = middleIndex;
             }
-        } while (startIndex < endIndex);
-        return (idTable.get(startIndex).compareTo(idToSearch) < 0)
-                ? startIndex + 1 : startIndex;
+        } 
+        return startIndex;
     }
     
     int dicho(LogootIdentifier idToSearch) {

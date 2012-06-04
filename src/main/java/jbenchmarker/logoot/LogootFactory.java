@@ -18,6 +18,8 @@
  */
 package jbenchmarker.logoot;
 
+import crdt.CRDT;
+import crdt.Factory;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
 

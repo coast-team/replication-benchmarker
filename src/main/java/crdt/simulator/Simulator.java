@@ -48,7 +48,7 @@ public abstract class Simulator {
    
     //final protected Map<Integer, List<Long>> remoteTime;
     
-    final private Factory<CRDT> rf;
+    final private Factory<? extends CRDT> rf;
     
 
     // logging file (null if no log)
@@ -67,7 +67,7 @@ public abstract class Simulator {
      * Constructor of a Simulator. Replicas and Document will be instaciated at run time.
      * @param rf the factory
      */
-    public Simulator(Factory<CRDT> rf) {
+    public Simulator(Factory<? extends CRDT> rf) {
         this.replicas = new HashMap<Integer,CRDT>();
         this.memUsed = new ArrayList<Long>();
         this.genTime = new ArrayList<Long>();

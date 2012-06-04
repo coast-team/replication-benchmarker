@@ -5,6 +5,7 @@
 package crdt.tree.orderedtree;
 
 import collect.Node;
+import collect.OrderedNode;
 import collect.UnorderedNode;
 import crdt.CRDT;
 import crdt.CRDTMessage;
@@ -41,7 +42,7 @@ public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Obs
         UnorderedNode<Positioned<T>> uf = tree.getRoot();
         for (int i : path) {
             f = f.getChild(i);
-            uf.getChild(f.getPositioned());
+            uf = uf.getChild(f.getPositioned());
         }
         PositionIdentifier pi = pic.generate(f, p==0 ? null : f.getChild(p-1).getPosition(), 
                 p==f.getChildrenNumber() ? null : f.getChild(p).getPosition());
@@ -55,7 +56,7 @@ public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Obs
         UnorderedNode<Positioned<T>> uf = tree.getRoot();
         for (int i : path) {
             f = f.getChild(i);
-            uf.getChild(f.getPositioned());
+            uf = uf.getChild(f.getPositioned());
         }
         CRDTMessage msg = tree.remove(uf);
         return msg;
@@ -67,12 +68,12 @@ public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Obs
     }
 
     @Override
-    public Node<T> lookup() {
+    public OrderedNode<T> lookup() {
         return root;
     }
 
     @Override
-    public CRDT<Node<T>> create() {
+    public PositionIdentifierTree<T> create() {
         return new PositionIdentifierTree<T>(pic, tree);
     }
 
@@ -97,7 +98,7 @@ public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Obs
         List<Positioned<T>> path = node.getPath();
         OrderedNodeImpl<T> father = root;
         for (Positioned<T> p : path) {
-            father.getChild(p);
+            father = father.getChild(p);
         }
         return father;
     }

@@ -130,7 +130,7 @@ public class LogootMerge<T> extends MergeAlgorithm implements PositionIdentifica
             p = ((LogootDocument) getDoc()).getId(0);
         } 
         if (n == null) {
-            n = ((LogootDocument) getDoc()).getId(getDoc().viewLength()+2);
+            n = ((LogootDocument) getDoc()).getId(getDoc().viewLength()+1);
         }
         return strategy.generateLineIdentifiers(this, (LogootIdentifier) p, (LogootIdentifier) n, 1).get(0);
     }
@@ -146,9 +146,12 @@ public class LogootMerge<T> extends MergeAlgorithm implements PositionIdentifica
 
             @Override
             public LogootIdentifier get(int i) {
-                return (LogootIdentifier) father.getChild(i).getPosition();
+                if (i == father.getChildrenNumber()+1) {
+                    return ((LogootDocument) getDoc()).getId(getDoc().viewLength()+1);
+                }
+                return (LogootIdentifier) father.getChild(i-1).getPosition();
             }
         };
-        return  ((LogootDocument) getDoc()).dicho(l, (LogootIdentifier) pi);
+        return  ((LogootDocument) getDoc()).dicho(l, (LogootIdentifier) pi)-1;
     }
 }
