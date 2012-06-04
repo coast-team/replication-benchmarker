@@ -31,7 +31,7 @@ public class LogootCounter extends LogootDocument {
     public void apply(SequenceMessage op) {
         LogootOperation lg = (LogootOperation) op;
         LogootIdentifier idToSearch = lg.getIdentifiant();
-        int pos = dicho(idToSearch);
+        int pos = dicho(idTable, idToSearch);
         //Insertion et Delete
         if ((lg.getType() == SequenceOperation.OpType.del) && !getId(pos).equals(idToSearch)) {
             count++;

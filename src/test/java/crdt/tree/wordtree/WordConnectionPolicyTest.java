@@ -19,6 +19,7 @@ import collect.Node;
 import java.util.List;
 import collect.Tree;
 import collect.HashTree;
+import collect.UnorderedNode;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -154,7 +155,7 @@ public class WordConnectionPolicyTest {
         policy.update(new PseudoSet(wordsorphan), null);
         policy.connect();
 //        assertSame("" + policy.addMapping(), 7, policy.addMapping().size());
-        Node acn = policy.lookup().getRoot().getChild('a').getChild('c');
+        Node acn = ((UnorderedNode) policy.lookup().getRoot()).getChild('a').getChild('c');
 //        assertNull(policy.addMapping(acn));
         assertEquals(treeResult, policy.lookup());                
     }
@@ -184,7 +185,7 @@ public class WordConnectionPolicyTest {
         notifyAll(wordsorphan, policy);
 
 //        assertSame("" + policy.addMapping(), 7, policy.addMapping().size());
-        Node acn = policy.lookup().getRoot().getChild('a').getChild('c');
+        Node acn = ((UnorderedNode) policy.lookup().getRoot()).getChild('a').getChild('c');
 //        assertNull(policy.addMapping(acn));
         assertEquals(treeResult, policy.lookup());                
     }

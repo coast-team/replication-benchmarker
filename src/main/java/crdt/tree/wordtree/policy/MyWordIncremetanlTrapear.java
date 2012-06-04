@@ -7,6 +7,7 @@ package crdt.tree.wordtree.policy;
 import collect.HashTree;
 import collect.Node;
 import collect.Tree;
+import collect.UnorderedNode;
 import crdt.Factory;
 import crdt.set.CRDTSet;
 import crdt.set.SetOperation;
@@ -112,12 +113,12 @@ public class MyWordIncremetanlTrapear<T>  implements WordPolicy<T> , Factory<Wor
     }
 
     @Override
-    public Set<List<T>> addMapping(Node<T> node) {
+    public Set<List<T>> addMapping(UnorderedNode<T> node) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Set<List<T>> delMapping(Node<T> node) {
+    public Set<List<T>> delMapping(UnorderedNode<T> node) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     class NodeContainer {

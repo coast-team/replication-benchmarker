@@ -30,7 +30,7 @@ import jbenchmarker.core.SequenceOperation;
  */
 public class LogootDocument<T> implements Document{
 
-    final private RangeList<LogootIdentifier> idTable;
+    final protected RangeList<LogootIdentifier> idTable;
     final private RangeList<T> document;
 
     public LogootDocument(long max) {
@@ -48,6 +48,7 @@ public class LogootDocument<T> implements Document{
         document.add(null);
     }
     
+    @Override
     public String view() {
         StringBuilder s = new StringBuilder();
         for (int i=1; i< document.size()-1; ++i) {
@@ -56,7 +57,7 @@ public class LogootDocument<T> implements Document{
         return s.toString();
     }
 
-    int dicho(LogootIdentifier idToSearch) {
+    int dicho(List<LogootIdentifier> idTable, LogootIdentifier idToSearch) {
         int startIndex = 0, endIndex = idTable.size() - 1, middleIndex;
         do {
             middleIndex = startIndex + (endIndex - startIndex) / 2;
@@ -73,10 +74,15 @@ public class LogootDocument<T> implements Document{
                 ? startIndex + 1 : startIndex;
     }
     
+    int dicho(LogootIdentifier idToSearch) {
+        return dicho(idTable, idToSearch);
+    }
+    
+    @Override
     public void apply(SequenceMessage op) {
         LogootOperation lg = (LogootOperation) op;
         LogootIdentifier idToSearch = lg.getIdentifiant();
-        int pos = dicho(idToSearch);
+        int pos = dicho(idTable, idToSearch);
         //Insertion et Delete
         if (lg.getType() == SequenceOperation.OpType.ins) {
             idTable.add(pos, idToSearch);

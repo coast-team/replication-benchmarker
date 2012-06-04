@@ -4,11 +4,7 @@
  */
 package crdt.tree.wordtree;
 
-import collect.ArraySkipList;
-import collect.HashBiMapSet;
-import collect.HashTree;
-import collect.Node;
-import collect.Tree;
+import collect.*;
 import crdt.set.CRDTSet;
 import java.util.*;
 
@@ -19,7 +15,7 @@ import java.util.*;
 public abstract class WordConnectionPolicy<T> implements WordPolicy<T> {
     private boolean fresh;
     protected HashTree<T> tree;
-    protected HashBiMapSet<Node<T>, List<T>> nodeToWord;
+    protected HashBiMapSet<UnorderedNode<T>, List<T>> nodeToWord;
     protected Set<List<T>> words;
     
     public WordConnectionPolicy() {
@@ -52,11 +48,11 @@ public abstract class WordConnectionPolicy<T> implements WordPolicy<T> {
         for (Set<List<T>> b : buckets) {
             for (List<T> w : b) {
                 int size = w.size();
-                Node<T> father = nodeToWord.getInverse(w.subList(0, size - 1));
+                UnorderedNode<T> father = nodeToWord.getInverse(w.subList(0, size - 1));
                 if (father == null) {
                     treatOrphan(w);
                 } else {
-                    Node<T> node = tree.add(father, w.get(size-1));
+                    UnorderedNode<T> node = tree.add(father, w.get(size-1));
                     nodeToWord.put(node, w);
                 }
             }
@@ -73,7 +69,7 @@ public abstract class WordConnectionPolicy<T> implements WordPolicy<T> {
     abstract protected void treatOrphan (List<T> orphan);
 
     @Override
-    public Collection<List<T>> addMapping(Node<T> node) {
+    public Collection<List<T>> addMapping(UnorderedNode<T> node) {
         if (!fresh) connect();
         return nodeToWord.get(node);
     }
@@ -91,7 +87,7 @@ public abstract class WordConnectionPolicy<T> implements WordPolicy<T> {
     }
 
     @Override
-    public Collection<List<T>> delMapping(Node<T> node) {
+    public Collection<List<T>> delMapping(UnorderedNode<T> node) {
         return addMapping(node);
     }
 }

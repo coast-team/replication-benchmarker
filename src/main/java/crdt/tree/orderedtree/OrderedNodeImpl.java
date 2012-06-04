@@ -6,16 +6,16 @@ package crdt.tree.orderedtree;
 
 import collect.AbstractNode;
 import collect.Node;
+import collect.OrderedNode;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  *
  * @author urso
  */
-class OrderedNodeImpl<T> extends AbstractNode<T> {    
+class OrderedNodeImpl<T> extends AbstractNode<T> implements OrderedNode<T> {    
     final private List<OrderedNodeImpl<T>> children;
     final PositionIdentifier pi;
 
@@ -44,17 +44,13 @@ class OrderedNodeImpl<T> extends AbstractNode<T> {
         children.remove(n);
         return n;
     }
-
-    @Override
-    public Node<T> getChild(T t) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
     
-    OrderedNodeImpl<T> getChild(int p) {
+    @Override
+    public OrderedNodeImpl<T> getChild(int p) {
         return children.get(p);
     }
     
-    PositionIdentifier getPosition() {
+    public PositionIdentifier getPosition() {
         return pi;
     }
     

@@ -5,6 +5,7 @@
 package crdt.tree.orderedtree;
 
 import collect.Node;
+import collect.UnorderedNode;
 import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.Factory;
@@ -37,7 +38,7 @@ public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Obs
     @Override
     public CRDTMessage add(List<Integer> path, int p, T element) throws PreconditionException {
         OrderedNodeImpl<T> f = root;
-        Node<Positioned<T>> uf = tree.getRoot();
+        UnorderedNode<Positioned<T>> uf = tree.getRoot();
         for (int i : path) {
             f = f.getChild(i);
             uf.getChild(f.getPositioned());
@@ -51,7 +52,7 @@ public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Obs
     @Override
     public CRDTMessage remove(List<Integer> path) throws PreconditionException {
         OrderedNodeImpl<T> f = root;
-        Node<Positioned<T>> uf = tree.getRoot();
+        UnorderedNode<Positioned<T>> uf = tree.getRoot();
         for (int i : path) {
             f = f.getChild(i);
             uf.getChild(f.getPositioned());

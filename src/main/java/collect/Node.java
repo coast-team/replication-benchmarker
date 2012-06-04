@@ -66,13 +66,7 @@ public interface Node<T> {
      */
     boolean isChildren(Node<T> n);
     
-    /**
-     * Get an node witch have t value and is children
-     * @param t
-     * @return children Node with t value.
-     */
-    Node<T> getChild(T t);
-   // Node<T> clone();
+    // Node<T> clone();
     
     /*
      * delete children of node

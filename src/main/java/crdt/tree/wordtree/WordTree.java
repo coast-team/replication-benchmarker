@@ -7,6 +7,7 @@ package crdt.tree.wordtree;
 import collect.HashTree;
 import collect.Node;
 import collect.Tree;
+import collect.UnorderedNode;
 import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
@@ -31,7 +32,7 @@ public class WordTree<T> extends CRDTTree<T> {
     }
     
     @Override
-    public CRDTMessage add(Node<T> father, T element) throws PreconditionException {
+    public CRDTMessage add(UnorderedNode<T> father, T element) throws PreconditionException {
         if (!wcp.lookup().contains(father)) 
             throw new PreconditionException("Adding node " + element + " with father not in the tree");
         if (father.getChild(element) != null) 
@@ -47,7 +48,7 @@ public class WordTree<T> extends CRDTTree<T> {
     }
 
     @Override
-    public CRDTMessage remove(Node<T> subtree) throws PreconditionException {
+    public CRDTMessage remove(UnorderedNode<T> subtree) throws PreconditionException {
         if (wcp.lookup().getRoot() == subtree) 
             throw new PreconditionException("Removing root");
         if (!wcp.lookup().contains(subtree)) 
@@ -58,7 +59,7 @@ public class WordTree<T> extends CRDTTree<T> {
         CRDTMessage msg = null;
 
         while (subtreeIt.hasNext()) {
-            Node<T> n = subtreeIt.next();
+            UnorderedNode<T> n = (UnorderedNode<T>) subtreeIt.next();
             Collection<List<T>> w = wcp.delMapping(n);
             toBeRemoved.addAll(0, w);
         }
@@ -80,8 +81,8 @@ public class WordTree<T> extends CRDTTree<T> {
     }
 
     @Override
-    public Node<T> getRoot() {
-        return wcp.lookup().getRoot();
+    public UnorderedNode<T> getRoot() {
+        return (UnorderedNode<T>) wcp.lookup().getRoot();
     }
 
     @Override

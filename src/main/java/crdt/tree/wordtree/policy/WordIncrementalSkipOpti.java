@@ -6,19 +6,14 @@ package crdt.tree.wordtree.policy;
 
 import collect.HashTree;
 import collect.Node;
-import collect.NodeImpl;
 import collect.Tree;
+import collect.UnorderedNode;
 import crdt.set.CRDTSet;
 import crdt.set.SetOperation;
 import crdt.tree.wordtree.Word;
 import crdt.tree.wordtree.WordPolicy;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Observable;
+import java.util.*;
 
 /**
  * WordSkip the orphan nodes.
@@ -102,7 +97,7 @@ public class WordIncrementalSkipOpti<T> implements WordPolicy<T> {
     }
 
     @Override
-    public Collection<List<T>> delMapping(Node<T> node) {
+    public Collection<List<T>> delMapping(UnorderedNode<T> node) {
         return addMapping(node);
     }
 
@@ -120,7 +115,7 @@ public class WordIncrementalSkipOpti<T> implements WordPolicy<T> {
     }
 
     @Override
-    public Collection<List<T>> addMapping(Node<T> node) {
+    public Collection<List<T>> addMapping(UnorderedNode<T> node) {
         Collection<List<T>> set = new LinkedList<List<T>>();
         set.add(new Word(node.getPath()));
         return set;

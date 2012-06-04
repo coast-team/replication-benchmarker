@@ -7,6 +7,7 @@ package crdt.tree.wordtree;
 import collect.HashTree;
 import collect.Node;
 import collect.Tree;
+import collect.UnorderedNode;
 import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
@@ -56,7 +57,7 @@ public class WordTreeTest {
     public void testNotIn() throws Exception {  
         WordTree t = new WordTree(new CommutativeCounterSet(), new WordSkip());
         t.add(t.getRoot(), 'a');
-        Node a = t.getRoot().getChild('a');
+        UnorderedNode a = t.getRoot().getChild('a');
         t.remove(a);
         t.add(a, 'b');
     } 

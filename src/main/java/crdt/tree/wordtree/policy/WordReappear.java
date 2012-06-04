@@ -4,14 +4,10 @@
  */
 package crdt.tree.wordtree.policy;
 
-import collect.Node;
+import collect.UnorderedNode;
 import crdt.tree.wordtree.Word;
 import crdt.tree.wordtree.WordConnectionPolicy;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 /**
  * Skip the orphan nodes.
@@ -24,7 +20,7 @@ public class WordReappear<T> extends WordConnectionPolicy<T> {
         while (nodeToWord.getInverse(ancestor) == null) {
             ancestor.pollLast();
         }
-        Node<T> node = nodeToWord.getInverse(ancestor);
+        UnorderedNode<T> node = nodeToWord.getInverse(ancestor);
         int i = ancestor.size();
         ListIterator<T> it = orphan.listIterator(i);
         while (it.hasNext()) {
@@ -41,7 +37,7 @@ public class WordReappear<T> extends WordConnectionPolicy<T> {
     }
 
     @Override
-    public Collection<List<T>> addMapping(Node<T> node) {
+    public Collection<List<T>> addMapping(UnorderedNode<T> node) {
         Collection<List<T>> m = super.addMapping(node);
         if (m == null) {
             Collection<List<T>> set = new LinkedList<List<T>>();
@@ -53,7 +49,7 @@ public class WordReappear<T> extends WordConnectionPolicy<T> {
     }
     
     @Override
-    public Collection<List<T>> delMapping(Node<T> node) {
+    public Collection<List<T>> delMapping(UnorderedNode<T> node) {
         Collection<List<T>> m = super.addMapping(node);
         if (m == null) {
             return Collections.EMPTY_SET;

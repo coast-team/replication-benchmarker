@@ -37,11 +37,11 @@ public class HashTree<T> extends Observable implements Tree<T> {
     }
 
     @Override
-    public Node<T> add(Node<T> father, T t) {
+    public UnorderedNode<T> add(Node<T> father, T t) {
         if (father == null) {
             father = root;
         }
-        NodeImpl<T> here = (NodeImpl<T>) father.getChild(t);
+        NodeImpl<T> here = ((NodeImpl<T>) father).getChild(t);
         if (here!= null) {
             return here;
         }
@@ -58,7 +58,7 @@ public class HashTree<T> extends Observable implements Tree<T> {
     }
 
     @Override
-    public Iterator<? extends Node<T>> getBFSIterator(Node<T> n) {
+    public Iterator<? extends UnorderedNode<T>> getBFSIterator(Node<T> n) {
         if (n == null) {
             n = root;
         }
@@ -69,7 +69,7 @@ public class HashTree<T> extends Observable implements Tree<T> {
     }
 
     @Override
-    public Iterator<? extends Node<T>> getDFSIterator(Node<T> n) {
+    public Iterator<? extends UnorderedNode<T>> getDFSIterator(Node<T> n) {
         if (n == null) {
             n = root;
         } else if (!contains(n)) {

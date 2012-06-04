@@ -6,6 +6,7 @@ package crdt.tree.wordtree;
 
 import collect.Node;
 import collect.Tree;
+import collect.UnorderedNode;
 import crdt.Factory;
 import java.util.Collection;
 import java.util.List;
@@ -27,7 +28,7 @@ public interface WordPolicy<T> extends Factory<WordPolicy<T>>, Observer {
      * Mapping between tree lookup node and words
      * @return a bimap
      */
-    public Collection<List<T>> addMapping(Node<T> node);
+    public Collection<List<T>> addMapping(UnorderedNode<T> node);
 
-    public Collection<List<T>> delMapping(Node<T> node);
+    public Collection<List<T>> delMapping(UnorderedNode<T> node);
 }

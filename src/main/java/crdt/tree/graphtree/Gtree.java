@@ -7,6 +7,7 @@ package crdt.tree.graphtree;
 import collect.Node;
 import collect.NodeImpl;
 import collect.Tree;
+import collect.UnorderedNode;
 import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.set.CRDTSet;
@@ -47,7 +48,7 @@ public class Gtree<T> extends CRDTTree<T> {
     }
 
     @Override
-    public CRDTMessage add(Node<T> fath, T t) throws PreconditionException {
+    public CRDTMessage add(UnorderedNode<T> fath, T t) throws PreconditionException {
         if (!this.lookup().contains(fath)) 
             throw new PreconditionException("Adding node with father not in the tree");        
         
@@ -56,7 +57,7 @@ public class Gtree<T> extends CRDTTree<T> {
     }
 
     @Override
-    public CRDTMessage remove(Node<T> subtree) throws PreconditionException {
+    public CRDTMessage remove(UnorderedNode<T> subtree) throws PreconditionException {
         if (this.lookup().getRoot() == subtree) {
             throw new PreconditionException("Removing root");
         }
@@ -93,8 +94,8 @@ public class Gtree<T> extends CRDTTree<T> {
     }
     
     @Override
-    public Node<T> getRoot() {
-        return this.lookup().getRoot();
+    public UnorderedNode<T> getRoot() {
+        return (UnorderedNode<T>) this.lookup().getRoot();
     }
         
     public CRDTSet<T> getNode()

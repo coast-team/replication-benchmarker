@@ -5,6 +5,7 @@
 package crdt.tree.wordtree.policy;
 
 import collect.Node;
+import collect.UnorderedNode;
 import crdt.tree.wordtree.WordConnectionPolicy;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class WordRoot<T> extends WordConnectionPolicy<T> {
         while (words.contains(ancestor)) {
             ancestor.pollLast();
         }
-        Node<T> father = nodeToWord.getInverse(orphan.subList(ancestor.size(), orphan.size()-1)),
+        UnorderedNode<T> father = nodeToWord.getInverse(orphan.subList(ancestor.size(), orphan.size()-1)),
                 node = father.getChild(elem);
         if (node == null) {
             node = tree.add(node, elem);

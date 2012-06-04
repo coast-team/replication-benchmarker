@@ -7,6 +7,7 @@ package crdt.tree.wordtree.policy;
 import collect.HashTree;
 import collect.Node;
 import collect.Tree;
+import collect.UnorderedNode;
 import crdt.set.SetOperation;
 import crdt.tree.wordtree.Word;
 import crdt.tree.wordtree.WordPolicy;
@@ -51,9 +52,9 @@ public class WordIncrementalReappear<T> implements WordPolicy<T> {
     }
 
     protected void addOrphan(List<T> word) {
-        Node<T> node = tree.getRoot();
+        UnorderedNode<T> node = tree.getRoot();
         for (T t : word) {
-            Node<T> c = node.getChild(t);
+            UnorderedNode<T> c = node.getChild(t);
             if (c == null) {
                 c = tree.add(node, t);
                 ghosts.add(c);
@@ -69,7 +70,7 @@ public class WordIncrementalReappear<T> implements WordPolicy<T> {
     }
 
     @Override
-    public Collection<List<T>> delMapping(Node<T> node) {
+    public Collection<List<T>> delMapping(UnorderedNode<T> node) {
         if (ghosts.contains(node)) {
             return Collections.EMPTY_SET;
         } else {
@@ -100,7 +101,7 @@ public class WordIncrementalReappear<T> implements WordPolicy<T> {
     }
 
     @Override
-    public Collection<List<T>> addMapping(Node<T> node) {
+    public Collection<List<T>> addMapping(UnorderedNode<T> node) {
         Collection<List<T>> set = new LinkedList<List<T>>();
         set.add(new Word(node.getPath()));
         return set;

@@ -4,14 +4,14 @@
  */
 package crdt.tree.orderedtree;
 
-import collect.Node;
+import collect.OrderedNode;
 
 /**
  *
  * @author urso
  */
 public interface PositionIdentificator {
-    public PositionIdentifier generate(Node father, PositionIdentifier p, PositionIdentifier n);
+    public PositionIdentifier generate(OrderedNode father, PositionIdentifier p, PositionIdentifier n);
     
-    int getInteger(Node father, PositionIdentifier pi);
+    int getInteger(OrderedNode father, PositionIdentifier pi);
 }

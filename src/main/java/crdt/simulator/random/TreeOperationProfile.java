@@ -19,6 +19,7 @@
 package crdt.simulator.random;
 
 import collect.Node;
+import collect.UnorderedNode;
 import crdt.CRDT;
 import crdt.Operation;
 import collect.VectorClock;
@@ -61,7 +62,7 @@ public abstract class TreeOperationProfile<T> implements OperationProfile {
                 n = l.get(r.nextInt(l.size()));
             }
             T elem = nextElement();
-            while (n.getChild(elem) != null) {
+            while (((UnorderedNode<T>) n).getChild(elem) != null) {
                 elem = nextElement();
             }
             return new TreeOperation<T>(n, elem);

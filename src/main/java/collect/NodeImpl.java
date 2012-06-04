@@ -4,14 +4,17 @@
  */
 package collect;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
  *
  * @author score
  */
-public class NodeImpl<T> extends AbstractNode<T> {
+public class NodeImpl<T>  extends AbstractNode<T> implements UnorderedNode<T> {
 
     //private Tree origin;
      final private Map<T, NodeImpl<T>> children;

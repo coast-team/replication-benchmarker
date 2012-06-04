@@ -6,6 +6,7 @@ package crdt.tree.wordtree.policy;
 
 import collect.Node;
 import collect.Tree;
+import collect.UnorderedNode;
 import crdt.set.SetOperation;
 import crdt.tree.wordtree.Word;
 import crdt.tree.wordtree.WordPolicy;
@@ -51,7 +52,7 @@ abstract public class WordIncrementalMany<T> implements WordPolicy<T> {
     abstract protected void move(Node<T> orig, Node<T> dest, List<T> word);
     
     @Override
-    public Set<List<T>> delMapping(Node<T> node) {
+    public Set<List<T>> delMapping(UnorderedNode<T> node) {
         return addMapping(node);
     }
 
@@ -61,7 +62,7 @@ abstract public class WordIncrementalMany<T> implements WordPolicy<T> {
     }
 
     @Override
-    public Set<List<T>> addMapping(Node<T> node) {
+    public Set<List<T>> addMapping(UnorderedNode<T> node) {
         return tree.getAttached(node);
     }
 

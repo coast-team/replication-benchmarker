@@ -19,6 +19,7 @@
 package jbenchmarker.logoot;
 
 import collect.Node;
+import collect.OrderedNode;
 import crdt.CRDT;
 import crdt.tree.orderedtree.PositionIdentificator;
 import crdt.tree.orderedtree.PositionIdentifier;
@@ -124,15 +125,30 @@ public class LogootMerge<T> extends MergeAlgorithm implements PositionIdentifica
     }
 
     @Override
-    public PositionIdentifier generate(Node father, PositionIdentifier p, PositionIdentifier n) {
+    public PositionIdentifier generate(OrderedNode father, PositionIdentifier p, PositionIdentifier n) {
         if (p == null) {
             p = ((LogootDocument) getDoc()).getId(0);
+        } 
+        if (n == null) {
+            n = ((LogootDocument) getDoc()).getId(getDoc().viewLength()+2);
         }
         return strategy.generateLineIdentifiers(this, (LogootIdentifier) p, (LogootIdentifier) n, 1).get(0);
     }
 
     @Override
-    public int getInteger(Node father, PositionIdentifier pi) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public int getInteger(final OrderedNode father, PositionIdentifier pi) {
+        List<LogootIdentifier> l = new AbstractList<LogootIdentifier>() {
+            
+            @Override
+            public int size() {
+                return father.getChildrenNumber()+2;
+            }
+
+            @Override
+            public LogootIdentifier get(int i) {
+                return (LogootIdentifier) father.getChild(i).getPosition();
+            }
+        };
+        return  ((LogootDocument) getDoc()).dicho(l, (LogootIdentifier) pi);
     }
 }

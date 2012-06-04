@@ -6,6 +6,7 @@ package crdt.tree.edgetree;
 
 import collect.Node;
 import collect.Tree;
+import collect.UnorderedNode;
 import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
@@ -63,7 +64,7 @@ public class EdgeTree<T> extends CRDTTree<T>{
     
 
     @Override
-    public CRDTMessage add(Node<T> father, T element) throws PreconditionException {
+    public CRDTMessage add(UnorderedNode<T> father, T element) throws PreconditionException {
         if (!lookup().contains(father)) 
             throw new PreconditionException("Adding node with father not in the tree");
         Edge e = new Edge(father.getValue(),element);
@@ -78,7 +79,7 @@ public class EdgeTree<T> extends CRDTTree<T>{
     }
 
     @Override
-    public CRDTMessage remove(Node<T> subtree) throws PreconditionException {
+    public CRDTMessage remove(UnorderedNode<T> subtree) throws PreconditionException {
         
         Iterator<? extends Node<T>> subtreeIt = lookup().getBFSIterator(subtree);
         CRDTMessage msg = null;
@@ -95,8 +96,8 @@ public class EdgeTree<T> extends CRDTTree<T>{
     }
 
     @Override
-    public Node<T> getRoot() {
-        return lookup().getRoot();
+    public UnorderedNode<T> getRoot() {
+        return (UnorderedNode<T>) lookup().getRoot();
     }
 
     @Override
