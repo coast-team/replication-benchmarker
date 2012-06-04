@@ -10,12 +10,7 @@ import collect.HashTree;
 import collect.Node;
 import collect.Tree;
 import crdt.set.CRDTSet;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Observable;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -23,7 +18,7 @@ import java.util.Set;
  */
 public abstract class WordConnectionPolicy<T> implements WordPolicy<T> {
     private boolean fresh;
-    protected Tree<T> tree;
+    protected HashTree<T> tree;
     protected HashBiMapSet<Node<T>, List<T>> nodeToWord;
     protected Set<List<T>> words;
     
@@ -67,6 +62,7 @@ public abstract class WordConnectionPolicy<T> implements WordPolicy<T> {
             }
         } 
         fresh = true;
+        
     }
     
     /**

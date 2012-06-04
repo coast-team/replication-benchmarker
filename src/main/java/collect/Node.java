@@ -37,7 +37,7 @@ public interface Node<T> {
     
     /**
      * 
-     * @return Father node.
+     * @return Path to this node.
      */
     List<T> getPath();
     

@@ -18,10 +18,11 @@
  */
 package jbenchmarker.logoot;
 
+import crdt.tree.orderedtree.PositionIdentifier;
 import java.io.Serializable;
 import java.util.*;
 
-public class LogootIdentifier implements Comparable<LogootIdentifier>, Serializable {
+public class LogootIdentifier implements Comparable<LogootIdentifier>, Serializable, PositionIdentifier {
 
     final private ArrayList<Component> id;
 

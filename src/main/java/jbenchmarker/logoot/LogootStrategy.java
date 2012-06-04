@@ -27,11 +27,7 @@ import java.util.List;
  *
  * @author urso
  */
-public abstract class LogootStrategy implements Serializable{
-
-
-
-
+public abstract class LogootStrategy implements Serializable {
     /**
      * Generate N identifier between P and Q;
      */

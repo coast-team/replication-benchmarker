@@ -48,7 +48,7 @@ public interface Tree<T> {
     public Iterator<? extends Node<T>> getBFSIterator(Node<T> node);
 
     /**
-     * Creates an iterator traversing the tree in BFS order 
+     * Creates an iterator traversing the tree in DFS order 
      * @param node a node in the tree (null for root)
      * @return the iterator
      */
@@ -61,8 +61,9 @@ public interface Tree<T> {
     public Node<T> getRoot();
     
     /**
-     * The root of the tree 
-     * @return the root of the tree 
+     * A node in the tree at a path
+     * @param path the path to the node
+     * @return a node at this path
      */
     public Node<T> getNode(List<T> path);
     

@@ -14,23 +14,33 @@ import crdt.Operation;
  */
 public class TreeOperation<T> implements Operation {
     
-    public enum OpType {add, del}; 
-    private OpType type;
-    private Node<T> node;
-    private T content;
+    public enum OpType {add, del, move}; 
+    private final OpType type;
+    private final Node<T> node, dest;
+    private final T content;
+
+    public TreeOperation(OpType type, Node<T> node, T content) {
+        this.type = type;
+        this.node = node;
+        this.dest = null;
+        this.content = content;
+    }
     
     // Add operation
     public TreeOperation(Node<T> obj, T elem) {
-        this.type = OpType.add;
-        this.node = obj;
-        this.content = elem;
+        this(OpType.add, obj, elem);
     }
     
     // Del operation
     public TreeOperation(Node<T> obj) {
-        this.type = OpType.del;
-        this.node = obj;
-        this.content = null;
+        this(OpType.del, obj, null);
+    }
+
+    public TreeOperation(Node<T> node, Node<T> dest, T content) {
+        this.type = OpType.move;
+        this.node = node;
+        this.dest = dest;
+        this.content = content;
     }
 
     public OpType getType() {
@@ -43,5 +53,9 @@ public class TreeOperation<T> implements Operation {
 
     public Node<T> getNode() {
         return node;
-    }    
+    }
+
+    public Node<T> getDest() {
+        return dest;
+    }
 }

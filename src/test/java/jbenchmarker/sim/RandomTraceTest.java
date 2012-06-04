@@ -51,7 +51,7 @@ public class RandomTraceTest {
             n++;
             en.nextElement();
         }
-        assertEquals(42*13, n);
+        assertEquals(42, n);
     }
     
     /**

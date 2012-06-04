@@ -18,7 +18,10 @@
  */
 package jbenchmarker.logoot;
 
+import collect.Node;
 import crdt.CRDT;
+import crdt.tree.orderedtree.PositionIdentificator;
+import crdt.tree.orderedtree.PositionIdentifier;
 import java.math.BigInteger;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
@@ -31,7 +34,7 @@ import java.util.*;
  *
  * @author mehdi urso
  */
-public class LogootMerge<T> extends MergeAlgorithm {
+public class LogootMerge<T> extends MergeAlgorithm implements PositionIdentificator {
 
     final private int nbBit;
     final private long max; // MAX = 2^nbBit - 1
@@ -118,5 +121,18 @@ public class LogootMerge<T> extends MergeAlgorithm {
     @Override
     public CRDT<String> create() {
         return new LogootMerge(new LogootDocument(Long.MAX_VALUE), 0, 64, new BoundaryStrategy(1000000000));
+    }
+
+    @Override
+    public PositionIdentifier generate(Node father, PositionIdentifier p, PositionIdentifier n) {
+        if (p == null) {
+            p = ((LogootDocument) getDoc()).getId(0);
+        }
+        return strategy.generateLineIdentifiers(this, (LogootIdentifier) p, (LogootIdentifier) n, 1).get(0);
+    }
+
+    @Override
+    public int getInteger(Node father, PositionIdentifier pi) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

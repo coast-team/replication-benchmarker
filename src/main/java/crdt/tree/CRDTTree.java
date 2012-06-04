@@ -10,6 +10,7 @@ import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.Operation;
 import crdt.PreconditionException;
+import java.util.List;
 
 /**
  *
@@ -33,6 +34,14 @@ public abstract class CRDTTree<T> extends CRDT<Tree<T>> {
    abstract public Node<T> getRoot();
    
    public Node<T> getNode(T ... path) {
+       Node<T> n = getRoot();
+       for (T t : path) {
+           n = n.getChild(t);
+       }
+       return n;
+   }
+   
+   public Node<T> getNode(List<T> path) {
        Node<T> n = getRoot();
        for (T t : path) {
            n = n.getChild(t);

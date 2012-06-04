@@ -4,69 +4,45 @@
  */
 package collect;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  *
  * @author score
  */
-public class NodeImpl<T> implements Node<T> {
+public class NodeImpl<T> extends AbstractNode<T> {
 
     //private Tree origin;
-     final private T value;
      final private Map<T, NodeImpl<T>> children;
-     private NodeImpl<T> father=null;
      private int level=0; // TODO : is level really usefull ?
      private int hash;
 
 
-    public Map<T, NodeImpl<T>> getChildren() {
+    @Override
+    protected Collection<NodeImpl<T>> getChildren() {
+        return children.values();
+    }
+    
+    public Map<T, NodeImpl<T>> getChildrenMap() {
         return children;
     }
     
-    protected NodeImpl() {      
+    protected NodeImpl() {
+        super(null,null);
         this.children = new HashMap<T, NodeImpl<T>>();
-        this.value = null;
         this.hash = generateHash();
     }
     
     @SuppressWarnings("LeakingThisInConstructor")
     protected NodeImpl(NodeImpl<T> f, T t) {
+        super(t, f);
         this.children = new HashMap<T, NodeImpl<T>>();
-        this.value = t;
         this.hash = generateHash();
         this.level = (f == null) ? -1 : f.level + 1;
         this.father = f;
         this.hash = generateHash();
         if (f != null) f.children.put(t, this);
-    }
-
-    @Override
-    public T getValue() {
-        return value;
-    }
-
-    @Override
-    public NodeImpl<T> getFather() {
-        return father;
-    }
-
-    @Override
-    public Iterator<NodeImpl<T>> getChildrenIterator() {
-        // TODO : make unmutable iterator
-        return children.values().iterator();
-    }
-
-    @Override
-    public int getChildrenNumber() {
-        return children.size();
     }
 
     @Override
@@ -92,20 +68,6 @@ public class NodeImpl<T> implements Node<T> {
         return true;
     }
 
-    protected void setFather(NodeImpl<T> n) {
-        if (this.father!=null){
-            this.getFather().children.remove(this.value);
-        }
-        this.father = n;
-        if (this.father != null) {
-            this.father.children.put(this.value, this);
-            this.level = this.father.level + 1;
-        } else {
-            this.level = -1;
-        }
-        this.hash = generateHash();
-    }
-
     private int generateHash() {
         int hashRet = 7;
         hashRet = 13 * hashRet + (this.value != null ? this.value.hashCode() : 0);
@@ -119,7 +81,7 @@ public class NodeImpl<T> implements Node<T> {
     }
 
     private boolean samePath(NodeImpl<T> other) {
-        NodeImpl<T> f, fo;
+        AbstractNode<T> f, fo;
         for (f = father, fo = other.father; f != null && fo != null ; f = f.father, fo = fo.father) {
             if (f.value != fo.value) {
                 return false;
@@ -137,18 +99,6 @@ public class NodeImpl<T> implements Node<T> {
     public NodeImpl<T> getChild(T t) {
         return children.get(t);
     }
-
-    @Override
-    public boolean isChildren(Node<T> n) {
-        return this.children.containsValue((NodeImpl)n);
-        /* TODO : Possible qu'un this.children.containsKey(n.getValue()) 
-         * serait plus rapide*/
-    }
-
-    @Override
-    public Collection<? extends Node<T>> getChildrenCopy() {
-        return new LinkedList(children.values());
-    }
     
     boolean sameTree(NodeImpl<T> other) {
         if (other == null) {
@@ -160,32 +110,12 @@ public class NodeImpl<T> implements Node<T> {
         if (this.children.size() != other.children.size()) {
             return false;
         }
-        for (Entry<T, NodeImpl<T>> e : this.getChildren().entrySet()) {
+        for (Entry<T, NodeImpl<T>> e : children.entrySet()) {
             if (!e.getValue().sameTree(other.children.get(e.getKey()))) {
                 return false;
             }
         }
         return true; 
-    }
-
-    @Override
-    public List<T> getPath() {
-        LinkedList<T> p = new LinkedList();
-        NodeImpl<T> n = this; 
-        while (n != null) {
-            if (n.value != null) p.addFirst(n.value);
-            n = n.getFather();
-        }
-        return p;
-    }
-
-    @Override
-    public Node<T> getRoot() {
-        NodeImpl<T> n = this; 
-        while (n.father != null) {
-            n = n.father;
-        }
-        return n;
     }
 
     @Override
@@ -197,5 +127,19 @@ public class NodeImpl<T> implements Node<T> {
                 itr.remove();
             }
         }
+    }
+
+    protected void setFather(NodeImpl<T> n) {
+        if (this.father != null) {
+            ((NodeImpl<T>) this.father).children.remove(this.value);
+        }
+        this.father = n;
+        if (this.father != null) {
+            ((NodeImpl<T>) this.father).children.put(this.value, this);
+            this.level = ((NodeImpl<T>) this.father).level + 1;
+        } else {
+            this.level = -1;
+        }
+        this.hash = generateHash();
     }
 }

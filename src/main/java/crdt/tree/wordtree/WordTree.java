@@ -4,17 +4,15 @@
  */
 package crdt.tree.wordtree;
 
-import crdt.PreconditionException;
+import collect.HashTree;
 import collect.Node;
-import collect.Tree; 
-import crdt.tree.*;
+import collect.Tree;
 import crdt.CRDTMessage;
 import crdt.Factory;
+import crdt.PreconditionException;
 import crdt.set.CRDTSet;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import crdt.tree.CRDTTree;
+import java.util.*;
 
 /**
  *
@@ -100,5 +98,11 @@ public class WordTree<T> extends CRDTTree<T> {
     @Override
     public String toString() {
         return "WordTree<" + words.getClass() + ',' + wcp.getClass() + ">{" + this.getReplicaNumber() + '}';
+    }
+
+    @Override
+    public synchronized void addObserver(Observer obsrvr) {
+        super.addObserver(obsrvr);
+        ((HashTree<T>) wcp.lookup()).addObserver(obsrvr);
     }
 }

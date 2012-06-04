@@ -4,13 +4,14 @@
  */
 package collect;
 
+import crdt.tree.TreeOperation;
 import java.util.*;
 
 /**
  *
  * @author score
  */
-public class HashTree<T> implements Tree<T> {
+public class HashTree<T> extends Observable implements Tree<T> {
 
     private NodeImpl<T> root;
 
@@ -43,6 +44,10 @@ public class HashTree<T> implements Tree<T> {
         NodeImpl<T> here = (NodeImpl<T>) father.getChild(t);
         if (here!= null) {
             return here;
+        }
+        if ((countObservers() > 0) && connected(father)) {
+            setChanged();
+            notifyObservers(new TreeOperation<T>(father, t));
         }
         return createNode(father, t);
     }
@@ -81,7 +86,12 @@ public class HashTree<T> implements Tree<T> {
         }
         NodeImpl<T> ni = (NodeImpl<T>)n;
         if (ni.getFather() != null) {
-            ni.getFather().getChildren().remove(n.getValue());
+            NodeImpl<T> father = (NodeImpl<T>) ni.getFather();
+            father.getChildren().remove(n.getValue());
+            if ((countObservers() > 0) && connected(father)) {
+                setChanged();
+                notifyObservers(new TreeOperation<T>(TreeOperation.OpType.del, father, n.getValue()));
+            }            
             ni.setFather(null);
         }
     }
@@ -122,8 +132,31 @@ public class HashTree<T> implements Tree<T> {
     @Override
     public void move(Node<T> father, Node<T> node) {
         NodeImpl n=(NodeImpl) node;
+        boolean move = false;
+        Node f = null;
+        if ((countObservers() > 0) && connected(node)) {
+            move = true;
+            f = n.getFather();
+        }   
+        
         n.setFather((NodeImpl)father);
-                
+        
+        if ((countObservers() > 0) && connected(father)) {
+            if (move) { // Move
+                setChanged();
+                notifyObservers(new TreeOperation<T>(f, father, node.getValue()));
+            } else { // Add subtree
+                Iterator<? extends Node<T>> it = getBFSIterator(node);
+                while (it.hasNext()) {
+                    Node<T> e = it.next();
+                    setChanged();
+                    notifyObservers(new TreeOperation<T>(e.getFather(), e.getValue()));
+                }
+            }
+        } else if (move) { // Del    
+            setChanged();
+            notifyObservers(new TreeOperation<T>(f, node.getValue()));
+        }
     }
 
     protected NodeImpl<T> createNode(Node<T> father, T t) {
@@ -133,7 +166,14 @@ public class HashTree<T> implements Tree<T> {
     protected NodeImpl<T> createRoot() {
         return new NodeImpl<T>();
     }
-    
+
+    private boolean connected(Node<T> father) {
+        while (father != root && father != null) {
+            father = father.getFather();
+        }
+        return (father == root);
+    }
+
     class DFSIterator<T> implements Iterator {
 
         Stack<Iterator<? extends Node<T>>> pile;
