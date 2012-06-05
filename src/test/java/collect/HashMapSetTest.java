@@ -12,7 +12,7 @@ import org.junit.Test;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class HashMapSetTest {
 

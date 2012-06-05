@@ -6,7 +6,7 @@ package crdt;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public interface Factory <T>{
    public T create();

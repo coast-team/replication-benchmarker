@@ -10,7 +10,7 @@ import crdt.tree.graphtree.mapping.MappingUpdateOperation;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class GraphRootInc<T> extends GraphConnectionPolicyInc<T> {
 

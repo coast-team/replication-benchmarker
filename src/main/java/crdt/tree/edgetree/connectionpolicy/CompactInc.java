@@ -14,7 +14,7 @@ import java.util.Set;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class CompactInc<T> extends EdgeConnectionPolicy<T> {
 

@@ -10,7 +10,7 @@ import java.util.List;
 /**
  *
  * @param <T> 
- * @author moi
+ * @author Stephane Martin
  */
 public interface Tree<T> {
     /**

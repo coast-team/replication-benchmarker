@@ -12,7 +12,7 @@ import java.util.Set;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public abstract class EdgeConnectionPolicy<T> implements Factory <EdgeConnectionPolicy<T>>,Observer {
     protected EdgeMappPolicy<T> emp;

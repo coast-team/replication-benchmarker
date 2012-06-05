@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class GraphShortestInc<T> extends GraphMappPolicyInc<T> {
 

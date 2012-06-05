@@ -13,7 +13,7 @@ import java.util.Observable;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public abstract class GraphConnectionPolicyInc<T> extends GraphConnectionPolicy<T> {
 

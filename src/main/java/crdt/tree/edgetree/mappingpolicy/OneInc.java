@@ -12,7 +12,7 @@ import crdt.tree.edgetree.connectionpolicy.EdgeConnectionPolicy;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class OneInc<T> extends EdgeMappPolicy<T> {
     HashMapSet<T,Node<T>> nodes;

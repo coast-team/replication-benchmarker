@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class GraphZeroInc<T> extends GraphMappPolicyInc<T> {
     Tree tree ;

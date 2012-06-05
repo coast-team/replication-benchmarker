@@ -11,7 +11,7 @@ import java.util.Observer;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public abstract class GraphConnectionPolicy<T> extends Observable implements Factory<GraphConnectionPolicy<T>>, Observer{
     protected GraphMappPolicy<T> gmp;

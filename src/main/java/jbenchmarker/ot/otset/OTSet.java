@@ -8,6 +8,6 @@ package jbenchmarker.ot.otset;
  *
  * @author stephane martin
  */
-public class Set {
+public class OTSet {
     
 }

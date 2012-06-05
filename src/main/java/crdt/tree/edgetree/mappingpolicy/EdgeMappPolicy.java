@@ -11,7 +11,7 @@ import crdt.tree.edgetree.connectionpolicy.EdgeConnectionPolicy;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public abstract class EdgeMappPolicy<T> implements Factory<EdgeMappPolicy<T>>/*
  * ,Observer

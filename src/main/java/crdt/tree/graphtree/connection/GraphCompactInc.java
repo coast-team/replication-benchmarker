@@ -8,7 +8,7 @@ import crdt.tree.graphtree.Edge;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class GraphCompactInc<T> extends GraphConnectionPolicyInc<T> {
     

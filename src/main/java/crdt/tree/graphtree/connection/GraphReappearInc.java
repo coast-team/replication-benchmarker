@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class GraphReappearInc<T> extends GraphConnectionPolicyInc<T> {
     //HashSet <T> Nodes;

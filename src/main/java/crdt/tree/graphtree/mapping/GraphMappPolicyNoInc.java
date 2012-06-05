@@ -12,7 +12,7 @@ import java.util.Observable;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public abstract class GraphMappPolicyNoInc<T> extends GraphMappPolicy {
 

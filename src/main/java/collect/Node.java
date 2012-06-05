@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  *
  * @param <T> 
- * @author moi
+ * @author Stephane Martin
  */
 public interface Node<T> {
     

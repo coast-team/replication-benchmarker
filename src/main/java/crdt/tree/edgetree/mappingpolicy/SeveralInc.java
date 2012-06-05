@@ -14,7 +14,7 @@ import java.util.Set;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class SeveralInc<T> extends EdgeMappPolicy<T> {
     HashTree tree;

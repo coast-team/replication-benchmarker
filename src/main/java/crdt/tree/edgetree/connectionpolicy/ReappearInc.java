@@ -13,7 +13,7 @@ import java.util.Set;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class ReappearInc<T> extends EdgeConnectionPolicy<T> {
     /*

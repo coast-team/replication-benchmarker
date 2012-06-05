@@ -13,7 +13,7 @@ import java.util.Set;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class SkipInc<T> extends EdgeConnectionPolicy<T> {
   HashMapSet<T, Edge<T>> orphans;/*

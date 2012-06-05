@@ -20,7 +20,7 @@ import java.util.Iterator;
  
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class EdgeTree<T> extends CRDTTree<T>{
     CRDTSet<Edge<T>> edgesSet;

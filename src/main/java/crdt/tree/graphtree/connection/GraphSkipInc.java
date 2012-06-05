@@ -12,7 +12,7 @@ import java.util.HashSet;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class GraphSkipInc<T> extends  GraphConnectionPolicyInc<T> {
     //HashSet <T> Nodes;

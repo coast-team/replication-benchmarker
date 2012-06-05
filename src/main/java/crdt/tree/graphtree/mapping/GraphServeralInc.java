@@ -10,7 +10,7 @@ import crdt.tree.graphtree.GraphMappPolicy;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class GraphServeralInc<T> extends GraphMappPolicyInc<T> {
 

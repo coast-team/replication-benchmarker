@@ -10,7 +10,7 @@ import java.util.Observable;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public abstract class GraphMappPolicyInc<T> extends GraphMappPolicy<T> {
 

@@ -9,7 +9,7 @@ import crdt.CRDTMessage;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public interface Viewer {
     public void addMessage(VectorClock emitor,VectorClock receptor,int e,int r,CRDTMessage m);

@@ -6,7 +6,7 @@ package crdt.tree.graphtree.mapping;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class MappingUpdateOperation<T> {
     public  enum Type{add,del,move};
