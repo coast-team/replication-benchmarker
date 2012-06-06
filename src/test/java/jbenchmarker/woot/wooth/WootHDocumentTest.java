@@ -20,6 +20,7 @@ package jbenchmarker.woot.wooth;
 
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.woot.WootIdentifier;
+import jbenchmarker.woot.WootOperation;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -167,32 +168,32 @@ public class WootHDocumentTest {
                 g = new WootIdentifier(0,1);
         
         
-        instance.apply(instance.insert(ins, a , WootIdentifier.IB, WootIdentifier.IE, 'a'));
+        instance.apply(new WootOperation(ins, a, WootIdentifier.IB, WootIdentifier.IE, 'a'));
         assertEquals("a", instance.view());
         
-        instance.apply(instance.insert(ins, b, a, WootIdentifier.IE, 'b'));
+        instance.apply(new WootOperation(ins, b, a, WootIdentifier.IE, 'b'));
         assertEquals("ab", instance.view());
 
-        instance.apply(instance.insert(ins, c, WootIdentifier.IB, a, 'c'));
+        instance.apply(new WootOperation(ins, c, WootIdentifier.IB, a, 'c'));
         assertEquals("cab", instance.view());
 
         instance.apply(instance.delete(del, c));
         assertEquals("ab", instance.view());
         
-        instance.apply(instance.insert(ins, e, a, b, 'e'));
+        instance.apply(new WootOperation(ins, e, a, b, 'e'));
         assertEquals("aeb", instance.view());
 
         instance.apply(instance.delete(del, e));
         assertEquals("ab", instance.view());
     
-        instance.apply(instance.insert(ins, d, a, b, 'd'));
+        instance.apply(new WootOperation(ins, d, a, b, 'd'));
         assertEquals("adb", instance.view());
 
-        instance.apply(instance.insert(ins, f, a, b, 'f'));
+        instance.apply(new WootOperation(ins, f, a, b, 'f'));
         assertTrue(f.compareTo(d) > 0);
         assertEquals("adfb", instance.view());
         
-        instance.apply(instance.insert(ins, g, a, b, 'g'));
+        instance.apply(new WootOperation(ins, g, a, b, 'g'));
         assertTrue(g.compareTo(d) < 0);
         assertEquals("agdfb", instance.view());    
     }
@@ -205,9 +206,9 @@ public class WootHDocumentTest {
         WootIdentifier a = new WootIdentifier(1,1), b = new WootIdentifier(3,1),
                 c = new WootIdentifier(2,1);
         
-        instance.apply(instance.insert(ins, a, WootIdentifier.IB, WootIdentifier.IE, 'a'));
-        instance.apply(instance.insert(ins, b, WootIdentifier.IB, a, 'b'));
-        instance.apply(instance.insert(ins, c, WootIdentifier.IB, WootIdentifier.IE, 'c'));
+        instance.apply(new WootOperation(ins, a, WootIdentifier.IB, WootIdentifier.IE, 'a'));
+        instance.apply(new WootOperation(ins, b, WootIdentifier.IB, a, 'b'));
+        instance.apply(new WootOperation(ins, c, WootIdentifier.IB, WootIdentifier.IE, 'c'));
         assertTrue(c.compareTo(a) > 0);
         assertTrue(c.compareTo(b) < 0);
         assertEquals("bac", instance.view());
