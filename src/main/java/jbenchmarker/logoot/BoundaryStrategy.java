@@ -27,7 +27,7 @@ import java.util.Random;
  *
  * @author urso
  */
-class BoundaryStrategy extends LogootStrategy {
+public class BoundaryStrategy extends LogootStrategy {
 
     private Random ran = new Random();
     private final long bound;
@@ -47,7 +47,8 @@ class BoundaryStrategy extends LogootStrategy {
     /**
      * Generate N identifier between P and Q;
      */
-    public ArrayList<LogootIdentifier> generateLineIdentifiers(LogootMerge replica, LogootIdentifier P, LogootIdentifier Q, int n) {
+    @Override
+    ArrayList<LogootIdentifier> generateLineIdentifiers(LogootDocument replica, LogootIdentifier P, LogootIdentifier Q, int n) {
         int index = 0, tMin = Math.min(P.length(), Q.length());
         
         while ((index < tMin && P.getComponentAt(index).equals(Q.getComponentAt(index))   

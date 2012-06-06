@@ -44,8 +44,8 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
      * Constructor
      */
     public MergeAlgorithm(Document doc, int r) {
-        this.setReplicaNumber(r);
         this.doc = doc;
+        this.setReplicaNumber(r);
     }
 
     /**

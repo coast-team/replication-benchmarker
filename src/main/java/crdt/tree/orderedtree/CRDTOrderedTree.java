@@ -4,7 +4,7 @@
  */
 package crdt.tree.orderedtree;
 
-import collect.Node;
+import collect.OrderedNode;
 import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.Operation;
@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author score
  */
-public abstract class CRDTOrderedTree<T> extends CRDT<Node<T>> {
+public abstract class CRDTOrderedTree<T> extends CRDT<OrderedNode<T>> {
     
    abstract public CRDTMessage add(List<Integer> path, int p, T element) throws PreconditionException;
     

@@ -17,21 +17,21 @@ import jbenchmarker.core.SequenceOperation;
 public class LogootCounter extends LogootDocument {
     public static class Factory extends ReplicaFactory {
         @Override public MergeAlgorithm create(int r) {
-                return new LogootMerge(new LogootDocument(Long.MAX_VALUE), r, 64, new BoundaryStrategy(1000000000));
+                return new LogootMerge(new LogootCounter(r, 64, new BoundaryStrategy(1000000000)), 1);
         }
     }
     
     public static int count = 0;
-    
-    public LogootCounter(long max) {
-        super(max); 
+
+    public LogootCounter(int r, int nbBit, LogootStrategy strategy) {
+        super(r, nbBit, strategy);
     }
     
     @Override
     public void apply(SequenceMessage op) {
         LogootOperation lg = (LogootOperation) op;
         LogootIdentifier idToSearch = lg.getIdentifiant();
-        int pos = dicho(idTable, idToSearch);
+        int pos = dicho(idToSearch);
         //Insertion et Delete
         if ((lg.getType() == SequenceOperation.OpType.del) && !getId(pos).equals(idToSearch)) {
             count++;

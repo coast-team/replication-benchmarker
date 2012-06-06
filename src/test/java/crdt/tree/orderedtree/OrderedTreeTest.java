@@ -4,7 +4,7 @@
  */
 package crdt.tree.orderedtree;
 
-import collect.Node;
+import collect.OrderedNode;
 import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
@@ -15,13 +15,12 @@ import crdt.tree.wordtree.WordConnectionPolicy;
 import crdt.tree.wordtree.WordTree;
 import crdt.tree.wordtree.policy.WordIncrementalSkip;
 import crdt.tree.wordtree.policy.WordIncrementalSkipOpti;
-import crdt.tree.wordtree.policy.WordSkip;
 import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.logoot.LogootFactory;
-import jbenchmarker.logoot.LogootMerge;
+import jbenchmarker.logoot.*;
 import static org.junit.Assert.*;
+import static crdt.tree.orderedtree.OrderedNodeMock.tree;
 import org.junit.Test;
 
 /**
@@ -29,11 +28,11 @@ import org.junit.Test;
  * @author urso
  */
 public class OrderedTreeTest {
-    private void assertSameTree(OrderedNodeImpl on, OrderedNodeImpl ot) {
-        assertTrue(on.toString(), on.same(ot));
+    private void assertSameTree(OrderedNodeMock on, OrderedNode ot) {
+        assertTrue(ot.toString(), on.same(ot));
     }
     
-    private void assertSameTree(OrderedNodeImpl on, PositionIdentifierTree ot) {
+    private void assertSameTree(OrderedNodeMock on, PositionIdentifierTree ot) {
         assertTrue(ot.lookup().toString(), on.same(ot.lookup()));
     }
     
@@ -52,26 +51,17 @@ public class OrderedTreeTest {
         }
         return l;
     }
-    
-    static OrderedNodeImpl tree(Character ch, Object ... cn) {
-        OrderedNodeImpl on = new OrderedNodeImpl(ch, null, null);
-        for (Object c : cn) {
-            if (c instanceof Node) {
-                on.getChildren().add(c);
-            } else {
-                on.getChildren().add(new OrderedNodeImpl(c, on, null));
-            }
-        }
-        return on;
-    }
   
     Factory<MergeAlgorithm> lf = new  LogootFactory();
 
-    OrderedNodeImpl testLogoot(Factory<CRDTSet> sf, Factory<WordConnectionPolicy> wcp) throws PreconditionException {
+    OrderedNode testLogoot(Factory<CRDTSet> sf, Factory<WordConnectionPolicy> wcp) throws PreconditionException {
         WordTree wt = new WordTree(sf.create(), wcp);
-        PositionIdentifierTree ot = new PositionIdentifierTree((LogootMerge)lf.create(), wt),
+        LogootStrategy st = new BoundaryStrategy(100);
+        PositionIdentifierTree ot = new PositionIdentifierTree(new LogootNode(null, 0, 32, st), wt),
                 ot2 = ot.create();
-        OrderedNodeImpl on;
+        ot.setReplicaNumber(1); ot2.setReplicaNumber(2);
+        
+        OrderedNodeMock on;
         
         CRDTMessage m1 = ot.add(path(), 0, 'x');
         ot2.applyRemote(m1);
@@ -104,18 +94,17 @@ public class OrderedTreeTest {
         CRDTMessage m8 = ot.remove(path(0)), m9 = ot2.add(path(0), 0, 'y');
         ot2.applyRemote(m8); ot.applyRemote(m9);
         
-        assertSameTree((OrderedNodeImpl) ot.lookup(), ot2);
-        return (OrderedNodeImpl) ot.lookup();
+        assertEquals(ot.lookup(), ot2.lookup());
+        return (OrderedNode) ot.lookup();
     }
     
     void testLogootSkip(Factory<CRDTSet> sf) throws PreconditionException {
-        OrderedNodeImpl r = testLogoot(sf, new WordIncrementalSkip()),
-                on = tree(null, tree('b', 'y', 'y'), 'c');
+        OrderedNode r = testLogoot(sf, new WordIncrementalSkip());
+        OrderedNodeMock on = tree(null, tree('b', 'y', 'y'), 'c');
         assertSameTree(on, r);
         
         r = testLogoot(sf, new WordIncrementalSkipOpti()); 
         assertSameTree(on, r);
-
 //        r = testLogoot(sf, new WordSkip()); 
 //        assertSameTree(on, r);
     }

@@ -18,26 +18,47 @@
  */
 package jbenchmarker.logoot;
 
+import crdt.Factory;
+import crdt.tree.orderedtree.PositionIdentificator;
+import crdt.tree.orderedtree.PositionIdentifier;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceMessage;
-
 import jbenchmarker.core.SequenceOperation;
 
 /**
  * A Logoot document. Contains a list of Charater and the corresponding list of LogootIndentitifer.
  * @author urso mehdi
  */
-public class LogootDocument<T> implements Document{
-
+public class LogootDocument<T> implements Document, PositionIdentificator<T>, Factory<LogootDocument<T>> {
+    protected final int nbBit;
+    protected final long max; // MAX = 2^nbBit - 1
+    private int myClock;
+    protected int replicaNumber;
+    protected final BigInteger base;
+    
     final protected RangeList<LogootIdentifier> idTable;
-    final private RangeList<T> document;
+    final protected RangeList<T> document;
+    final protected LogootStrategy strategy;
 
-    public LogootDocument(long max) {
+    public LogootDocument(int r, int nbBit, LogootStrategy strategy) {
         super();
         document = new RangeList<T>();
         idTable = new RangeList<LogootIdentifier>();
+        this.strategy = strategy;
 
+        myClock = 0;
+        this.nbBit = nbBit;
+//        this.strategy = strategy;
+        if (nbBit == 64) {
+            this.max = Long.MAX_VALUE;
+        } else {
+            this.max = (long) Math.pow(2, nbBit) - 1;
+        }
+        base = BigInteger.valueOf(2).pow(nbBit);
+        
         LogootIdentifier Begin = new LogootIdentifier(1), End = new LogootIdentifier(1);
         Begin.addComponent(new Component(0, -1, -1));
         End.addComponent(new Component(max, -1, -1));
@@ -46,6 +67,10 @@ public class LogootDocument<T> implements Document{
         document.add(null);
         idTable.add(End);
         document.add(null);
+    } 
+    
+    public long getNbBit() {
+        return nbBit;
     }
     
     @Override
@@ -57,7 +82,7 @@ public class LogootDocument<T> implements Document{
         return s.toString();
     }
 
-    int dicho(List<LogootIdentifier> idTable, LogootIdentifier idToSearch) {
+    protected int dicho(LogootIdentifier idToSearch) {
         int startIndex = 1, endIndex = idTable.size() - 1, middleIndex;
         while (startIndex < endIndex) {
             middleIndex = startIndex + (endIndex - startIndex) / 2;
@@ -73,15 +98,11 @@ public class LogootDocument<T> implements Document{
         return startIndex;
     }
     
-    int dicho(LogootIdentifier idToSearch) {
-        return dicho(idTable, idToSearch);
-    }
-    
     @Override
     public void apply(SequenceMessage op) {
         LogootOperation lg = (LogootOperation) op;
         LogootIdentifier idToSearch = lg.getIdentifiant();
-        int pos = dicho(idTable, idToSearch);
+        int pos = dicho(idToSearch);
         //Insertion et Delete
         if (lg.getType() == SequenceOperation.OpType.ins) {
             idTable.add(pos, idToSearch);
@@ -109,5 +130,75 @@ public class LogootDocument<T> implements Document{
     @Override
     public int viewLength() {
         return document.size()-2;
+    }
+
+    // TODO : duplicate strategy ?
+    @Override
+    public LogootDocument<T> create() {
+        return new LogootDocument<T>(replicaNumber, nbBit, strategy);
+    }
+    
+    void incClock() {
+        this.myClock++;
+    }
+
+    int getClock() {
+        return this.myClock;
+    }
+
+    void setClock(int c) {
+        this.myClock = c;
+    }
+
+    long getMax() {
+        return this.max;
+    }
+
+    BigInteger getBase() {
+        return base;
+    }
+
+    public void setReplicaNumber(int replicaNumber) {
+        this.replicaNumber = replicaNumber;
+    }
+
+    int getReplicaNumber() {
+        return replicaNumber;
+    }
+    
+    public LogootIdentifier getNewId(int p) {
+        return strategy.generateLineIdentifiers(this, idTable.get(p),
+                    idTable.get(p + 1), 1).get(0);
+    }
+        
+    ArrayList<LogootIdentifier> generateIdentifiers(int position, int N) {
+        return strategy.generateLineIdentifiers(this, idTable.get(position),
+                    idTable.get(position + 1), N);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final LogootDocument<T> other = (LogootDocument<T>) obj;
+        if (this.idTable != other.idTable && (this.idTable == null || !this.idTable.equals(other.idTable))) {
+            return false;
+        }
+        if (this.document != other.document && (this.document == null || !this.document.equals(other.document))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + (this.idTable != null ? this.idTable.hashCode() : 0);
+        hash = 97 * hash + (this.document != null ? this.document.hashCode() : 0);
+        return hash;
     }
 }

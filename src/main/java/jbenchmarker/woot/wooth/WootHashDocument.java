@@ -33,6 +33,8 @@ public class WootHashDocument<T> implements Document {
     final protected WootHashNode<T> first;
     final protected Map<WootIdentifier, WootHashNode<T>> map;
     private int size = 0;
+    private int clock = 0;
+    private int replicaNumber;
 
     public WootHashDocument() {
         super();
@@ -43,6 +45,12 @@ public class WootHashDocument<T> implements Document {
         this.map.put(WootIdentifier.IE, end);
     }
 
+    public WootHashDocument(int replicaNumber) {
+        this();
+        this.replicaNumber = replicaNumber;
+    }
+
+    @Override
     public String view() {
         StringBuilder s = new StringBuilder();
         for (WootHashNode w=first; w!=null; w = w.getNext()) 
@@ -60,6 +68,7 @@ public class WootHashDocument<T> implements Document {
         return false;    
     }    
     
+    @Override
     public void apply(SequenceMessage op) {
         WootOperation wop = (WootOperation) op;
         
@@ -123,8 +132,8 @@ public class WootHashDocument<T> implements Document {
         return new WootOperation(o, id);
     }
     
-    public WootOperation insert(SequenceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, T content) {
-        return new WootOperation(o, id, ip, in, content);
+    public WootOperation insert(SequenceOperation o, WootIdentifier ip, WootIdentifier in, T content) {
+        return new WootOperation(o, nextIdentifier(), ip, in, content);
     }
 
     private void insertBetween(WootHashNode wn, WootHashNode ip, WootHashNode in) {
@@ -165,5 +174,10 @@ public class WootHashDocument<T> implements Document {
     @Override
     public int viewLength() {
         return size;
+    }
+    
+    private WootIdentifier nextIdentifier() {
+        clock++;
+        return new WootIdentifier(this.replicaNumber, clock);
     }
 }

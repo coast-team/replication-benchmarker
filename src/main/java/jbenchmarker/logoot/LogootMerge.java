@@ -18,10 +18,8 @@
  */
 package jbenchmarker.logoot;
 
-import collect.Node;
 import collect.OrderedNode;
 import crdt.CRDT;
-import crdt.tree.orderedtree.PositionIdentificator;
 import crdt.tree.orderedtree.PositionIdentifier;
 import java.math.BigInteger;
 import jbenchmarker.core.MergeAlgorithm;
@@ -35,30 +33,14 @@ import java.util.*;
  *
  * @author mehdi urso
  */
-public class LogootMerge<T> extends MergeAlgorithm implements PositionIdentificator {
+public class LogootMerge<T> extends MergeAlgorithm {
 
-    final private int nbBit;
-    final private long max; // MAX = 2^nbBit - 1
-    private int myClock;
-    private final LogootStrategy strategy;
-    private final BigInteger base;
+
 
     // nbBit <= 64
-    public LogootMerge(Document doc, int r, int nbBit, LogootStrategy strategy) {
+    public LogootMerge(Document doc, int r) {
         super(doc, r);
-        myClock = 0;
-        this.nbBit = nbBit;
-        this.strategy = strategy;
-        if (nbBit == 64) {
-            max = Long.MAX_VALUE;
-        } else {
-            this.max = (long) Math.pow(2, nbBit) - 1;
-        }
-        base = BigInteger.valueOf(2).pow(nbBit);
-    }
 
-    public long getNbBit() {
-        return nbBit;
     }
 
     @Override
@@ -76,8 +58,7 @@ public class LogootMerge<T> extends MergeAlgorithm implements PositionIdentifica
         if (opt.getType() == SequenceOperation.OpType.ins) {
             N = opt.getContent().size();
             List<T> content = opt.getContent();
-            ArrayList<LogootIdentifier> patch = strategy.generateLineIdentifiers(this, lg.getId(position),
-                    lg.getId(position + 1), N);
+            ArrayList<LogootIdentifier> patch = lg.generateIdentifiers(position, N);
 
             ArrayList<T> lc = new ArrayList<T>(patch.size());
             for (int cmpt = 0; cmpt < patch.size(); cmpt++) {
@@ -99,59 +80,16 @@ public class LogootMerge<T> extends MergeAlgorithm implements PositionIdentifica
         return lop;
     }
 
-    void incClock() {
-        this.myClock++;
-    }
 
-    int getClock() {
-        return this.myClock;
-    }
-
-    void setClock(int c) {
-        this.myClock = c;
-    }
-
-    long getMax() {
-        return this.max;
-    }
-
-    BigInteger getBase() {
-        return base;
-    }
 
     @Override
     public CRDT<String> create() {
-        return new LogootMerge(new LogootDocument(Long.MAX_VALUE), 0, 64, new BoundaryStrategy(1000000000));
+        return new LogootMerge(((LogootDocument) getDoc()).create(), 0);
     }
 
     @Override
-    public PositionIdentifier generate(OrderedNode father, PositionIdentifier p, PositionIdentifier n) {
-        if (p == null) {
-            p = ((LogootDocument) getDoc()).getId(0);
-        } 
-        if (n == null) {
-            n = ((LogootDocument) getDoc()).getId(getDoc().viewLength()+1);
-        }
-        return strategy.generateLineIdentifiers(this, (LogootIdentifier) p, (LogootIdentifier) n, 1).get(0);
-    }
-
-    @Override
-    public int getInteger(final OrderedNode father, PositionIdentifier pi) {
-        List<LogootIdentifier> l = new AbstractList<LogootIdentifier>() {
-            
-            @Override
-            public int size() {
-                return father.getChildrenNumber()+2;
-            }
-
-            @Override
-            public LogootIdentifier get(int i) {
-                if (i == father.getChildrenNumber()+1) {
-                    return ((LogootDocument) getDoc()).getId(getDoc().viewLength()+1);
-                }
-                return (LogootIdentifier) father.getChild(i-1).getPosition();
-            }
-        };
-        return  ((LogootDocument) getDoc()).dicho(l, (LogootIdentifier) pi)-1;
+    public void setReplicaNumber(int replicaNumber) {
+        super.setReplicaNumber(replicaNumber);
+        ((LogootDocument) getDoc()).setReplicaNumber(replicaNumber);
     }
 }

@@ -9,7 +9,7 @@ package crdt.tree.orderedtree;
  * @author urso
  */ 
 
-class Positioned<T> {
+public class Positioned<T> {
     final private PositionIdentifier pi;
     final private T elem;
 

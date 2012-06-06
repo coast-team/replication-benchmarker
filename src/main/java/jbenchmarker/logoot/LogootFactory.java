@@ -29,7 +29,7 @@ import jbenchmarker.core.ReplicaFactory;
  */
 public class LogootFactory extends ReplicaFactory {
     @Override
-    public MergeAlgorithm create(int r) {
-        return new LogootMerge(new LogootDocument(Long.MAX_VALUE), r, 64, new BoundaryStrategy(1000000000));
+    public LogootMerge create(int r) {
+        return new LogootMerge(new LogootDocument(r, 64, new BoundaryStrategy(1000000000)), r);
     }
 }

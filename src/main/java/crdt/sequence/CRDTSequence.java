@@ -2,15 +2,15 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package crdt.tree.orderedtree;
+package crdt.sequence;
 
-import collect.OrderedNode;
+import crdt.CRDT;
 import java.util.List;
 
 /**
  *
  * @author urso
  */
-public interface PositionIdentificator<T> {    
-
+public abstract class CRDTSequence<T> extends CRDT<List<T>> {
+    
 }

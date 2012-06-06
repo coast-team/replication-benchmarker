@@ -44,7 +44,7 @@ public class LogootMergeTest
     
         @Test
     public void testgenerateLocal() {
-        LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 64, new BoundaryStrategy(1000000000));
+        LogootMerge LM = (LogootMerge) new LogootFactory().create();
 
         List<SequenceMessage> a = LM.generateLocal(insert(0, "a"));  //a
         assertEquals(1, a.size());
@@ -71,7 +71,7 @@ public class LogootMergeTest
     @Test
     public void testDeleteBloc() {
         
-        LogootMerge<Character> LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 64, new BoundaryStrategy(1000000000));
+        LogootMerge LM = (LogootMerge) new LogootFactory().create();
         LogootDocument<Character> lg = (LogootDocument) (LM.getDoc());
         
         
@@ -94,14 +94,14 @@ public class LogootMergeTest
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testIns() throws IncorrectTraceException {
-        LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 2, new BoundaryStrategy(1000000000));
+        LogootMerge LM = (LogootMerge) new LogootFactory().create();
         LM.generateLocal(insert(10, "a"));
         fail("Out of bound insert not detected.");
     }
 
     @Test(expected = java.lang.AssertionError.class) //contrairement à IndexOutOfBoundsException
     public void testDel() throws IncorrectTraceException {
-        LogootMerge LM = new LogootMerge(new LogootDocument(Long.MAX_VALUE), 1, 2, new BoundaryStrategy(1000000000));
+        LogootMerge LM = (LogootMerge) new LogootFactory().create();
         LM.generateLocal(delete(0, 1));
         fail("Out of bound delete not detected.");
     }
