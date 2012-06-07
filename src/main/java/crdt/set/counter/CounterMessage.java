@@ -15,7 +15,7 @@ public class CounterMessage<T> extends CommutativeSetMessage<T> {
     private int counter;
 
     public CounterMessage(T t, int c) {
-        this.content = t;
+        super(t);
         this.counter = c;
     }
     
@@ -32,5 +32,9 @@ public class CounterMessage<T> extends CommutativeSetMessage<T> {
     protected CommutativeMessage copy() {
         return new CounterMessage(this.content, this.counter);
     }
-    
+
+    @Override
+    public OpType getType() {
+        return (counter > 0) ? OpType.add : OpType.del; 
+    }
 }

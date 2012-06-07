@@ -4,16 +4,15 @@
  */
 package crdt.set.twophases;
 
-import crdt.set.twophases.TwoPhasesMessage.OpType;
-import crdt.set.SetOperation;
+import crdt.set.CommutativeSetMessage.OpType;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
  * @author score
  */
-public class twoPhaseOperationTest {
+public class TwoPhaseOperationTest {
     
     @Test
         public void TwoPhaseOperationTest()

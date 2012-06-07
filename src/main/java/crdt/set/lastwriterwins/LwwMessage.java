@@ -10,21 +10,13 @@ import crdt.set.CommutativeSetMessage;
  *
  * @author score
  */
-public class LwwMessage<T> extends CommutativeSetMessage<T> {
+public class LwwMessage<T> extends TypedMessage<T> {
     
     private int now;
-   
-    public enum OpType {add, del}; 
-    private OpType type;
-   
-    public OpType getType() {
-        return type;
-    }
     
     public LwwMessage(OpType type, T t, int now) {
-        this.type=type;
+        super(type, t);
         this.now = now;
-        this.content = t;
     }
         
     public int getime() {

@@ -70,25 +70,34 @@ public class WootHashDocument<T> implements Document {
     
     @Override
     public void apply(SequenceMessage op) {
-        WootOperation wop = (WootOperation) op;
+        WootOperation<T> wop = (WootOperation<T>) op;
         
         if (wop.getType() == SequenceOperation.OpType.del) {
-            WootHashNode<T> e = map.get(wop.getId());
-            if (e.isVisible()) { --size; }
-            e.setVisible(false);
+            del(wop.getId());
         } else { 
-            WootHashNode wn = new WootHashNode(wop.getId(), wop.getContent(), true, null, 
-                    Math.max(map.get(wop.getIp()).getDegree(), map.get(wop.getIn()).getDegree())+1);           
-            insertBetween(wn, map.get(wop.getIp()), map.get(wop.getIn()));
-            map.put(wop.getId(), wn);
-            ++size;
+            add(wop.getId(), wop.getContent(), wop.getIp(), wop.getIn());
         }        
     }
 
+    protected void add(WootIdentifier id, T content, WootIdentifier ip, WootIdentifier in) {
+        WootHashNode wp = map.get(ip), wn = map.get(in),
+                w = new WootHashNode(id, content, true, null, Math.max(wp.getDegree(), wn.getDegree()) + 1);
+        insertBetween(w, wp, wn);
+        map.put(id, w);
+        ++size;
+    }
+
+    protected void del(WootIdentifier id) {
+        WootHashNode<T> e = map.get(id);
+        if (e.isVisible()) {
+            --size;
+        }
+        e.setVisible(false);
+    }
     /**
      * pth visible character
      */
-    public WootHashNode getVisible(int p) {
+    public WootHashNode<T> getVisible(int p) {
         int j=-1;        
         WootHashNode w = first;
         while (j<p) {
@@ -122,7 +131,7 @@ public class WootHashDocument<T> implements Document {
      */
     public WootHashNode getNext(WootHashNode v) {
         v = v.getNext();
-        while ( !v.isVisible() && !v.getId().equals(WootIdentifier.IE)) {
+        while ( !v.isVisible() && v.getNext() != null) {
             v = v.getNext();
         }
         return v; 
@@ -176,8 +185,16 @@ public class WootHashDocument<T> implements Document {
         return size;
     }
     
-    private WootIdentifier nextIdentifier() {
+    protected WootIdentifier nextIdentifier() {
         clock++;
         return new WootIdentifier(this.replicaNumber, clock);
+    }
+
+    public void setReplicaNumber(int replicaNumber) {
+        this.replicaNumber = replicaNumber;
+    }
+
+    public int getReplicaNumber() {
+        return replicaNumber;
     }
 }

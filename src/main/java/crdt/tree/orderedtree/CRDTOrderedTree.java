@@ -25,7 +25,7 @@ public abstract class CRDTOrderedTree<T> extends CRDT<OrderedNode<T>> {
    final public CRDTMessage applyLocal(Operation op) throws PreconditionException {
        OrderedTreeOperation<T> top = (OrderedTreeOperation<T>) op;
        if (top.getType() == OrderedTreeOperation.OpType.add)
-           return add(top.getPath(), top.hashCode(), top.getContent());
+           return add(top.getPath(), top.getPosition(), top.getContent());
        else
            return remove(top.getPath());
    }

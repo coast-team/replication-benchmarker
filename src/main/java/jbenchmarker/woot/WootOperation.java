@@ -18,6 +18,7 @@
  */
 package jbenchmarker.woot;
 
+import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
@@ -27,9 +28,7 @@ import jbenchmarker.core.SequenceOperation.OpType;
  * @author urso
  */
 public class WootOperation<T> extends SequenceMessage {
-    final private WootIdentifier id;
-    final private WootIdentifier ip;   // previous
-    final private WootIdentifier in;   // next   
+    final private Cloneable identifier;   // next   
     final private T content;
         
     /**
@@ -42,9 +41,7 @@ public class WootOperation<T> extends SequenceMessage {
      */
     public WootOperation(SequenceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, T content) {
         super(o);
-        this.id = id;
-        this.ip = ip;
-        this.in = in;
+        this.identifier = new WootPosition(id, ip, in);
         this.content = content;
     }
 
@@ -55,27 +52,32 @@ public class WootOperation<T> extends SequenceMessage {
      */
     public WootOperation(SequenceOperation o, WootIdentifier id) {
         super(o);
-        this.id = id;
-        this.ip = null;
-        this.in = null;
+        this.identifier = id;
         this.content = null;        
     }
 
-
+    private WootOperation(SequenceOperation o, Cloneable id, T content) {
+        super(o);
+        this.identifier = id;
+        this.content = content;        
+    }
+    
     public OpType getType() {
         return this.getOriginalOp().getType();
     }
 
     public WootIdentifier getId() {
-        return id;
+        return identifier instanceof WootIdentifier ? 
+                (WootIdentifier) identifier : 
+                ((WootPosition) identifier).getId();
     }
 
     public WootIdentifier getIn() {
-        return in;
+        return ((WootPosition) identifier).getIn();
     }
 
     public WootIdentifier getIp() {
-        return ip;
+        return ((WootPosition) identifier).getIp();
     }
 
     public T getContent() {
@@ -84,7 +86,10 @@ public class WootOperation<T> extends SequenceMessage {
 
     @Override
     public SequenceMessage copy() {
-        return (ip == null) ? new WootOperation(this.getOriginalOp(), id.clone()) : 
-                new WootOperation(this.getOriginalOp(), id.clone(), ip.clone(), in.clone(), content);
+        return new WootOperation(this.getOriginalOp(), 
+                identifier instanceof WootIdentifier ? 
+                ((WootIdentifier) identifier).clone() : 
+                ((WootPosition) identifier).clone(), 
+                content);
     }
 }

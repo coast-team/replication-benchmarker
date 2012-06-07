@@ -64,7 +64,7 @@ public class CausalDispatcherTest {
     public static void tearDownClass() throws Exception {
     }
 
-    static CausalSimulator testRun(Factory<CRDT> factory, int duration, int rn, OperationProfile opp) throws PreconditionException, IncorrectTraceException, IOException {
+    public static CausalSimulator testRun(Factory<CRDT> factory, int duration, int rn, OperationProfile opp) throws PreconditionException, IncorrectTraceException, IOException {
         CausalSimulator cd = new CausalSimulator(factory);
         cd.run(new RandomTrace(duration, RandomTrace.FLAT, opp, 0.2, 10, 3, rn), false);
         //System.out.println(cd.getlTime());
@@ -156,6 +156,16 @@ public class CausalDispatcherTest {
 //    @Ignore
     @Test
     public void testRunWord() throws IncorrectTraceException, PreconditionException, IOException {
+        for (Factory<CRDT> sf : s) {
+            for (Factory<WordPolicy> pf : p) {
+                //System.out.println(new WordTree(sf, pf));
+                testRun(new WordTree(sf, pf), 200, 5, treeop);
+            }
+       }
+    }
+    
+    @Test
+    public void testRunLogootTree() throws IncorrectTraceException, PreconditionException, IOException {
         for (Factory<CRDT> sf : s) {
             for (Factory<WordPolicy> pf : p) {
                 //System.out.println(new WordTree(sf, pf));

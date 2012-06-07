@@ -5,12 +5,12 @@
 package crdt.set.twophases;
 
 import crdt.CRDTMessage;
-
 import crdt.PreconditionException;
 import crdt.set.CRDTSet;
 import crdt.set.ConvergentSet;
-import crdt.set.twophases.TwoPhasesMessage.OpType;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  *

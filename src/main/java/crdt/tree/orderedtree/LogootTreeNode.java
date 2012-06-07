@@ -14,10 +14,10 @@ import jbenchmarker.logoot.LogootStrategy;
  *
  * @author urso
  */
-class LogootNode<T> extends LogootDocument<LogootNode<T>> implements OrderedNode<T> {
+class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> implements OrderedNode<T> {
     private final T value;
     
-    public LogootNode(T value, int r, int nbBit, LogootStrategy strategy) {
+    public LogootTreeNode(T value, int r, int nbBit, LogootStrategy strategy) {
         super(r, nbBit, strategy);
         this.value = value;
     }
@@ -67,13 +67,13 @@ class LogootNode<T> extends LogootDocument<LogootNode<T>> implements OrderedNode
     }
 
     @Override
-    public List<LogootNode<T>> getElements() {
+    public List<LogootTreeNode<T>> getElements() {
         return document.subList(1, document.size()-1);
     }
 
     @Override
-    public LogootNode<T> createNode(T elem) {
-        return new LogootNode<T>(elem, replicaNumber, nbBit, strategy);
+    public LogootTreeNode<T> createNode(T elem) {
+        return new LogootTreeNode<T>(elem, replicaNumber, nbBit, strategy);
     }
 
     @Override
@@ -84,17 +84,22 @@ class LogootNode<T> extends LogootDocument<LogootNode<T>> implements OrderedNode
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final LogootNode<T> other = (LogootNode<T>) obj;
+        final LogootTreeNode<T> other = (LogootTreeNode<T>) obj;
         if (this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
             return false;
         }
-        return true;
+        return super.equals(obj);
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
+        int hash = super.hashCode();
         hash = 71 * hash + (this.value != null ? this.value.hashCode() : 0);
         return hash;
     }
+
+    @Override
+    public String toString() {
+        return value + "{" + getElements() + '}';
+    } 
 }

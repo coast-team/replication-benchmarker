@@ -18,13 +18,14 @@
  */
 package jbenchmarker.woot;
 
+import crdt.tree.orderedtree.PositionIdentifier;
 import java.io.Serializable;
 
 /**
  *
  * @author urso
  */
-public class WootIdentifier implements Comparable<WootIdentifier>, Serializable {
+public class WootIdentifier implements Comparable<WootIdentifier>, Serializable, Cloneable {
     public static final WootIdentifier IB = new WootIdentifier(-1,0);
     public static final WootIdentifier IE = new WootIdentifier(-1,1);;
 

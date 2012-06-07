@@ -9,18 +9,28 @@ import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.set.CRDTSet;
+import crdt.set.NaiveSet;
 import crdt.set.observedremove.CommutativeOrSet;
 import crdt.set.observedremove.ConvergentOrSet;
+import crdt.simulator.CausalDispatcherTest;
+import crdt.simulator.IncorrectTraceException;
+import crdt.simulator.random.OperationProfile;
+import crdt.simulator.random.OrderedTreeOperationProfile;
+import static crdt.tree.orderedtree.OrderedNodeMock.tree;
 import crdt.tree.wordtree.WordConnectionPolicy;
 import crdt.tree.wordtree.WordTree;
+import crdt.tree.wordtree.policy.WordIncrementalReappear;
 import crdt.tree.wordtree.policy.WordIncrementalSkip;
 import crdt.tree.wordtree.policy.WordIncrementalSkipOpti;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.logoot.*;
-import static org.junit.Assert.*;
-import static crdt.tree.orderedtree.OrderedNodeMock.tree;
+import jbenchmarker.logoot.BoundaryStrategy;
+import jbenchmarker.logoot.LogootFactory;
+import jbenchmarker.logoot.LogootStrategy;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
@@ -28,6 +38,7 @@ import org.junit.Test;
  * @author urso
  */
 public class OrderedTreeTest {
+    
     private void assertSameTree(OrderedNodeMock on, OrderedNode ot) {
         assertTrue(ot.toString(), on.same(ot));
     }
@@ -51,14 +62,17 @@ public class OrderedTreeTest {
         }
         return l;
     }
-  
+
+    PositionIdentifierTree createTree(OrderedNode root, Factory<CRDTSet> sf, Factory<WordConnectionPolicy> wcp) {
+        WordTree wt = new WordTree(sf.create(), wcp);
+        return new PositionIdentifierTree(root.createNode(null), wt);       
+    }
+    
     Factory<MergeAlgorithm> lf = new  LogootFactory();
 
-    OrderedNode testLogoot(Factory<CRDTSet> sf, Factory<WordConnectionPolicy> wcp) throws PreconditionException {
-        WordTree wt = new WordTree(sf.create(), wcp);
-        LogootStrategy st = new BoundaryStrategy(100);
-        PositionIdentifierTree ot = new PositionIdentifierTree(new LogootNode(null, 0, 32, st), wt),
-                ot2 = ot.create();
+    OrderedNode testTree(PositionIdentifierTree tf) throws PreconditionException {
+        PositionIdentifierTree ot = tf.create(),
+                ot2 = tf.create();
         ot.setReplicaNumber(1); ot2.setReplicaNumber(2);
         
         OrderedNodeMock on;
@@ -98,20 +112,57 @@ public class OrderedTreeTest {
         return (OrderedNode) ot.lookup();
     }
     
-    void testLogootSkip(Factory<CRDTSet> sf) throws PreconditionException {
-        OrderedNode r = testLogoot(sf, new WordIncrementalSkip());
+    void testSkip(OrderedNode root, Factory<CRDTSet> sf) throws PreconditionException {
+        OrderedNode r = testTree(createTree(root, sf, new WordIncrementalSkip()));
         OrderedNodeMock on = tree(null, tree('b', 'y', 'y'), 'c');
         assertSameTree(on, r);
         
-        r = testLogoot(sf, new WordIncrementalSkipOpti()); 
+        r = testTree(createTree(root, sf, new WordIncrementalSkipOpti())); 
         assertSameTree(on, r);
 //        r = testLogoot(sf, new WordSkip()); 
 //        assertSameTree(on, r);
     }
     
-    @Test
-    public void testLogootOr() throws PreconditionException {
-        testLogootSkip(new CommutativeOrSet());
-        testLogootSkip(new ConvergentOrSet());
+    public void testSetSkips(OrderedNode root) throws PreconditionException {
+        testSkip(root, new CommutativeOrSet());
+        testSkip(root, new ConvergentOrSet());
+        testSkip(root, new NaiveSet());
     }
+    
+    @Test 
+    public void testLogootTree() throws PreconditionException {
+        LogootStrategy st = new BoundaryStrategy(100);
+        OrderedNode root = new LogootTreeNode(null, 0, 32, st);
+        testSetSkips(root);
+    }
+    
+    @Test 
+    public void testWootHTree() throws PreconditionException {
+        OrderedNode root = new WootHashTreeNode(null, 0);
+        testSetSkips(root);
+    }
+    
+    Factory policies[] = {// new WordSkip(), new WordReappear(), new WordRoot(), new WordCompact(),
+        new WordIncrementalSkip(), 
+        new WordIncrementalReappear(),
+        // new WordIncrementalRoot(), new WordIncrementalCompact(), 
+        new WordIncrementalSkipOpti()};
+    
+    private OperationProfile otreeop = new OrderedTreeOperationProfile(0.6, 0.4) {
+
+        @Override
+        public Object nextElement() {
+            return 'a'+(Math.random() * 26);
+        }
+    };
+    
+    @Test
+    public void testRunsNaive() throws PreconditionException, IncorrectTraceException, IOException {
+        for (Factory p : policies) {
+            CausalDispatcherTest.testRun(createTree(new LogootTreeNode(null, 0, 
+                    32, new BoundaryStrategy(100)), new NaiveSet(), p), 1000, 5, otreeop);
+        }
+    }
+    
+    
 }

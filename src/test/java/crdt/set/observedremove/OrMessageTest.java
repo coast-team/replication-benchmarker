@@ -4,12 +4,11 @@
  */
 package crdt.set.observedremove;
 
-import java.util.*;
-import crdt.set.observedremove.Tag;
-import crdt.set.observedremove.OrMessage;
-import crdt.set.observedremove.OrMessage.OpType;
+import crdt.set.CommutativeSetMessage.OpType;
+import java.util.HashSet;
+import java.util.Set;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 
 /**

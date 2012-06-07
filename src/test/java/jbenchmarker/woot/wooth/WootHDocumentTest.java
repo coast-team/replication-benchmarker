@@ -37,7 +37,7 @@ public class WootHDocumentTest {
     /**
      * Test of view method, of class WootHDocumentTest.
      */
-    @Test(timeout=100)
+    @Test
     public void testView() {
         System.out.println("view");
         WootHashDocument instance = new WootHashDocument();
@@ -61,7 +61,7 @@ public class WootHDocumentTest {
     /**
      * Test of getVisible method, of class WootHDocumentTest.
      */
-    @Test(timeout=100)
+    @Test
     public void testGetVisible() {
         System.out.println("getVisible");
         WootHashDocument instance = new WootHashDocument();
@@ -83,7 +83,7 @@ public class WootHDocumentTest {
     /**
      * Test of nextVisible method, of class WootHDocumentTest.
      */
-    @Test(timeout=100)
+    @Test
     public void testNextVisible() {
         System.out.println("nextVisible");
         WootHashDocument instance = new WootHashDocument();
@@ -105,7 +105,7 @@ public class WootHDocumentTest {
     /**
      * Test of getVisible method, of class WootHDocumentTest.
      */
-    @Test(timeout=100)
+    @Test
     public void testGetPrevious() {
         System.out.println("getPrevious");
         WootHashDocument instance = new WootHashDocument();
@@ -131,7 +131,7 @@ public class WootHDocumentTest {
     /**
      * Test of getVisible method, of class WootHDocumentTest.
      */
-    @Test(timeout=100)
+    @Test
     public void testGetNext() {
         System.out.println("getNext");
         WootHashDocument instance = new WootHashDocument();
@@ -156,7 +156,7 @@ public class WootHDocumentTest {
     }
     
     
-    @Test(timeout=100)
+    @Test
     public void testApply() {
         System.out.println("apply");
         WootHashDocument instance = new WootHashDocument();
@@ -198,7 +198,7 @@ public class WootHDocumentTest {
         assertEquals("agdfb", instance.view());    
     }
     
-    @Test(timeout=100)
+    @Test
     public void wootPuzzle() {
         System.out.println("Woot Puzzle");
         SequenceOperation ins = SequenceOperation.insert(0, 0, "", null);

@@ -5,12 +5,14 @@
 package crdt.set.observedremove;
 
 import crdt.CRDTMessage;
-import crdt.set.CrdtSetGeneric;
 import crdt.PreconditionException;
-import crdt.set.observedremove.OrMessage.OpType;
-import java.util.*;
-import org.junit.Test;
+import crdt.set.CommutativeSetMessage.OpType;
+import crdt.set.CrdtSetGeneric;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *

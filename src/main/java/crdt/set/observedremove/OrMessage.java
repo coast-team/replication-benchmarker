@@ -6,6 +6,7 @@ package crdt.set.observedremove;
 
 import crdt.CommutativeMessage;
 import crdt.set.CommutativeSetMessage;
+import crdt.set.lastwriterwins.TypedMessage;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,25 +15,13 @@ import java.util.Set;
  *
  * @author score
  */
-public class OrMessage<T> extends CommutativeSetMessage<T> {
+public class OrMessage<T> extends TypedMessage<T> {
     
     private Set<Tag> tags;
 
-    /**
-     * @return the type
-     */
-    public OpType getType() {
-        return type;
-    }
-
-    public enum OpType {add, del}; 
-    private OpType type;
-    
-
     public OrMessage(OpType type, T t, Set<Tag> tag) {  
-        this.type=type;
+        super(type, t);
         this.tags = tag;
-        this.content = t;
     }
     
     public Set<Tag> getTags() {

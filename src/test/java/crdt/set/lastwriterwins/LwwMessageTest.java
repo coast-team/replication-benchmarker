@@ -3,9 +3,10 @@
  * and open the template in the editor.
  */
 package crdt.set.lastwriterwins;
-import static org.junit.Assert.*;
 
-import crdt.set.lastwriterwins.LwwMessage.OpType;
+import crdt.set.CommutativeSetMessage.OpType;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**

@@ -6,37 +6,19 @@ package crdt.set.twophases;
 
 import crdt.set.observedremove.*;
 import crdt.CommutativeMessage;
-import java.util.Set;
+import crdt.set.CommutativeSetMessage;
+import crdt.set.CommutativeSetMessage.OpType;
+import crdt.set.lastwriterwins.TypedMessage;
 
 
 /**
  *
  * @author score
  */
-public class TwoPhasesMessage<T> extends CommutativeMessage{
-    
-    private T content;
-
-    /**
-     * @return the type
-     */
-    public OpType getType() {
-        return type;
-    }
-
-  
-    public enum OpType {add, del}; 
-    private OpType type;
-    
+public class TwoPhasesMessage<T> extends TypedMessage<T> {
 
     public TwoPhasesMessage(OpType type, T t) {  
-        this.type=type;
-        this.content = t;
-    }
-    
-    
-    public T getContent() {
-        return content;
+        super(type, t);
     }
 
     
