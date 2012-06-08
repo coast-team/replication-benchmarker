@@ -77,7 +77,7 @@ public class IntegrationSOCT2 {
     @Test
     public void testSOCT2RunJSON() throws Exception {
         //Trace trace = TraceGenerator.traceFromJson("/home/damien/etherpad-lite/var/dirtyCS.db");
-        Trace trace = TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald3.db","films003");//pb avec notes001
+        Trace trace = TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald3.db","corrections003");//pb avec notes001
         CausalSimulator cd = new CausalSimulator(new SOCT2Factory());
         //CausalSimulator cd = new CausalSimulator(new CausalCheckerFactory());
 
