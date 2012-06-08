@@ -68,7 +68,7 @@ public class TTFDocument<T> implements Document {
             TTFChar c = this.model.get(pos);
             if (c.isVisible()) { --size; }
             c.hide();
-        } else {
+        } else {      
             this.model.add(pos, new TTFChar(oop.getChar()));
             ++size;
         }

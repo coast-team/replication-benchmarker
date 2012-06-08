@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package jbenchmarker.trace.json;
 
 import collect.VectorClock;
@@ -20,7 +16,7 @@ public class VectorClockCSMapper {
       
     public Integer userId(String key){
         if(!this.tabUId.containsKey(key)){           
-           this.tabUId.put(key,tabUId.size()+1);
+           this.tabUId.put(key,tabUId.size());
        }
         return tabUId.get(key);
     }

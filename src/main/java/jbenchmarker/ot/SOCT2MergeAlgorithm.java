@@ -27,7 +27,7 @@ import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
 import collect.VectorClock;
 import crdt.simulator.IncorrectTraceException;
-import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.*;
 
 /**
  *
@@ -53,7 +53,11 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
     }
 
     @Override
-    protected void integrateLocal(SequenceMessage op) {        
+    protected void integrateLocal(SequenceMessage op) {
+        if (! (op instanceof TTFOperation)) {
+            return ;
+        }
+        
         TTFOperation oop = (TTFOperation) op;
 
         if (this.readyFor(oop.getSiteId(), oop.getClock())) {
@@ -86,7 +90,7 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
                 this.log.add(op);
                 doc.apply(op);
             }
-        } else {
+        } else if (opt.getType() == SequenceOperation.OpType.ins) {
             for (int i = 0; i < opt.getContent().size(); i++) {
                 TTFOperation op = TTFOperation.insert(opt, mpos + i, opt.getContent().get(i), new VectorClock(this.siteVC));
                 this.siteVC.inc(this.getReplicaNumber());
@@ -94,6 +98,33 @@ public class SOCT2MergeAlgorithm extends MergeAlgorithm {
                 this.log.add(op);
                 doc.apply(op);
             }
+        }else if (opt.getType() == SequenceOperation.OpType.up) {
+            
+            int visibleIndex = 0;
+            for (int i = 0; i < opt.getOffset(); i++) {
+                // TODO: could be improved with an iterator on only visible characters
+                while (! doc.getChar(mpos+visibleIndex).isVisible()) {
+                    visibleIndex++;
+                }
+                TTFOperation op = TTFOperation.delete(opt, mpos + visibleIndex, new VectorClock(this.siteVC));
+                this.siteVC.inc(this.getReplicaNumber());
+                generatedOperations.add(op);
+                this.log.add(op);
+                doc.apply(op);
+            }
+            for (int i = 0; i < opt.getContent().size(); i++) {
+                TTFOperation op = TTFOperation.insert(opt, mpos + i, opt.getContent().get(i), new VectorClock(this.siteVC));
+                this.siteVC.inc(this.getReplicaNumber());
+                generatedOperations.add(op);
+                this.log.add(op);
+                doc.apply(op);
+            }
+        }else if (opt.getType() == SequenceOperation.OpType.unsupported) {
+                UnsupportedOperation op = UnsupportedOperation.create(opt, new VectorClock(this.siteVC));
+                //this.siteVC.inc(this.getReplicaNumber());
+                generatedOperations.add(op);
+                //this.log.add(op);
+                //doc.apply(op);                       
         }
 
         return generatedOperations;

@@ -174,9 +174,11 @@ public class TraceGenerator {
             return SequenceOperation.insert(repli, pos, e.getVal().getChars_inserted(), v);
         } else if(e.getVal().getOperation().equals("suppression")){
             return SequenceOperation.delete(repli, pos, e.getVal().getNumber_charDeleted(), v);
-        }else{
-           return SequenceOperation.update(repli,pos,e.getVal().getNumber_charDeleted(),e.getVal().getChars_inserted(), v);
-        }         
+        }else if(e.getVal().getOperation().equals("remplacement")){
+            return SequenceOperation.update(repli,pos,e.getVal().getNumber_charDeleted(),e.getVal().getChars_inserted(), v);
+        }else{//stylage
+            return SequenceOperation.unsupported(repli, v);
+        }
     }
     
     /**
@@ -186,6 +188,9 @@ public class TraceGenerator {
         return new JSONTrace(nomFichier);
     }
     
+    public static Trace traceFromJson(String nomFichier,String padid) throws FileNotFoundException, IOException{
+        return new JSONTrace(nomFichier,padid);
+    }
     /**
      *  Extract trace form XML JDOM document
      */

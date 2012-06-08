@@ -21,13 +21,18 @@ package jbenchmarker.sim;
 import jbenchmarker.TraceSimul2XML;
 import org.junit.Ignore;
 import crdt.CRDT;
+import crdt.CRDTMessage;
+import crdt.Operation;
 import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
 import crdt.simulator.CausalSimulator;
+import crdt.simulator.TraceOperation;
+import java.util.Enumeration;
 import java.util.logging.Logger;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.ot.SOCT2Factory;
+import jbenchmarker.trace.CausalCheckerFactory;
 import jbenchmarker.trace.TraceGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -51,7 +56,7 @@ public class IntegrationSOCT2 {
         assertEquals(r, cd.getReplicas().get(4).lookup());
     }
     
-//    @Ignore   // 231,986 s  on rev 105
+    @Ignore   // 231,986 s  on rev 105
     @Test
     public void testSOCT2RunG1() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
@@ -68,7 +73,32 @@ public class IntegrationSOCT2 {
             assertEquals(r, m.lookup());
         }
     }
-//    @Ignore
+    
+    @Test
+    public void testSOCT2RunJSON() throws Exception {
+        //Trace trace = TraceGenerator.traceFromJson("/home/damien/etherpad-lite/var/dirtyCS.db");
+        Trace trace = TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald3.db","films003");//pb avec notes001
+        CausalSimulator cd = new CausalSimulator(new SOCT2Factory());
+        //CausalSimulator cd = new CausalSimulator(new CausalCheckerFactory());
+
+        long startTime = System.currentTimeMillis();
+        cd.run(trace, false);        
+        long endTime = System.currentTimeMillis();
+         
+        Logger.getLogger(getClass().getCanonicalName()).info("computation time: "+(endTime-startTime)+" ms");
+        
+        
+        String r = (String) cd.getReplicas().get(0).lookup();        
+        for (CRDT m : cd.getReplicas().values()) {
+            assertEquals(r, m.lookup());
+        } 
+        
+        System.out.println(r);
+        
+        
+    }
+    
+    @Ignore
     @Test
     public void testSOCT2Random() throws Exception {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
@@ -80,7 +110,8 @@ public class IntegrationSOCT2 {
             assertEquals(r, m.lookup());
         }     
     }
-//    @Ignore
+
+    @Ignore
     @Test
     public void testSOCT2SimulXML() throws Exception {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);

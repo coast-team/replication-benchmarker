@@ -68,6 +68,9 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
     @Override
     public CRDTMessage applyLocal(crdt.Operation op) throws PreconditionException {
         List<SequenceMessage> l = generateLocal((SequenceOperation) op);
+        
+        // FIXME: when l is an empty list, a NullPointerException is thrown...
+        
         SequenceMessage m = null;
         for (SequenceMessage n : l) {
             if (m == null) { 

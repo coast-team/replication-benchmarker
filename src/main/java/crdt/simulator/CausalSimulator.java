@@ -191,7 +191,9 @@ public class CausalSimulator extends Simulator {
                 remoteTime.add(0L);
             }
             nbLocal++;
+
             final CRDTMessage msg = m.clone();
+            
             genHistory.get(r).add(msg);
             clocks.get(r).inc(r);
             globalClock.inc(r);

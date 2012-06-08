@@ -1,5 +1,7 @@
 package jbenchmarker.trace.json;
 
+import collect.VectorClock;
+
 /**
  * @author Damien Flament
  */
@@ -11,16 +13,35 @@ public class ElementCS {
     private int position;
     private String userId;
     private VectorClockCS vector_clock;
-
-    public ElementCS(String op, int offset, String str, int pos, String uid, VectorClockCS vc) {
+    private int replica;
+    private VectorClock vc;
+    
+    public ElementCS(String op, int offset, String str, int pos, String uid, VectorClockCS vcs) {
         this.operation = op;
         this.number_charDeleted = offset;
         this.chars_inserted = str;
         this.position = pos;
         this.userId = uid;
-        this.vector_clock = vc;
+        this.vector_clock = vcs;
     }
 
+    public ElementCS(String op, int offset, String str, int pos, int repli, VectorClock v) {
+        this.operation = op;
+        this.number_charDeleted = offset;
+        this.chars_inserted = str;
+        this.position = pos;
+        this.replica = repli;
+        this.vc = v;
+    }
+
+    public VectorClock getVc() {
+        return vc;
+    }
+
+    public int getReplica() {
+        return replica;
+    }
+    
     public String getChars_inserted() {
         return chars_inserted;
     }

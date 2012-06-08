@@ -16,46 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.ot;
+package jbenchmarker.core;
 
-import jbenchmarker.core.SequenceMessage;
 import collect.VectorClock;
-import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  *
  * @author oster
  */
-public class TTFOperation<T> extends SequenceMessage implements SOCT2OperationInterface{
+public class UnsupportedOperation<T> extends SequenceMessage {
 
-    private int pos;
-    private T content;
     private VectorClock clock;
     private final int siteId;
-    private OpType type;
 
-    public TTFOperation(SequenceOperation o,OpType t) {
+    public UnsupportedOperation(SequenceOperation o) {
         super(o);
         this.siteId = this.getOriginalOp().getReplica();
-        this.type = t;
     }
 
     // FIXME: should be moved to SequenceMessage class?
     public OpType getType() {
-        return this.type;
-    }
-
-    public int getPosition() {
-        return this.pos;
-    }
-
-    public void setPosition(int pos) {
-        this.pos = pos;
-    }
-
-    public T getChar() {
-        return this.content;
+        return this.getOriginalOp().getType();
     }
 
     public int getSiteId() {
@@ -68,9 +50,7 @@ public class TTFOperation<T> extends SequenceMessage implements SOCT2OperationIn
 
     @Override
     public SequenceMessage copy() {
-        TTFOperation op = new TTFOperation(getOriginalOp(),this.type);
-        op.pos = this.pos;
-        op.content = this.content;
+        UnsupportedOperation op = new UnsupportedOperation(getOriginalOp());
         op.clock = new VectorClock(this.clock);
 
         return op;
@@ -81,37 +61,14 @@ public class TTFOperation<T> extends SequenceMessage implements SOCT2OperationIn
         StringBuilder sb = new StringBuilder();
         sb.append(this.getType());
         sb.append('(');
-        sb.append(this.pos);
-        if (OpType.ins == this.getType()) {
-            sb.append(',');
-            sb.append(this.content);
-        } 
         sb.append(')');
         return sb.toString();
     }
 
-    public static TTFOperation delete(SequenceOperation o, int pos, VectorClock vc) {
-        TTFOperation op = new TTFOperation(o,OpType.del);
-        op.pos = pos;
+    public static UnsupportedOperation create(SequenceOperation o, VectorClock vc) {
+        UnsupportedOperation op = new UnsupportedOperation(o);
         op.clock = vc;
         return op;
     }
 
-    public static <T> TTFOperation insert(SequenceOperation o, int pos, T content, VectorClock vc) {
-        TTFOperation op = new TTFOperation(o,OpType.ins);
-        op.pos = pos;
-        op.content = content;
-        op.clock = vc;
-        return op;
-    }
-
-    public static TTFOperation from(SequenceOperation opt) {
-        TTFOperation op = new TTFOperation(opt,opt.getType());
-        op.clock = opt.getVectorClock();
-        op.pos = opt.getPosition();
-        if (opt.getType() == OpType.ins) {
-            op.content = opt.getContent().get(0);
-        }
-        return op;
-    }
 }

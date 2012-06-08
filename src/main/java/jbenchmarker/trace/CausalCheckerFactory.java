@@ -68,7 +68,7 @@ public class CausalCheckerFactory extends ReplicaFactory {
 
         private void check(SequenceOperation op) throws IncorrectTraceException {
             if (!vc.readyFor(op.getReplica(), op.getVectorClock())) {
-                throw new IncorrectTraceException("Replica " + this.getReplicaNumber() + " not ready for " + op);
+                throw new IncorrectTraceException("Replica " + this.getReplicaNumber() + "[vc:"+this.vc+"] not ready for " + op);
             }
         }
 

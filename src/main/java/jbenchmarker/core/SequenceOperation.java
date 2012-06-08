@@ -51,7 +51,7 @@ public class SequenceOperation<T> extends TraceOperation implements crdt.Operati
     }
 
 
-    public enum OpType {ins, del,up}; 
+    public enum OpType {ins, del, up, unsupported}; 
     
     private OpType type;                  // type of operation : insert or delete
     private int position;                 // position in the document
@@ -118,6 +118,16 @@ public class SequenceOperation<T> extends TraceOperation implements crdt.Operati
          }        
          return new SequenceOperation(OpType.up, replica, position, offset,l, VC);
      }    
+     
+     
+     /*
+     * Construction of a stylage operation
+     */
+     static public SequenceOperation<Character> unsupported(int replica, VectorClock VC){
+         List<Character> l = new ArrayList<Character>();                 
+         return new SequenceOperation(OpType.unsupported, replica, -1, 0, l, VC);
+     }    
+     
      
     @Override
     public boolean equals(Object obj) {
