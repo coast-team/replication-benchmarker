@@ -70,7 +70,7 @@ public class LogootMerge<T> extends MergeAlgorithm {
             lg.insert(position, patch, lc);
 
         } else {
-            offset = opt.getOffset();
+            offset = opt.getNumberOf();
             for (int k = 1; k <= offset; k++) {
                 LogootOperation<T> wop = LogootOperation.Delete(opt, lg.getId(position + k));
                 lop.add(wop);

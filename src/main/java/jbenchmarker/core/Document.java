@@ -39,5 +39,5 @@ public interface Document extends Serializable {
     /**
      * Applies a character operation
      */ 
-    public void apply(SequenceMessage op);
+    public void apply(Operation op);
 }

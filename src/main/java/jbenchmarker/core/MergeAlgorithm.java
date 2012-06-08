@@ -43,9 +43,9 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
     /*
      * Constructor
      */
-    public MergeAlgorithm(Document doc, int r) {
+    public MergeAlgorithm(Document doc, int siteId) {
         this.doc = doc;
-        this.setReplicaNumber(r);
+        this.setReplicaNumber(siteId);
     }
 
     /**
@@ -66,7 +66,7 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
     }
 
     @Override
-    public CRDTMessage applyLocal(crdt.Operation op) throws PreconditionException {
+    public CRDTMessage applyLocal(jbenchmarker.core.Operation op) throws PreconditionException {
         List<SequenceMessage> l = generateLocal((SequenceOperation) op);
         
         // FIXME: when l is an empty list, a NullPointerException is thrown...

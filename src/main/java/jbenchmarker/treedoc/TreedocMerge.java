@@ -56,7 +56,7 @@ public class TreedocMerge extends MergeAlgorithm {
 		case del:
 			// TODO: implement batch delete more efficiently?
 			for (int i = opt.getPosition(); i < opt.getPosition()
-					+ opt.getOffset(); i++) {
+					+ opt.getNumberOf(); i++) {
 				final TreedocIdentifier deletedId = doc
 						.deleteAt(restrictedIndex(i, false));
 				ops.add(new TreedocOperation(opt, deletedId));

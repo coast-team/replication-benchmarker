@@ -50,7 +50,7 @@ public class PlaceboFactory extends ReplicaFactory {
         }
 
         @Override
-        public void apply(SequenceMessage op) {
+        public void apply(Operation op) {
         }
 
         @Override
@@ -72,7 +72,7 @@ public class PlaceboFactory extends ReplicaFactory {
 
         @Override
         protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
-            int nbop = (opt.getType() == SequenceOperation.OpType.del) ? opt.getOffset() : opt.getContent().size();
+            int nbop = (opt.getType() == SequenceOperation.OpType.del) ? opt.getNumberOf() : opt.getContent().size();
             List<SequenceMessage> l = new java.util.ArrayList<SequenceMessage>(nbop);
             for (int i = 0; i < nbop; i++) {
                 l.add(new PlaceboOperation(opt));

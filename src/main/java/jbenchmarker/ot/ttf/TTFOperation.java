@@ -16,33 +16,52 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.ot;
+package jbenchmarker.ot.ttf;
 
-import jbenchmarker.core.SequenceMessage;
-import collect.VectorClock;
-import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  *
  * @author oster
+ * 
+ * TTFOperation Operation Add,Del,up, of TTFSet
  */
-public class TTFOperation<T> extends SequenceMessage implements SOCT2OperationInterface{
+public class TTFOperation<T> implements Operation{
 
     private int pos;
     private T content;
-    private VectorClock clock;
-    private final int siteId;
+    //private VectorClock clock;
+   // private final int siteId;
     private OpType type;
+    private int siteId;
 
-    public TTFOperation(SequenceOperation o,OpType t) {
-        super(o);
-        this.siteId = this.getOriginalOp().getReplica();
+    public int getSiteId() {
+        return siteId;
+    }
+
+    public TTFOperation( OpType type,int pos,T content, int siteId) {
+        this.pos = pos;
+        this.type = type;
+        this.content = content;
+        this.siteId=siteId;
+    }
+    
+
+     public TTFOperation( OpType type,int pos, int siteId) {
+        this.pos = pos;
+        this.type = type;
+        this.siteId=siteId;
+    }
+    
+    public TTFOperation(OpType t) {
+        //super(o);
+      //  this.siteId = this.getOriginalOp().getReplica();
         this.type = t;
     }
 
-    // FIXME: should be moved to SequenceMessage class?
-    public OpType getType() {
+    // FIXME: should be moved to SequenceOperation class?
+   public OpType getType() {
         return this.type;
     }
 
@@ -58,22 +77,17 @@ public class TTFOperation<T> extends SequenceMessage implements SOCT2OperationIn
         return this.content;
     }
 
-    public int getSiteId() {
+   /* public int getSiteId() {
         return this.siteId;
-    }
+    }*/
 
-    public VectorClock getClock() {
+  /*  public VectorClock getClock() {
         return this.clock;
-    }
+    }*/
 
     @Override
-    public SequenceMessage copy() {
-        TTFOperation op = new TTFOperation(getOriginalOp(),this.type);
-        op.pos = this.pos;
-        op.content = this.content;
-        op.clock = new VectorClock(this.clock);
-
-        return op;
+    public TTFOperation<T>  clone() {
+        return new TTFOperation(this.getType(),this.getPosition(),this.content,siteId);
     }
 
     @Override
@@ -90,28 +104,38 @@ public class TTFOperation<T> extends SequenceMessage implements SOCT2OperationIn
         return sb.toString();
     }
 
-    public static TTFOperation delete(SequenceOperation o, int pos, VectorClock vc) {
-        TTFOperation op = new TTFOperation(o,OpType.del);
-        op.pos = pos;
-        op.clock = vc;
+   /* public static TTFOperation delete(SequenceOperation o, int pos/*, VectorClock vc*) {
+        TTFOperation op = new TTFOperation(OpType.del,pos);
+        //op.pos = pos;
+        //op.clock = vc;
         return op;
     }
 
-    public static <T> TTFOperation insert(SequenceOperation o, int pos, T content, VectorClock vc) {
-        TTFOperation op = new TTFOperation(o,OpType.ins);
+    public static <T> TTFOperation insert(SequenceOperation o, int pos, T content/*, VectorClock vc*) {
+        TTFOperation op = new TTFOperation(OpType.ins,pos,);
         op.pos = pos;
         op.content = content;
-        op.clock = vc;
+        //op.clock = vc;
         return op;
     }
 
     public static TTFOperation from(SequenceOperation opt) {
         TTFOperation op = new TTFOperation(opt,opt.getType());
-        op.clock = opt.getVectorClock();
+        //op.clock = opt.getVectorClock();
         op.pos = opt.getPosition();
         if (opt.getType() == OpType.ins) {
             op.content = opt.getContent().get(0);
         }
         return op;
-    }
+    }*/
+
+  /*  @Override
+    public SequenceMessage clone() {
+        TTFOperation op = new TTFOperation(getOriginalOp());
+        op.pos = this.pos;
+        op.content = this.content;
+//        op.clock = new VectorClock(this.clock);
+
+        return op;
+    }*/
 }

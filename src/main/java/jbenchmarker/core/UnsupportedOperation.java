@@ -27,12 +27,12 @@ import jbenchmarker.core.SequenceOperation.OpType;
  */
 public class UnsupportedOperation<T> extends SequenceMessage {
 
-    private VectorClock clock;
-    private final int siteId;
+    //private VectorClock clock;
+    //private final int siteId;
 
     public UnsupportedOperation(SequenceOperation o) {
         super(o);
-        this.siteId = this.getOriginalOp().getReplica();
+        //this.siteId = this.getOriginalOp().getReplica();
     }
 
     // FIXME: should be moved to SequenceMessage class?
@@ -40,18 +40,18 @@ public class UnsupportedOperation<T> extends SequenceMessage {
         return this.getOriginalOp().getType();
     }
 
-    public int getSiteId() {
+   /* public int getSiteId() {
         return this.siteId;
     }
 
     public VectorClock getClock() {
         return this.clock;
-    }
+    }*/
 
     @Override
     public SequenceMessage copy() {
         UnsupportedOperation op = new UnsupportedOperation(getOriginalOp());
-        op.clock = new VectorClock(this.clock);
+        //op.clock = new VectorClock(this.clock);
 
         return op;
     }
@@ -65,9 +65,9 @@ public class UnsupportedOperation<T> extends SequenceMessage {
         return sb.toString();
     }
 
-    public static UnsupportedOperation create(SequenceOperation o, VectorClock vc) {
+    public static UnsupportedOperation create(SequenceOperation o/*, VectorClock vc*/) {
         UnsupportedOperation op = new UnsupportedOperation(o);
-        op.clock = vc;
+        //op.clock = vc;
         return op;
     }
 

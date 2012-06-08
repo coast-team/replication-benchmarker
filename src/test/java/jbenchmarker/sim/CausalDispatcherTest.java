@@ -31,6 +31,7 @@ import jbenchmarker.core.MergeAlgorithm;
 import java.util.ArrayList;
 import jbenchmarker.core.SequenceMessage;
 import java.util.List;
+import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -87,7 +88,7 @@ public class CausalDispatcherTest {
                     return "";
                 }
 
-                public void apply(SequenceMessage op) {
+                public void apply(Operation op) {
                 }
 
                 @Override

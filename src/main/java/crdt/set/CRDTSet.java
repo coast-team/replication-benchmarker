@@ -5,7 +5,7 @@
 package crdt.set;
 import crdt.CRDT;
 import crdt.CRDTMessage;
-import crdt.Operation;
+import jbenchmarker.core.Operation;
 import java.util.*;
 import crdt.PreconditionException;
 

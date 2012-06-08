@@ -20,12 +20,11 @@ package jbenchmarker.logoot;
 
 import crdt.Factory;
 import crdt.tree.orderedtree.PositionIdentificator;
-import crdt.tree.orderedtree.PositionIdentifier;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
-import jbenchmarker.core.SequenceMessage;
+import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 
 /**
@@ -99,7 +98,7 @@ public class LogootDocument<T> implements Document, PositionIdentificator<T>, Fa
     }
     
     @Override
-    public void apply(SequenceMessage op) {
+    public void apply(Operation op) {
         LogootOperation lg = (LogootOperation) op;
         LogootIdentifier idToSearch = lg.getIdentifiant();
         int pos = dicho(idToSearch);

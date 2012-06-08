@@ -4,17 +4,16 @@
  */
 package jbenchmarker.ot.otset;
 
-import jbenchmarker.ot.SOCT2OperationInterface;
-import jbenchmarker.ot.SOCT2TranformationInterface;
+import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 
 /**
  *
  * @author stephane martin
  */
-public class AddWinTransformation implements SOCT2TranformationInterface{
+public class AddWinTransformation  implements SOCT2TranformationInterface<OTSetOperations>{
 
     @Override
-    public SOCT2OperationInterface transpose(SOCT2OperationInterface op1, SOCT2OperationInterface op2) {
+    public OTSetOperations transpose(OTSetOperations op1, OTSetOperations op2) {
         OTSetOperations op1p=(OTSetOperations)op1;
         OTSetOperations op2p=(OTSetOperations)op2;
         OTSetOperations ret=op1p;
@@ -55,7 +54,7 @@ public class AddWinTransformation implements SOCT2TranformationInterface{
     }
 
     @Override
-    public SOCT2OperationInterface transposeBackward(SOCT2OperationInterface op1, SOCT2OperationInterface op2) {
+    public OTSetOperations transposeBackward(OTSetOperations op1, OTSetOperations op2) {
                 OTSetOperations op1p=(OTSetOperations)op1;
         OTSetOperations op2p=(OTSetOperations)op2;
         OTSetOperations ret=op1p;

@@ -19,12 +19,8 @@
 package jbenchmarker.wootr;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
 import jbenchmarker.core.Document;
-import jbenchmarker.core.SequenceMessage;
+import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 
 /**
@@ -50,7 +46,7 @@ public abstract class WootRDocument implements Document {
     }
     
 
-    public void apply(SequenceMessage op) {
+    public void apply(Operation op) {
         WootROperation wop = (WootROperation) op;
         WootRNode e = wop.getNode();
         if (wop.getType() == SequenceOperation.OpType.del) {

@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import jbenchmarker.core.Document;
-import jbenchmarker.core.SequenceMessage;
+import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 
 /**
@@ -68,7 +68,7 @@ public abstract class WootDocument<N extends WootNode> implements Document, Fact
         throw new NoSuchElementException("Don't find " + id + " after position " + d);
     }
 
-    public void apply(SequenceMessage op) {
+    public void apply(Operation op) {
         WootOperation wop = (WootOperation) op;
         
         if (wop.getType() == SequenceOperation.OpType.del) {

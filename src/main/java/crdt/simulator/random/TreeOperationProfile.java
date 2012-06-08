@@ -21,7 +21,7 @@ package crdt.simulator.random;
 import collect.Node;
 import collect.UnorderedNode;
 import crdt.CRDT;
-import crdt.Operation;
+import jbenchmarker.core.Operation;
 import collect.VectorClock;
 import crdt.tree.CRDTTree;
 import crdt.tree.TreeOperation;

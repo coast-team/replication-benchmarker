@@ -22,10 +22,10 @@ import crdt.CommutativeMessage;
 import java.io.Serializable;
 
 /**
- * An operation for a replication algorithm.
+ * An operation for a replication algorithm. C'est quoi le différence avec sequence operation ?
  * @author urso
  */
-public abstract class SequenceMessage extends CommutativeMessage implements Serializable {
+public abstract class SequenceMessage extends CommutativeMessage implements Serializable,Message {
     final private SequenceOperation originalOp;       // Trace operation issuing this one
 
     public SequenceOperation getOriginalOp() {
@@ -61,6 +61,12 @@ public abstract class SequenceMessage extends CommutativeMessage implements Seri
     @Override
     abstract public SequenceMessage copy();
 
+    /*@Override
+    public SequenceMessage clone(){
+        return copy();
+    }*/
+
+    
     @Override
     protected String visu() {
         return originalOp.toString();

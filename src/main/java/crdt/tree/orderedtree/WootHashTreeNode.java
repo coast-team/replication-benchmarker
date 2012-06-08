@@ -9,7 +9,7 @@ import java.util.AbstractList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jbenchmarker.core.SequenceMessage;
+import jbenchmarker.core.Operation;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;
 import jbenchmarker.woot.WootPosition;
@@ -30,7 +30,7 @@ class WootHashTreeNode<T> extends WootHashDocument<WootHashTreeNode<T>> implemen
     }
 
     @Override
-    public void apply(SequenceMessage op) {    
+    public void apply(Operation op) {    
         super.apply(op);
         WootOperation wop = (WootOperation) op;
         positions.put(wop.getId(), new WootPosition(wop.getId(), wop.getIp(), wop.getIn()));

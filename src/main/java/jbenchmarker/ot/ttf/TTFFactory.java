@@ -16,42 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.ot;
+package jbenchmarker.ot.ttf;
 
-import java.io.Serializable;
+import jbenchmarker.core.MergeAlgorithm;
+import jbenchmarker.core.ReplicaFactory;
 
 /**
  *
  * @author oster
  */
-public class TTFChar<T> implements Serializable{
-
-    private T character;
-    private boolean visible;
-
-    public TTFChar(T c) {
-        this.character = c;
-        this.visible = true;
-    }
-
-    public boolean isVisible() {
-        return this.visible;
-    }
-
-    public void hide() {
-        this.visible = false;
-    }
-
-    public T getChar() {
-        return this.character;
-    }
-
+public class TTFFactory extends ReplicaFactory {
     @Override
-    public String toString() {
-        if (this.visible) {
-            return "" + this.character;
-        } else {
-            return "{" + this.character + "}";
-        }
+    public MergeAlgorithm create(int siteId) {
+        return new TTFMergeAlgorithm(new TTFDocument(), siteId);
     }
 }

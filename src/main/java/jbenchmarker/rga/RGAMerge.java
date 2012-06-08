@@ -66,7 +66,7 @@ public class RGAMerge extends MergeAlgorithm {
 		int offset; 	
 		
 		if(opt.getType()==SequenceOperation.OpType.del) {
-			offset = opt.getOffset();
+			offset = opt.getNumberOf();
 			target = rgadoc.getVisibleNode(p+1);
 		} else {
 			offset = opt.getContent().size();

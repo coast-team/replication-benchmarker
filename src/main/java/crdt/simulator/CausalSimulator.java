@@ -18,6 +18,7 @@
  */
 package crdt.simulator;
 
+import jbenchmarker.core.Operation;
 import collect.VectorClock;
 import crdt.*;
 import java.io.BufferedWriter;
@@ -348,7 +349,7 @@ public class CausalSimulator extends Simulator {
         if (sOp.getType() == SequenceOperation.OpType.ins) {
             trace = "Ins|" + sOp.getContentAsString() + "|" + sOp.getPosition() + "|" + sOp.getVectorClock() + "|" + sOp.getReplica();
         } else {
-            trace = "del|" + sOp.getOffset() + "|" + sOp.getPosition() + "|" + sOp.getVectorClock() + "|" + sOp.getReplica();
+            trace = "del|" + sOp.getNumberOf() + "|" + sOp.getPosition() + "|" + sOp.getVectorClock() + "|" + sOp.getReplica();
         }
         writer.append(trace+"\n");
     }

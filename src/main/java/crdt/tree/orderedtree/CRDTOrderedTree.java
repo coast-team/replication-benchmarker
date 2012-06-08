@@ -7,7 +7,7 @@ package crdt.tree.orderedtree;
 import collect.OrderedNode;
 import crdt.CRDT;
 import crdt.CRDTMessage;
-import crdt.Operation;
+import jbenchmarker.core.Operation;
 import crdt.PreconditionException;
 import java.util.List;
 

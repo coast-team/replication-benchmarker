@@ -4,14 +4,26 @@
  */
 package crdt.tree.orderedtree;
 
-import crdt.Operation;
+import jbenchmarker.core.Operation;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author score
  */
 public class OrderedTreeOperation<T> implements Operation {
+
+    @Override
+    public Operation clone() {
+        try {
+            return (Operation) super.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(OrderedTreeOperation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
    
     public enum OpType {add, del}; 
     final private OpType type;

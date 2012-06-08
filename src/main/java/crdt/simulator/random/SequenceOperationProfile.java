@@ -19,7 +19,7 @@
 package crdt.simulator.random;
 
 import crdt.CRDT;
-import crdt.Operation;
+import jbenchmarker.core.Operation;
 import collect.VectorClock;
 import crdt.simulator.random.OperationProfile;
 import jbenchmarker.core.Document;

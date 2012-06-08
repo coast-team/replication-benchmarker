@@ -18,6 +18,8 @@
  */
 package jbenchmarker.ot;
 
+import jbenchmarker.ot.ttf.TTFChar;
+import jbenchmarker.ot.ttf.TTFDocument;
 import java.util.ArrayList;
 import org.junit.Test;
 import static org.junit.Assert.*;

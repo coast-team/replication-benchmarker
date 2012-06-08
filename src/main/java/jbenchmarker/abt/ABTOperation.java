@@ -97,6 +97,7 @@ public class ABTOperation<T> extends SequenceMessage{
 		op.vc  = this.vc;		// do not copy vector clock. 
 		return op;
 	}
+        
 	
     @Override
 	public String toString(){

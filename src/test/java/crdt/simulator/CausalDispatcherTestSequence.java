@@ -14,7 +14,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import jbenchmarker.logoot.LogootFactory;
-import jbenchmarker.ot.SOCT2Factory;
+import jbenchmarker.ot.ttf.TTFFactory;
 import jbenchmarker.rga.RGAFactory;
 import jbenchmarker.woot.WootFactories.WootFactory;
 import jbenchmarker.woot.WootFactories.WootHFactory;

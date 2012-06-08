@@ -20,7 +20,10 @@ package crdt.simulator;
 
 import collect.VectorClock;
 import crdt.CRDT;
-import crdt.Operation;
+import crdt.tree.orderedtree.OrderedTreeOperation;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jbenchmarker.core.Operation;
 
 /**
  *
@@ -75,5 +78,14 @@ abstract public class TraceOperation implements Operation {
         hash = 23 * hash + this.replica;
         hash = 23 * hash + (this.VC != null ? this.VC.hashCode() : 0);
         return hash;
+    }
+      @Override
+    public Operation clone() {
+        try {
+            return (Operation) super.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(OrderedTreeOperation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

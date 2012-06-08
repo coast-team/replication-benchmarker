@@ -16,15 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.ot;
+package jbenchmarker.ot.soct2;
 
+import collect.VectorClock;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import collect.VectorClock;
-import java.io.Serializable;
+import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
 
 /**
  *
@@ -32,16 +31,16 @@ import java.io.Serializable;
  */
 public class OperationGarbageCollector implements Serializable{
 
-    private SOCT2MergeAlgorithm mergeAlgorithm;
+    private TTFMergeAlgorithm mergeAlgorithm;
     private Map<Integer, VectorClock> clocksOfAllSites = new TreeMap<Integer, VectorClock>();
     private static final int GC_FREQUENCY_IN_OPERATIONS = 20;
     private int countdownBeforeGC = GC_FREQUENCY_IN_OPERATIONS;
 
-    public OperationGarbageCollector(SOCT2MergeAlgorithm merger) {
+    public OperationGarbageCollector(TTFMergeAlgorithm merger) {
         this.mergeAlgorithm = merger;
     }
 
-    public void collect(TTFOperation op) {
+    public void collect(SOCT2Message op) {
         this.clocksOfAllSites.put(op.getSiteId(), op.getClock());
 
         this.countdownBeforeGC--;
@@ -54,7 +53,7 @@ public class OperationGarbageCollector implements Serializable{
     private void gc() {
         VectorClock commonAncestorVectorClock = mergeAlgorithm.getClock().min(this.clocksOfAllSites.values());
 
-        Iterator<SOCT2OperationInterface> it = this.mergeAlgorithm.getHistoryLog().iterator();
+        Iterator<SOCT2Message> it = this.mergeAlgorithm.getHistoryLog().iterator();
         int count = 0;
         while (it.hasNext()) {
             if (!it.next().getClock().greaterThan(commonAncestorVectorClock)) {

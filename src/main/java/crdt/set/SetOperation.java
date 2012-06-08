@@ -4,7 +4,10 @@
  */
 package crdt.set;
 
-import crdt.Operation;
+import crdt.tree.orderedtree.OrderedTreeOperation;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jbenchmarker.core.Operation;
 
 /**
  *
@@ -32,6 +35,15 @@ public class SetOperation<T> implements Operation {
     @Override
     public String toString() {
         return "SetOperation{" + "type=" + type + ", content=" + content + '}';
+    }
+      @Override
+    public Operation clone() {
+        try {
+            return (Operation) super.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(OrderedTreeOperation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
     
 }

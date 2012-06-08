@@ -59,11 +59,11 @@ public class WootMerge<T> extends MergeAlgorithm {
         int p = opt.getPosition();
         if (opt.getType() == SequenceOperation.OpType.del) {
             int v = wdoc.getVisible(p);
-            for (int i = 0; i < opt.getOffset(); i++) {
+            for (int i = 0; i < opt.getNumberOf(); i++) {
                 WootOperation wop = wdoc.delete(opt, wdoc.getElement(v).getId());
                 wdoc.setInvisible(v);
                 lop.add(wop);
-                if (i+1 < opt.getOffset()) v = wdoc.nextVisible(v);
+                if (i+1 < opt.getNumberOf()) v = wdoc.nextVisible(v);
             }         
         } else {
            int ip = wdoc.getPrevious(p);

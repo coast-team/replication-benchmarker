@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package crdt;
+package jbenchmarker.ot.ottree;
 
 /**
  *
- * @author urso
+ * @author moi
  */
-public interface Operation {
+public class OTTree {
     
 }

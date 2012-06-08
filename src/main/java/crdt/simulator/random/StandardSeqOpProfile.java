@@ -20,7 +20,7 @@ package crdt.simulator.random;
 
 import crdt.simulator.random.SequenceOperationProfile;
 import crdt.CRDT;
-import crdt.Operation;
+import jbenchmarker.core.Operation;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.sim.RandomGauss;

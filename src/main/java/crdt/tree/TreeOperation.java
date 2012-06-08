@@ -6,7 +6,10 @@ package crdt.tree;
 
 import collect.Node;
 import crdt.set.*;
-import crdt.Operation;
+import crdt.tree.orderedtree.OrderedTreeOperation;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jbenchmarker.core.Operation;
 
 /**
  *
@@ -57,5 +60,15 @@ public class TreeOperation<T> implements Operation {
 
     public Node<T> getDest() {
         return dest;
+    }
+    
+    @Override
+    public Operation clone() {
+        try {
+            return (Operation) super.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(OrderedTreeOperation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

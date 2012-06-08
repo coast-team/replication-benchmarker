@@ -74,7 +74,7 @@ public class ABTMerge extends MergeAlgorithm {
 
 		int offset;
 		int p = opt.getPosition();
-		if(opt.getType() ==  SequenceOperation.OpType.del) offset = opt.getOffset();
+		if(opt.getType() ==  SequenceOperation.OpType.del) offset = opt.getNumberOf();
 		else offset = opt.getContent().size();
 		
 		for(int i=0;i<offset;i++){

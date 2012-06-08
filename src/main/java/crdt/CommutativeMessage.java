@@ -4,14 +4,14 @@
  */
 package crdt;
 
-import crdt.CRDTMessage;
 import java.util.LinkedList;
+import jbenchmarker.core.Operation;
 
 /**
  *
  * @author urso
  */
-public abstract class CommutativeMessage<T> implements CRDTMessage, Cloneable {
+public abstract class CommutativeMessage<T> implements CRDTMessage, Cloneable,Operation {
     private LinkedList<CommutativeMessage<T>> msgs = new LinkedList<CommutativeMessage<T>>();
 
     public LinkedList<CommutativeMessage<T>> getMsgs() {

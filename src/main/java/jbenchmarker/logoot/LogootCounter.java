@@ -5,7 +5,7 @@
 package jbenchmarker.logoot;
 
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.SequenceMessage;
+import jbenchmarker.core.Operation;
 import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.core.SequenceOperation;
 
@@ -28,7 +28,7 @@ public class LogootCounter extends LogootDocument {
     }
     
     @Override
-    public void apply(SequenceMessage op) {
+    public void apply(Operation op) {
         LogootOperation lg = (LogootOperation) op;
         LogootIdentifier idToSearch = lg.getIdentifiant();
         int pos = dicho(idToSearch);

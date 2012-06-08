@@ -20,17 +20,18 @@ package jbenchmarker.core;
 
 import collect.VectorClock;
 import crdt.CRDT;
-import crdt.Operation;
 import crdt.simulator.TraceOperation;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author urso
  */
-public class SequenceOperation<T> extends TraceOperation implements crdt.Operation, Serializable {
+public class SequenceOperation<T> extends TraceOperation implements Operation, Serializable{
 
     @Override
     public Operation getOperation(CRDT replica) {
@@ -43,19 +44,27 @@ public class SequenceOperation<T> extends TraceOperation implements crdt.Operati
             if (this.position >= sizeDoc) {
                this.position = sizeDoc - 1;//a position exceeds document size
             }
-            if ((this.position + this.offset) > sizeDoc) {
-                this.offset = sizeDoc - this.position; //delete document at position exceeds document size
+            if ((this.position + this.numberOf) > sizeDoc) {
+                this.numberOf = sizeDoc - this.position; //delete document at position exceeds document size
             }
         }
         return this;
     }
 
+    @Override
+    public Operation clone() {
+        return new SequenceOperation(type,this.getReplica(),position,numberOf,new ArrayList(content),new VectorClock(this.getVectorClock()));
+                 
+    }
 
+    
+
+    
     public enum OpType {ins, del, up, unsupported}; 
     
     private OpType type;                  // type of operation : insert or delete
     private int position;                 // position in the document
-    private int offset;                   // length of a del
+    private int numberOf;                   // length of a del
     private List<T> content;          // content of an ins
     
     public List<T> getContent() {
@@ -70,8 +79,8 @@ public class SequenceOperation<T> extends TraceOperation implements crdt.Operati
         return s.toString();
     }
 
-    public int getOffset() {
-        return offset;
+    public int getNumberOf() {
+        return numberOf;
     }
 
     public int getPosition() {
@@ -86,7 +95,7 @@ public class SequenceOperation<T> extends TraceOperation implements crdt.Operati
         super(replica, VC);
         this.type = type;
         this.position = position;
-        this.offset = offset;
+        this.numberOf = offset;
         this.content = content;
     }
 
@@ -144,7 +153,7 @@ public class SequenceOperation<T> extends TraceOperation implements crdt.Operati
         if (this.position != other.position) {
             return false;
         }
-        if (this.offset != other.offset) {
+        if (this.numberOf != other.numberOf) {
             return false;
         }
         if ((this.content == null) ? (other.content != null) : !this.content.equals(other.content)) {
@@ -158,19 +167,18 @@ public class SequenceOperation<T> extends TraceOperation implements crdt.Operati
         int hash = 7;
         hash = 89 * hash + (this.type != null ? this.type.hashCode() : 0);
         hash = 89 * hash + this.position;
-        hash = 89 * hash + this.offset;
+        hash = 89 * hash + this.numberOf;
         hash = 89 * hash + (this.content != null ? this.content.hashCode() : 0);
         return 89 * hash + super.hashCode();
     }
 
 
-
     @Override
     public String toString() {
-        return "SequenceOperation{" + "replica=" + getReplica() + ", VC=" + getVectorClock() + ", type=" + type + ", position=" + position + (type==OpType.del ? ", offset=" + offset : ", content=" + content) + '}';
-    }    
+        return "SequenceOperation{" + "replica=" + getReplica() + ", VC=" + getVectorClock() + ", type=" + type + ", position=" + position + (type==OpType.del ? ", offset=" + numberOf : ", content=" + content) + '}';
+    }
     
     public int getRange() {
-        return (type == OpType.ins) ? content.size() : offset;  
+        return (type == OpType.ins) ? content.size() : numberOf;  
     }
 }

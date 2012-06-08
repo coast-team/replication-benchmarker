@@ -9,7 +9,7 @@ import collect.Tree;
 import collect.UnorderedNode;
 import crdt.CRDT;
 import crdt.CRDTMessage;
-import crdt.Operation;
+import jbenchmarker.core.Operation;
 import crdt.PreconditionException;
 import java.util.List;
 

@@ -21,7 +21,10 @@ package crdt.simulator.random;
 import crdt.simulator.*;
 import collect.VectorClock;
 import crdt.CRDT;
-import crdt.Operation;
+import crdt.tree.orderedtree.OrderedTreeOperation;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jbenchmarker.core.Operation;
 
 /**
  *
@@ -39,5 +42,14 @@ public class RandomOperation extends TraceOperation {
     @Override
     public Operation getOperation(CRDT replica) {
         return opp.nextOperation(replica, getVectorClock());
+    }
+      @Override
+    public Operation clone() {
+        try {
+            return (Operation) super.clone();
+        } catch (Exception ex) {
+            Logger.getLogger(OrderedTreeOperation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

@@ -52,11 +52,11 @@ public class WootHashMerge<T> extends MergeAlgorithm {
         int p = opt.getPosition();
         if (opt.getType() == SequenceOperation.OpType.del) {
             WootHashNode w = wdoc.getVisible(p);
-            for (int i = 0; i < opt.getOffset(); i++) {
+            for (int i = 0; i < opt.getNumberOf(); i++) {
                 WootOperation wop = wdoc.delete(opt, w.getId());
                 lop.add(wop);
                 wdoc.apply(wop);
-                if (i+1 < opt.getOffset()) w = wdoc.nextVisible(w);
+                if (i+1 < opt.getNumberOf()) w = wdoc.nextVisible(w);
             }         
         } else {
            WootHashNode ip = wdoc.getPrevious(p), in = wdoc.getNext(ip);

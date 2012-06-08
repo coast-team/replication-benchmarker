@@ -21,18 +21,12 @@ package jbenchmarker.sim;
 import jbenchmarker.TraceSimul2XML;
 import org.junit.Ignore;
 import crdt.CRDT;
-import crdt.CRDTMessage;
-import crdt.Operation;
 import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
 import crdt.simulator.CausalSimulator;
-import crdt.simulator.TraceOperation;
-import java.util.Enumeration;
 import java.util.logging.Logger;
-import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.ot.SOCT2Factory;
-import jbenchmarker.trace.CausalCheckerFactory;
+import jbenchmarker.ot.ttf.TTFFactory;
 import jbenchmarker.trace.TraceGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -47,7 +41,7 @@ public class IntegrationSOCT2 {
     public void testSOCT2ExempleRun() throws Exception {
         System.out.println("Integration test with WootH");
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
-        CausalSimulator cd = new CausalSimulator(new SOCT2Factory());
+        CausalSimulator cd = new CausalSimulator(new TTFFactory());
 
         cd.run(trace, false);
         String r = "Salut Monsieurjour MehdiFin";
@@ -60,7 +54,7 @@ public class IntegrationSOCT2 {
     @Test
     public void testSOCT2RunG1() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
-        CausalSimulator cd = new CausalSimulator(new SOCT2Factory());
+        CausalSimulator cd = new CausalSimulator(new TTFFactory());
 
         long startTime = System.currentTimeMillis();
         cd.run(trace, false);
@@ -78,7 +72,7 @@ public class IntegrationSOCT2 {
     public void testSOCT2RunJSON() throws Exception {
         //Trace trace = TraceGenerator.traceFromJson("/home/damien/etherpad-lite/var/dirtyCS.db");
         Trace trace = TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald3.db","corrections003");//pb avec notes001
-        CausalSimulator cd = new CausalSimulator(new SOCT2Factory());
+        CausalSimulator cd = new CausalSimulator(new TTFFactory());
         //CausalSimulator cd = new CausalSimulator(new CausalCheckerFactory());
 
         long startTime = System.currentTimeMillis();
@@ -102,7 +96,7 @@ public class IntegrationSOCT2 {
     @Test
     public void testSOCT2Random() throws Exception {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
-        CausalSimulator cd = new CausalSimulator(new SOCT2Factory());
+        CausalSimulator cd = new CausalSimulator(new TTFFactory());
 
         cd.run(trace, false);
         String r = (String) cd.getReplicas().get(0).lookup();
@@ -115,7 +109,7 @@ public class IntegrationSOCT2 {
     @Test
     public void testSOCT2SimulXML() throws Exception {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);
-        CausalSimulator cdSim = new CausalSimulator(new SOCT2Factory());
+        CausalSimulator cdSim = new CausalSimulator(new TTFFactory());
         cdSim.setLogging("trace.log");
         cdSim.run(trace, false);
          
@@ -124,7 +118,7 @@ public class IntegrationSOCT2 {
         mn.main(args);
         
         Trace real = TraceGenerator.traceFromXML("trace.xml", 1);
-        CausalSimulator cdReal = new CausalSimulator(new SOCT2Factory());
+        CausalSimulator cdReal = new CausalSimulator(new TTFFactory());
         cdReal.run(real, true);
         
         //compare all replica

@@ -21,11 +21,11 @@ package jbenchmarker.treedoc.list;
 import java.util.Collections;
 
 import jbenchmarker.core.Document;
-import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 import citi.treedoc.Treedoc;
 import citi.treedoc.TreedocId;
 import citi.treedoc.TreedocIdFactory;
+import jbenchmarker.core.Operation;
 
 /**
  * 
@@ -56,7 +56,7 @@ public class TreedocDocument<T> extends Treedoc<TreedocId, T> implements
 	}
 
 	@Override
-	public void apply(SequenceMessage op) {
+	public void apply(Operation op) {
 		final TreedocOperation<T> treedocOp = (TreedocOperation<T>) op;
 		if (treedocOp.getOriginalOp().getType() == SequenceOperation.OpType.ins) {
 			insert(treedocOp.getId(), treedocOp.getContent());

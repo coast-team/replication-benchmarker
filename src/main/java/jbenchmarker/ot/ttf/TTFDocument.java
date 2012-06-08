@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.ot;
+package jbenchmarker.ot.ttf;
 
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
-import jbenchmarker.core.SequenceMessage;
+import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 
 /**
@@ -60,7 +60,7 @@ public class TTFDocument<T> implements Document {
     }
 
     @Override
-    public void apply(SequenceMessage op) {
+    public void apply(Operation op) {
         TTFOperation oop = (TTFOperation) op;
         int pos = oop.getPosition();
 
