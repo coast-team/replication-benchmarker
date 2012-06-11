@@ -7,8 +7,9 @@ package jbenchmarker.core;
 
 
 /**
- *
- * @author moi
+ * This is message by operation based
+ * For future reunifications of commutative messages
+ * @author Martin stephane
  */
 public abstract class OperationBasedMessage {
    public OperationBasedMessage concat(OperationBasedMessage msg){

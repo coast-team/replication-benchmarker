@@ -8,11 +8,12 @@ import java.util.LinkedList;
 
 /**
  *
+ *  
  * @author Stephane Martin
  * 
  * A message contains many operations.
  */
-public final class OperationBasedMessages<T> extends OperationBasedMessage implements ReplicatedMessage, Cloneable {
+public final class OperationBasedMessages extends OperationBasedMessage implements ReplicatedMessage, Cloneable {
     private LinkedList<OperationBasedMessage> ops = new LinkedList<OperationBasedMessage>();
 
     OperationBasedMessages(OperationBasedMessage aThis, OperationBasedMessage msg) {
@@ -33,10 +34,19 @@ public final class OperationBasedMessages<T> extends OperationBasedMessage imple
             
     }
 
+    /**
+     * return all messages operations
+     * @return
+     */
     public LinkedList<OperationBasedMessage> getOps() {
         return ops;
     }
     
+    /**
+     * Concatenation of message.
+     * @param msg
+     * @return
+     */
     @Override
     public OperationBasedMessages concat(ReplicatedMessage msg) {
         OperationBasedMessage cmsg = (OperationBasedMessage) msg;
@@ -46,6 +56,10 @@ public final class OperationBasedMessages<T> extends OperationBasedMessage imple
         return this;
     } 
     
+    /**
+     * 
+     * @return cloned operationBased message
+     */
     @Override
     public OperationBasedMessages clone() {
         OperationBasedMessages clone = new OperationBasedMessages();
@@ -55,6 +69,10 @@ public final class OperationBasedMessages<T> extends OperationBasedMessage imple
         return clone;
     }
 
+    /**
+     * 
+     * @return a representation of message
+     */
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
@@ -68,6 +86,10 @@ public final class OperationBasedMessages<T> extends OperationBasedMessage imple
     
     //abstract protected OperationBasedMessage copy();
 
+    /**
+     * 
+     * @return number of messages.
+     */
     @Override
     public int size() {
         return ops.size();

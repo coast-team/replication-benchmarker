@@ -66,7 +66,7 @@ public class PlaceboFactory extends ReplicaFactory {
         }
 
         @Override
-        protected void integrateLocal(SequenceMessage op) throws IncorrectTraceException {
+        protected void integrateRemote(SequenceMessage op) throws IncorrectTraceException {
             this.getDoc().apply(op);
         }
 

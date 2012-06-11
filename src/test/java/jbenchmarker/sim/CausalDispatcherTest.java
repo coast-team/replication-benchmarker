@@ -97,7 +97,7 @@ public class CausalDispatcherTest {
                 }
             }, r) {
 
-                protected void integrateLocal(SequenceMessage op) {
+                protected void integrateRemote(SequenceMessage op) {
                     this.getDoc().apply(op);
                 }
 

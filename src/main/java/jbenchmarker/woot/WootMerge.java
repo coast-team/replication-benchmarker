@@ -44,7 +44,7 @@ public class WootMerge<T> extends MergeAlgorithm {
     }
     
     @Override
-    protected void integrateLocal(SequenceMessage op) {
+    protected void integrateRemote(SequenceMessage op) {
 //        WootOperation wop = (WootOperation) op;
 //        WootDocument<? extends WootNode> wdoc = (WootDocument<? extends WootNode>) (this.getDoc());
 //        if (wop.getType()==SequenceOperation.OpType.ins && (!wdoc.has(wop.getIp()) || !wdoc.has(wop.getIp())))

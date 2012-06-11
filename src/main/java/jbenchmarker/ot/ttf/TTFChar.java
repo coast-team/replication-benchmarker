@@ -21,7 +21,8 @@ package jbenchmarker.ot.ttf;
 import java.io.Serializable;
 
 /**
- *
+ * This is TTF character: couple of element and visibility flag.
+ * @param <T>  Character
  * @author oster
  */
 public class TTFChar<T> implements Serializable{
@@ -29,23 +30,43 @@ public class TTFChar<T> implements Serializable{
     private T character;
     private boolean visible;
 
+    /**
+     * Make new visible character 
+     * @param c character
+     */
     public TTFChar(T c) {
         this.character = c;
         this.visible = true;
     }
 
+    /**
+     * check the visibility of character
+     * @return true if visible
+     */
     public boolean isVisible() {
         return this.visible;
     }
 
+    /**
+     * hide the character
+     */
     public void hide() {
         this.visible = false;
     }
 
+    /**
+     * return the current character
+     * @return character
+     */
     public T getChar() {
         return this.character;
     }
 
+    /**
+     * this is string representation of element 
+     * The { character } is invisible.
+     * @return string
+     */
     @Override
     public String toString() {
         if (this.visible) {

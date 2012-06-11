@@ -25,18 +25,30 @@ import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 
 /**
- *
+ * This is TTF document sequence of character
+ * @param <T>  Type of character
  * @author oster
  */
 public class TTFDocument<T> implements Document {
 
+    /**
+     * This is list of characters
+     */
     protected List<TTFChar<T>> model;
     private int size = 0;
 
+    /**
+     * Make new TTF document 
+     */
     public TTFDocument() {
         this.model = new ArrayList<TTFChar<T>>();
     }
 
+    /**
+     * Return document without invisible character
+     * @return return edited document
+     */
+    @Override
     public String view() {
         StringBuilder sb = new StringBuilder();
         for (TTFChar c : this.model) {
@@ -47,6 +59,10 @@ public class TTFDocument<T> implements Document {
         return sb.toString();
     }
     
+    /**
+     * return representation with invisible character (for debug)
+     * @return representation string
+     */
     public String extendedView() {
         StringBuilder sb = new StringBuilder();
         for (TTFChar c : this.model) {
@@ -59,6 +75,10 @@ public class TTFDocument<T> implements Document {
         return sb.toString();
     }
 
+    
+    /*
+     * Apply an operation to document.
+     */
     @Override
     public void apply(Operation op) {
         TTFOperation oop = (TTFOperation) op;
@@ -74,10 +94,20 @@ public class TTFDocument<T> implements Document {
         }
     }
 
+    /**
+     * get character from absolute position. invisible character count.
+     * @param pos position
+     * @return character 
+     */
     public TTFChar getChar(int pos) {
         return this.model.get(pos);
     }
 
+    /**
+     * Transform an position in text without invisible character to position with invisible character
+     * @param positionInView
+     * @return position in model
+     */
     public int viewToModel(int positionInView) {
         int positionInModel = 0;
         int visibleCharacterCount = 0;
@@ -105,6 +135,10 @@ public class TTFDocument<T> implements Document {
     }
 
 //    @Override
+    /**
+     * 
+     * @return sise of document without invisible character
+     */
     public int viewLength() {
         return size;
     }

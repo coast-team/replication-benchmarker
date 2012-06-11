@@ -28,7 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * local operation of document.
  * @author urso
  */
 public class SequenceOperation<T> extends TraceOperation implements Operation, Serializable{

@@ -28,29 +28,40 @@ import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2Log;
 
 /**
- *
+ * This TTF Merge Algorithm uses SOCT2 algorithm with TTF method
  * @author oster
  */
 public class TTFMergeAlgorithm extends MergeAlgorithm {
 
     private SOCT2<TTFOperation> soct2;
 
+    /**
+     * Make new TTFMerge algorithm with docuement (TTFDocuement) and site id or replicat id.
+     * @param doc TTF Document
+     * @param siteId SiteID
+     */
     public TTFMergeAlgorithm(Document doc, int siteId) {
         super(doc, siteId);
         soct2 = new SOCT2<TTFOperation>(doc,new TTFTransformations(), siteId);
 
     }
 
+    /**
+     * @return Vector Clock of site
+     */
     public VectorClock getClock() {
         return soct2.getSiteVC();
     }
 
+    /**
+     * @return history log object of document
+     */
     public SOCT2Log getHistoryLog() {
         return soct2.getLog();
     }
 
     /*
-     *
+     *This integrate local modifications and generate message to another replicas
      */
     @Override
     public List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
@@ -97,13 +108,20 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
         return generatedOperations;
     }
 
+    /**
+     * Make a new mergeAlgorithm with 0 as site id.
+     * @return new TTFMergeAlgorithm
+     */
     @Override
     public CRDT<String> create() {
         return new TTFMergeAlgorithm(new TTFDocument(), 0);
     }
 
+    /*
+     * IntegrateRemote Operation
+     */
     @Override
-    public void integrateLocal(SequenceMessage op) throws IncorrectTraceException {
+    public void integrateRemote(SequenceMessage op) throws IncorrectTraceException {
         soct2.integrateRemote(((TTFSequenceMessage) op).getSoct2Message());
     }
 }

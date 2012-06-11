@@ -44,7 +44,7 @@ public class LogootMerge<T> extends MergeAlgorithm {
     }
 
     @Override
-    protected void integrateLocal(SequenceMessage op) {
+    protected void integrateRemote(SequenceMessage op) {
         getDoc().apply(op);
     }
 

@@ -48,7 +48,7 @@ public class ABTMerge extends MergeAlgorithm {
 	}
 	
 	@Override
-	protected void integrateLocal(SequenceMessage op) throws IncorrectTraceException {
+	protected void integrateRemote(SequenceMessage op) throws IncorrectTraceException {
 		// TODO Auto-generated method stub
 		
 		ABTOperation abtop = (ABTOperation)op;		

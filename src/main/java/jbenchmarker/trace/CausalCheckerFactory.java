@@ -44,7 +44,7 @@ public class CausalCheckerFactory extends ReplicaFactory {
         private VectorClock vc = new VectorClock();
 
         @Override
-        protected void integrateLocal(SequenceMessage op) throws IncorrectTraceException {
+        protected void integrateRemote(SequenceMessage op) throws IncorrectTraceException {
             check(op.getOriginalOp());
             this.getDoc().apply(op);
             vc.inc(op.getOriginalOp().getReplica());

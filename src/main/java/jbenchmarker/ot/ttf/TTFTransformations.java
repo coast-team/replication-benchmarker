@@ -23,7 +23,7 @@ import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
- *
+ * Is transformation and backward transformation for TTF model
  * @author oster
  */
 public class TTFTransformations implements SOCT2TranformationInterface<TTFOperation> {

@@ -230,11 +230,11 @@ public class TTFSOCT2Test {
         TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(1, 2, "y", vc(3, 0, 0)));
         TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(2, 1, 1, vc(3, 0, 0)));
 
-        site0.integrateLocal(op1);
+        site0.integrateRemote(op1);
         assertEquals("axbc", site0.lookup());
-        site0.integrateLocal(op2);
+        site0.integrateRemote(op2);
         assertEquals("axbyc", site0.lookup());
-        site0.integrateLocal(op3);
+        site0.integrateRemote(op3);
         assertEquals("axyc", site0.lookup());
     }
 
@@ -247,11 +247,11 @@ public class TTFSOCT2Test {
         TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(1, 2, "y", vc(3, 0, 0)));
         TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(2, 1, 1, vc(3, 0, 0)));
 
-        site0.integrateLocal(op1);
+        site0.integrateRemote(op1);
         assertEquals("axbc", site0.lookup());
-        site0.integrateLocal(op3);
+        site0.integrateRemote(op3);
         assertEquals("axc", site0.lookup());
-        site0.integrateLocal(op2);
+        site0.integrateRemote(op2);
         assertEquals("axyc", site0.lookup());
     }
 
@@ -266,13 +266,13 @@ public class TTFSOCT2Test {
 
         TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(new TTFDocument(), 1);
         for (SequenceMessage op : ops) {
-            site1.integrateLocal(op);
+            site1.integrateRemote(op);
         }
-        site1.integrateLocal(op2);
+        site1.integrateRemote(op2);
         assertEquals("abyc", site1.lookup());
-        site1.integrateLocal(op1);
+        site1.integrateRemote(op1);
         assertEquals("axbyc", site1.lookup());
-        site1.integrateLocal(op3);
+        site1.integrateRemote(op3);
         assertEquals("axyc", site1.lookup());
     }
 
@@ -287,13 +287,13 @@ public class TTFSOCT2Test {
 
         TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(new TTFDocument(), 1);
         for (SequenceMessage op : ops) {
-            site1.integrateLocal(op);
+            site1.integrateRemote(op);
         }
-        site1.integrateLocal(op2);
+        site1.integrateRemote(op2);
         assertEquals("abyc", site1.lookup());
-        site1.integrateLocal(op3);
+        site1.integrateRemote(op3);
         assertEquals("ayc", site1.lookup());
-        site1.integrateLocal(op1);
+        site1.integrateRemote(op1);
         assertEquals("axyc", site1.lookup());
     }
 
@@ -308,13 +308,13 @@ public class TTFSOCT2Test {
 
         TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
         for (SequenceMessage op : ops) {
-            site2.integrateLocal(op);
+            site2.integrateRemote(op);
         }
-        site2.integrateLocal(op3);
+        site2.integrateRemote(op3);
         assertEquals("ac", site2.lookup());
-        site2.integrateLocal(op1);
+        site2.integrateRemote(op1);
         assertEquals("axc", site2.lookup());
-        site2.integrateLocal(op2);
+        site2.integrateRemote(op2);
         assertEquals("axyc", site2.lookup());
     }
 
@@ -329,13 +329,13 @@ public class TTFSOCT2Test {
 
         TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
         for (SequenceMessage op : ops) {
-            site2.integrateLocal(op);
+            site2.integrateRemote(op);
         }
-        site2.integrateLocal(op3);
+        site2.integrateRemote(op3);
         assertEquals("ac", site2.lookup());
-        site2.integrateLocal(op2);
+        site2.integrateRemote(op2);
         assertEquals("ayc", site2.lookup());
-        site2.integrateLocal(op1);
+        site2.integrateRemote(op1);
         assertEquals("axyc", site2.lookup());
     }
 
@@ -581,7 +581,7 @@ public class TTFSOCT2Test {
 
     private static void integrateSeqAtSite(List<SequenceMessage> seq, TTFMergeAlgorithm site) throws IncorrectTraceException {
         for (SequenceMessage op : duplicate(seq)) {
-            site.integrateLocal(op);
+            site.integrateRemote(op);
         }
     }
 }

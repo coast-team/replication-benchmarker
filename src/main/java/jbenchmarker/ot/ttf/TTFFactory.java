@@ -26,6 +26,11 @@ import jbenchmarker.core.ReplicaFactory;
  * @author oster
  */
 public class TTFFactory extends ReplicaFactory {
+    /**
+     * Make a new TTFMerge Algorithme
+     * @param siteId Site Id or Replicat ID
+     * @return return TTFMergeAlgorithm.
+     */
     @Override
     public MergeAlgorithm create(int siteId) {
         return new TTFMergeAlgorithm(new TTFDocument(), siteId);

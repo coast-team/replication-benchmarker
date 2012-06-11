@@ -42,7 +42,7 @@ public class TreedocMerge<T> extends MergeAlgorithm {
 	}
 
 	@Override
-	protected void integrateLocal(SequenceMessage op) throws IncorrectTraceException {
+	protected void integrateRemote(SequenceMessage op) throws IncorrectTraceException {
 		getDoc().apply(op);
 	}
 

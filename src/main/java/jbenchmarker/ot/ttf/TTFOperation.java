@@ -23,9 +23,10 @@ import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  *
+ * @param <T> type of characters 
  * @author oster
  * 
- * TTFOperation Operation Add,Del,up, of TTFSet
+ * TTFOperation Operation Add,Del,up, of TTFsequence
  */
 public class TTFOperation<T> implements Operation{
 
@@ -36,10 +37,21 @@ public class TTFOperation<T> implements Operation{
     private OpType type;
     private int siteId;
 
+    /**
+     * 
+     * @return site id or replicat number
+     */
     public int getSiteId() {
         return siteId;
     }
 
+    /**
+     * make TTF Operation
+     * @param type Add,Del, Up or unsupported
+     * @param pos Position obsolute
+     * @param content Character
+     * @param siteId Id site or replicat which sent this operation
+     */
     public TTFOperation( OpType type,int pos,T content, int siteId) {
         this.pos = pos;
         this.type = type;
@@ -48,31 +60,55 @@ public class TTFOperation<T> implements Operation{
     }
     
 
-     public TTFOperation( OpType type,int pos, int siteId) {
+    /**
+     * make TTF Operation without content (Deletion)
+     * @param type Del or unsupported
+     * @param pos Position obsolute
+     * @param siteId Id site or replicat which sent this operation
+     */
+    public TTFOperation( OpType type,int pos, int siteId) {
         this.pos = pos;
         this.type = type;
         this.siteId=siteId;
     }
     
-    public TTFOperation(OpType t) {
+     /**
+      * Make operation with type only For futur uses
+      * @param t Type of operation
+      */
+     public TTFOperation(OpType t) {
         //super(o);
       //  this.siteId = this.getOriginalOp().getReplica();
         this.type = t;
     }
 
-    // FIXME: should be moved to SequenceOperation class?
-   public OpType getType() {
+    
+     /**
+      * @return type of operation 
+      */
+     public OpType getType() {
         return this.type;
     }
 
-    public int getPosition() {
+   /**
+    * 
+    * @return position of element
+    */
+   public int getPosition() {
         return this.pos;
     }
 
+    /**
+     * change position of element
+     * @param pos position
+     */
     public void setPosition(int pos) {
         this.pos = pos;
     }
 
+    /**
+     * @return Character of operation
+     */
     public T getChar() {
         return this.content;
     }
@@ -85,11 +121,19 @@ public class TTFOperation<T> implements Operation{
         return this.clock;
     }*/
 
+    /**
+     * clone operation
+     * @return new instance of the operation
+     */
     @Override
     public TTFOperation<T>  clone() {
         return new TTFOperation(this.getType(),this.getPosition(),this.content,siteId);
     }
 
+    /**
+     * return a string representation of operation
+     * @return String
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

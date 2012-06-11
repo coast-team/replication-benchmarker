@@ -22,7 +22,7 @@ import collect.VectorClock;
 import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
- *
+ * 
  * @author oster
  */
 public class UnsupportedOperation<T> extends SequenceMessage {

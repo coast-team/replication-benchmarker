@@ -192,7 +192,6 @@ public class CausalSimulator extends Simulator {
                 remoteTime.add(0L);
             }
             nbLocal++;
-
             final CRDTMessage msg = m.clone();
             
             genHistory.get(r).add(msg);
@@ -225,7 +224,7 @@ public class CausalSimulator extends Simulator {
                             CRDTMessage optime = op.clone();
 
                             tmp = System.nanoTime();
-                            a.applyRemote(optime);;
+                            a.applyRemote(optime);
                             long after = System.nanoTime(); 
                             if (detail) {
                                 int num = orderTrace.get(history.get(s).get(j));                            
