@@ -8,8 +8,10 @@ import collect.VectorClock;
 import jbenchmarker.core.Operation;
 
 /**
- *
- * @author Stephane Martin Message contains remote operation.
+ * This Object is sent to another replicas.
+ * Message contains remote operation with vector clock.
+ * @param <Op> type of operation managed 
+ * @author Stephane Martin 
  */
 public class SOCT2Message<Op extends Operation>{
     
@@ -18,6 +20,12 @@ public class SOCT2Message<Op extends Operation>{
     int siteID;
     Op operation;
 
+    /**
+     * Construct of this object with followed elements 
+     * @param vc Vector clock of the operation 
+     * @param siteID Site id of sender
+     * @param operation the operation 
+     */
     public SOCT2Message(VectorClock vc, int siteID, Op operation) {
         //super(op);
         this.vc = vc;
@@ -25,34 +33,58 @@ public class SOCT2Message<Op extends Operation>{
         this.operation = operation;
     }
 
+    /**
+     * 
+     * @return the operation
+     */
     public Op getOperation() {
         return operation;
     }
 
+    /**
+     * Change the operation of message
+     * @param operation
+     */
     public void setOperation(Op operation) {
         this.operation = operation;
     }
 
+    /**
+     * 
+     * @return site id of sender
+     */
     public int getSiteId() {
         return siteID;
     }
 
+    /**
+     * change site id
+     * @param siteID
+     */
     public void setSiteId(int siteID) {
         this.siteID = siteID;
     }
 
-    public VectorClock getVc() {
-        return vc;
-    }
 
+    /**
+     * @return the vector clock of the operation
+     */
     public VectorClock getClock() {
         return vc;
     }
 
+    /**
+     * Change vector clock of messages
+     * @param vc Vector Clock
+     */
     public void setVc(VectorClock vc) {
         this.vc = vc;
     }
     
+    /**
+     * Clone the message with operation
+     * @return new operation
+     */
     @Override
     public SOCT2Message clone(){
         return new SOCT2Message(new VectorClock(vc),siteID,operation.clone() );

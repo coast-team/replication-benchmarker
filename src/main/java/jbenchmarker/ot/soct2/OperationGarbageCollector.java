@@ -26,7 +26,8 @@ import java.util.TreeMap;
 import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
 
 /**
- *
+ * Garbage collector for soct2 log
+ * TODO : finish 
  * @author oster
  */
 public class OperationGarbageCollector implements Serializable{
@@ -36,10 +37,18 @@ public class OperationGarbageCollector implements Serializable{
     private static final int GC_FREQUENCY_IN_OPERATIONS = 20;
     private int countdownBeforeGC = GC_FREQUENCY_IN_OPERATIONS;
 
+    /**
+     * 
+     * @param merger
+     */
     public OperationGarbageCollector(TTFMergeAlgorithm merger) {
         this.mergeAlgorithm = merger;
     }
 
+    /**
+     * 
+     * @param op
+     */
     public void collect(SOCT2Message op) {
         this.clocksOfAllSites.put(op.getSiteId(), op.getClock());
 

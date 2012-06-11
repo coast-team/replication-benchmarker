@@ -25,36 +25,69 @@ import java.util.List;
 import jbenchmarker.core.Operation;
 
 /**
- *
+ *  This object is a log of Soct2. It splits the history the process to transform new operation
+ * @param op  Is type of operation managed
+ * 
  * @author oster
  */
-public class SOCT2Log<T extends Operation> implements Iterable<SOCT2Message<T>>, Serializable {
+public class SOCT2Log<Op extends Operation> implements Iterable<SOCT2Message<Op>>, Serializable {
 
-    private SOCT2TranformationInterface<T> tranforme;
+    private SOCT2TranformationInterface<Op> tranforme;
     
+    /**
+     * Construct a new log with this transformations.
+     * @param t Transformation
+     */
     public SOCT2Log(SOCT2TranformationInterface t){
         this.tranforme=t;
     }
+    
+    /*
+     * Construction without transformation is forbiden.
+     */
+    
     private SOCT2Log(){
         
     }
     
-    protected List<SOCT2Message<T>> operations = new ArrayList<SOCT2Message<T>>();
+    /**
+     * This is log or history of process.
+     */
+    protected List<SOCT2Message<Op>> operations = new ArrayList<SOCT2Message<Op>>();
 
+    /**
+     * add operation to log without transformation
+     * @param operation
+     */
     public void add(SOCT2Message operation) {
         this.operations.add(operation);
     }
 
+    /**
+     * 
+     * @return size of log or history
+     */
     public int getSize() {
         return this.operations.size();
     }
 
-    public Iterator<SOCT2Message<T>> iterator() {
+    /**
+     * 
+     * @return iterator for each operation with vector clock
+     */
+    @Override
+    public Iterator<SOCT2Message<Op>> iterator() {
         return this.operations.iterator();
     }
 
-    public T merge(SOCT2Message<T> operation) {
-        T opt = operation.getOperation();
+    /**
+     * Integrate the new operation. 
+     * The history is splited and operation is transformed
+     * @param operation new operation
+     * @return return the transformed operation
+     */
+    public Op merge(SOCT2Message<Op> operation) {
+        Op opt = operation.getOperation();
         int separationIndex = separatePrecedingAndConcurrentOperations(operation);
 
         for (int i = separationIndex; i < this.operations.size(); i++) {
@@ -87,11 +120,11 @@ public class SOCT2Log<T extends Operation> implements Iterable<SOCT2Message<T>>,
 
     // transpose backward the (index)th operation with the (index-1)th operation
     private void transposeBackward(int index) {
-        SOCT2Message<T> messj = operations.get(index);
-        SOCT2Message<T> messk = operations.get(index - 1);
+        SOCT2Message<Op> messj = operations.get(index);
+        SOCT2Message<Op> messk = operations.get(index - 1);
         
-        T opj = messj.getOperation();
-        T opk = messk.getOperation();
+        Op opj = messj.getOperation();
+        Op opk = messk.getOperation();
         
 
         messj.setOperation( tranforme.transposeBackward(opj, opk));
