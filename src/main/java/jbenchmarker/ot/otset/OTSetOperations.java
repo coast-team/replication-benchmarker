@@ -4,26 +4,22 @@
  */
 package jbenchmarker.ot.otset;
 
-import collect.VectorClock;
+import jbenchmarker.core.Operation;
 import jbenchmarker.core.OperationBasedMessages;
-import jbenchmarker.core.Document;
 
 /**
  *
  * @author stephane martin
  */
-public class OTSetOperations<Element> {
+public class OTSetOperations<Element> implements Operation {
 
     @Override
-    public OperationBasedMessages clone() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Operation clone() {
+       return new OTSetOperations(type, e, siteId);
     }
 
-    @Override
-    public String toString() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
+    
+  
    /* @Override
     protected String visu() {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -42,13 +38,11 @@ public class OTSetOperations<Element> {
     private OpType type;
     private OpType noped;
     private Element e;
-    private VectorClock clock;
     private final int siteId;
     
-    public OTSetOperations(OpType type, Element e, VectorClock clock, int siteId) {
+    public OTSetOperations(OpType type, Element e, int siteId) {
         this.type = type;
         this.e = e;
-        this.clock = clock;
         this.siteId = siteId;
     }
     
@@ -62,28 +56,17 @@ public class OTSetOperations<Element> {
 
     public void convToNop() {
         noped = type;
+        type= OpType.Nop;
     }
 
     public void convFromNop() {
         type = noped;
         noped = null;
     }
-    
-    
-    public void doOp(Document doc) throws Exception {
-        OTSet docSet;
-        if (doc instanceof OTSet) {
-            throw new Exception("Bad type");
-        }
-        docSet=(OTSet)doc;
-        switch (this.type) {
-            case Add:
-                
-                break;
-            case Del:
-                break;
-            case Nop:
-            
-        }
+
+    @Override
+    public String toString() {
+        return "OTSetOperations{" + "type=" + type + ", noped=" + noped + ", e=" + e + ", siteId=" + siteId + '}';
     }
+   
 }

@@ -34,7 +34,7 @@ import jbenchmarker.ot.soct2.SOCT2Log;
 public class TTFMergeAlgorithm extends MergeAlgorithm {
 
     private SOCT2<TTFOperation> soct2;
-
+    //private TTFDocument ;
     /**
      * Make new TTFMerge algorithm with docuement (TTFDocuement) and site id or replicat id.
      * @param doc TTF Document
@@ -42,7 +42,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
      */
     public TTFMergeAlgorithm(Document doc, int siteId) {
         super(doc, siteId);
-        soct2 = new SOCT2<TTFOperation>(doc,new TTFTransformations(), siteId);
+        soct2 = new SOCT2<TTFOperation>(new TTFTransformations(), siteId);
 
     }
 
@@ -80,6 +80,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                     TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, soct2.getSiteId());
 
                     generatedOperations.add(new TTFSequenceMessage(soct2.estampileMessage(op), opt));
+                    doc.apply(op);
                 }
                 break;
             case ins:
@@ -90,6 +91,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                             soct2.getSiteId());
 
                     generatedOperations.add(new TTFSequenceMessage(soct2.estampileMessage(op), opt));
+                    doc.apply(op);
                     
                 }
                 break;
@@ -121,7 +123,8 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
      * IntegrateRemote Operation
      */
     @Override
-    public void integrateRemote(SequenceMessage op) throws IncorrectTraceException {
-        soct2.integrateRemote(((TTFSequenceMessage) op).getSoct2Message());
+    public void integrateRemote(SequenceMessage mess) throws IncorrectTraceException {
+        Operation op=soct2.integrateRemote(((TTFSequenceMessage) mess).getSoct2Message());
+        this.getDoc().apply(op);
     }
 }

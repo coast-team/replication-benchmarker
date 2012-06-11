@@ -17,6 +17,7 @@ public class DelWinTransformation implements SOCT2TranformationInterface<OTSetOp
         OTSetOperations op1p=(OTSetOperations)op1;
         OTSetOperations op2p=(OTSetOperations)op2;
         OTSetOperations ret=op1p;
+        
         switch( op1p.getType()){
             case Add:
                 switch( op2p.getType()){
@@ -41,9 +42,11 @@ public class DelWinTransformation implements SOCT2TranformationInterface<OTSetOp
                         }
                         break;
                     case Nop:
+                        
                 }
                 break;
             case Nop:
+                
                 
         }
         return ret;

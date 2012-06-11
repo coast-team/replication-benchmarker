@@ -18,22 +18,22 @@
  */
 package jbenchmarker.ot;
 
-import jbenchmarker.ot.ttf.TTFSequenceMessage;
-import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
-import jbenchmarker.ot.ttf.TTFOperation;
-import jbenchmarker.ot.ttf.TTFDocument;
-import jbenchmarker.ot.soct2.SOCT2Message;
+import collect.VectorClock;
 import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
-import jbenchmarker.core.SequenceOperation.OpType;
-import java.util.Map;
 import java.util.Iterator;
-import collect.VectorClock;
 import java.util.List;
+import java.util.Map;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.SequenceOperation.OpType;
+import jbenchmarker.ot.soct2.SOCT2Message;
+import jbenchmarker.ot.ttf.TTFDocument;
+import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
+import jbenchmarker.ot.ttf.TTFOperation;
+import jbenchmarker.ot.ttf.TTFSequenceMessage;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

@@ -19,28 +19,20 @@ public class SOCT2 <O extends Operation> {
 
     private VectorClock siteVC;
     private SOCT2Log<O> log;
-    private Document doc;
+    //private Document doc;
     private int siteId;
 
     
-    /**
-     * return the document
-     * @return
-     */
-    public Document getDoc() {
-        return doc;
-    }
-
+    
     /**
      * Make soct2 instance with document (to apply modification) transformations, and replicat number or site id
-     * @param doc document
      * @param ot Tranformations
      * @param siteId Site identifier
      */
-    public SOCT2(Document doc,SOCT2TranformationInterface ot, int siteId) {
+    public SOCT2(SOCT2TranformationInterface ot, int siteId) {
         this.siteVC = new VectorClock();
         this.log = new SOCT2Log(ot);
-        this.doc=doc;
+        
         this.siteId = siteId;
     }
 
@@ -85,7 +77,8 @@ public class SOCT2 <O extends Operation> {
     }
 
     /**
-     * This method put on operation the vector clock, increse the vector clock and apply the operation.
+     * This method put on operation the vector clock, increse the vector clock
+     * the operation is not applyed
      * @param op The operation 
      * @return Soct2Message with vector clock.
      */
@@ -93,23 +86,24 @@ public class SOCT2 <O extends Operation> {
         SOCT2Message ret = new SOCT2Message(new VectorClock(siteVC), siteId, op);
         this.siteVC.inc(this.siteId);
         this.log.add(ret);
-        doc.apply((Operation)op);
+        //doc.apply((Operation)op);
 
         return ret;
     }
 
     /**
      * Integre operation sent by another site or replicats.
+     * The operation is returned to apply on document
      * @param Soct2message Is a message which contains the operation and vector clock
      */
-    public void integrateRemote(SOCT2Message Soct2message) {
+    public Operation integrateRemote(SOCT2Message Soct2message) {
 
         if (this.readyFor(Soct2message.getSiteId(), Soct2message.getClock())) {
             this.log.merge(Soct2message);
-            this.getDoc().apply((Operation) Soct2message.getOperation());
+            //this.getDoc().apply((Operation) Soct2message.getOperation());
             this.log.add(Soct2message);
             this.siteVC.inc(Soct2message.getSiteId());
-
+            return Soct2message.getOperation();
         } else {
             throw new RuntimeException("it seems causal reception is broken");
         }

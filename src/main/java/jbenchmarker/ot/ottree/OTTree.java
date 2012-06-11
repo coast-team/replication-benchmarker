@@ -6,7 +6,7 @@ package jbenchmarker.ot.ottree;
 
 /**
  *
- * @author moi
+ * @author Stephane Martin
  */
 public class OTTree {
     
