@@ -26,8 +26,7 @@ import jbenchmarker.core.Operation;
 
 /**
  *  This object is a log of Soct2. It splits the history the process to transform new operation
- * @param op  Is type of operation managed
- * 
+ * @param <Op> 
  * @author oster
  */
 public class SOCT2Log<Op extends Operation> implements Iterable<SOCT2Message<Op>>, Serializable {
@@ -105,8 +104,9 @@ public class SOCT2Log<Op extends Operation> implements Iterable<SOCT2Message<Op>
             SOCT2Message localOperation = operations.get(i);
             int siteIdOfLocalOperation = localOperation.getSiteId();
 
-            if (localOperation.getClock().getSafe(siteIdOfLocalOperation) < receivedOperation.getClock().getSafe(siteIdOfLocalOperation)) {
-                // opi precedes op
+            //if (localOperation.getClock().getSafe(siteIdOfLocalOperation) < receivedOperation.getClock().getSafe(siteIdOfLocalOperation)) { Garbage collection
+            if (localOperation.getClock().getSafe(siteIdOfLocalOperation) <= receivedOperation.getClock().getSafe(siteIdOfLocalOperation)) {    
+            // opi precedes op
                 for (int j = i; j > separationIndex; j--) {
                     // transpose opi backward to seq1
                     transposeBackward(j);

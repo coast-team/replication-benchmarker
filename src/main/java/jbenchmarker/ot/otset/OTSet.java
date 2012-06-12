@@ -35,7 +35,7 @@ public class OTSet<T> extends CRDTSet<T> {
      */
     public OTSet(SOCT2TranformationInterface ot, int siteId) {
         this.siteId = siteId;
-        soct2 = new SOCT2(ot, siteId);
+        soct2 = new SOCT2(ot, siteId,true);
 
     }
 

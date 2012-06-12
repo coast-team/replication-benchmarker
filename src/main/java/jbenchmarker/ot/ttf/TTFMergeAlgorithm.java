@@ -42,7 +42,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
      */
     public TTFMergeAlgorithm(Document doc, int siteId) {
         super(doc, siteId);
-        soct2 = new SOCT2<TTFOperation>(new TTFTransformations(), siteId);
+        soct2 = new SOCT2<TTFOperation>(new TTFTransformations(), siteId,true);
 
     }
 

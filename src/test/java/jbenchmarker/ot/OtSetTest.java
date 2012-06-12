@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class OtSet {
+public class OtSetTest {
     
     /*
      * 4 sites :

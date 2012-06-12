@@ -23,46 +23,63 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
-import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
 
 /**
  * Garbage collector for soct2 log
- * TODO : finish 
+ * TODO : Test Me !!!!! 
  * @author oster
  */
-public class OperationGarbageCollector implements Serializable{
+public class SOCT2GarbageCollector implements Serializable{
 
-    private TTFMergeAlgorithm mergeAlgorithm;
+    private SOCT2 soct2Algorithm;
+    /**
+     * Recommanded number operation before garbage collecting (20)
+     */
+    public static final int RECOMMANDED_GC_FREQUENCY_VALUE=20;
     private Map<Integer, VectorClock> clocksOfAllSites = new TreeMap<Integer, VectorClock>();
-    private static final int GC_FREQUENCY_IN_OPERATIONS = 20;
-    private int countdownBeforeGC = GC_FREQUENCY_IN_OPERATIONS;
+    private int frequencyGC = 20;
+    private int countdownBeforeGC = frequencyGC;
 
     /**
-     * 
+     * New garbage collector instance
+     * @param merger soct2 algorithme instance
+     * @param frequencyGC  operation frequency to run the garbage collection >0
+     */
+    public SOCT2GarbageCollector(SOCT2 merger,int frequencyGC) {
+        this.soct2Algorithm = merger;
+        this.frequencyGC=frequencyGC;
+    }
+    /**
+     * New garbage collector instance with RECOMMANDED_GC_FREQUENCY_VALUE (20 operations)
+     * Get soct2 algorithm instance
      * @param merger
      */
-    public OperationGarbageCollector(TTFMergeAlgorithm merger) {
-        this.mergeAlgorithm = merger;
+    public SOCT2GarbageCollector(SOCT2 merger) {
+        this.soct2Algorithm = merger;
+        this.frequencyGC=RECOMMANDED_GC_FREQUENCY_VALUE;
     }
+    
 
     /**
-     * 
-     * @param op
+     * register the soct2message to get anothers vector clock and count before run
+     * @param mess Soct2messages
      */
-    public void collect(SOCT2Message op) {
-        this.clocksOfAllSites.put(op.getSiteId(), op.getClock());
+    public void collect(SOCT2Message mess) {
+        this.clocksOfAllSites.put(mess.getSiteId(), mess.getClock());
 
         this.countdownBeforeGC--;
         if (this.countdownBeforeGC == 0) {
             gc();
-            this.countdownBeforeGC = GC_FREQUENCY_IN_OPERATIONS;
+            this.countdownBeforeGC = frequencyGC;
         }
+        
+
     }
 
     private void gc() {
-        VectorClock commonAncestorVectorClock = mergeAlgorithm.getClock().min(this.clocksOfAllSites.values());
+        VectorClock commonAncestorVectorClock = soct2Algorithm.getSiteVC().min(this.clocksOfAllSites.values());
 
-        Iterator<SOCT2Message> it = this.mergeAlgorithm.getHistoryLog().iterator();
+        Iterator<SOCT2Message> it = this.soct2Algorithm.getLog().iterator();
         int count = 0;
         while (it.hasNext()) {
             if (!it.next().getClock().greaterThan(commonAncestorVectorClock)) {

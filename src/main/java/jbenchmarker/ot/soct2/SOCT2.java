@@ -6,7 +6,6 @@ package jbenchmarker.ot.soct2;
 
 import collect.VectorClock;
 import java.util.Map;
-import jbenchmarker.core.Document;
 import jbenchmarker.core.Operation;
 
 /**
@@ -22,20 +21,40 @@ public class SOCT2 <O extends Operation> {
     //private Document doc;
     private int siteId;
 
-    
+    private SOCT2GarbageCollector gc;
+        
     
     /**
      * Make soct2 instance with document (to apply modification) transformations, and replicat number or site id
      * @param ot Tranformations
      * @param siteId Site identifier
+     * @param gc is number of remote operation count before gc 0 disable the gc.
      */
-    public SOCT2(SOCT2TranformationInterface ot, int siteId) {
+    public SOCT2(SOCT2TranformationInterface ot, int siteId,int gcFrequency) {
         this.siteVC = new VectorClock();
         this.log = new SOCT2Log(ot);
         
         this.siteId = siteId;
+        if (gcFrequency>0){
+            this.gc=new SOCT2GarbageCollector(this,gcFrequency);
+        }
     }
 
+     /**
+     * Make soct2 instance with document (to apply modification) transformations, and replicat number or site id
+     * @param ot Tranformations
+     * @param siteId Site identifier
+     * @param gc is boolean to enable or disable gc with recommanded value.
+     */
+    public SOCT2(SOCT2TranformationInterface ot, int siteId,boolean  gc) {
+        this.siteVC = new VectorClock();
+        this.log = new SOCT2Log(ot);
+        
+        this.siteId = siteId;
+        if (gc){
+            this.gc=new SOCT2GarbageCollector(this);
+        }
+    }
     /**
      * 
      * @return the vector clock of the instance
@@ -65,7 +84,8 @@ public class SOCT2 <O extends Operation> {
      * @return true if its ready false else.
      */
     public boolean readyFor(int siteId, VectorClock vcOp) {
-        if (this.siteVC.getSafe(siteId) != vcOp.getSafe(siteId)) {
+        //if (this.siteVC.getSafe(siteId) != vcOp.getSafe(siteId)) { Garbage collection
+        if (this.siteVC.getSafe(siteId)+1 != vcOp.getSafe(siteId)) {
             return false;
         }
         for (Map.Entry<Integer, Integer> e : vcOp.entrySet()) {
@@ -83,8 +103,9 @@ public class SOCT2 <O extends Operation> {
      * @return Soct2Message with vector clock.
      */
     public SOCT2Message estampileMessage(O op) {
-        SOCT2Message ret = new SOCT2Message(new VectorClock(siteVC), siteId, op);
         this.siteVC.inc(this.siteId);
+        SOCT2Message ret = new SOCT2Message(new VectorClock(siteVC), siteId, op);
+        //this.siteVC.inc(this.siteId); For garbage collection
         this.log.add(ret);
         //doc.apply((Operation)op);
 
@@ -95,6 +116,7 @@ public class SOCT2 <O extends Operation> {
      * Integre operation sent by another site or replicats.
      * The operation is returned to apply on document
      * @param Soct2message Is a message which contains the operation and vector clock
+     * @return operation to performe on document 
      */
     public Operation integrateRemote(SOCT2Message Soct2message) {
 
@@ -103,6 +125,9 @@ public class SOCT2 <O extends Operation> {
             //this.getDoc().apply((Operation) Soct2message.getOperation());
             this.log.add(Soct2message);
             this.siteVC.inc(Soct2message.getSiteId());
+            if (gc!=null)
+                this.gc.collect(Soct2message); //Garbage collector
+
             return Soct2message.getOperation();
         } else {
             throw new RuntimeException("it seems causal reception is broken");
