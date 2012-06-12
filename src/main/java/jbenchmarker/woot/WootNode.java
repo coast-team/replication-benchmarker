@@ -51,4 +51,34 @@ public abstract class WootNode<T> implements Serializable{
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final WootNode<T> other = (WootNode<T>) obj;
+        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
+            return false;
+        }
+        if (this.content != other.content && (this.content == null || !this.content.equals(other.content))) {
+            return false;
+        }
+        if (this.visible != other.visible) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + (this.id != null ? this.id.hashCode() : 0);
+        hash = 59 * hash + (this.content != null ? this.content.hashCode() : 0);
+        hash = 59 * hash + (this.visible ? 1 : 0);
+        return hash;
+    }
 }

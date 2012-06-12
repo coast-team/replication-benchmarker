@@ -19,7 +19,6 @@
 package jbenchmarker.logoot;
 
 import crdt.Factory;
-import crdt.tree.orderedtree.PositionIdentificator;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,7 @@ import jbenchmarker.core.SequenceOperation;
  * A Logoot document. Contains a list of Charater and the corresponding list of LogootIndentitifer.
  * @author urso mehdi
  */
-public class LogootDocument<T> implements Document, PositionIdentificator<T>, Factory<LogootDocument<T>> {
+public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
     protected final int nbBit;
     protected final long max; // MAX = 2^nbBit - 1
     private int myClock;
@@ -47,6 +46,7 @@ public class LogootDocument<T> implements Document, PositionIdentificator<T>, Fa
         document = new RangeList<T>();
         idTable = new RangeList<LogootIdentifier>();
         this.strategy = strategy;
+        this.replicaNumber = r;
 
         myClock = 0;
         this.nbBit = nbBit;

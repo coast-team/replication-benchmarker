@@ -54,7 +54,7 @@ class WootHashTreeNode<T> extends WootHashDocument<WootHashTreeNode<T>> implemen
 
     @Override
     public OrderedNode<T> getChild(Positioned<T> p) {
-        return (OrderedNode<T>) find((WootIdentifier) p.getPi());
+        return find(((WootPosition) p.getPi()).getId());
     }
 
     @Override
@@ -71,8 +71,14 @@ class WootHashTreeNode<T> extends WootHashDocument<WootHashTreeNode<T>> implemen
 
     @Override
     public void add(PositionIdentifier id, T elem) {
-        WootPosition wp = (WootPosition) id;
-        add(wp.getId(), createNode(elem), wp.getIp(), wp.getIn());    
+        final WootPosition wp = (WootPosition) id;
+        final WootIdentifier wid = wp.getId();
+        if (positions.containsKey(wid)) {
+            setVisible(wid, true);
+        } else {
+            positions.put(wid, wp);
+            add(wid, createNode(elem), wp.getIp(), wp.getIn());    
+        }
     }
     
     @Override
@@ -101,31 +107,30 @@ class WootHashTreeNode<T> extends WootHashDocument<WootHashTreeNode<T>> implemen
     public WootHashTreeNode<T> createNode(T elem) {
         return new WootHashTreeNode<T>(elem, getReplicaNumber());
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final WootHashTreeNode<T> other = (WootHashTreeNode<T>) obj;
-        if (this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
-            return false;
-        }
-        return super.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = super.hashCode();
-        hash = 71 * hash + (this.value != null ? this.value.hashCode() : 0);
-        return hash;
-    }
     
     @Override
     public String toString() {
         return value + "{" + getElements() + '}';
+    }
+    
+    
+    // TODO : more efficient implementation
+    @Override
+    public boolean same(OrderedNode<T> other) {
+        if (other == null) {
+            return false;
+        }
+        if (this.value != other.getValue() && (this.value == null || !this.value.equals(other.getValue()))) {
+            return false;
+        }
+        if (childrenNumber() != other.childrenNumber()) {
+            return false;
+        }
+        for (int i = 0; i < childrenNumber(); ++i) {
+            if (!getChild(i).same(other.getChild(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

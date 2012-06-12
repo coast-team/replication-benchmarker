@@ -23,6 +23,7 @@ import crdt.tree.wordtree.policy.WordIncrementalReappear;
 import crdt.tree.wordtree.policy.WordIncrementalSkip;
 import crdt.tree.wordtree.policy.WordIncrementalSkipOpti;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.core.MergeAlgorithm;
@@ -39,12 +40,12 @@ import org.junit.Test;
  */
 public class OrderedTreeTest {
     
-    private void assertSameTree(OrderedNodeMock on, OrderedNode ot) {
-        assertTrue(ot.toString(), on.same(ot));
+    private void assertSameTree(OrderedNode on, OrderedNode ot) {
+        assertTrue(ot + " expected : " + on, on.same(ot));
     }
     
-    private void assertSameTree(OrderedNodeMock on, PositionIdentifierTree ot) {
-        assertTrue(ot.lookup().toString(), on.same(ot.lookup()));
+    private void assertSameTree(OrderedNode on, PositionIdentifierTree ot) {
+        assertTrue(ot.lookup() + " expected : " + on, on.same(ot.lookup()));
     }
     
     static class IntegerPos implements PositionIdentifier {
@@ -108,7 +109,7 @@ public class OrderedTreeTest {
         CRDTMessage m8 = ot.remove(path(0)), m9 = ot2.add(path(0), 0, 'y');
         ot2.applyRemote(m8); ot.applyRemote(m9);
         
-        assertEquals(ot.lookup(), ot2.lookup());
+        assertSameTree(ot.lookup(), ot2.lookup());
         return (OrderedNode) ot.lookup();
     }
     
@@ -130,9 +131,23 @@ public class OrderedTreeTest {
     }
     
     @Test 
+    public void testFoo() throws PreconditionException {
+        List a = new ArrayList(), b = new LinkedList();
+        a.add('a'); b.add('c'); b.add('a'); b.add('b');
+        assertEquals(a, b.subList(1, 2));
+    }
+    
+    @Test 
     public void testLogootTree() throws PreconditionException {
         LogootStrategy st = new BoundaryStrategy(100);
         OrderedNode root = new LogootTreeNode(null, 0, 32, st);
+        testSetSkips(root);
+    }
+        
+    @Test 
+    public void testLogootTreeBoundary() throws PreconditionException {
+        LogootStrategy st = new BoundaryStrategy(1);
+        OrderedNode root = new LogootTreeNode(null, 0, 2, st);
         testSetSkips(root);
     }
     
@@ -157,12 +172,18 @@ public class OrderedTreeTest {
     };
     
     @Test
-    public void testRunsNaive() throws PreconditionException, IncorrectTraceException, IOException {
+    public void testRunsNaiveLogoot() throws PreconditionException, IncorrectTraceException, IOException {
         for (Factory p : policies) {
             CausalDispatcherTest.testRun(createTree(new LogootTreeNode(null, 0, 
                     32, new BoundaryStrategy(100)), new NaiveSet(), p), 1000, 5, otreeop);
         }
     }
     
+    @Test
+    public void testRunsNaiveWootH() throws PreconditionException, IncorrectTraceException, IOException {
+        for (Factory p : policies) {
+            CausalDispatcherTest.testRun(createTree(new WootHashTreeNode(null, 0), new NaiveSet(), p), 1000, 5, otreeop);
+        }
+    }
     
 }

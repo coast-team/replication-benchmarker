@@ -14,8 +14,8 @@ import java.util.List;
  * @author urso
  */
 public class OrderedNodeMock<T> implements OrderedNode<T> {
-    List<OrderedNodeMock<T>> children = new ArrayList<OrderedNodeMock<T>>();
-    T value;
+    final List<OrderedNodeMock<T>> children = new ArrayList<OrderedNodeMock<T>>();
+    final T value;
 
     public OrderedNodeMock(T value) {
         this.value = value;
@@ -63,7 +63,7 @@ public class OrderedNodeMock<T> implements OrderedNode<T> {
 
     @Override
     public List<? extends OrderedNode<T>> getElements() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return children;
     }
 
     @Override
@@ -71,22 +71,26 @@ public class OrderedNodeMock<T> implements OrderedNode<T> {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public boolean same(OrderedNode<T> on) {
-        if (value != on.getValue() && !value.equals(on.getValue())) {
-            return false;
-        } 
-        if (children.size() != on.childrenNumber()) {
+    @Override
+    public boolean same(OrderedNode<T> other) {
+        if (other == null) {
             return false;
         }
-        for (int i = 0; i < children.size(); i++) {
-            if (!children.get(i).same(on.getChild(i))) {
+        if (this.value != other.getValue() && (this.value == null || !this.value.equals(other.getValue()))) {
+            return false;
+        }
+        if (childrenNumber() != other.childrenNumber()) {
+            return false;
+        }
+        for (int i = 0; i < childrenNumber(); ++i) {
+            if (!getChild(i).same(other.getChild(i))) {
                 return false;
             }
         }
         return true;
     }
-    
-   static <T> OrderedNodeMock<T> tree(T ch, Object ... cn) {
+
+    static <T> OrderedNodeMock<T> tree(T ch, Object... cn) {
         OrderedNodeMock on = new OrderedNodeMock(ch);
         for (Object c : cn) {
             if (c instanceof OrderedNode) {
@@ -97,7 +101,12 @@ public class OrderedNodeMock<T> implements OrderedNode<T> {
         }
         return on;
     }
-
+    
+    @Override
+    public String toString() {
+        return value + "{" + getElements() + '}';
+    }
+    
     @Override
     public void setReplicaNumber(int replicaNumber) {
         throw new UnsupportedOperationException("Not supported yet.");

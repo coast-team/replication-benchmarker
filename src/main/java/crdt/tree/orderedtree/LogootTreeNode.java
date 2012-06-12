@@ -77,29 +77,26 @@ class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> implements Ord
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
+    public boolean same(OrderedNode<T> other) {
+        if (other == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (this.value != other.getValue() && (this.value == null || !this.value.equals(other.getValue()))) {
             return false;
         }
-        final LogootTreeNode<T> other = (LogootTreeNode<T>) obj;
-        if (this.value != other.value && (this.value == null || !this.value.equals(other.value))) {
+        if (childrenNumber() != other.childrenNumber()) {
             return false;
         }
-        return super.equals(obj);
+        for (int i = 0; i < childrenNumber(); ++i) {
+            if (!getChild(i).same(other.getChild(i))) {
+                return false;
+            }
+        }
+        return true;
     }
-
-    @Override
-    public int hashCode() {
-        int hash = super.hashCode();
-        hash = 71 * hash + (this.value != null ? this.value.hashCode() : 0);
-        return hash;
-    }
-
+    
     @Override
     public String toString() {
         return value + "{" + getElements() + '}';
-    } 
+    }
 }

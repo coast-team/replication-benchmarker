@@ -33,7 +33,7 @@ public class BoundaryStrategy extends LogootStrategy {
     private final long bound;
     private final BigInteger boundBI;
 
-    public BoundaryStrategy(int bound) {
+    public BoundaryStrategy(long bound) {
         this.bound = bound;
         this.boundBI = BigInteger.valueOf(bound);
     }    

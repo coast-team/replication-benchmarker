@@ -30,8 +30,8 @@ import jbenchmarker.woot.WootOperation;
  * @author urso
  */
 public class WootHashDocument<T> implements Document {
-    final protected WootHashNode<T> first;
-    final protected Map<WootIdentifier, WootHashNode<T>> map;
+    final private WootHashNode<T> first;
+    final private Map<WootIdentifier, WootHashNode<T>> map;
     private int size = 0;
     private int clock = 0;
     private int replicaNumber;
@@ -58,8 +58,8 @@ public class WootHashDocument<T> implements Document {
         return s.toString();
     }
     
-    public WootHashNode find(WootIdentifier id) {
-        return map.get(id);
+    public T find(WootIdentifier id) {
+        return map.get(id).getContent();
     }
 
     public boolean has(WootIdentifier id) {
@@ -88,12 +88,20 @@ public class WootHashDocument<T> implements Document {
     }
 
     protected void del(WootIdentifier id) {
-        WootHashNode<T> e = map.get(id);
-        if (e.isVisible()) {
-            --size;
-        }
-        e.setVisible(false);
+        setVisible(id, false);
     }
+    
+    
+    protected void setVisible(WootIdentifier id, boolean b) {
+        WootHashNode<T> e = map.get(id);
+        if (!b && e.isVisible()) {
+            --size;
+        } else if (b && !e.isVisible()) {
+            ++size;
+        }
+        e.setVisible(b);
+    }
+    
     /**
      * pth visible character
      */
