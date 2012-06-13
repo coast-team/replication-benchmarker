@@ -25,14 +25,26 @@ import java.util.Random;
  * @author urso
  */
 public class RandomGauss extends Random {
-    /**
-     * Returns the next strictly positive pseudorandom, Gaussian ("normally") 
-     * distributed double value with the specified mean and the specified 
-     * standard deviation from this random number generator's sequence.
-     * @param mean the mean 
-     * @param sdv the standard deviation 
-     * @return the next pseudorandom, Gaussian ("normally") distributed strictly positive double value
-     */
+	public RandomGauss() {
+		super();
+	}
+
+	public RandomGauss(long seed) {
+		super(seed);
+	}
+
+	/**
+	 * Returns the next strictly positive pseudorandom, Gaussian ("normally")
+	 * distributed double value with the specified mean and the specified
+	 * standard deviation from this random number generator's sequence.
+	 * 
+	 * @param mean
+	 *            the mean
+	 * @param sdv
+	 *            the standard deviation
+	 * @return the next pseudorandom, Gaussian ("normally") distributed strictly
+	 *         positive double value
+	 */
     public double nextGaussian(double mean, double sdv) {
         double x;
         do {
