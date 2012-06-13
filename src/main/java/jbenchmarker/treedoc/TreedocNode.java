@@ -120,10 +120,15 @@ class TreedocNode {
 	}
 
 	protected void getSubtreeContent(final StringBuilder contentBuffer) {
+		final int origBufferSize = contentBuffer.length();
 		getNodesContent(leftChildren, contentBuffer);
 		if (!tombstone)
 			contentBuffer.append(content);
 		getNodesContent(rightChildren, contentBuffer);
+		if (contentBuffer.length() - origBufferSize != getSubtreeSize()) {
+			throw new IllegalStateException(
+					"corrupted state, size of a content does not match internal size counter");
+		}
 	}
 
 	protected int getNodesNumber() {
@@ -138,11 +143,10 @@ class TreedocNode {
 	 * Finds an deletes a node indicated by id.
 	 * 
 	 * @param id
-	 * @param idIndex
 	 * @return true if node was still there.
 	 */
 	protected boolean findAndDeleteNode(
-			final Iterator<ComponentScanner> idIterator, final int idIndex) {
+			final Iterator<ComponentScanner> idIterator) {
 		if (!idIterator.hasNext()) {
 			final boolean wasTombstone = tombstone;
 			if (!wasTombstone)
@@ -157,7 +161,7 @@ class TreedocNode {
 			final int childIndex = binarySearchByTag(direction, children, tag);
 			if (childIndex >= 0) {
 				final TreedocNode child = children[childIndex];
-				if (child.findAndDeleteNode(idIterator, idIndex + 1)) {
+				if (child.findAndDeleteNode(idIterator)) {
 					subtreeSize--;
 					// Discard a whole subtree, as close to the root as
 					// possible.
@@ -172,8 +176,7 @@ class TreedocNode {
 	}
 
 	protected void findAndInsertNode(
-			final Iterator<ComponentScanner> idIterator, final int idIndex,
-			final String content) {
+			final Iterator<ComponentScanner> idIterator, final String content) {
 		subtreeSize += content.length();
 		if (!idIterator.hasNext()) {
 			// Fill in the last subtree on the path with the content.
@@ -207,7 +210,7 @@ class TreedocNode {
 				}
 				setChildren(direction, newChildren);
 			}
-			child.findAndInsertNode(idIterator, idIndex + 1, content);
+			child.findAndInsertNode(idIterator, content);
 		}
 	}
 
@@ -231,20 +234,34 @@ class TreedocNode {
 			final TreedocNode leftChild = new TreedocNode(uniqueTag);
 			final TreedocNode[] leftChildren = new TreedocNode[1];
 			leftChildren[0] = leftChild;
+			assertHasNoChildren(this.leftChildren);
 			setChildren(EdgeDirection.LEFT, leftChildren);
 			leftChild.createBalancedSubtreeOfContent(content, begin,
 					leftSubtree);
 		}
 		this.content = content.charAt(begin + leftSubtree);
 		this.tombstone = false;
+		if (subtreeSize != 0 && subtreeSize != length) {
+			throw new IllegalStateException(
+					"trying to create a balanced subtree within the node that already contains "
+							+ subtreeSize + " nodes");
+		}
 		this.subtreeSize = length;
 		if (rightSubtree > 0) {
 			final TreedocNode rightChild = new TreedocNode(uniqueTag);
 			final TreedocNode[] rightChildren = new TreedocNode[1];
 			rightChildren[0] = rightChild;
+			assertHasNoChildren(this.rightChildren);
 			setChildren(EdgeDirection.RIGHT, rightChildren);
 			rightChild.createBalancedSubtreeOfContent(content, begin
 					+ leftSubtree + 1, rightSubtree);
+		}
+	}
+
+	private void assertHasNoChildren(final TreedocNode children[]) {
+		if (children != null && children.length > 0) {
+			throw new IllegalStateException(
+					"trying to create a balance subtree within the node that already contains some children");
 		}
 	}
 

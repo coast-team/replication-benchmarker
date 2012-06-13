@@ -34,11 +34,11 @@ public class TreedocRoot extends TreedocNode {
 	}
 
 	public void insertAt(final TreedocIdentifier id, final String content) {
-		findAndInsertNode(id.iterator(), 0, content);
+		findAndInsertNode(id.iterator(), content);
 	}
 
 	public void deleteAt(final TreedocIdentifier id) {
-		findAndDeleteNode(id.iterator(), 0);
+		findAndDeleteNode(id.iterator());
 	}
 
 	public TreedocIdentifier insertAt(final int index, final String content) {
