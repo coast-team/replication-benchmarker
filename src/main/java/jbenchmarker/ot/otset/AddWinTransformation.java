@@ -95,4 +95,10 @@ public class AddWinTransformation implements SOCT2TranformationInterface<OTSetOp
 
         return ret;
     }
+
+    @Override
+    public String toString() {
+        return "AddWinTransformation";
+    }
+    
 }

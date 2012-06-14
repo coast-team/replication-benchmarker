@@ -6,12 +6,11 @@ package jbenchmarker.core;
 
 import crdt.Factory;
 import crdt.PreconditionException;
-import jbenchmarker.core.Operation;
 import java.util.Observable;
 
 /**
- * A CRDT is a factory. create() returns a new CRDT with the same behavior. 
- * @author urso
+ *  
+ * @author Stephane Martin
  */
 public abstract class ReplicatedDocument<L> extends Observable implements Factory<ReplicatedDocument<L>> {
     private int replicaNumber;

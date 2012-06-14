@@ -4,6 +4,7 @@
  */
 package jbenchmarker.core;
 
+import crdt.CRDTMessage;
 import java.util.LinkedList;
 
 /**
@@ -94,4 +95,6 @@ public final class OperationBasedMessages extends OperationBasedMessage implemen
     public int size() {
         return ops.size();
     }
+
+   
 }

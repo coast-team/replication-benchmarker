@@ -4,6 +4,8 @@
  */
 package jbenchmarker.core;
 
+import crdt.CRDTMessage;
+
 
 
 /**
@@ -11,13 +13,17 @@ package jbenchmarker.core;
  * For future reunifications of commutative messages
  * @author Martin stephane
  */
-public abstract class OperationBasedMessage {
-   public OperationBasedMessage concat(OperationBasedMessage msg){
-       return new OperationBasedMessages(this,msg);
+public abstract class OperationBasedMessage implements  CRDTMessage {
+   
+    
+    public OperationBasedMessage concat(CRDTMessage msg){
+       return new OperationBasedMessages(this,(OperationBasedMessage)msg);
    }
    //public abstract ReplicatedDocuement apply
+    @Override
     public abstract OperationBasedMessage clone();
     
+    @Override
     public int size(){
         return 1;
     }

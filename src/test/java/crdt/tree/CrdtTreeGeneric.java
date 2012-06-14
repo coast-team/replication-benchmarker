@@ -87,11 +87,13 @@ public class CrdtTreeGeneric<T> {
 
     // Add 1 -> 2   
     public void testApplyRemoteAdd(CRDTTree crdttree1, CRDTTree crdttree2) throws Exception {
-
+        /*crdttree1.setReplicaNumber(0);
+        crdttree2.setReplicaNumber(1);*/
         //TestApply add sequentiel     
         crdttree2.applyRemote(populateTreeABC(crdttree1));
         crdttree2.applyRemote(populateTreeXYZ(crdttree1));
-
+        
+        
         //tree to compare
         assertEquals(basicTree, crdttree1.lookup());
         assertEquals(crdttree2.lookup(), crdttree1.lookup());
@@ -100,7 +102,6 @@ public class CrdtTreeGeneric<T> {
 
     // Concurrent insertion under two diffrent father      
     public void testAddConcurDiffFather(CRDTTree crdttree1, CRDTTree crdttree2) throws Exception {
-      
         crdttree2.applyRemote(populateTreeABC(crdttree1));
 
         //Add concurrently        

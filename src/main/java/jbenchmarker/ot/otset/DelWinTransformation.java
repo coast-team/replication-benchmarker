@@ -88,5 +88,10 @@ public class DelWinTransformation implements SOCT2TranformationInterface<OTSetOp
         }
         return ret;
     }
+
+    @Override
+    public String toString() {
+        return "DelWinTransformation";
+    }
     
 }

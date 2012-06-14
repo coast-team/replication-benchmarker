@@ -87,7 +87,7 @@ public class SOCT2Message<Op extends Operation> extends crdt.CommutativeMessage 
      * @return new operation
      */
     @Override
-    public SOCT2Message clone(){
+    public SOCT2Message copy(){
         return new SOCT2Message(new VectorClock(vc),siteID,operation.clone() );
     }
     
@@ -109,14 +109,7 @@ public class SOCT2Message<Op extends Operation> extends crdt.CommutativeMessage 
         return this.toString();
     }
 
-    /**
-     * deprecated
-     * @return
-     */
-    @Override
-    protected CommutativeMessage copy() {
-        return this.clone();
-    }
+   
 
     
 }

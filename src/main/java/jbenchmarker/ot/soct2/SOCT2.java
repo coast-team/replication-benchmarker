@@ -115,22 +115,29 @@ public class SOCT2 <O extends Operation> {
     /**
      * Integre operation sent by another site or replicats.
      * The operation is returned to apply on document
-     * @param Soct2message Is a message which contains the operation and vector clock
+     * @param soct2message Is a message which contains the operation and vector clock
      * @return operation to performe on document 
      */
-    public Operation integrateRemote(SOCT2Message Soct2message) {
+    public Operation integrateRemote(SOCT2Message soct2message) {
 
-        if (this.readyFor(Soct2message.getSiteId(), Soct2message.getClock())) {
-            this.log.merge(Soct2message);
+        if (this.readyFor(soct2message.getSiteId(), soct2message.getClock())) {
+            this.log.merge(soct2message);
             //this.getDoc().apply((Operation) Soct2message.getOperation());
-            this.log.add(Soct2message);
-            this.siteVC.inc(Soct2message.getSiteId());
+            this.log.add(soct2message);
+            this.siteVC.inc(soct2message.getSiteId());
             if (gc!=null)
-                this.gc.collect(Soct2message); //Garbage collector
+                this.gc.collect(soct2message); //Garbage collector
 
-            return Soct2message.getOperation();
+            return soct2message.getOperation();
         } else {
-            throw new RuntimeException("it seems causal reception is broken");
+            throw new RuntimeException("it seems causal reception is broken in "+this.siteId+" v: "+siteVC+" vs "+soct2message.getClock()+" from "+soct2message.getSiteId());
         }
+    }
+
+    public void setSiteId(int siteId) {
+        this.siteId = siteId;
+    }
+    public void setReplicaNumber(int siteId) {
+        this.siteId = siteId;
     }
 }

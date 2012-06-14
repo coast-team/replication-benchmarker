@@ -29,6 +29,9 @@ import crdt.tree.wordtree.policy.WordIncrementalSkipOpti;
 import crdt.tree.wordtree.policy.WordReappear;
 import crdt.tree.wordtree.policy.WordRoot;
 import crdt.tree.wordtree.policy.WordSkip;
+import jbenchmarker.ot.otset.AddWinTransformation;
+import jbenchmarker.ot.otset.DelWinTransformation;
+import jbenchmarker.ot.otset.OTSet;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import org.junit.BeforeClass;
@@ -40,19 +43,34 @@ import org.junit.Test;
  */
 public class WordTreeTest {
     
+    /**
+     * 
+     */
     public WordTreeTest() {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
 
 
     
+    /**
+     * 
+     * @throws Exception
+     */
     @Test(expected = PreconditionException.class)
     public void testNotIn() throws Exception {  
         WordTree t = new WordTree(new CommutativeCounterSet(), new WordSkip());
@@ -62,6 +80,11 @@ public class WordTreeTest {
         t.add(a, 'b');
     } 
     
+    /**
+     * Create test for wordtree
+     * @param sf setFactory
+     * @throws Exception
+     */
     public void testWordBasic(Factory<CRDTSet> sf) throws Exception {
         CrdtTreeGeneric test = new CrdtTreeGeneric();
         test.runAllBasic(new WordTree(sf.create(), new WordSkip()));
@@ -81,6 +104,10 @@ public class WordTreeTest {
         testCompact(sf, new WordIncrementalCompact());
     }
         
+    /**
+     * 
+     * @throws Exception
+     */
     @Test
     public void testCmCWS() throws Exception {
         Tree tr, resultTree;
@@ -133,6 +160,10 @@ public class WordTreeTest {
         assertEquals(resultTree, tr);
     }    
 
+    /**
+     * 
+     * @throws Exception
+     */
     @Test
     public void testCmOWS() throws Exception {
         Tree tr, resultTree;
@@ -194,6 +225,10 @@ public class WordTreeTest {
         z = resultTree.innerAdd(c, 'z');
 */
      
+    /**
+     * 
+     * @throws Exception
+     */
     @Test
     public void testCmCWR() throws Exception {
         Tree tr, resultTree;
@@ -215,6 +250,10 @@ public class WordTreeTest {
         assertEquals(resultTree, tr);
     }    
             
+    /**
+     * 
+     * @throws Exception
+     */
     @Test
     public void testCmLWR() throws Exception {
         Tree tr, resultTree;
@@ -235,36 +274,79 @@ public class WordTreeTest {
         assertEquals(resultTree, tr);
     }  
     
+    /**
+     * 
+     * @throws Exception
+     */
     @Test
     public void testBasicCmCounter() throws Exception {
         testWordBasic(new CommutativeCounterSet());
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @Test
     public void testBasicCvCounter() throws Exception {
         testWordBasic(new ConvergentCounterSet());
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @Test
     public void testBasicCmLww() throws Exception {
         testWordBasic(new CommutativeLwwSet());
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @Test
     public void testBasicCvLww() throws Exception {
         testWordBasic(new ConvergentLwwSet());
     }
     
+    /**
+     * 
+     * @throws Exception
+     */
     @Test
     public void testBasicCmOr() throws Exception {
         testWordBasic(new CommutativeOrSet());
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     @Test
     public void testBasicCvOr() throws Exception {
         testWordBasic(new ConvergentOrSet());
     }
 
+    /**
+     * test for wordTree with set OT with soct2 and addwin policy
+     * @throws Exception
+     */
+    @Test
+    public void testBasicOtAddWin() throws Exception {
+        testWordBasic(new OTSet(new AddWinTransformation(),0,true));
+    }
+    
+    /**
+     * test for wordTree with set OT with soct2 and delwin policy
+     * @throws Exception
+     */
+    @Test
+    public void testBasicOtDelWin() throws Exception {
+        testWordBasic(new OTSet(new DelWinTransformation(),0,true));
+    }
+    
+    
     private void testRoot(Factory<CRDTSet> sf, Factory<WordPolicy> rf) throws PreconditionException {
         WordTree wt1 = new WordTree(sf.create(), rf.create()),
                 wt2 = new WordTree(sf.create(), rf.create());

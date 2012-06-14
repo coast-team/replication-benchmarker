@@ -31,14 +31,14 @@ import jbenchmarker.core.Operation;
  */
 public class SOCT2Log<Op extends Operation> implements Iterable<SOCT2Message<Op>>, Serializable {
 
-    private SOCT2TranformationInterface<Op> tranforme;
+    private SOCT2TranformationInterface<Op> transforme;
     
     /**
      * Construct a new log with this transformations.
      * @param t Transformation
      */
     public SOCT2Log(SOCT2TranformationInterface t){
-        this.tranforme=t;
+        this.transforme=t;
     }
     
     /*
@@ -88,9 +88,8 @@ public class SOCT2Log<Op extends Operation> implements Iterable<SOCT2Message<Op>
     public Op merge(SOCT2Message<Op> operation) {
         Op opt = operation.getOperation();
         int separationIndex = separatePrecedingAndConcurrentOperations(operation);
-
         for (int i = separationIndex; i < this.operations.size(); i++) {
-            opt = tranforme.transpose(opt, operations.get(i).getOperation());
+            opt = transforme.transpose(opt, operations.get(i).getOperation());
         }
 
         return opt;
@@ -127,8 +126,8 @@ public class SOCT2Log<Op extends Operation> implements Iterable<SOCT2Message<Op>
         Op opk = messk.getOperation();
         
 
-        messj.setOperation( tranforme.transposeBackward(opj, opk));
-        messk.setOperation( tranforme.transpose(opk, opj));
+        messj.setOperation( transforme.transposeBackward(opj, opk));
+        messk.setOperation( transforme.transpose(opk, opj));
 
         operations.set(index - 1, messj);
         operations.set(index, messk);

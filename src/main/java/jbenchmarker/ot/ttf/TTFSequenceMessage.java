@@ -42,7 +42,7 @@ public class TTFSequenceMessage extends SequenceMessage {
      */
     @Override
     public SequenceMessage copy() {
-        return new TTFSequenceMessage(soct2Message.clone(), this.getOriginalOp());
+        return new TTFSequenceMessage((SOCT2Message)soct2Message.clone(), this.getOriginalOp());
     }
 
   
