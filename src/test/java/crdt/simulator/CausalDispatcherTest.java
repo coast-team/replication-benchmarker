@@ -33,6 +33,9 @@ import crdt.simulator.random.TreeOperationProfile;
 import crdt.tree.wordtree.WordTree;
 import crdt.tree.wordtree.policy.WordSkip;
 import java.util.Map.Entry;
+import jbenchmarker.ot.otset.AddWinTransformation;
+import jbenchmarker.ot.otset.DelWinTransformation;
+import jbenchmarker.ot.otset.OTSet;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -44,12 +47,14 @@ import static org.junit.Assert.*;
  */
 public class CausalDispatcherTest {
 
-    Factory p[] = {new WordSkip(), new WordReappear(), new WordRoot(), new WordCompact(),
+    Factory policy[] = {new WordSkip(), new WordReappear(), new WordRoot(), new WordCompact(),
         new WordIncrementalSkip(), new WordIncrementalReappear(),
         new WordIncrementalRoot(), new WordIncrementalCompact(), new WordIncrementalSkipOpti()};
-    Factory s[] = {new CommutativeCounterSet(), new ConvergentCounterSet(),
+    Factory set[] = {new CommutativeCounterSet(), new ConvergentCounterSet(),
         new CommutativeLwwSet(), new ConvergentLwwSet(),
-        new CommutativeOrSet(), new ConvergentOrSet()};
+        new CommutativeOrSet(), new ConvergentOrSet(),
+        new OTSet(new AddWinTransformation(),0,false),
+        new OTSet(new DelWinTransformation(),0,false)};
     //Vector<LinkedList<TimeBench>> result = new Vector<LinkedList<TimeBench>>();
     int scale = 100;
 
@@ -92,7 +97,7 @@ public class CausalDispatcherTest {
                                 append("\n---------\n");
                     }
                     //cd.view.affiche();
-
+//                    System.err.println("diff\n"+l+"\n"+r.getValue().lookup());
                     fail(" ** A= " + i + " ** B= " + r.getKey() + "\n" + sf.toString());
                 }
             }
@@ -148,7 +153,7 @@ public class CausalDispatcherTest {
 //        }
 //        System.out.println("local : " + (l/nl) + "\nRemote : " + (r/nr));
 
-        for (Factory<CRDT> sf : s) {
+        for (Factory<CRDT> sf : set) {
             testRun(sf, 200, 20, seqopp);
         }
     }
@@ -156,8 +161,8 @@ public class CausalDispatcherTest {
 //    @Ignore
     @Test
     public void testRunWord() throws IncorrectTraceException, PreconditionException, IOException {
-        for (Factory<CRDT> sf : s) {
-            for (Factory<WordPolicy> pf : p) {
+        for (Factory<CRDT> sf : set) {
+            for (Factory<WordPolicy> pf : policy) {
                 //System.out.println(new WordTree(sf, pf));
                 testRun(new WordTree(sf, pf), 200, 5, treeop);
             }
@@ -166,8 +171,8 @@ public class CausalDispatcherTest {
     
     @Test
     public void testRunLogootTree() throws IncorrectTraceException, PreconditionException, IOException {
-        for (Factory<CRDT> sf : s) {
-            for (Factory<WordPolicy> pf : p) {
+        for (Factory<CRDT> sf : set) {
+            for (Factory<WordPolicy> pf : policy) {
                 //System.out.println(new WordTree(sf, pf));
                 testRun(new WordTree(sf, pf), 200, 5, treeop);
             }
@@ -181,7 +186,7 @@ public class CausalDispatcherTest {
         while (i <1) {
             //System.out.println(" i :"+i++);
             i++;
-            testRun(new WordTree(s[1], p[1]), 15000, 4, treeop);
+            testRun(new WordTree(set[1], policy[1]), 15000, 4, treeop);
             
         }
         //writeResult();

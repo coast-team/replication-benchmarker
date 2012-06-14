@@ -20,7 +20,11 @@ public class OtSetTest {
     
     /*
      * 4 sites :
-     * site 1 generate 1
+     * s1 : add 1(m1), del 1(m3) ; s2 add 1(m2)
+     * s3 recieve (m1,m2,m3)
+     * s4 recieve (m1,m3,m2)
+     * s1 recieve m2
+     * s2 recieve m1,m3
      */
 
     @Test
@@ -39,7 +43,7 @@ public class OtSetTest {
             assertEquals(set1.contains(1), false);
 
             /*
-             * Scenario 1
+             * Scenario 
              */
             set3.applyRemote(m1.clone());
             assertEquals(set3.contains(1), true);

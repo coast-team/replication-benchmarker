@@ -11,6 +11,7 @@ import crdt.set.CRDTSet;
 import java.util.HashSet;
 import java.util.Set;
 import jbenchmarker.ot.soct2.SOCT2;
+import jbenchmarker.ot.soct2.SOCT2GarbageCollector;
 import jbenchmarker.ot.soct2.SOCT2Message;
 import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 
@@ -29,11 +30,12 @@ public class OTSet<T> extends CRDTSet<T> {
      */
     SOCT2TranformationInterface ot;
     static int created = 0;
+    int GCfrequency = 0;
 
     public OTSet(SOCT2TranformationInterface ot) {
-        this.replicaNumber = 0;
+        this.replicaNumber = ++created ;
         this.ot = ot;
-        soct2 = new SOCT2(ot, 0, true);
+        soct2 = new SOCT2(ot,replicaNumber , GCfrequency);
 
     }
 
@@ -44,7 +46,7 @@ public class OTSet<T> extends CRDTSet<T> {
      */
     public OTSet(SOCT2TranformationInterface ot, int siteId) {
         this.replicaNumber = siteId;
-        soct2 = new SOCT2(ot, siteId, true);
+        soct2 = new SOCT2(ot, siteId, GCfrequency);
         this.ot = ot;
     }
 
@@ -62,11 +64,21 @@ public class OTSet<T> extends CRDTSet<T> {
      * @param gc if true Enable the garbage collector
      */
     public OTSet(SOCT2TranformationInterface ot, int siteId, boolean gc) {
+        if (gc){
+            this.GCfrequency=SOCT2GarbageCollector.RECOMMANDED_GC_FREQUENCY_VALUE;
+        }
         this.replicaNumber = siteId;
-        soct2 = new SOCT2(ot, siteId, gc);
+        
+        soct2 = new SOCT2(ot, siteId, GCfrequency);
         this.ot = ot;
     }
 
+    public OTSet(SOCT2TranformationInterface ot, int siteId, int gcFrequency) {
+        this.replicaNumber = siteId;
+        soct2 = new SOCT2(ot, siteId, gcFrequency);
+        this.ot = ot;
+        this.GCfrequency=gcFrequency;
+    }
     /**
      * return new Otset
      *
@@ -74,7 +86,7 @@ public class OTSet<T> extends CRDTSet<T> {
      */
     @Override
     public CRDTSet create() {
-        return new OTSet(ot, replicaNumber + ++created);
+        return new OTSet(ot, replicaNumber + ++created ,GCfrequency);
     }
 
     /**
@@ -170,4 +182,10 @@ public class OTSet<T> extends CRDTSet<T> {
 
         return set;
     }
+
+    @Override
+    public String toString() {
+        return "OTSet{" + "set=" + set + ", soct2=" + soct2 + ", replicaNumber=" + replicaNumber + ", ot=" + ot + '}';
+    }
+    
 }
