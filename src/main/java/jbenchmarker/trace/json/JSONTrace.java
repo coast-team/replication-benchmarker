@@ -123,6 +123,7 @@ public class JSONTrace implements Trace{
         for(int i = 0; i< ins.size(); i++){
             if(ins.get(i) > (3*moyIns)){
                 ins.remove(i);
+                i--;
             }
         }
         moy = 0;      
@@ -140,11 +141,12 @@ public class JSONTrace implements Trace{
         for(int i = 0; i< del.size(); i++){
             moy = moy+del.get(i);
         }
-        //System.out.println("del" +del);
+        System.out.println("del" +del);
         double moyDel = moy/del.size();       
         for(int i = 0; i < del.size(); i++){
             if(del.get(i) > (3*moyDel)){
                 del.remove(i);
+                i--;
             }
         }
         moy = 0;
@@ -168,6 +170,7 @@ public class JSONTrace implements Trace{
         for(int i = 0; i< up.size(); i++){
             if(Math.abs(up.get(i)) > Math.abs(3*moyUp)){
                up.remove(i);
+               i--;
             }
         }
         moy = 0;
