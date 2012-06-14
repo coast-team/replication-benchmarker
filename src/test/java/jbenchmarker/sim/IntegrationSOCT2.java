@@ -70,8 +70,9 @@ public class IntegrationSOCT2 {
     
     @Test
     public void testSOCT2RunJSON() throws Exception {
-        //Trace trace = TraceGenerator.traceFromJson("/home/damien/etherpad-lite/var/dirtyCS.db");
-        Trace trace = TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald3.db","corrections003");//pb avec notes001
+        Trace trace = TraceGenerator.traceFromJson("/home/damien/etherpad-lite/var/dirtyCS.db","test");
+        //Trace trace = TraceGenerator.traceFromJson("../../traces/json/dirtyCS.db");
+        //Trace trace = TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald3.db","notes001");//pb avec notes001, notes002 corrompu a cause d'un pb lors du test des etudiants
         CausalSimulator cd = new CausalSimulator(new TTFFactory());
         //CausalSimulator cd = new CausalSimulator(new CausalCheckerFactory());
 
@@ -87,7 +88,7 @@ public class IntegrationSOCT2 {
             assertEquals(r, m.lookup());
         } 
         
-        System.out.println(r);
+        //System.out.println(r);
         
         
     }
