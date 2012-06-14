@@ -115,85 +115,87 @@ public class JSONTrace implements Trace{
         double moy = 0;
         double v = 0;
         
-        for(int i = 0;i<ins.size();i++){
+        for(int i = 0; i< ins.size(); i++){
             moy = moy+ins.get(i);
         }
         double moyIns = moy/ins.size();
         
-        for(int i = 0;i<ins.size();i++){
-            if(ins.get(i)>(3*moyIns)){
+        for(int i = 0; i< ins.size(); i++){
+            if(ins.get(i) > (3*moyIns)){
                 ins.remove(i);
             }
         }
         moy = 0;      
-        for(int i = 0;i<ins.size();i++){            
+        for(int i = 0; i< ins.size(); i++){            
             moy = moy+ins.get(i);
             v = v+(ins.get(i)*ins.get(i));
             total.add((double)ins.get(i));
         }
         moyIns = moy/ins.size();
         double varIns = (v/ins.size())-(moyIns*moyIns);
-        //System.out.println("varianceIns = "+varIns+"\nmoyIns = "+moyIns);
-
+   
+        
         //calcul variance et moyenne suppression
         moy = 0;
-        for(int i = 0;i<del.size();i++){
+        for(int i = 0; i< del.size(); i++){
             moy = moy+del.get(i);
         }
+        //System.out.println("del" +del);
         double moyDel = moy/del.size();       
-        for(int i = 0;i<del.size();i++){
-            if(del.get(i)>(3*moyDel)){
+        for(int i = 0; i < del.size(); i++){
+            if(del.get(i) > (3*moyDel)){
                 del.remove(i);
             }
         }
         moy = 0;
         v = 0;
-        for(int i = 0;i<del.size();i++){            
+        for(int i = 0; i < del.size(); i++){            
             moy = moy+del.get(i);
             v = v+(del.get(i)*del.get(i));
             total.add(del.get(i));
         }
+        System.out.println("del "+del);
         moyDel = moy/del.size();
         double varDel = (v/del.size())-(moyDel*moyDel);
-        //System.out.println("varianceDel = "+varDel+"\nmoyDel = "+moyDel);
+        
         
         //calcul variance et moyenne update
         moy = 0;
-        for(int i = 0;i<up.size();i++){
+        for(int i = 0; i < up.size(); i++){
             moy = moy+up.get(i);
         }
         double moyUp = moy/up.size();
-        for(int i = 0;i<up.size();i++){
-            if(Math.abs(up.get(i))> Math.abs(3*moyUp)){
+        for(int i = 0; i< up.size(); i++){
+            if(Math.abs(up.get(i)) > Math.abs(3*moyUp)){
                up.remove(i);
             }
         }
         moy = 0;
         v = 0;
-        for(int i = 0;i<up.size();i++){            
+        for(int i = 0; i < up.size(); i++){            
             moy = moy+up.get(i);
             v = v+(up.get(i)*up.get(i));
             total.add(up.get(i));
         }
         moyUp = moy/up.size();
         double varUp = (v/up.size())-(moyUp*moyUp);
-       // System.out.println(up+"\nvarianceUp = "+varUp+"\nmoyUp = "+moyUp);
+       
         
         //calcul variance et moyenne totale
         moy = 0;
         v = 0;
-        for(int i = 0;i<total.size();i++){            
+        for(int i = 0; i < total.size(); i++){            
             moy = moy+total.get(i);
             v = v+(total.get(i)*total.get(i));            
         }
        double moyTotale = moy/total.size();
        double varTotale = (v/total.size())-(moyTotale*moyTotale);
-      // System.out.println("varianceTotale = "+varTotale+"\nmoyTotale = "+moyTotale);
+      
         
         System.out.println("%insertion : "+((double)ins.size()/(double)total.size())*100+"\n%suppresion : "+((double)del.size()/(double)total.size())*100+"\n%update : "+((double)up.size()/(double)total.size())*100);      
-        System.out.println("moyenne nbCharInserted = "+moyIns+"\nmoyenne offset = "+moyDel+"\nmoyenne update = "+moyUp);
-        System.out.println("variance insertion = "+varIns+"\nvariance supression = "+varDel+"\nvariance update = "+varUp);
-        System.out.println("variance totale = "+varTotale);
+        System.out.println("moyenne insertion = "+moyIns+"\nmoyenne suppression = "+moyDel+"\nmoyenne update = "+moyUp);
+        System.out.println("variance insertion = "+varIns+"\nvariance suppression = "+varDel+"\nvariance update = "+varUp);
+        System.out.println("moyenne totale = "+moyTotale+"\nvariance totale = "+varTotale);
         
         buf.close();
         fw.close();
