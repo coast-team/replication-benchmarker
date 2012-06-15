@@ -76,4 +76,9 @@ public class UniqueTag implements Comparable<UniqueTag> {
 		final UniqueTag other = (UniqueTag) obj;
 		return counter == other.counter && replicaId == other.replicaId;
 	}
+
+	@Override
+	public String toString() {
+		return "(" + replicaId + "," + counter + ")";
+	}
 }

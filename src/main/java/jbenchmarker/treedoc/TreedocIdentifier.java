@@ -35,7 +35,7 @@ import java.util.NoSuchElementException;
  * 
  * @author mzawirski
  */
-public class TreedocIdentifier implements Serializable{
+public class TreedocIdentifier implements Serializable {
 	enum EdgeDirection {
 		LEFT, RIGHT
 	};
@@ -140,6 +140,22 @@ public class TreedocIdentifier implements Serializable{
 	public TreedocIdentifier clone() {
 		final int clonedTags[] = Arrays.copyOf(tags, tags.length);
 		return new TreedocIdentifier((BitSet) path.clone(), clonedTags, length);
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder buf = new StringBuilder();
+		final Iterator<ComponentScanner> iter = iterator();
+		while (iter.hasNext()) {
+			final ComponentScanner component = iter.next();
+			buf.append(component.getDirection() == EdgeDirection.LEFT ? '0'
+					: '1');
+			buf.append(':');
+			buf.append(component.getTag());
+			buf.append("|");
+		}
+		// Shrink last "|".
+		return buf.substring(0, buf.length() - 1);
 	}
 
 	private class ComponentIterator implements Iterator<ComponentScanner> {

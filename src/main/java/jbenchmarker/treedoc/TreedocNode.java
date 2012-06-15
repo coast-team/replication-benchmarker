@@ -125,10 +125,10 @@ class TreedocNode {
 		if (!tombstone)
 			contentBuffer.append(content);
 		getNodesContent(rightChildren, contentBuffer);
-		if (contentBuffer.length() - origBufferSize != getSubtreeSize()) {
-			throw new IllegalStateException(
-					"corrupted state, size of a content does not match internal size counter");
-		}
+		// if (contentBuffer.length() - origBufferSize != getSubtreeSize()) {
+		// throw new IllegalStateException(
+		// "corrupted state, size of a content does not match internal size counter");
+		// }
 	}
 
 	protected int getNodesNumber() {
@@ -389,6 +389,19 @@ class TreedocNode {
 			// differently.
 			firstChild.insertBefore(newNode, idRecorder);
 		}
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder buf = new StringBuilder(getSubtreeSize());
+		getNodesContent(leftChildren, buf);
+		buf.append('|');
+		buf.append(tombstone ? '!' : content);
+		buf.append('|');
+		getNodesContent(rightChildren, buf);
+		buf.append("|size=");
+		buf.append(getSubtreeSize());
+		return buf.toString();
 	}
 
 	/**
