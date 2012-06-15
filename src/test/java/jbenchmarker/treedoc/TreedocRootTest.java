@@ -29,11 +29,12 @@ import org.junit.Test;
  * @author mzawirski
  */
 public class TreedocRootTest {
+	private static final int REPLICA_ID = 7;
 	private TreedocRoot root;
 
 	@Before
 	public void setUp() throws Exception {
-		root = new TreedocRoot(UniqueTag.createGenerator(0));
+		root = new TreedocRoot(UniqueTag.createGenerator());
 	}
 
 	@Test
@@ -43,63 +44,63 @@ public class TreedocRootTest {
 
 	@Test
 	public void testCreateSingle() {
-		root.insertAt(0, "a");
+		root.insertAt(0, "a", REPLICA_ID);
 		assertEquals(1, root.getSubtreeSize());
 		assertEquals("a", root.getContent());
 	}
 
 	@Test
 	public void testInsertAtBeginning() {
-		root.insertAt(0, "b");
-		root.insertAt(0, "a");
+		root.insertAt(0, "b", REPLICA_ID);
+		root.insertAt(0, "a", REPLICA_ID);
 		assertEquals(2, root.getSubtreeSize());
 		assertEquals("ab", root.getContent());
 	}
 
 	@Test
 	public void testInsertAtEnd() {
-		root.insertAt(0, "a");
-		root.insertAt(1, "b");
+		root.insertAt(0, "a", REPLICA_ID);
+		root.insertAt(1, "b", REPLICA_ID);
 		assertEquals(2, root.getSubtreeSize());
 		assertEquals("ab", root.getContent());
 	}
 
 	@Test
 	public void testInsertAtMiddle() {
-		root.insertAt(0, "a");
-		root.insertAt(1, "c");
-		root.insertAt(1, "b");
+		root.insertAt(0, "a", REPLICA_ID);
+		root.insertAt(1, "c", REPLICA_ID);
+		root.insertAt(1, "b", REPLICA_ID);
 		assertEquals("abc", root.getContent());
 	}
 
 	@Test
 	public void testInsertsDeletesInterleaved() {
-		root.insertAt(0, "a");
-		root.insertAt(1, "b");
-		root.insertAt(1, "c");
+		root.insertAt(0, "a", REPLICA_ID);
+		root.insertAt(1, "b", REPLICA_ID);
+		root.insertAt(1, "c", REPLICA_ID);
 		root.deleteAt(1);
-		root.insertAt(1, "e");
+		root.insertAt(1, "e", REPLICA_ID);
 		root.deleteAt(0);
-		root.insertAt(0, "d");
+		root.insertAt(0, "d", REPLICA_ID);
 		root.deleteAt(2);
-		root.insertAt(2, "f");
+		root.insertAt(2, "f", REPLICA_ID);
 		assertEquals("def", root.getContent());
 	}
 
 	@Test
 	public void testInsertsDeletesInserts() {
-		root.insertAt(0, "a");
+		root.insertAt(0, "a", REPLICA_ID);
 		root.deleteAt(0);
-		root.insertAt(0, "b");
-		root.insertAt(1, "c");
-		root.insertAt(2, "d");
+		root.insertAt(0, "b", REPLICA_ID);
+		root.insertAt(1, "c", REPLICA_ID);
+		root.insertAt(2, "d", REPLICA_ID);
 		assertEquals("bcd", root.getContent());
 	}
 
 	@Test
 	public void test() {
-		root.insertAt(0, "a");
+		root.insertAt(0, "a", REPLICA_ID);
 		root.deleteAt(0);
-		root.insertAt(0, "b");
+		root.insertAt(0, "b", REPLICA_ID);
 	}
 }

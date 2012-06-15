@@ -22,5 +22,5 @@ package jbenchmarker.treedoc;
  * @author mzawirski
  */
 public interface UniqueTagGenerator {
-	UniqueTag nextTag();
+	UniqueTag nextTag(int replicaId);
 }

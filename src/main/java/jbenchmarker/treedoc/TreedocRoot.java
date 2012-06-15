@@ -41,8 +41,10 @@ public class TreedocRoot extends TreedocNode {
 		findAndDeleteNode(id.iterator());
 	}
 
-	public TreedocIdentifier insertAt(final int index, final String content) {
-		final TreedocNode newNode = new TreedocNode(tagGenerator.nextTag());
+	public TreedocIdentifier insertAt(final int index, final String content,
+			final int replicaId) {
+		final TreedocNode newNode = new TreedocNode(
+				tagGenerator.nextTag(replicaId));
 		newNode.createBalancedSubtreeOfContent(content, 0, content.length());
 		final Recorder idRecorder = new Recorder();
 		final TreedocNode precedingNode;

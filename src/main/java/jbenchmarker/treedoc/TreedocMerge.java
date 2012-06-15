@@ -33,7 +33,7 @@ import jbenchmarker.core.SequenceOperation;
  */
 public class TreedocMerge extends MergeAlgorithm {
 	public TreedocMerge(int r) {
-		super(new TreedocDocument(UniqueTag.createGenerator(r)), r);
+		super(new TreedocDocument(UniqueTag.createGenerator()), r);
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class TreedocMerge extends MergeAlgorithm {
 		switch (opt.getType()) {
 		case ins:
 			final TreedocIdentifier id = doc.insertAt(
-					restrictedIndex(opt.getPosition(), true), opt.getContentAsString());
+					restrictedIndex(opt.getPosition(), true), opt.getContentAsString(), getReplicaNumber());
 			ops.add(new TreedocOperation(opt, id, opt.getContentAsString()));
 			break;
 		case del:
@@ -76,8 +76,9 @@ public class TreedocMerge extends MergeAlgorithm {
 				- (insert ? 0 : 1));
 	}
 
-    @Override
-    public CRDT<String> create() {
-        return new TreedocMerge(0);
-    }
+	@Override
+	public CRDT<String> create() {
+		return new TreedocMerge(0);
+		// FIXME: what is the semantics: what replica number should we use!?
+	}
 }

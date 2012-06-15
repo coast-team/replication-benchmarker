@@ -33,12 +33,12 @@ public class UniqueTag implements Comparable<UniqueTag> {
 	private final int replicaId;
 	private final int counter;
 
-	public static UniqueTagGenerator createGenerator(final int replicaId) {
+	public static UniqueTagGenerator createGenerator() {
 		return new UniqueTagGenerator() {
 			int currentStamp;
 
 			@Override
-			public UniqueTag nextTag() {
+			public UniqueTag nextTag(final int replicaId) {
 				return new UniqueTag(replicaId, currentStamp++);
 			}
 		};

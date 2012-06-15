@@ -52,8 +52,8 @@ public class UniqueTagTest {
 
 	@Test
 	public void testGenerator() {
-		final UniqueTagGenerator generator = UniqueTag.createGenerator(123);
-		assertEquals(new UniqueTag(123, 0), generator.nextTag());
-		assertEquals(new UniqueTag(123, 1), generator.nextTag());
+		final UniqueTagGenerator generator = UniqueTag.createGenerator();
+		assertEquals(new UniqueTag(123, 0), generator.nextTag(123));
+		assertEquals(new UniqueTag(123, 1), generator.nextTag(123));
 	}
 }
