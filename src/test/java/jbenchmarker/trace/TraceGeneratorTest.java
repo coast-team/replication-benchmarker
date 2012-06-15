@@ -107,7 +107,7 @@ public class TraceGeneratorTest {
     
     @Test
     public void testTraceFromJson() throws Exception {        
-        List<SequenceOperation> trace = it2list(TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald3.db","notes001"));
+        List<SequenceOperation> trace = it2list(TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald3.db","notes003"));
 //        assertEquals(11, trace.size());
 
 //        assertEquals(SequenceOperation.OpType.ins, trace.get(0).getType());
