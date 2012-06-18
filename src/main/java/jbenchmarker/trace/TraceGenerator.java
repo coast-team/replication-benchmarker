@@ -30,6 +30,10 @@ import jbenchmarker.trace.json.ElementJSON;
 import jbenchmarker.trace.json.JSONTrace;
 import jbenchmarker.trace.json.VectorClockCS;
 import jbenchmarker.trace.json.VectorClockCSMapper;
+import jbenchmarker.trace.json.moulinette.DocumentJSON;
+import jbenchmarker.trace.json.moulinette.attributs.ElementModif;
+import jbenchmarker.trace.json.moulinette.attributs.TypeModif;
+import jbenchmarker.trace.json.moulinette.attributs.VectorClockMapper;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -177,6 +181,34 @@ public class TraceGenerator {
         }else if(e.getVal().getOperation().equals("remplacement")){
             return SequenceOperation.update(repli,pos,e.getVal().getNumber_charDeleted(),e.getVal().getChars_inserted(), v);
         }else{//stylage
+            return SequenceOperation.unsupported(repli, v);
+        }
+    }
+    
+    
+     /**
+     * Parses one JSON elmeent from a CouchBase DataBase into a trace operation
+     * TO DO : variable pos is wrong. It must be the  
+     * @return the parsed Trace operation 
+     */
+    public static SequenceOperation oneJSONDB2OP(int rep,DocumentJSON d, ElementModif e, VectorClockMapper vectorClockMapper) {
+        int pos = d.get(e);
+        
+        int repli = rep;
+
+        //Copy VectorClock : TO TEST
+        VectorClock v = new VectorClock(vectorClockMapper.get(rep));
+        
+        v.inc(rep);
+        //v is now the last vectorClock of replica rep
+        vectorClockMapper.put(rep, v);
+        
+        if (e.getType() == TypeModif.addText) {
+            return SequenceOperation.insert(repli, pos, e.getLigne(), v);
+        } else if(e.getType() == TypeModif.delText){
+            //when a line deleted, offset is the length of the line deleted
+            return SequenceOperation.delete(repli, pos, e.getLigne().length(), v);
+        }else{
             return SequenceOperation.unsupported(repli, v);
         }
     }
