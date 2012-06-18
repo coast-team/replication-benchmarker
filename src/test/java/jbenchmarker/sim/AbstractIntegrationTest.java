@@ -58,39 +58,39 @@ public abstract class AbstractIntegrationTest {
 		assertNotNull(referenceView);
 	}
         
-	@Test
-	public void testExempleRun() throws Exception {
-		cd.run(TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1), false);
-		assertConsistentViews();
-	}
-
-	@Test
-	public void testG1Run() throws Exception {
-		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1), false);
-		assertConsistentViews();
-	}
-
-	@Test
-	public void testG2Run() throws Exception {
-		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1, 16), false);
-		assertConsistentViews();
-	}
-
-	@Test
-	public void testG3Run() throws Exception {
-		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1), false);
-		assertConsistentViews();
-	}
-
-	@Test
-	public void testSerieRun() throws Exception {
-		cd.run(TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1), false);
-		assertConsistentViews();
-	}
+//	@Test
+//	public void testExempleRun() throws Exception {
+//		cd.run(TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1), false);
+//		assertConsistentViews();
+//	}
+//
+//	@Test
+//	public void testG1Run() throws Exception {
+//		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1), false);
+//		assertConsistentViews();
+//	}
+//
+//	@Test
+//	public void testG2Run() throws Exception {
+//		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1, 16), false);
+//		assertConsistentViews();
+//	}
+//
+//	@Test
+//	public void testG3Run() throws Exception {
+//		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1), false);
+//		assertConsistentViews();
+//	}
+//
+//	@Test
+//	public void testSerieRun() throws Exception {
+//		cd.run(TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1), false);
+//		assertConsistentViews();
+//	}
         
     @Test
     public void testRandom() throws Exception {
-        cd.run(new RandomTrace(20, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 1, 10, 3.0, 5), false);
+        cd.run(new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 1, 10, 3.0, 5), false);
 	assertConsistentViews();
     }
 }

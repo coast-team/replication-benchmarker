@@ -205,4 +205,26 @@ public class WootHashDocument<T> implements Document {
     public int getReplicaNumber() {
         return replicaNumber;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final WootHashDocument<T> other = (WootHashDocument<T>) obj;
+        if (this.first != other.first && (this.first == null || !this.first.equals(other.first))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + (this.first != null ? this.first.hashCode() : 0);
+        return hash;
+    }
 }

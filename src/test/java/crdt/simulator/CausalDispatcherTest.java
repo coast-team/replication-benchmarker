@@ -5,18 +5,7 @@
 package crdt.simulator;
 
 import collect.Node;
-import java.io.IOException;
-import java.util.Set;
-import crdt.tree.wordtree.policy.WordIncrementalSkip;
-import crdt.tree.wordtree.policy.WordIncrementalCompact;
-import crdt.tree.wordtree.policy.WordIncrementalRoot;
-import crdt.tree.wordtree.policy.WordIncrementalSkipOpti;
-import org.junit.Ignore;
-import crdt.tree.wordtree.policy.WordIncrementalReappear;
-import crdt.tree.wordtree.WordPolicy;
-import crdt.tree.wordtree.policy.WordCompact;
-import crdt.tree.wordtree.policy.WordRoot;
-import crdt.tree.wordtree.policy.WordReappear;
+import collect.OrderedNode;
 import crdt.CRDT;
 import crdt.Factory;
 import crdt.PreconditionException;
@@ -30,16 +19,20 @@ import crdt.simulator.random.OperationProfile;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.SetOperationProfile;
 import crdt.simulator.random.TreeOperationProfile;
+import crdt.tree.wordtree.WordPolicy;
 import crdt.tree.wordtree.WordTree;
-import crdt.tree.wordtree.policy.WordSkip;
+import crdt.tree.wordtree.policy.*;
+import java.io.IOException;
 import java.util.Map.Entry;
+import java.util.Set;
 import jbenchmarker.ot.otset.AddWinTransformation;
 import jbenchmarker.ot.otset.DelWinTransformation;
 import jbenchmarker.ot.otset.OTSet;
 import org.junit.AfterClass;
+import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -85,7 +78,8 @@ public class CausalDispatcherTest {
                 l = r.getValue().lookup();
                 i = r.getKey();
             } else {
-                if (!l.equals(r.getValue().lookup())) {
+                if (//(l instanceof OrderedNode && !((OrderedNode) l).same((OrderedNode) r.getValue().lookup())) ||  
+                        !l.equals(r.getValue().lookup())) {
                     StringBuilder sf = new StringBuilder();
                     sf.append("**** ").append(r.getValue().toString()).append('\n');
                     for (Entry<Integer, CRDT> e : cd.replicas.entrySet()) {

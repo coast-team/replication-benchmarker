@@ -167,7 +167,7 @@ public class OrderedTreeTest {
 
         @Override
         public Object nextElement() {
-            return 'a'+(Math.random() * 26);
+            return (char) ('a'+(int) (Math.random() * 26));
         }
     };
     

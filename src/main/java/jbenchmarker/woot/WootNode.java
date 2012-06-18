@@ -52,6 +52,11 @@ public abstract class WootNode<T> implements Serializable{
         this.visible = visible;
     }
 
+    /**
+     * Two invisible woot nodes are considered equal. 
+     * @param obj
+     * @return 
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -61,6 +66,9 @@ public abstract class WootNode<T> implements Serializable{
             return false;
         }
         final WootNode<T> other = (WootNode<T>) obj;
+        if (!this.visible && !other.visible) {
+            return true;
+        }
         if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
             return false;
         }
