@@ -8,6 +8,8 @@ import crdt.CRDTMessage;
 import jbenchmarker.ot.otset.AddWinTransformation;
 import jbenchmarker.ot.otset.DelWinTransformation;
 import jbenchmarker.ot.otset.OTSet;
+import jbenchmarker.ot.soct2.OTAlgorithm;
+import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -17,19 +19,14 @@ import static org.junit.Assert.*;
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
 public class OtSetTest {
-    
-    /*
-     * 4 sites :
-     * s1 : add 1(m1), del 1(m3) ; s2 add 1(m2)
-     * s3 recieve (m1,m2,m3)
-     * s4 recieve (m1,m3,m2)
-     * s1 recieve m2
-     * s2 recieve m1,m3
-     */
 
+    /*
+     * 4 sites : s1 : add 1(m1), del 1(m3) ; s2 add 1(m2) s3 recieve (m1,m2,m3)
+     * s4 recieve (m1,m3,m2) s1 recieve m2 s2 recieve m1,m3
+     */
     @Test
     public void OTSetTestAddWin() {
-        SOCT2TranformationInterface ot = new AddWinTransformation();
+        OTAlgorithm ot = new SOCT2(new AddWinTransformation(), null);
         OTSet set1 = new OTSet(ot, 0);
         OTSet set2 = new OTSet(ot, 1);
         OTSet set3 = new OTSet(ot, 3);
@@ -43,7 +40,7 @@ public class OtSetTest {
             assertEquals(set1.contains(1), false);
 
             /*
-             * Scenario 
+             * Scenario
              */
             set3.applyRemote(m1.clone());
             assertEquals(set3.contains(1), true);
@@ -81,7 +78,7 @@ public class OtSetTest {
 
     @Test
     public void OTSetTestDelWin() {
-        SOCT2TranformationInterface ot = new DelWinTransformation();
+        OTAlgorithm ot = new SOCT2(new DelWinTransformation(), null);
         OTSet set1 = new OTSet(ot, 0);
         OTSet set2 = new OTSet(ot, 1);
         OTSet set3 = new OTSet(ot, 3);

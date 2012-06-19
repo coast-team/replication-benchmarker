@@ -32,6 +32,7 @@ import crdt.tree.wordtree.policy.WordSkip;
 import jbenchmarker.ot.otset.AddWinTransformation;
 import jbenchmarker.ot.otset.DelWinTransformation;
 import jbenchmarker.ot.otset.OTSet;
+import jbenchmarker.ot.soct2.SOCT2;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import org.junit.BeforeClass;
@@ -42,15 +43,15 @@ import org.junit.Test;
  * @author urso
  */
 public class WordTreeTest {
-    
+
     /**
-     * 
+     *
      */
     public WordTreeTest() {
     }
 
     /**
-     * 
+     *
      * @throws Exception
      */
     @BeforeClass
@@ -58,30 +59,29 @@ public class WordTreeTest {
     }
 
     /**
-     * 
+     *
      * @throws Exception
      */
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
 
-
-    
     /**
-     * 
+     *
      * @throws Exception
      */
     @Test(expected = PreconditionException.class)
-    public void testNotIn() throws Exception {  
+    public void testNotIn() throws Exception {
         WordTree t = new WordTree(new CommutativeCounterSet(), new WordSkip());
         t.add(t.getRoot(), 'a');
         UnorderedNode a = t.getRoot().getChild('a');
         t.remove(a);
         t.add(a, 'b');
-    } 
-    
+    }
+
     /**
      * Create test for wordtree
+     *
      * @param sf setFactory
      * @throws Exception
      */
@@ -103,9 +103,9 @@ public class WordTreeTest {
         testCompact(sf, new WordCompact());
         testCompact(sf, new WordIncrementalCompact());
     }
-        
+
     /**
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -115,53 +115,53 @@ public class WordTreeTest {
         CrdtTreeGeneric test = new CrdtTreeGeneric();
         Factory<CRDTTree> tf = new WordTree(new CommutativeCounterSet(), new WordSkip());
         test.testAdopt(tf.create(), tf.create());
-        
+
         tr = test.testConcurAddRmvFather(tf.create(), tf.create());
         resultTree = new HashTree();
         a = resultTree.add(null, 'a');
         c = resultTree.add(null, 'c');
         z = resultTree.add(c, 'z');
-        
+
         assertEquals(resultTree, tr);
-        
+
         tr = test.testConcurAddRmvSameElement(tf.create(), tf.create());
         resultTree = new HashTree();
-        a = resultTree.add(null, 'a'); 
+        a = resultTree.add(null, 'a');
         b = resultTree.add(null, 'b');
         c = resultTree.add(null, 'c');
         x = resultTree.add(b, 'x');
         y = resultTree.add(b, 'y');
         z = resultTree.add(c, 'z');
-        
+
         assertEquals(resultTree, tr);
-        
+
         tr = test.testTwoPath(tf.create(), tf.create());
         resultTree = new HashTree();
-        a = resultTree.add(null, 'a'); 
+        a = resultTree.add(null, 'a');
         b = resultTree.add(null, 'b');
         c = resultTree.add(null, 'c');
         x = resultTree.add(a, 'x');
         y = resultTree.add(b, 'y');
         z = resultTree.add(c, 'z');
         resultTree.add(y, 'x');
-        
+
         assertEquals(resultTree, tr);
-                
+
         tr = test.testCycle(tf.create(), tf.create());
         resultTree = new HashTree();
-        a = resultTree.add(null, 'a'); 
+        a = resultTree.add(null, 'a');
         b = resultTree.add(null, 'b');
         c = resultTree.add(null, 'c');
         x = resultTree.add(b, 'x');
         y = resultTree.add(b, 'y');
         resultTree.add(x, 'y');
-        resultTree.add(y, 'x');    
-        
+        resultTree.add(y, 'x');
+
         assertEquals(resultTree, tr);
-    }    
+    }
 
     /**
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -171,62 +171,58 @@ public class WordTreeTest {
         CrdtTreeGeneric test = new CrdtTreeGeneric();
         Factory<CRDTTree> tf = new WordTree(new CommutativeOrSet(), new WordSkip());
         test.testAdopt(tf.create(), tf.create());
-        
+
         tr = test.testConcurAddRmvFather(tf.create(), tf.create());
         resultTree = new HashTree();
         a = resultTree.add(null, 'a');
         c = resultTree.add(null, 'c');
         z = resultTree.add(c, 'z');
-        
+
         assertEquals(resultTree, tr);
-        
+
         tr = test.testConcurAddRmvSameElement(tf.create(), tf.create());
         resultTree = new HashTree();
-        a = resultTree.add(null, 'a'); 
+        a = resultTree.add(null, 'a');
         b = resultTree.add(null, 'b');
         c = resultTree.add(null, 'c');
         x = resultTree.add(b, 'x');
         y = resultTree.add(b, 'y');
         z = resultTree.add(c, 'z');
-        
+
         assertEquals(resultTree, tr);
-        
+
         tr = test.testTwoPath(tf.create(), tf.create());
         resultTree = new HashTree();
-        a = resultTree.add(null, 'a'); 
+        a = resultTree.add(null, 'a');
         b = resultTree.add(null, 'b');
         c = resultTree.add(null, 'c');
         x = resultTree.add(a, 'x');
         y = resultTree.add(b, 'y');
         z = resultTree.add(c, 'z');
         resultTree.add(y, 'x');
-        
+
         assertEquals(resultTree, tr);
-                
+
         tr = test.testCycle(tf.create(), tf.create());
         resultTree = new HashTree();
-        a = resultTree.add(null, 'a'); 
+        a = resultTree.add(null, 'a');
         b = resultTree.add(null, 'b');
         c = resultTree.add(null, 'c');
         x = resultTree.add(b, 'x');
         y = resultTree.add(b, 'y');
         resultTree.add(x, 'y');
-        resultTree.add(y, 'x');    
-        
+        resultTree.add(y, 'x');
+
         assertEquals(resultTree, tr);
-    }    
-    
-/*
-        a = resultTree.innerAdd(null, 'a'); 
-        b = resultTree.innerAdd(null, 'b');
-        c = resultTree.innerAdd(null, 'c');
-        x = resultTree.innerAdd(b, 'x');
-        y = resultTree.innerAdd(b, 'y');
-        z = resultTree.innerAdd(c, 'z');
-*/
-     
+    }
+
+    /*
+     * a = resultTree.innerAdd(null, 'a'); b = resultTree.innerAdd(null, 'b'); c
+     * = resultTree.innerAdd(null, 'c'); x = resultTree.innerAdd(b, 'x'); y =
+     * resultTree.innerAdd(b, 'y'); z = resultTree.innerAdd(c, 'z');
+     */
     /**
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -236,22 +232,22 @@ public class WordTreeTest {
         CrdtTreeGeneric test = new CrdtTreeGeneric();
         CRDTSet s = new CommutativeCounterSet();
         Factory<CRDTTree> tf = new WordTree(s, new WordReappear());
-        
+
         tr = test.testConcurAddRmvFather(tf.create(), tf.create());
         resultTree = new HashTree();
-        
-        a = resultTree.add(null, 'a'); 
+
+        a = resultTree.add(null, 'a');
         b = resultTree.add(null, 'b');
         c = resultTree.add(null, 'c');
         x = resultTree.add(b, 'x');
         k = resultTree.add(x, 'k');
         z = resultTree.add(c, 'z');
-        
+
         assertEquals(resultTree, tr);
-    }    
-            
+    }
+
     /**
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -260,22 +256,22 @@ public class WordTreeTest {
         Node a, b, c, x, y, z, k;
         CrdtTreeGeneric test = new CrdtTreeGeneric();
         Factory<CRDTTree> tf = new WordTree(new CommutativeLwwSet(), new WordReappear());
-        
+
         tr = test.testConcurAddRmvSameElement(tf.create(), tf.create());
         resultTree = new HashTree();
-        
-        a = resultTree.add(null, 'a'); 
+
+        a = resultTree.add(null, 'a');
         b = resultTree.add(null, 'b');
         c = resultTree.add(null, 'c');
 //        x = resultTree.innerAdd(b, 'x');
         y = resultTree.add(b, 'y');
         z = resultTree.add(c, 'z');
-        
+
         assertEquals(resultTree, tr);
-    }  
-    
+    }
+
     /**
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -284,7 +280,7 @@ public class WordTreeTest {
     }
 
     /**
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -293,7 +289,7 @@ public class WordTreeTest {
     }
 
     /**
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -302,16 +298,16 @@ public class WordTreeTest {
     }
 
     /**
-     * 
+     *
      * @throws Exception
      */
     @Test
     public void testBasicCvLww() throws Exception {
         testWordBasic(new ConvergentLwwSet());
     }
-    
+
     /**
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -320,7 +316,7 @@ public class WordTreeTest {
     }
 
     /**
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -330,23 +326,24 @@ public class WordTreeTest {
 
     /**
      * test for wordTree with set OT with soct2 and addwin policy
+     *
      * @throws Exception
      */
     @Test
     public void testBasicOtAddWin() throws Exception {
-        testWordBasic(new OTSet(new AddWinTransformation(),0,true));
+        testWordBasic(new OTSet(new SOCT2(new AddWinTransformation(), null)));
     }
-    
+
     /**
      * test for wordTree with set OT with soct2 and delwin policy
+     *
      * @throws Exception
      */
     @Test
     public void testBasicOtDelWin() throws Exception {
-        testWordBasic(new OTSet(new DelWinTransformation(),0,true));
+        testWordBasic(new OTSet(new SOCT2(new DelWinTransformation(), null)));
     }
-    
-    
+
     private void testRoot(Factory<CRDTSet> sf, Factory<WordPolicy> rf) throws PreconditionException {
         WordTree wt1 = new WordTree(sf.create(), rf.create()),
                 wt2 = new WordTree(sf.create(), rf.create());
@@ -354,24 +351,26 @@ public class WordTreeTest {
         m1.concat(wt1.add(wt1.getRoot(), 'c'));
         m1.concat(wt1.add(wt1.getRoot().getChild('a'), 'b'));
         wt2.applyRemote(m1);
-        
+
         CRDTMessage m2 = wt2.remove(wt2.getRoot().getChild('a').getChild('b'));
         m1 = wt1.add(wt1.getRoot().getChild('a').getChild('b'), 'a');
         wt1.applyRemote(m2);
         wt2.applyRemote(m1);
-        
+
         Tree rt = new HashTree();
-        rt.add(null, 'a'); rt.add(null, 'c');
+        rt.add(null, 'a');
+        rt.add(null, 'c');
         assertEquals(rt, wt1.lookup());
         assertEquals(rt, wt2.lookup());
-        
+
         m1 = wt1.remove(wt1.getRoot().getChild('a'));
         wt2.applyRemote(m1);
-        rt = new HashTree(); rt.add(null, 'c');       
+        rt = new HashTree();
+        rt.add(null, 'c');
         assertEquals(rt, wt1.lookup());
-        assertEquals(rt, wt2.lookup());        
+        assertEquals(rt, wt2.lookup());
     }
-    
+
     private void testRootDouble(Factory<CRDTSet> sf, Factory<WordPolicy> rf) throws PreconditionException {
         WordTree wt1 = new WordTree(sf.create(), new WordRoot()),
                 wt2 = new WordTree(sf.create(), new WordRoot());
@@ -379,26 +378,28 @@ public class WordTreeTest {
         m1.concat(wt1.add(wt1.getRoot(), 'c'));
         m1.concat(wt1.add(wt1.getRoot().getChild('a'), 'b'));
         wt2.applyRemote(m1);
-        
+
         CRDTMessage m2 = wt2.remove(wt2.getRoot().getChild('a').getChild('b'));
         m1 = wt1.add(wt1.getRoot().getChild('a').getChild('b'), 'a');
         wt1.applyRemote(m2);
         wt2.applyRemote(m1);
-        
+
         m1 = wt1.add(wt1.getRoot().getChild('a'), 'd');
         m2 = wt2.add(wt2.getRoot().getChild('a'), 'b');
         wt1.applyRemote(m2);
         wt2.applyRemote(m1);
-        
-        Tree rt = new HashTree(); 
-        Node a = rt.add(null, 'a'), 
+
+        Tree rt = new HashTree();
+        Node a = rt.add(null, 'a'),
                 a2 = rt.add(rt.add(a, 'b'), 'a');
-        rt.add(null, 'c'); rt.add(a, 'd');         
-        rt.add(a2, 'd'); rt.add(a2, 'b');
+        rt.add(null, 'c');
+        rt.add(a, 'd');
+        rt.add(a2, 'd');
+        rt.add(a2, 'b');
         assertEquals(rt, wt1.lookup());
-        assertEquals(rt, wt2.lookup());        
+        assertEquals(rt, wt2.lookup());
     }
-    
+
     private void testCompact(Factory<CRDTSet> sf, Factory<WordPolicy> cf) throws PreconditionException {
         WordTree wt1 = new WordTree(sf.create(), cf.create()),
                 wt2 = new WordTree(sf.create(), cf.create());
@@ -407,21 +408,24 @@ public class WordTreeTest {
         m1.concat(wt1.add(wt1.getRoot().getChild('a'), 'a'));
         m1.concat(wt1.add(wt1.getRoot().getChild('a'), 'b'));
         wt2.applyRemote(m1);
-        
+
         CRDTMessage m2 = wt2.remove(wt2.getRoot().getChild('a').getChild('b'));
         m1 = wt1.add(wt1.getRoot().getChild('a').getChild('b'), 'a');
         wt1.applyRemote(m2);
         wt2.applyRemote(m1);
-        
+
         Tree rt = new HashTree();
-        rt.add(rt.add(null, 'a'), 'a'); rt.add(null, 'c');
+        rt.add(rt.add(null, 'a'), 'a');
+        rt.add(null, 'c');
         assertEquals(rt, wt1.lookup());
         assertEquals(rt, wt2.lookup());
-        
+
         m1 = wt1.remove(wt1.getRoot().getChild('a').getChild('a'));
         wt2.applyRemote(m1);
-        rt = new HashTree(); rt.add(null, 'a'); rt.add(null, 'c');       
+        rt = new HashTree();
+        rt.add(null, 'a');
+        rt.add(null, 'c');
         assertEquals(rt, wt1.lookup());
-        assertEquals(rt, wt2.lookup());        
+        assertEquals(rt, wt2.lookup());
     }
 }
