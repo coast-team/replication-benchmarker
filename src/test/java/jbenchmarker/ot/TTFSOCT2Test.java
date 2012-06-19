@@ -27,7 +27,7 @@ import java.util.Map;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
-import jbenchmarker.ot.soct2.SOCT2Message;
+import jbenchmarker.ot.soct2.OTMessage;
 import jbenchmarker.ot.ttf.TTFDocument;
 import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
 import jbenchmarker.ot.ttf.TTFOperation;
@@ -48,7 +48,7 @@ public class TTFSOCT2Test {
 
         List<SequenceMessage> ops = merger.generateLocal(insert(siteId, 0, "b"));
         assertEquals(1, ops.size());
-        SOCT2Message<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
+        OTMessage<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.ins, opg.getOperation().getType());
         assertEquals('b', opg.getOperation().getChar());
         assertEquals(0, opg.getOperation().getPosition());
@@ -81,7 +81,7 @@ public class TTFSOCT2Test {
         List<SequenceMessage> ops = merger.generateLocal(insert(siteId, 0, "abc"));
         assertEquals(3, ops.size());
 
-        SOCT2Message<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
+        OTMessage<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.ins, opg.getOperation().getType());
         assertEquals('a', opg.getOperation().getChar());
         assertEquals(0, opg.getOperation().getPosition());
@@ -109,7 +109,7 @@ public class TTFSOCT2Test {
         // remove 'a'
         List<SequenceMessage> ops = merger.generateLocal(delete(siteId, 0, 1));
         assertEquals(1, ops.size());
-        SOCT2Message<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
+        OTMessage<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
         assertEquals(0, opg.getOperation().getPosition());
         assertEquals("[<0,4>]", vcToString(opg.getClock()));
@@ -153,7 +153,7 @@ public class TTFSOCT2Test {
         List<SequenceMessage> ops = merger.generateLocal(delete(siteId, 0, 4));
 
         assertEquals(4, ops.size());
-        SOCT2Message<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
+        OTMessage<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
         assertEquals(0, opg.getOperation().getPosition());
         assertEquals("[<0,4>]", vcToString(opg.getClock()));
@@ -189,7 +189,7 @@ public class TTFSOCT2Test {
         List<SequenceMessage> ops = merger.generateLocal(delete(siteId, 1, 3));
 
         assertEquals(3, ops.size());
-        SOCT2Message<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
+        OTMessage<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
         assertEquals(1, opg.getOperation().getPosition());
 
@@ -210,10 +210,10 @@ public class TTFSOCT2Test {
         TTFMergeAlgorithm merger = new TTFMergeAlgorithm(new TTFDocument(), siteId);
         assertEquals(vc(0), merger.getClock());
 
-        SOCT2Message op1 = ((TTFSequenceMessage) merger.generateLocal(insert(siteId, 0, "a")).get(0)).getSoct2Message();
+        OTMessage op1 = ((TTFSequenceMessage) merger.generateLocal(insert(siteId, 0, "a")).get(0)).getSoct2Message();
         assertEquals(vc(1), merger.getClock());
 
-        SOCT2Message op2 = ((TTFSequenceMessage) merger.generateLocal(insert(siteId, 1, "b")).get(0)).getSoct2Message();
+        OTMessage op2 = ((TTFSequenceMessage) merger.generateLocal(insert(siteId, 1, "b")).get(0)).getSoct2Message();
         assertEquals(vc(2), merger.getClock());
 
         assertEquals(vc(0), op1.getClock());
@@ -563,7 +563,7 @@ public class TTFSOCT2Test {
 
         }
 
-        SOCT2Message smess = new SOCT2Message(opt.getVectorClock(), opt.getReplica(), op);
+        OTMessage smess = new OTMessage(opt.getVectorClock(), opt.getReplica(), op);
         TTFSequenceMessage mess = new TTFSequenceMessage(smess, opt);
         return mess;
 

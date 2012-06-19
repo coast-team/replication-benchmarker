@@ -28,6 +28,7 @@ import java.util.Set;
 import jbenchmarker.ot.otset.AddWinTransformation;
 import jbenchmarker.ot.otset.DelWinTransformation;
 import jbenchmarker.ot.otset.OTSet;
+import jbenchmarker.ot.soct2.SOCT2;
 import org.junit.AfterClass;
 import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
@@ -46,8 +47,8 @@ public class CausalDispatcherTest {
     Factory set[] = {new CommutativeCounterSet(), new ConvergentCounterSet(),
         new CommutativeLwwSet(), new ConvergentLwwSet(),
         new CommutativeOrSet(), new ConvergentOrSet(),
-        new OTSet(new AddWinTransformation(),0,false),
-        new OTSet(new DelWinTransformation(),0,false)};
+        new OTSet(new SOCT2(new AddWinTransformation(), null)),
+        new OTSet(new SOCT2(new DelWinTransformation(), null))};
     //Vector<LinkedList<TimeBench>> result = new Vector<LinkedList<TimeBench>>();
     int scale = 100;
 

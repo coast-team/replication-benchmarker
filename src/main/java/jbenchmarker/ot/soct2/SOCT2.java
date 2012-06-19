@@ -5,6 +5,7 @@
 package jbenchmarker.ot.soct2;
 
 import collect.VectorClock;
+import crdt.Factory;
 import java.util.Map;
 import jbenchmarker.core.Operation;
 
@@ -14,51 +15,38 @@ import jbenchmarker.core.Operation;
  * @author Stephane Martin
  * Algorithm SOCT2 With document, Log with transformations, and an vector clock.
  */
-public class SOCT2 <O extends Operation> {
+public class SOCT2 <O extends Operation> implements OTAlgorithm<O> {
 
-    private VectorClock siteVC;
-    private SOCT2Log<O> log;
+    final private VectorClock siteVC;
+    final private SOCT2Log<O> log;
+    final SOCT2TranformationInterface ot;
     //private Document doc;
-    private int siteId;
+    private int replicaNumber;
 
-    private SOCT2GarbageCollector gc;
-        
+    final private GarbageCollector gc;
+  
+    /**
+     * Make soct2 instance. 
+     */
+    public SOCT2(SOCT2TranformationInterface ot, int siteId, Factory<GarbageCollector> gc) {
+        this.ot = ot; 
+        this.siteVC = new VectorClock();
+        this.log = new SOCT2Log(ot);
+        this.replicaNumber = siteId;
+        this.gc = gc == null ? null : gc.create();            
+    }
     
     /**
-     * Make soct2 instance with document (to apply modification) transformations, and replicat number or site id
-     * @param ot Tranformations
-     * @param siteId Site identifier
-     * @param gc is number of remote operation count before gc 0 disable the gc.
+     * Make soct2 instance. 
      */
-    public SOCT2(SOCT2TranformationInterface ot, int siteId,int gcFrequency) {
-        this.siteVC = new VectorClock();
-        this.log = new SOCT2Log(ot);
-        
-        this.siteId = siteId;
-        if (gcFrequency>0){
-            this.gc=new SOCT2GarbageCollector(this,gcFrequency);
-        }
-    }
-
-     /**
-     * Make soct2 instance with document (to apply modification) transformations, and replicat number or site id
-     * @param ot Tranformations
-     * @param siteId Site identifier
-     * @param gc is boolean to enable or disable gc with recommanded value.
-     */
-    public SOCT2(SOCT2TranformationInterface ot, int siteId,boolean  gc) {
-        this.siteVC = new VectorClock();
-        this.log = new SOCT2Log(ot);
-        
-        this.siteId = siteId;
-        if (gc){
-            this.gc=new SOCT2GarbageCollector(this);
-        }
+    public SOCT2(SOCT2TranformationInterface ot, Factory<GarbageCollector> gc) {
+        this(ot, 0, gc);
     }
     /**
      * 
      * @return the vector clock of the instance
      */
+    @Override
     public VectorClock getSiteVC() {
         return siteVC;
     }
@@ -66,15 +54,9 @@ public class SOCT2 <O extends Operation> {
     /**
      * @return return log object
      */
+    @Override
     public SOCT2Log getLog() {
         return log;
-    }
-
-    /**
-     * @return replicat number or site identifier
-     */
-    public int getSiteId() {
-        return siteId;
     }
 
     /**
@@ -83,6 +65,7 @@ public class SOCT2 <O extends Operation> {
      * @param vcOp Vector clock of this operation.
      * @return true if its ready false else.
      */
+    @Override
     public boolean readyFor(int siteId, VectorClock vcOp) {
         //if (this.siteVC.getSafe(siteId) != vcOp.getSafe(siteId)) { Garbage collection
         if (this.siteVC.getSafe(siteId)+1 != vcOp.getSafe(siteId)) {
@@ -102,9 +85,10 @@ public class SOCT2 <O extends Operation> {
      * @param op The operation 
      * @return Soct2Message with vector clock.
      */
-    public SOCT2Message estampileMessage(O op) {
-        this.siteVC.inc(this.siteId);
-        SOCT2Message ret = new SOCT2Message(new VectorClock(siteVC), siteId, op);
+    @Override
+    public OTMessage estampileMessage(O op) {
+        this.siteVC.inc(this.replicaNumber);
+        OTMessage ret = new OTMessage(new VectorClock(siteVC), replicaNumber, op);
         //this.siteVC.inc(this.siteId); For garbage collection
         this.log.add(ret);
         //doc.apply((Operation)op);
@@ -116,28 +100,36 @@ public class SOCT2 <O extends Operation> {
      * Integre operation sent by another site or replicats.
      * The operation is returned to apply on document
      * @param soct2message Is a message which contains the operation and vector clock
-     * @return operation to performe on document 
+     * @return operation to performe on document
      */
-    public Operation integrateRemote(SOCT2Message soct2message) {
+    @Override
+    public Operation integrateRemote(OTMessage soct2message) {
 
         if (this.readyFor(soct2message.getSiteId(), soct2message.getClock())) {
             this.log.merge(soct2message);
             //this.getDoc().apply((Operation) Soct2message.getOperation());
             this.log.add(soct2message);
             this.siteVC.inc(soct2message.getSiteId());
-            if (gc!=null)
-                this.gc.collect(soct2message); //Garbage collector
-
+            if (gc != null) {
+                this.gc.collect(this, soct2message); //Garbage collector
+            }
             return soct2message.getOperation();
         } else {
-            throw new RuntimeException("it seems causal reception is broken in "+this.siteId+" v: "+siteVC+" vs "+soct2message.getClock()+" from "+soct2message.getSiteId());
+            throw new RuntimeException("it seems causal reception is broken in " + this.replicaNumber + " v: " + siteVC + " vs " + soct2message.getClock() + " from " + soct2message.getSiteId());
         }
     }
 
-    public void setSiteId(int siteId) {
-        this.siteId = siteId;
-    }
+    @Override
     public void setReplicaNumber(int siteId) {
-        this.siteId = siteId;
+        this.replicaNumber = siteId;
+    }
+
+    @Override
+    public OTAlgorithm<O> create() {
+        return new SOCT2<O>(ot, replicaNumber, gc);
+    }
+
+    public int getReplicaNumber() {
+        return replicaNumber;
     }
 }

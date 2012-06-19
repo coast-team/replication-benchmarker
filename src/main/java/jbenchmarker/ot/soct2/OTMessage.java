@@ -14,7 +14,7 @@ import jbenchmarker.core.Operation;
  * @param <Op> type of operation managed 
  * @author Stephane Martin 
  */
-public class SOCT2Message<Op extends Operation> extends crdt.CommutativeMessage {
+public class OTMessage<Op extends Operation> extends crdt.CommutativeMessage {
     
 
     VectorClock vc;
@@ -27,7 +27,7 @@ public class SOCT2Message<Op extends Operation> extends crdt.CommutativeMessage 
      * @param siteID Site id of sender
      * @param operation the operation 
      */
-    public SOCT2Message(VectorClock vc, int siteID, Op operation) {
+    public OTMessage(VectorClock vc, int siteID, Op operation) {
         //super(op);
         this.vc = vc;
         this.siteID = siteID;
@@ -87,8 +87,8 @@ public class SOCT2Message<Op extends Operation> extends crdt.CommutativeMessage 
      * @return new operation
      */
     @Override
-    public SOCT2Message copy(){
-        return new SOCT2Message(new VectorClock(vc),siteID,operation.clone() );
+    public OTMessage copy(){
+        return new OTMessage(new VectorClock(vc),siteID,operation.clone() );
     }
     
     /**

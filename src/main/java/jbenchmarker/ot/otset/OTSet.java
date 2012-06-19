@@ -6,13 +6,15 @@ package jbenchmarker.ot.otset;
 
 import crdt.CRDTMessage;
 import crdt.CommutativeMessage;
+import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.set.CRDTSet;
 import java.util.HashSet;
 import java.util.Set;
+import jbenchmarker.ot.soct2.OTAlgorithm;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2GarbageCollector;
-import jbenchmarker.ot.soct2.SOCT2Message;
+import jbenchmarker.ot.soct2.OTMessage;
 import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 
 /**
@@ -22,21 +24,18 @@ import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
  */
 public class OTSet<T> extends CRDTSet<T> {
 
-    Set set = new HashSet();
-    SOCT2 soct2;
-    int replicaNumber;
+    final Set set = new HashSet();
+    final OTAlgorithm<OTSetOperations<T>> otAlgo;
+    
     /*
      * -- Factory --
      */
-    SOCT2TranformationInterface ot;
     static int created = 0;
-    int GCfrequency = 0;
 
-    public OTSet(SOCT2TranformationInterface ot) {
-        this.replicaNumber = ++created ;
-        this.ot = ot;
-        soct2 = new SOCT2(ot,replicaNumber , GCfrequency);
-
+    public OTSet(Factory<OTAlgorithm<OTSetOperations<T>>> otalgo) {
+        super(++created); 
+        this.otAlgo = otalgo.create();
+        this.otAlgo.setReplicaNumber(created);
     }
 
     /**
@@ -44,41 +43,18 @@ public class OTSet<T> extends CRDTSet<T> {
      * @param ot OT policy for this set AddWin or DelWin
      * @param replicaNumber Site number of replicat number
      */
-    public OTSet(SOCT2TranformationInterface ot, int siteId) {
-        this.replicaNumber = siteId;
-        soct2 = new SOCT2(ot, siteId, GCfrequency);
-        this.ot = ot;
+    public OTSet(Factory<OTAlgorithm<OTSetOperations<T>>> otalgo, int siteId) {
+        super(siteId);
+        this.otAlgo = otalgo.create();
+        this.otAlgo.setReplicaNumber(siteId);
     }
 
     @Override
     public void setReplicaNumber(int replicaNumber) {
         super.setReplicaNumber(replicaNumber);
-        soct2.setReplicaNumber(replicaNumber);
-        this.replicaNumber = replicaNumber;
+        otAlgo.setReplicaNumber(replicaNumber);
     }
-
-    /**
-     *
-     * @param ot OT policy for this set AddWin or DelWin
-     * @param replicaNumber Site number of replicat number
-     * @param gc if true Enable the garbage collector
-     */
-    public OTSet(SOCT2TranformationInterface ot, int siteId, boolean gc) {
-        if (gc){
-            this.GCfrequency=SOCT2GarbageCollector.RECOMMANDED_GC_FREQUENCY_VALUE;
-        }
-        this.replicaNumber = siteId;
-        
-        soct2 = new SOCT2(ot, siteId, GCfrequency);
-        this.ot = ot;
-    }
-
-    public OTSet(SOCT2TranformationInterface ot, int siteId, int gcFrequency) {
-        this.replicaNumber = siteId;
-        soct2 = new SOCT2(ot, siteId, gcFrequency);
-        this.ot = ot;
-        this.GCfrequency=gcFrequency;
-    }
+    
     /**
      * return new Otset
      *
@@ -86,7 +62,7 @@ public class OTSet<T> extends CRDTSet<T> {
      */
     @Override
     public CRDTSet create() {
-        return new OTSet(ot, replicaNumber + ++created ,GCfrequency);
+        return new OTSet(otAlgo);
     }
 
     /**
@@ -101,9 +77,9 @@ public class OTSet<T> extends CRDTSet<T> {
         if (set.contains(t)) {
             throw new PreconditionException("add : set already contains element " + t);
         } else {
-            OTSetOperations<T> op = new OTSetOperations(OTSetOperations.OpType.Add, t, replicaNumber);
+            OTSetOperations<T> op = new OTSetOperations(OTSetOperations.OpType.Add, t, getReplicaNumber());
             set.add(t);
-            return soct2.estampileMessage(op);
+            return otAlgo.estampileMessage(op);
         }
     }
 
@@ -118,9 +94,9 @@ public class OTSet<T> extends CRDTSet<T> {
     @Override
     protected CRDTMessage innerRemove(T t) throws PreconditionException {
         if (set.contains(t)) {
-            OTSetOperations<T> op = new OTSetOperations(OTSetOperations.OpType.Del, t, replicaNumber);
+            OTSetOperations<T> op = new OTSetOperations(OTSetOperations.OpType.Del, t, getReplicaNumber());
             set.remove(t);
-            return soct2.estampileMessage(op);
+            return otAlgo.estampileMessage(op);
         } else {
             throw new PreconditionException("del : element " + t + " is not present in set");
         }
@@ -154,7 +130,7 @@ public class OTSet<T> extends CRDTSet<T> {
     }
 
     private void applyOneOperation(CRDTMessage msg) {
-        OTSetOperations<T> op = (OTSetOperations<T>) soct2.integrateRemote((SOCT2Message) msg);
+        OTSetOperations<T> op = (OTSetOperations<T>) otAlgo.integrateRemote((OTMessage) msg);
         switch (op.getType()) {
             case Add:
                 if (!set.contains(op.getElement())) {
@@ -185,7 +161,7 @@ public class OTSet<T> extends CRDTSet<T> {
 
     @Override
     public String toString() {
-        return "OTSet{" + "set=" + set + ", soct2=" + soct2 + ", replicaNumber=" + replicaNumber + ", ot=" + ot + '}';
+        return "OTSet{" + "set=" + set + ", soct2=" + otAlgo + ", replicaNumber=" + getReplicaNumber() + '}';
     }
     
 }

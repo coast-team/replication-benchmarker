@@ -27,7 +27,7 @@ import java.util.List;
 import jbenchmarker.core.*;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2Log;
-import jbenchmarker.ot.soct2.SOCT2Message;
+import jbenchmarker.ot.soct2.OTMessage;
 
 /**
  * This TTF Merge Algorithm uses SOCT2 algorithm with TTF method
@@ -44,7 +44,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
      */
     public TTFMergeAlgorithm(Document doc, int siteId) {
         super(doc, siteId);
-        soct2 = new SOCT2<TTFOperation>(new TTFTransformations(), siteId,true);
+        soct2 = new SOCT2<TTFOperation>(new TTFTransformations(), siteId, null);
 
     }
 
@@ -53,13 +53,6 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
      */
     public VectorClock getClock() {
         return soct2.getSiteVC();
-    }
-
-    /**
-     * @return history log object of document
-     */
-    public SOCT2Log getHistoryLog() {
-        return soct2.getLog();
     }
 
     
@@ -76,7 +69,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                     while (!doc.getChar(mpos + visibleIndex).isVisible()) {
                         visibleIndex++;
                     }
-                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, soct2.getSiteId());
+                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, soct2.getReplicaNumber());
 
                     if (ret==null){
                         ret=soct2.estampileMessage(op);
@@ -92,7 +85,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                     TTFOperation op = new TTFOperation(SequenceOperation.OpType.ins,
                             mpos + i,
                             opt.getContent().get(i),
-                            soct2.getSiteId());
+                            soct2.getReplicaNumber());
 
                     if (ret==null){
                         ret=soct2.estampileMessage(op);
@@ -117,6 +110,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
 
         return ret;
     }
+    
     /*
      *This integrate local modifications and generate message to another replicas
      */
@@ -134,7 +128,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                     while (!doc.getChar(mpos + visibleIndex).isVisible()) {
                         visibleIndex++;
                     }
-                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, soct2.getSiteId());
+                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, soct2.getReplicaNumber());
 
                     generatedOperations.add(new TTFSequenceMessage(soct2.estampileMessage(op), opt));
                     doc.apply(op);
@@ -145,7 +139,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                     TTFOperation op = new TTFOperation(SequenceOperation.OpType.ins,
                             mpos + i,
                             opt.getContent().get(i),
-                            soct2.getSiteId());
+                            soct2.getReplicaNumber());
 
                     generatedOperations.add(new TTFSequenceMessage(soct2.estampileMessage(op), opt));
                     doc.apply(op);
@@ -184,14 +178,14 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
         integrateOneRemoteOperation(((TTFSequenceMessage) mess).getSoct2Message());
     }
     public void integrateRemote(CRDTMessage mess) throws IncorrectTraceException {
-        SOCT2Message soctMess= (SOCT2Message)mess;
+        OTMessage soctMess= (OTMessage)mess;
         integrateOneRemoteOperation(soctMess);
         for(Object m:soctMess.getMsgs()){
-            integrateOneRemoteOperation((SOCT2Message)m);
+            integrateOneRemoteOperation((OTMessage)m);
         }
         
     }
-    private void integrateOneRemoteOperation(SOCT2Message mess){
+    private void integrateOneRemoteOperation(OTMessage mess){
         Operation op=soct2.integrateRemote(mess);
         this.getDoc().apply(op);
     }

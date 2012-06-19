@@ -14,6 +14,13 @@ import crdt.PreconditionException;
  * @author score
  */
 public abstract class CRDTSet<T> extends CRDT<Set<T>>  {
+
+    public CRDTSet() {
+    }
+
+    public CRDTSet(int replicaNumber) {
+        super(replicaNumber);
+    }
     
     @Override
     public abstract CRDTSet<T> create();

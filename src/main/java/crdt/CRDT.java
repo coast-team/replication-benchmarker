@@ -14,6 +14,13 @@ import java.util.Observable;
 public abstract class CRDT<L> extends Observable implements Factory<CRDT<L>> {
     private int replicaNumber;
 
+    public CRDT(int replicaNumber) {
+        this.replicaNumber = replicaNumber;
+    }
+
+    public CRDT() {
+    }
+
     public void setReplicaNumber(int replicaNumber) {
         this.replicaNumber = replicaNumber;
     }

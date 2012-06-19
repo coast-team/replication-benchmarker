@@ -29,7 +29,7 @@ import jbenchmarker.core.Operation;
  * @param <Op> 
  * @author oster
  */
-public class SOCT2Log<Op extends Operation> implements Iterable<SOCT2Message<Op>>, Serializable {
+public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, Serializable {
 
     private SOCT2TranformationInterface<Op> transforme;
     
@@ -52,13 +52,13 @@ public class SOCT2Log<Op extends Operation> implements Iterable<SOCT2Message<Op>
     /**
      * This is log or history of process.
      */
-    protected List<SOCT2Message<Op>> operations = new ArrayList<SOCT2Message<Op>>();
+    protected List<OTMessage<Op>> operations = new ArrayList<OTMessage<Op>>();
 
     /**
      * add operation to log without transformation
      * @param operation
      */
-    public void add(SOCT2Message operation) {
+    public void add(OTMessage operation) {
         this.operations.add(operation);
     }
 
@@ -75,7 +75,7 @@ public class SOCT2Log<Op extends Operation> implements Iterable<SOCT2Message<Op>
      * @return iterator for each operation with vector clock
      */
     @Override
-    public Iterator<SOCT2Message<Op>> iterator() {
+    public Iterator<OTMessage<Op>> iterator() {
         return this.operations.iterator();
     }
 
@@ -85,7 +85,7 @@ public class SOCT2Log<Op extends Operation> implements Iterable<SOCT2Message<Op>
      * @param operation new operation
      * @return return the transformed operation
      */
-    public Op merge(SOCT2Message<Op> operation) {
+    public Op merge(OTMessage<Op> operation) {
         Op opt = operation.getOperation();
         int separationIndex = separatePrecedingAndConcurrentOperations(operation);
         for (int i = separationIndex; i < this.operations.size(); i++) {
@@ -95,12 +95,12 @@ public class SOCT2Log<Op extends Operation> implements Iterable<SOCT2Message<Op>
         return opt;
     }
 
-    private int separatePrecedingAndConcurrentOperations(SOCT2Message receivedOperation) {
+    private int separatePrecedingAndConcurrentOperations(OTMessage receivedOperation) {
         int separationIndex = 0;
         int logSize = operations.size();
 
         for (int i = 0; i < logSize; i++) {
-            SOCT2Message localOperation = operations.get(i);
+            OTMessage localOperation = operations.get(i);
             int siteIdOfLocalOperation = localOperation.getSiteId();
 
             //if (localOperation.getClock().getSafe(siteIdOfLocalOperation) < receivedOperation.getClock().getSafe(siteIdOfLocalOperation)) { Garbage collection
@@ -119,8 +119,8 @@ public class SOCT2Log<Op extends Operation> implements Iterable<SOCT2Message<Op>
 
     // transpose backward the (index)th operation with the (index-1)th operation
     private void transposeBackward(int index) {
-        SOCT2Message<Op> messj = operations.get(index);
-        SOCT2Message<Op> messk = operations.get(index - 1);
+        OTMessage<Op> messj = operations.get(index);
+        OTMessage<Op> messk = operations.get(index - 1);
         
         Op opj = messj.getOperation();
         Op opk = messk.getOperation();
