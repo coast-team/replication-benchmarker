@@ -20,12 +20,14 @@ package jbenchmarker.ot.ttf;
 
 import collect.VectorClock;
 import crdt.CRDT;
+import crdt.CRDTMessage;
 import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.*;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2Log;
+import jbenchmarker.ot.soct2.SOCT2Message;
 
 /**
  * This TTF Merge Algorithm uses SOCT2 algorithm with TTF method
@@ -60,6 +62,61 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
         return soct2.getLog();
     }
 
+    
+    public CRDTMessage generateLocalCRDT(SequenceOperation opt){
+        TTFDocument doc = (TTFDocument) this.getDoc();
+        List<SequenceMessage> generatedOperations = new ArrayList<SequenceMessage>();
+        CRDTMessage ret=null;
+        int mpos = doc.viewToModel(opt.getPosition());
+        switch (opt.getType()) {
+            case del:
+                int visibleIndex = 0;
+                for (int i = 0; i < opt.getNumberOf(); i++) {
+                    // TODO: could be improved with an iterator on only visible characters
+                    while (!doc.getChar(mpos + visibleIndex).isVisible()) {
+                        visibleIndex++;
+                    }
+                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, soct2.getSiteId());
+
+                    if (ret==null){
+                        ret=soct2.estampileMessage(op);
+                    }else{
+                        ret.concat(soct2.estampileMessage(op));
+                    }
+                        
+                    doc.apply(op);
+                }
+                break;
+            case ins:
+                for (int i = 0; i < opt.getContent().size(); i++) {
+                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.ins,
+                            mpos + i,
+                            opt.getContent().get(i),
+                            soct2.getSiteId());
+
+                    if (ret==null){
+                        ret=soct2.estampileMessage(op);
+                    }else{
+                        ret.concat(soct2.estampileMessage(op));
+                    }
+                    doc.apply(op);
+                    
+                }
+                break;
+            case unsupported:
+                UnsupportedOperation op = UnsupportedOperation.create(opt);
+                //this.siteVC.inc(this.getReplicaNumber());
+                generatedOperations.add(op);
+                break;
+
+            case up:
+                
+                break;
+
+        }
+
+        return ret;
+    }
     /*
      *This integrate local modifications and generate message to another replicas
      */
@@ -124,7 +181,18 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
      */
     @Override
     public void integrateRemote(SequenceMessage mess) throws IncorrectTraceException {
-        Operation op=soct2.integrateRemote(((TTFSequenceMessage) mess).getSoct2Message());
+        integrateOneRemoteOperation(((TTFSequenceMessage) mess).getSoct2Message());
+    }
+    public void integrateRemote(CRDTMessage mess) throws IncorrectTraceException {
+        SOCT2Message soctMess= (SOCT2Message)mess;
+        integrateOneRemoteOperation(soctMess);
+        for(Object m:soctMess.getMsgs()){
+            integrateOneRemoteOperation((SOCT2Message)m);
+        }
+        
+    }
+    private void integrateOneRemoteOperation(SOCT2Message mess){
+        Operation op=soct2.integrateRemote(mess);
         this.getDoc().apply(op);
     }
 }
