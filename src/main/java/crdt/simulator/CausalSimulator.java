@@ -141,7 +141,7 @@ public class CausalSimulator extends Simulator {
             
             
             // For testing can be removed
-            causalCheck(opt, clocks);
+            // causalCheck(opt, clocks);
             
             VectorClock vc = clocks.get(r);
             

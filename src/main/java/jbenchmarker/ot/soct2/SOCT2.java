@@ -92,7 +92,6 @@ public class SOCT2 <O extends Operation> implements OTAlgorithm<O> {
         //this.siteVC.inc(this.siteId); For garbage collection
         this.log.add(ret);
         //doc.apply((Operation)op);
-
         return ret;
     }
 

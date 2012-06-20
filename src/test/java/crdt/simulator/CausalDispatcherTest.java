@@ -176,15 +176,27 @@ public class CausalDispatcherTest {
        }
     }
 
+//    @Ignore
+    @Test
+    public void stressSet() throws PreconditionException, IncorrectTraceException, IOException {
+        int i = 0;
+        while (i <5000) {
+            //System.out.println(" i :"+i++);
+            i++;
+            testRun(set[6], 10, 3, seqopp);          
+        }
+        //writeResult();
+    }
+    
+    
     @Ignore
     @Test
     public void stress() throws PreconditionException, IncorrectTraceException, IOException {
         int i = 0;
-        while (i <1) {
+        while (i <5000) {
             //System.out.println(" i :"+i++);
             i++;
-            testRun(new WordTree(set[1], policy[1]), 15000, 4, treeop);
-            
+            testRun(new WordTree(set[7], policy[1]), 10, 3, treeop);
         }
         //writeResult();
     }

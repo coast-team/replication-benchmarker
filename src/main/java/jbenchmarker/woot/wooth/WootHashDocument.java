@@ -181,7 +181,6 @@ public class WootHashDocument<T> implements Document {
             }
             insertBetween(wn, ip, in);
         }
-
     }
     
     WootHashNode getFirst() {

@@ -48,7 +48,7 @@ public class WootHashMerge<T> extends MergeAlgorithm {
     @Override
     protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
-        WootHashDocument wdoc = (WootHashDocument) (this.getDoc());
+        WootHashDocument wdoc = this.getDoc();
         int p = opt.getPosition();
         if (opt.getType() == SequenceOperation.OpType.del) {
             WootHashNode w = wdoc.getVisible(p);
@@ -69,6 +69,17 @@ public class WootHashMerge<T> extends MergeAlgorithm {
            } 
         }
         return lop;
+    }
+
+    @Override
+    public WootHashDocument getDoc() {
+        return (WootHashDocument) super.getDoc();
+    }
+
+    @Override
+    public void setReplicaNumber(int replicaNumber) {
+        super.setReplicaNumber(replicaNumber);
+        this.getDoc().setReplicaNumber(replicaNumber);
     }
 
     @Override

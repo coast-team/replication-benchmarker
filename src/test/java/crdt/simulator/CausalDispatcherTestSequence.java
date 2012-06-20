@@ -29,6 +29,7 @@ public class CausalDispatcherTestSequence {
 
     Factory s[] = { new LogootFactory(), //new TreedocFactory(), new jbenchmarker.treedoc.list.TreedocFactory(),
         new WootFactory(), new WootOFactory(), new WootHFactory(), // new ABTFactory(),
+        new TTFFactory(),
     //    new SOCT2Factory(), new RGAFactory()
     };
     

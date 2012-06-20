@@ -12,10 +12,7 @@ import crdt.set.CRDTSet;
 import java.util.HashSet;
 import java.util.Set;
 import jbenchmarker.ot.soct2.OTAlgorithm;
-import jbenchmarker.ot.soct2.SOCT2;
-import jbenchmarker.ot.soct2.SOCT2GarbageCollector;
 import jbenchmarker.ot.soct2.OTMessage;
-import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 
 /**
  *

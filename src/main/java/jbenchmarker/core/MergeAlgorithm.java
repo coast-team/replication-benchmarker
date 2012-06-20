@@ -53,6 +53,10 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
         this.setReplicaNumber(siteId);
     }
 
+    public MergeAlgorithm(Document doc) {
+        this.doc = doc;
+    }
+
     /**
      * Integrate remote message from another replicas
      * To be define by the concrete merge algorithm

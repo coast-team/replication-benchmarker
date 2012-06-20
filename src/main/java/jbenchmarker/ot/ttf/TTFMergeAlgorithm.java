@@ -25,40 +25,44 @@ import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.*;
+import jbenchmarker.ot.soct2.OTAlgorithm;
 import jbenchmarker.ot.soct2.OTMessage;
 import jbenchmarker.ot.soct2.SOCT2;
 
 /**
  * This TTF Merge Algorithm uses SOCT2 algorithm with TTF method
+ *
  * @author oster
  */
 public class TTFMergeAlgorithm extends MergeAlgorithm {
 
-    private SOCT2<TTFOperation> soct2;
+    final private OTAlgorithm<TTFOperation> otAlgo;
     //private TTFDocument ;
+
     /**
-     * Make new TTFMerge algorithm with docuement (TTFDocuement) and site id or replicat id.
+     * Make new TTFMerge algorithm with docuement (TTFDocuement) and site id or
+     * replicat id.
+     *
      * @param doc TTF Document
      * @param siteId SiteID
      */
     public TTFMergeAlgorithm(Document doc, int siteId) {
-        super(doc, siteId);
-        soct2 = new SOCT2<TTFOperation>(new TTFTransformations(), siteId, null);
-
+        super(doc);
+        otAlgo = new SOCT2<TTFOperation>(new TTFTransformations(), siteId, null);
+        setReplicaNumber(siteId);
     }
 
     /**
      * @return Vector Clock of site
      */
     public VectorClock getClock() {
-        return soct2.getSiteVC();
+        return otAlgo.getSiteVC();
     }
 
-    
-    public CRDTMessage generateLocalCRDT(SequenceOperation opt){
+    public CRDTMessage generateLocalCRDT(SequenceOperation opt) {
         TTFDocument doc = (TTFDocument) this.getDoc();
         List<SequenceMessage> generatedOperations = new ArrayList<SequenceMessage>();
-        CRDTMessage ret=null;
+        CRDTMessage ret = null;
         int mpos = doc.viewToModel(opt.getPosition());
         switch (opt.getType()) {
             case del:
@@ -68,14 +72,12 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                     while (!doc.getChar(mpos + visibleIndex).isVisible()) {
                         visibleIndex++;
                     }
-                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, soct2.getReplicaNumber());
-
-                    if (ret==null){
-                        ret=soct2.estampileMessage(op);
-                    }else{
-                        ret.concat(soct2.estampileMessage(op));
+                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, getReplicaNumber());
+                    if (ret == null) {
+                        ret = otAlgo.estampileMessage(op);
+                    } else {
+                        ret.concat(otAlgo.estampileMessage(op));
                     }
-                        
                     doc.apply(op);
                 }
                 break;
@@ -84,15 +86,13 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                     TTFOperation op = new TTFOperation(SequenceOperation.OpType.ins,
                             mpos + i,
                             opt.getContent().get(i),
-                            soct2.getReplicaNumber());
-
-                    if (ret==null){
-                        ret=soct2.estampileMessage(op);
-                    }else{
-                        ret.concat(soct2.estampileMessage(op));
+                            getReplicaNumber());
+                    if (ret == null) {
+                        ret = otAlgo.estampileMessage(op);
+                    } else {
+                        ret.concat(otAlgo.estampileMessage(op));
                     }
                     doc.apply(op);
-                    
                 }
                 break;
             case unsupported:
@@ -100,18 +100,15 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                 //this.siteVC.inc(this.getReplicaNumber());
                 generatedOperations.add(op);
                 break;
-
             case up:
-                
                 break;
-
         }
-
         return ret;
     }
-    
+
     /*
-     *This integrate local modifications and generate message to another replicas
+     * This integrate local modifications and generate message to another
+     * replicas
      */
     @Override
     public List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
@@ -127,9 +124,8 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                     while (!doc.getChar(mpos + visibleIndex).isVisible()) {
                         visibleIndex++;
                     }
-                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, soct2.getReplicaNumber());
-
-                    generatedOperations.add(new TTFSequenceMessage(soct2.estampileMessage(op), opt));
+                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, getReplicaNumber());
+                    generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
                     doc.apply(op);
                 }
                 break;
@@ -138,11 +134,9 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                     TTFOperation op = new TTFOperation(SequenceOperation.OpType.ins,
                             mpos + i,
                             opt.getContent().get(i),
-                            soct2.getReplicaNumber());
-
-                    generatedOperations.add(new TTFSequenceMessage(soct2.estampileMessage(op), opt));
+                            getReplicaNumber());
+                    generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
                     doc.apply(op);
-                    
                 }
                 break;
             case unsupported:
@@ -150,18 +144,15 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                 //this.siteVC.inc(this.getReplicaNumber());
                 generatedOperations.add(op);
                 break;
-
             case up:
-                
                 break;
-
         }
-
         return generatedOperations;
     }
 
     /**
      * Make a new mergeAlgorithm with 0 as site id.
+     *
      * @return new TTFMergeAlgorithm
      */
     @Override
@@ -176,17 +167,24 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
     public void integrateRemote(SequenceMessage mess) throws IncorrectTraceException {
         integrateOneRemoteOperation(((TTFSequenceMessage) mess).getSoct2Message());
     }
-    
+
     public void integrateRemote(CRDTMessage mess) throws IncorrectTraceException {
-        OTMessage soctMess= (OTMessage)mess;
+        OTMessage soctMess = (OTMessage) mess;
         integrateOneRemoteOperation(soctMess);
-        for(Object m:soctMess.getMsgs()){
-            integrateOneRemoteOperation((OTMessage)m);
+        for (Object m : soctMess.getMsgs()) {
+            integrateOneRemoteOperation((OTMessage) m);
         }
-        
+
     }
-    private void integrateOneRemoteOperation(OTMessage mess){
-        Operation op=soct2.integrateRemote(mess);
+
+    private void integrateOneRemoteOperation(OTMessage mess) {
+        Operation op = otAlgo.integrateRemote(mess);
         this.getDoc().apply(op);
+    }
+
+    @Override
+    public void setReplicaNumber(int replicaNumber) {
+        super.setReplicaNumber(replicaNumber);
+        otAlgo.setReplicaNumber(replicaNumber);
     }
 }
