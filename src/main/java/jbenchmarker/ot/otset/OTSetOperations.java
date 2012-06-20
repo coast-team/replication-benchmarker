@@ -5,7 +5,7 @@
 package jbenchmarker.ot.otset;
 
 import jbenchmarker.core.Operation;
-import jbenchmarker.core.OperationBasedMessages;
+import crdt.OperationBasedMessages;
 
 /**
  *
@@ -21,12 +21,12 @@ public class OTSetOperations<Element> implements Operation {
     
   
    /* @Override
-    protected String visu() {
+    protected String toString() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected OperationBasedMessages copy() {
+    protected OperationBasedMessages clone() {
         throw new UnsupportedOperationException("Not supported yet.");
     }*/
 

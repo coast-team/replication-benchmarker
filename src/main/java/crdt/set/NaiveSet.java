@@ -20,7 +20,7 @@ public class NaiveSet<T> extends CommutativeSet<T> {
     HashSet<T> set = new HashSet<T>();
 
     @Override
-    protected void applyOneRemote(CommutativeSetMessage<T> op) {
+    protected void applyOneInRemote(CommutativeSetMessage<T> op) {
         if (op.getType() == OpType.add) {
             set.add(op.content);
         } else {
@@ -54,5 +54,5 @@ public class NaiveSet<T> extends CommutativeSet<T> {
     public Set<T> lookup() {
         return set;
     }
-    
+
 }

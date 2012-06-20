@@ -71,7 +71,7 @@ public class WordTree<T> extends CRDTTree<T> {
     }
 
     @Override
-    public void applyRemote(CRDTMessage op) {
+    public void applyOneRemote(CRDTMessage op) {
         words.applyRemote(op);       
     }
 

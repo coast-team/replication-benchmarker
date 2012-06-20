@@ -61,7 +61,7 @@ public class LogootOperation<T> extends SequenceMessage
 
     // FIXME: shoud clone the operation and its parameters
     @Override
-    public SequenceMessage copy() {
+    public SequenceMessage clone() {
         return new LogootOperation(this.getOriginalOp(), this.identif.clone(), this.content);
     }
 

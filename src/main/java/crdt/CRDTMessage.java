@@ -11,6 +11,7 @@ package crdt;
 public interface CRDTMessage extends Cloneable {
     public CRDTMessage concat(CRDTMessage msg);
 
+    public void execute(CRDT crdt);
     public CRDTMessage clone();
     
     public int size();

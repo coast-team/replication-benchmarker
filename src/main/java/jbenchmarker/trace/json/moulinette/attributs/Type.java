@@ -10,5 +10,5 @@ package jbenchmarker.trace.json.moulinette.attributs;
  */
 public enum  Type {
     //Liste exhaustive des opérations possibles sur des fichiers ; add_dir, del_dir sont en suppléments
-    update_file,add_file,copy_of_file,del_file,remain_file,change_type,unmerged_file,unknown,add_dir,del_dir
+    update_file,add_file,clone_of_file,del_file,remain_file,change_type,unmerged_file,unknown,add_dir,del_dir
 }

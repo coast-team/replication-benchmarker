@@ -37,7 +37,7 @@ public class PlaceboFactory extends ReplicaFactory {
         }
 
         @Override
-        public SequenceMessage copy() {
+        public SequenceMessage clone() {
             return new PlaceboOperation(this.getOriginalOp());
         }
     }

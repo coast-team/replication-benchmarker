@@ -23,6 +23,7 @@ import java.util.Iterator;
 import crdt.simulator.Trace;
 import crdt.simulator.CausalSimulator;
 import crdt.CRDT;
+import crdt.CRDTMessage;
 import crdt.simulator.TraceOperation;
 import java.util.Enumeration;
 import jbenchmarker.core.ReplicaFactory;
@@ -69,7 +70,7 @@ public class CausalDispatcherTest {
         }
             
         @Override
-        public SequenceMessage copy() {
+        public SequenceMessage clone() {
             return this;
         }
 

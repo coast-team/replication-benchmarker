@@ -5,6 +5,7 @@
 package crdt.tree.graphtree;
 
 import collect.Node;
+import crdt.CRDT;
 import crdt.CRDTMessage;
 import java.util.*;
 
@@ -47,6 +48,11 @@ public class GTreeMessage implements CRDTMessage {
     @Override
     public int size() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void execute(CRDT crdt) {
+        crdt.applyOneRemote(this);
     }
     
 }

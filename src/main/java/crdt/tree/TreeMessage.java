@@ -4,6 +4,7 @@
  */
 package crdt.tree;
 
+import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.set.SetOperation;
 import java.util.HashSet;
@@ -27,7 +28,12 @@ public class TreeMessage implements CRDTMessage {
     public CRDTMessage clone() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
+    @Override
+    public void execute(CRDT crdt) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     public enum TreeOperationType {add, del}; 
     private TreeOperationType type;
 

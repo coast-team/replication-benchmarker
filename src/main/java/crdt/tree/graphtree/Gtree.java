@@ -83,7 +83,7 @@ public class Gtree<T> extends CRDTTree<T> {
     }
     
     @Override
-    public void applyRemote(CRDTMessage op) {
+    public void applyOneRemote(CRDTMessage op) {
         this.node.applyRemote(((GTreeMessage)op).getNode());
         this.edge.applyRemote(((GTreeMessage)op).getEdge());        
     }

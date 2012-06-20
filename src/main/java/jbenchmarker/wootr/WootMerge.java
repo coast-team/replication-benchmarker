@@ -19,6 +19,7 @@
 package jbenchmarker.wootr;
 
 import crdt.CRDT;
+import crdt.CRDTMessage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

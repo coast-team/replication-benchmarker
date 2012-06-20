@@ -30,7 +30,7 @@ public class CommutativeOrSet<T> extends CommutativeSet<T> {
     }
 
     @Override
-    protected void applyOneRemote(CommutativeSetMessage<T> op) {
+    protected void applyOneInRemote(CommutativeSetMessage<T> op) {
 
         OrMessage<T> orOp = (OrMessage<T>) op;
 

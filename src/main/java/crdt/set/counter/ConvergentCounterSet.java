@@ -4,6 +4,7 @@
  */
 package crdt.set.counter;
 
+import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.set.CRDTSet;
 import crdt.set.ConvergentSet;
@@ -32,7 +33,7 @@ public class ConvergentCounterSet<T>  extends ConvergentSet<T>  {
     }
 
     @Override
-    public void applyRemote(CRDTMessage statv) {
+    public void applyOneRemote(CRDTMessage statv) {
         ConvergentCounterSet<T> that = (ConvergentCounterSet<T>) statv;
 
         // least upper bound 
@@ -100,4 +101,6 @@ public class ConvergentCounterSet<T>  extends ConvergentSet<T>  {
         clone.mapR = (HashMap<T, Integer>) this.mapR.clone();
         return clone;
     }
+
+  
 }

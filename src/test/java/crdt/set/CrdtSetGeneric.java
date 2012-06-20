@@ -152,10 +152,10 @@ public class CrdtSetGeneric<T, L> {
     public Set<T> testApplyConcurAddDel(CRDTSet set1, CRDTSet set2) throws PreconditionException {
         CRDTMessage m1 = set1.innerAdd('a');
         CRDTMessage m2 = set1.innerAdd('b');
-        m1.concat(m2);
+        m1=m1.concat(m2);
         CRDTMessage m3 = set2.innerAdd('a');
         CRDTMessage m4 = set2.innerRemove('a');
-        m3.concat(m4);
+        m3=m3.concat(m4);
         
         set2.applyRemote(m1);
         set1.applyRemote(m3);

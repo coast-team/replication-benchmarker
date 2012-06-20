@@ -31,7 +31,7 @@ public class CommutativeTwoPhaseSet<T> extends CRDTSet<T>{
     }
 
     @Override
-    public void applyRemote(CRDTMessage Setop) {
+    public void applyOneRemote(CRDTMessage Setop) {
         
         TwoPhasesMessage op = (TwoPhasesMessage) Setop;
         if (op.getType() == TwoPhasesMessage.OpType.add) {

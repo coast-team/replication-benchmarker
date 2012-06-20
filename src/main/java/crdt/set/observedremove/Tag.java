@@ -39,7 +39,7 @@ public class Tag {
         numReplica = n;
     }
     
-    public Tag copy() {
+    public Tag clone() {
         return new Tag(this.numReplica,this.numOp);
     }
 

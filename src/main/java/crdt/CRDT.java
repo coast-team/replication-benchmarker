@@ -31,9 +31,11 @@ public abstract class CRDT<L> extends Observable implements Factory<CRDT<L>> {
     
     abstract public CRDTMessage applyLocal(Operation op) throws PreconditionException ;
     
-    abstract public void applyRemote(CRDTMessage msg);
+    final public void applyRemote(CRDTMessage msg){
+        msg.execute(this);
+    }
     
-    
+    abstract public void applyOneRemote(CRDTMessage msg);
     abstract public L lookup();
         
     @Deprecated

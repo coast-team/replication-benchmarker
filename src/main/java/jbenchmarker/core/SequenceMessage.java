@@ -59,16 +59,16 @@ public abstract class SequenceMessage extends CommutativeMessage implements Seri
     }
     
     @Override
-    abstract public SequenceMessage copy();
+    abstract public SequenceMessage clone();
 
     /*@Override
     public SequenceMessage clone(){
-        return copy();
+        return clone();
     }*/
 
     
     @Override
-    protected String visu() {
+    public String toString() {
         return originalOp.toString();
     }
 }

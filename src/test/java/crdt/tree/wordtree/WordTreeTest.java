@@ -348,8 +348,8 @@ public class WordTreeTest {
         WordTree wt1 = new WordTree(sf.create(), rf.create()),
                 wt2 = new WordTree(sf.create(), rf.create());
         CRDTMessage m1 = wt1.add(wt1.getRoot(), 'a');
-        m1.concat(wt1.add(wt1.getRoot(), 'c'));
-        m1.concat(wt1.add(wt1.getRoot().getChild('a'), 'b'));
+        m1=m1.concat(wt1.add(wt1.getRoot(), 'c'));
+        m1=m1.concat(wt1.add(wt1.getRoot().getChild('a'), 'b'));
         wt2.applyRemote(m1);
 
         CRDTMessage m2 = wt2.remove(wt2.getRoot().getChild('a').getChild('b'));
@@ -375,8 +375,8 @@ public class WordTreeTest {
         WordTree wt1 = new WordTree(sf.create(), new WordRoot()),
                 wt2 = new WordTree(sf.create(), new WordRoot());
         CRDTMessage m1 = wt1.add(wt1.getRoot(), 'a');
-        m1.concat(wt1.add(wt1.getRoot(), 'c'));
-        m1.concat(wt1.add(wt1.getRoot().getChild('a'), 'b'));
+        m1=m1.concat(wt1.add(wt1.getRoot(), 'c'));
+        m1=m1.concat(wt1.add(wt1.getRoot().getChild('a'), 'b'));
         wt2.applyRemote(m1);
 
         CRDTMessage m2 = wt2.remove(wt2.getRoot().getChild('a').getChild('b'));
@@ -404,9 +404,9 @@ public class WordTreeTest {
         WordTree wt1 = new WordTree(sf.create(), cf.create()),
                 wt2 = new WordTree(sf.create(), cf.create());
         CRDTMessage m1 = wt1.add(wt1.getRoot(), 'a');
-        m1.concat(wt1.add(wt1.getRoot(), 'c'));
-        m1.concat(wt1.add(wt1.getRoot().getChild('a'), 'a'));
-        m1.concat(wt1.add(wt1.getRoot().getChild('a'), 'b'));
+        m1=m1.concat(wt1.add(wt1.getRoot(), 'c'));
+        m1=m1.concat(wt1.add(wt1.getRoot().getChild('a'), 'a'));
+        m1=m1.concat(wt1.add(wt1.getRoot().getChild('a'), 'b'));
         wt2.applyRemote(m1);
 
         CRDTMessage m2 = wt2.remove(wt2.getRoot().getChild('a').getChild('b'));

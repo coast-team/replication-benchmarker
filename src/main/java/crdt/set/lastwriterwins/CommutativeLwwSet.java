@@ -4,6 +4,8 @@
  */
 package crdt.set.lastwriterwins;
 
+import crdt.CRDTMessage;
+import crdt.CommutativeMessage;
 import crdt.set.CRDTSet;
 import crdt.set.CommutativeSet;
 import crdt.set.CommutativeSetMessage;
@@ -30,7 +32,7 @@ public class CommutativeLwwSet<T> extends CommutativeSet<T>{
     }
 
     @Override
-    protected void applyOneRemote(CommutativeSetMessage<T> op) {
+    protected void applyOneInRemote(CommutativeSetMessage<T> op) {
 
         LwwMessage lw = (LwwMessage) op;
         int timeReceiv = lw.getime();
@@ -102,5 +104,7 @@ public class CommutativeLwwSet<T> extends CommutativeSet<T>{
     @Override
     public CRDTSet<T> create() {
         return new CommutativeLwwSet();
-    }  
+    }
+
+    
 }

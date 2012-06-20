@@ -51,7 +51,7 @@ public class TreedocOperation<T> extends SequenceMessage {
 	}
 
 	@Override
-	public SequenceMessage copy() {
+	public SequenceMessage clone() {
 		return new TreedocOperation(getOriginalOp(), new TreedocId(id), content);
 	}
 }

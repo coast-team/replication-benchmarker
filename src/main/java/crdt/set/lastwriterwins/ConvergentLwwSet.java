@@ -32,7 +32,7 @@ public class ConvergentLwwSet<T> extends ConvergentSet<T>  {
     }
 
      @Override
-    public void applyRemote(CRDTMessage stat) {
+    public void applyOneRemote(CRDTMessage stat) {
         ConvergentLwwSet lSC = (ConvergentLwwSet) stat;
 
         HashMap<T, Integer> statA = lSC.getMapA();

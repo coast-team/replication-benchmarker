@@ -85,7 +85,7 @@ public class WootOperation<T> extends SequenceMessage {
     }
 
     @Override
-    public SequenceMessage copy() {
+    public SequenceMessage clone() {
         return new WootOperation(this.getOriginalOp(), 
                 identifier instanceof WootIdentifier ? 
                 ((WootIdentifier) identifier).clone() : 

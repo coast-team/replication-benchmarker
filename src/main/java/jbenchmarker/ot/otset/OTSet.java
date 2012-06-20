@@ -5,7 +5,6 @@
 package jbenchmarker.ot.otset;
 
 import crdt.CRDTMessage;
-import crdt.CommutativeMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.set.CRDTSet;
@@ -19,7 +18,7 @@ import jbenchmarker.ot.soct2.OTMessage;
  * @param <T> Type of elements in set.
  * @author stephane martin OT set
  */
-public class OTSet<T> extends CRDTSet<T> {
+public class OTSet<T> extends CRDTSet<T>  {
 
     final Set set = new HashSet();
     final OTAlgorithm<OTSetOperations<T>> otAlgo;
@@ -115,18 +114,19 @@ public class OTSet<T> extends CRDTSet<T> {
      *
      * @param msg OTSetOperation message from another replicas.
      */
-    @Override
+   /* @Override
     public void applyRemote(CRDTMessage msg) {
-
-        applyOneOperation(msg);
+            
+        applyOneRemote(msg);
         for (Object mess : ((CommutativeMessage) msg).getMsgs()) {
-            applyOneOperation((CRDTMessage) mess);
+            applyOneRemote((CRDTMessage) mess);
         }
 
 
-    }
+    }*/
 
-    private void applyOneOperation(CRDTMessage msg) {
+    @Override
+    public void applyOneRemote(CRDTMessage msg) {
         OTSetOperations<T> op = (OTSetOperations<T>) otAlgo.integrateRemote((OTMessage) msg);
         switch (op.getType()) {
             case Add:
@@ -164,4 +164,7 @@ public class OTSet<T> extends CRDTSet<T> {
     public OTAlgorithm<OTSetOperations<T>> getOtAlgo() {
         return otAlgo;
     }
+
+    
+    
 }

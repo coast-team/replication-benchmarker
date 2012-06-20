@@ -4,7 +4,6 @@
  */
 package crdt;
 
-import java.util.LinkedList;
 import jbenchmarker.core.Operation;
 
 /**
@@ -12,48 +11,47 @@ import jbenchmarker.core.Operation;
  * @author urso
  */
 public abstract class CommutativeMessage<T> implements CRDTMessage, Cloneable,Operation {
-    private LinkedList<CommutativeMessage<T>> msgs = new LinkedList<CommutativeMessage<T>>();
+    //private LinkedList<CommutativeMessage<T>> msgs = new LinkedList<CommutativeMessage<T>>();
 
-    public LinkedList<CommutativeMessage<T>> getMsgs() {
+    /*public LinkedList<CommutativeMessage<T>> getMsgs() {
         return msgs;
-    }
+    }*/
     
     @Override
+    public CRDTMessage concat(CRDTMessage msg){
+       return new OperationBasedMessages(this,(CommutativeMessage)msg);
+   }
+    
+   /* @Override
     public CommutativeMessage concat(CRDTMessage msg) {
         CommutativeMessage cmsg = (CommutativeMessage) msg;
         msgs.add(cmsg);
         msgs.addAll(cmsg.msgs);
         return this;
-    } 
+    } */
     
     @Override
-    public CommutativeMessage clone() {
-        CommutativeMessage clone = copy();
-        for (CommutativeMessage m : msgs) {
-            clone.msgs.add(m.copy());
-        }
-        return clone;
-    }
+    abstract public CommutativeMessage clone();
 
-    @Override
+    /*@Override
     public String toString() {
-        StringBuilder s = new StringBuilder(visu());
+        StringBuilder s = new StringBuilder(toString());
         for (CommutativeMessage m : msgs) {
-            s.append(" + ").append(m.visu());
+            s.append(" + ").append(m.toString());
         }
         return s.toString();
-    }
+    }*/
 
-    abstract protected String visu();
+    //abstract protected String toString();
     
-    abstract protected CommutativeMessage copy();
+    //abstract protected CommutativeMessage clone();
 
     @Override
     public int size() {
-        int s = 1;
-        for (CommutativeMessage<T> m : msgs) {
-            s += m.size();
-        }
-        return s;
+        return 1;
+    }
+    @Override
+    public void execute(CRDT cmrdt){
+        cmrdt.applyOneRemote(this);   
     }
 }

@@ -574,7 +574,7 @@ public class TTFSOCT2Test {
     public static List<SequenceMessage> duplicate(List<SequenceMessage> list) {
         ArrayList<SequenceMessage> res = new ArrayList<SequenceMessage>();
         for (SequenceMessage elt : list) {
-            res.add(((TTFSequenceMessage) elt).copy());
+            res.add(((TTFSequenceMessage) elt).clone());
         }
         return res;
     }

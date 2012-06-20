@@ -29,12 +29,12 @@ public class OrMessage<T> extends TypedMessage<T> {
     }
     
     @Override
-    public String visu() {
+    public String toString() {
         return "OM{" + "content=" + content + ",tags=" + tags + ", type=" + type + '}';
     }
 
     @Override
-    protected CommutativeMessage copy() {
+    public CommutativeMessage clone() {
         return new OrMessage(type, content, new HashSet(tags));
     }
 }

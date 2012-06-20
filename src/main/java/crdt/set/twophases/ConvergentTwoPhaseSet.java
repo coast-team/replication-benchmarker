@@ -41,7 +41,7 @@ public class ConvergentTwoPhaseSet<T> extends ConvergentSet<T>  {
     }
     
     @Override
-    public void applyRemote (CRDTMessage stat) {
+    public void applyOneRemote (CRDTMessage stat) {
         ConvergentTwoPhaseSet tpcs = (ConvergentTwoPhaseSet) stat;
         setA.addAll(tpcs.getSetA());
         setR.addAll(tpcs.getSetR());

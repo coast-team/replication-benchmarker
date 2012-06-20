@@ -29,7 +29,7 @@ public class CommutativeCounterSet<T> extends CommutativeSet<T>{
     }
     
     @Override
-    protected void applyOneRemote(CommutativeSetMessage<T> op) {
+    protected void applyOneInRemote(CommutativeSetMessage<T> op) {
         CounterMessage<T> countOp = (CounterMessage<T>) op;
         T elem = countOp.getContent();
         int oldc = (map.containsKey(elem) ? map.get(elem) : 0);

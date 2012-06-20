@@ -49,7 +49,7 @@ public class UnsupportedOperation<T> extends SequenceMessage {
     }*/
 
     @Override
-    public SequenceMessage copy() {
+    public SequenceMessage clone() {
         UnsupportedOperation op = new UnsupportedOperation(getOriginalOp());
         //op.clock = new VectorClock(this.clock);
 

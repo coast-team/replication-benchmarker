@@ -101,7 +101,7 @@ public class EdgeTree<T> extends CRDTTree<T>{
     }
 
     @Override
-    public void applyRemote(CRDTMessage msg) {
+    public void applyOneRemote(CRDTMessage msg) {
         this.edgesSet.applyRemote(msg);
     }
 

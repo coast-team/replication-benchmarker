@@ -59,7 +59,7 @@ public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Obs
     }
 
     @Override
-    public void applyRemote(CRDTMessage msg) {
+    public void applyOneRemote(CRDTMessage msg) {
         tree.applyRemote(msg);
     }
 
@@ -107,4 +107,6 @@ public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Obs
         tree.setReplicaNumber(replicaNumber);
         root.setReplicaNumber(replicaNumber);
     }
+
+    
 }

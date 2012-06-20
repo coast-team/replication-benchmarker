@@ -56,7 +56,7 @@ public class CausalCheckerFactory extends ReplicaFactory {
             List<SequenceMessage> l = new ArrayList<SequenceMessage>(1);
             SequenceMessage op = new SequenceMessage(opt) {
 
-                public SequenceMessage copy() {
+                public SequenceMessage clone() {
                     return this;
                 }
             };

@@ -2,9 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package jbenchmarker.core;
+package crdt;
 
-import crdt.CRDTMessage;
 import java.util.LinkedList;
 
 /**
@@ -14,19 +13,20 @@ import java.util.LinkedList;
  * 
  * A message contains many operations.
  */
-public final class OperationBasedMessages extends OperationBasedMessage implements ReplicatedMessage, Cloneable {
-    private LinkedList<OperationBasedMessage> ops = new LinkedList<OperationBasedMessage>();
+public final class OperationBasedMessages extends CommutativeMessage implements Cloneable {
+    private LinkedList<CommutativeMessage> ops = new LinkedList<CommutativeMessage>();
 
-    OperationBasedMessages(OperationBasedMessage aThis, OperationBasedMessage msg) {
+    OperationBasedMessages(CommutativeMessage aThis, CommutativeMessage msg) {
 
-        addMessage(msg);
+        
         addMessage(aThis);
+        addMessage(msg);
     }
 
     private OperationBasedMessages() {
     }
     
-    void addMessage(OperationBasedMessage mess){
+    void addMessage(CommutativeMessage mess){
         if (mess instanceof OperationBasedMessages){
             ops.addAll(((OperationBasedMessages)mess).getOps());
         }else{
@@ -39,7 +39,7 @@ public final class OperationBasedMessages extends OperationBasedMessage implemen
      * return all messages operations
      * @return
      */
-    public LinkedList<OperationBasedMessage> getOps() {
+    public LinkedList<CommutativeMessage> getOps() {
         return ops;
     }
     
@@ -49,12 +49,12 @@ public final class OperationBasedMessages extends OperationBasedMessage implemen
      * @return
      */
     @Override
-    public OperationBasedMessages concat(ReplicatedMessage msg) {
-        OperationBasedMessage cmsg = (OperationBasedMessage) msg;
+    public CRDTMessage concat(CRDTMessage msg) {
+        CommutativeMessage cmsg = (CommutativeMessage) msg;
         OperationBasedMessages ret=new OperationBasedMessages();
         ret.addMessage(this);
         ret.addMessage(cmsg);
-        return this;
+        return ret;
     } 
     
     /**
@@ -64,7 +64,7 @@ public final class OperationBasedMessages extends OperationBasedMessage implemen
     @Override
     public OperationBasedMessages clone() {
         OperationBasedMessages clone = new OperationBasedMessages();
-        for (OperationBasedMessage o : ops) {
+        for (CommutativeMessage o : ops) {
             clone.ops.add(o.clone());
         }
         return clone;
@@ -77,15 +77,16 @@ public final class OperationBasedMessages extends OperationBasedMessage implemen
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        for (OperationBasedMessage m : ops) {
+        s.append("BAG:");
+        for (CommutativeMessage m : ops) {
             s.append(" + ").append(m.toString());
         }
         return s.toString();
     }
 
-    //abstract protected String visu();
+    //abstract protected String toString();
     
-    //abstract protected OperationBasedMessage copy();
+    //abstract protected CommutativeMessage clone();
 
     /**
      * 
@@ -96,6 +97,16 @@ public final class OperationBasedMessages extends OperationBasedMessage implemen
         return ops.size();
     }
 
+   
+
+    @Override
+   public void execute(CRDT cmrdt){
+        for (CommutativeMessage o : ops) {
+            cmrdt.applyOneRemote(o);
+        }
+    }
+
+    
    
     
 }

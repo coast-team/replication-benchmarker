@@ -4,25 +4,26 @@
  */
 package crdt.set;
 
-import crdt.CommutativeMessage;
 import crdt.CRDTMessage;
+import crdt.CommutativeMessage;
 import crdt.PreconditionException;
 
 /**
  *
  * @author urso
  */
-public abstract class CommutativeSet<T> extends CRDTSet<T> {        
-    @Override
-    final public void applyRemote(CRDTMessage msg) {
+public abstract class CommutativeSet<T> extends CRDTSet<T>  {        
+    //@Override
+    /*final public void applyRemote(CRDTMessage msg) {
         CommutativeSetMessage<T> op = (CommutativeSetMessage<T>) msg;
         applyOneRemoteNotify(op);
         for (CommutativeMessage<T> m : op.getMsgs()) {
             applyOneRemoteNotify((CommutativeSetMessage<T>) m);
         }
-    }
+    }*/
     
-    abstract protected void applyOneRemote(CommutativeSetMessage<T> op);
+    
+    abstract protected void applyOneInRemote(CommutativeSetMessage<T> op);
     
     @Override
     abstract public CommutativeMessage innerAdd(T t) throws PreconditionException;
@@ -30,10 +31,12 @@ public abstract class CommutativeSet<T> extends CRDTSet<T> {
     @Override
     abstract public CommutativeMessage innerRemove(T t) throws PreconditionException;
 
-    private void applyOneRemoteNotify(CommutativeSetMessage<T> op) {
+    @Override
+    public void applyOneRemote(CRDTMessage opm) {
+        CommutativeSetMessage<T> op =(CommutativeSetMessage)opm;
         T t = op.getContent();
         boolean before = lookup().contains(t);
-        applyOneRemote(op);
+        applyOneInRemote(op);
         boolean after = lookup().contains(t);
         if (before && !after)
             notifyDel(t);

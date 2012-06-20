@@ -196,7 +196,7 @@ public class TraceGenerator {
         
         int repli = rep;
 
-        //Copy VectorClock : TO TEST
+        //clone VectorClock : TO TEST
         VectorClock v = new VectorClock(vectorClockMapper.get(rep));
         
         v.inc(rep);

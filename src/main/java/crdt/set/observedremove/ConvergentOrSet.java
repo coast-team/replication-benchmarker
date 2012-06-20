@@ -34,7 +34,7 @@ public class ConvergentOrSet<T> extends ConvergentSet<T> {
     }
 
      @Override
-    public void applyRemote(CRDTMessage set) {
+    public void applyOneRemote(CRDTMessage set) {
 
         ConvergentOrSet oSetC = ((ConvergentOrSet) set).clone();
         HashMap<T, HashSet<Tag>> statA = oSetC.getMapA();//for add

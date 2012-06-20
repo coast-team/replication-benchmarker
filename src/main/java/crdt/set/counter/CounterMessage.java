@@ -24,12 +24,12 @@ public class CounterMessage<T> extends CommutativeSetMessage<T> {
     }
 
     @Override
-    public String visu() {
+    public String toString() {
         return "CM{" + "elem=" + content + ", cont=" + counter + '}';
     }
 
     @Override
-    protected CommutativeMessage copy() {
+    public CommutativeMessage clone() {
         return new CounterMessage(this.content, this.counter);
     }
 

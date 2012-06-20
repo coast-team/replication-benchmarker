@@ -63,7 +63,7 @@ public class WootROperation extends SequenceMessage {
 
     
     @Override
-    public SequenceMessage copy() {
+    public SequenceMessage clone() {
         return new WootROperation(this.getOriginalOp(), (WootRNode) node.clone());
     }
 }

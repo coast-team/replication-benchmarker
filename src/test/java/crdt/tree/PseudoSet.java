@@ -52,7 +52,7 @@ public class PseudoSet extends CRDTSet {
     }
 
     @Override
-    public void applyRemote(CRDTMessage msg) {
+    public void applyOneRemote(CRDTMessage msg) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -32,12 +32,12 @@ public class TwoPhasesMessage<T> extends TypedMessage<T> {
     }
 
     @Override
-    public String visu() {
+    public String toString() {
         return "2M{" + "content=" + content + ", type=" + type + '}';
     }
 
     @Override
-    protected CommutativeMessage copy() {
+    public CommutativeMessage clone() {
         return new TwoPhasesMessage(type, content);
     }  
 }

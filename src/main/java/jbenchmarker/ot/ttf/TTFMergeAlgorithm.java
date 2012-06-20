@@ -81,7 +81,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                     if (ret == null) {
                         ret = otAlgo.estampileMessage(op);
                     } else {
-                        ret.concat(otAlgo.estampileMessage(op));
+                        ret=ret.concat(otAlgo.estampileMessage(op));
                     }
                     doc.apply(op);
                 }
@@ -95,7 +95,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                     if (ret == null) {
                         ret = otAlgo.estampileMessage(op);
                     } else {
-                        ret.concat(otAlgo.estampileMessage(op));
+                        ret=ret.concat(otAlgo.estampileMessage(op));
                     }
                     doc.apply(op);
                 }
@@ -173,14 +173,14 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
         integrateOneRemoteOperation(((TTFSequenceMessage) mess).getSoct2Message());
     }
 
-    public void integrateRemote(CRDTMessage mess) throws IncorrectTraceException {
+    /*public void integrateRemote(CRDTMessage mess) throws IncorrectTraceException {
         OTMessage soctMess = (OTMessage) mess;
         integrateOneRemoteOperation(soctMess);
         for (Object m : soctMess.getMsgs()) {
             integrateOneRemoteOperation((OTMessage) m);
         }
 
-    }
+    }*/
 
     private void integrateOneRemoteOperation(OTMessage mess) {
         Operation op = otAlgo.integrateRemote(mess);

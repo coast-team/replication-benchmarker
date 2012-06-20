@@ -4,6 +4,7 @@
  */
 package crdt.set;
 
+import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.PreconditionException;
 
@@ -15,6 +16,11 @@ public abstract class ConvergentSet<T> extends CRDTSet<T> implements CRDTMessage
     @Override
     public CRDTMessage concat(CRDTMessage msg) {
        return msg;
+    }
+    
+    @Override
+    public void execute(CRDT crdt){
+        crdt.applyOneRemote(this);
     }
     
     @Override

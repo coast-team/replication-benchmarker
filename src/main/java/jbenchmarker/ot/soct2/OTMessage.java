@@ -87,7 +87,7 @@ public class OTMessage<Op extends Operation> extends crdt.CommutativeMessage {
      * @return new operation
      */
     @Override
-    public OTMessage copy(){
+    public OTMessage clone(){
         return new OTMessage(new VectorClock(vc),siteID,operation.clone() );
     }
     
@@ -100,14 +100,7 @@ public class OTMessage<Op extends Operation> extends crdt.CommutativeMessage {
        return "SOCT2Message ("+ operation +", from:"+siteID+" vc:"+vc.toString()+" )";
     }
 
-    /**
-     * deprecated
-     * @return
-     */
-    @Override
-    protected String visu() {
-        return this.toString();
-    }
+   
 
    
 

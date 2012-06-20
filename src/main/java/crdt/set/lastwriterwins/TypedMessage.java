@@ -27,12 +27,12 @@ public class TypedMessage<T> extends CommutativeSetMessage<T> {
     }
 
     @Override
-    public String visu() {
+    public String toString() {
         return "" + type + '(' + content + ')';
     }
     
     @Override
-    protected CommutativeMessage copy() {
+    public CommutativeMessage clone() {
         return new TypedMessage(type, content);
     }
 }
