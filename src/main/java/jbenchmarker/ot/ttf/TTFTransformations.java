@@ -18,9 +18,8 @@
  */
 package jbenchmarker.ot.ttf;
 
-import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
-import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation.OpType;
+import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 
 /**
  * Is transformation and backward transformation for TTF model
