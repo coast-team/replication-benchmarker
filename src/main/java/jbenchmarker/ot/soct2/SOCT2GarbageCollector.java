@@ -67,6 +67,8 @@ public class SOCT2GarbageCollector implements Serializable, GarbageCollector {
      */
     @Override
     public void collect(OTAlgorithm soct2Algorithm, OTMessage mess) {
+        
+        System.out.println("**Coollect**");
         this.clocksOfAllSites.put(mess.getSiteId(), mess.getClock());
 
         this.countdownBeforeGC--;

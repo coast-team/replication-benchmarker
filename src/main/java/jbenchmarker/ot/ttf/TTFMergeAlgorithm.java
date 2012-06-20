@@ -25,9 +25,8 @@ import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.*;
-import jbenchmarker.ot.soct2.SOCT2;
-import jbenchmarker.ot.soct2.SOCT2Log;
 import jbenchmarker.ot.soct2.OTMessage;
+import jbenchmarker.ot.soct2.SOCT2;
 
 /**
  * This TTF Merge Algorithm uses SOCT2 algorithm with TTF method
@@ -177,6 +176,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
     public void integrateRemote(SequenceMessage mess) throws IncorrectTraceException {
         integrateOneRemoteOperation(((TTFSequenceMessage) mess).getSoct2Message());
     }
+    
     public void integrateRemote(CRDTMessage mess) throws IncorrectTraceException {
         OTMessage soctMess= (OTMessage)mess;
         integrateOneRemoteOperation(soctMess);

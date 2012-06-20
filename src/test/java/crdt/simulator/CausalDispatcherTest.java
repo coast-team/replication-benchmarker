@@ -92,7 +92,9 @@ public class CausalDispatcherTest {
                                 append("\n---------\n");
                     }
                     //cd.view.affiche();
-//                    System.err.println("diff\n"+l+"\n"+r.getValue().lookup());
+
+                    System.err.println("diff\n"+l+"\n"+r.getValue().lookup());
+                    System.err.println("fist\n");
                     fail(" ** A= " + i + " ** B= " + r.getKey() + "\n" + sf.toString());
                 }
             }

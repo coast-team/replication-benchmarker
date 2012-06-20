@@ -97,7 +97,7 @@ public class OTMessage<Op extends Operation> extends crdt.CommutativeMessage {
      */
     @Override
     public String toString(){
-       return "SOCT2Message ("+ operation +", from:"+siteID+" vc:"+vc.toString();
+       return "SOCT2Message ("+ operation +", from:"+siteID+" vc:"+vc.toString()+" )";
     }
 
     /**
