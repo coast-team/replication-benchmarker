@@ -22,12 +22,13 @@ public class DelWinTransformation implements SOCT2TranformationInterface<OTSetOp
             case Add:
                 switch( op2p.getType()){
                     case Add:
-                        if (op1p.getElement().equals(op2p.getElement())){
+                          break;
+                    case Del:
+                         if (op1p.getElement().equals(op2p.getElement())){
                             ret=op1p;
                             ret.convToNop();
                         }
                         break;
-                    case Del:
                     case Nop:
                 }
                 break;
@@ -36,10 +37,10 @@ public class DelWinTransformation implements SOCT2TranformationInterface<OTSetOp
                     case Add:
                         break;
                     case Del:
-                        if (op1p.getElement().equals(op2p.getElement())){
+                        /*if (op1p.getElement().equals(op2p.getElement())){
                             ret=op1p;
                             ret.convToNop();
-                        }
+                        }*/
                         break;
                     case Nop:
                         
@@ -61,12 +62,14 @@ public class DelWinTransformation implements SOCT2TranformationInterface<OTSetOp
             case Add:
                 switch( op2p.getType()){
                     case Add:
+                        break;
+                    case Del:
                         if (op1p.getElement().equals(op2p.getElement())){
                             ret=op1p;
                             ret.convFromNop();
                         }
                         break;
-                    case Del:
+                    
                     case Nop:
                 }
                 break;
@@ -75,10 +78,10 @@ public class DelWinTransformation implements SOCT2TranformationInterface<OTSetOp
                     case Add:
                         break;
                     case Del:
-                         if (op1p.getElement().equals(op2p.getElement())){
+                         /*if (op1p.getElement().equals(op2p.getElement())){
                             ret=op1p;
                             ret.convFromNop();
-                        }
+                        }*/
                         break;
                     case Nop:
                 }
