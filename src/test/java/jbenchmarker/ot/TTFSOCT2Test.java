@@ -52,7 +52,7 @@ public class TTFSOCT2Test {
         assertEquals(OpType.ins, opg.getOperation().getType());
         assertEquals('b', opg.getOperation().getChar());
         assertEquals(0, opg.getOperation().getPosition());
-        assertEquals("[]", vcToString(opg.getClock()));
+        assertEquals("[<0,1>]", vcToString(opg.getClock()));
         assertEquals("b", merger.lookup());
 
 
@@ -61,14 +61,14 @@ public class TTFSOCT2Test {
         opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals('a', opg.getOperation().getChar());
         assertEquals(0, opg.getOperation().getPosition());
-        assertEquals("[<0,1>]", vcToString(opg.getClock()));
+        assertEquals("[<0,2>]", vcToString(opg.getClock()));
         assertEquals("ab", merger.lookup());
 
         ops = merger.generateLocal(insert(siteId, 2, "c"));
         assertEquals(1, ops.size());
         opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals('c', opg.getOperation().getChar());
-        assertEquals("[<0,2>]", vcToString(opg.getClock()));
+        assertEquals("[<0,3>]", vcToString(opg.getClock()));
         assertEquals(2, opg.getOperation().getPosition());
         assertEquals("abc", merger.lookup());
     }
@@ -85,16 +85,16 @@ public class TTFSOCT2Test {
         assertEquals(OpType.ins, opg.getOperation().getType());
         assertEquals('a', opg.getOperation().getChar());
         assertEquals(0, opg.getOperation().getPosition());
-        assertEquals("[]", vcToString(opg.getClock()));
+        assertEquals("[<0,1>]", vcToString(opg.getClock()));
 
         opg = ((TTFSequenceMessage) ops.get(1)).getSoct2Message();
         assertEquals('b', opg.getOperation().getChar());
         assertEquals(1, opg.getOperation().getPosition());
-        assertEquals("[<0,1>]", vcToString(opg.getClock()));
+        assertEquals("[<0,2>]", vcToString(opg.getClock()));
 
         opg = ((TTFSequenceMessage) ops.get(2)).getSoct2Message();
         assertEquals('c', opg.getOperation().getChar());
-        assertEquals("[<0,2>]", vcToString(opg.getClock()));
+        assertEquals("[<0,3>]", vcToString(opg.getClock()));
         assertEquals(2, opg.getOperation().getPosition());
 
         assertEquals("abc", merger.lookup());
@@ -112,7 +112,7 @@ public class TTFSOCT2Test {
         OTMessage<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
         assertEquals(0, opg.getOperation().getPosition());
-        assertEquals("[<0,4>]", vcToString(opg.getClock()));
+        assertEquals("[<0,5>]", vcToString(opg.getClock()));
         assertEquals("bcd", merger.lookup());
 
         // remove 'd'
@@ -121,7 +121,7 @@ public class TTFSOCT2Test {
         opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
         assertEquals(3, opg.getOperation().getPosition());
-        assertEquals("[<0,5>]", vcToString(opg.getClock()));
+        assertEquals("[<0,6>]", vcToString(opg.getClock()));
         assertEquals("bc", merger.lookup());
 
         // remove 'c'
@@ -130,7 +130,7 @@ public class TTFSOCT2Test {
         opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
         assertEquals(2, opg.getOperation().getPosition());
-        assertEquals("[<0,6>]", vcToString(opg.getClock()));
+        assertEquals("[<0,7>]", vcToString(opg.getClock()));
         assertEquals("b", merger.lookup());
 
         // remove 'b'
@@ -139,7 +139,7 @@ public class TTFSOCT2Test {
         opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
         assertEquals(1, opg.getOperation().getPosition());
-        assertEquals("[<0,7>]", vcToString(opg.getClock()));
+        assertEquals("[<0,8>]", vcToString(opg.getClock()));
         assertEquals("", merger.lookup());
     }
 
@@ -156,22 +156,22 @@ public class TTFSOCT2Test {
         OTMessage<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
         assertEquals(0, opg.getOperation().getPosition());
-        assertEquals("[<0,4>]", vcToString(opg.getClock()));
+        assertEquals("[<0,5>]", vcToString(opg.getClock()));
 
         opg = ((TTFSequenceMessage) ops.get(1)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
         assertEquals(1, opg.getOperation().getPosition());
-        assertEquals("[<0,5>]", vcToString(opg.getClock()));
+        assertEquals("[<0,6>]", vcToString(opg.getClock()));
 
         opg = ((TTFSequenceMessage) ops.get(2)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
         assertEquals(2, opg.getOperation().getPosition());
-        assertEquals("[<0,6>]", vcToString(opg.getClock()));
+        assertEquals("[<0,7>]", vcToString(opg.getClock()));
 
         opg = ((TTFSequenceMessage) ops.get(3)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
         assertEquals(3, opg.getOperation().getPosition());
-        assertEquals("[<0,7>]", vcToString(opg.getClock()));
+        assertEquals("[<0,8>]", vcToString(opg.getClock()));
 
         assertEquals("", merger.lookup());
     }
@@ -216,8 +216,8 @@ public class TTFSOCT2Test {
         OTMessage op2 = ((TTFSequenceMessage) merger.generateLocal(insert(siteId, 1, "b")).get(0)).getSoct2Message();
         assertEquals(vc(2), merger.getClock());
 
-        assertEquals(vc(0), op1.getClock());
-        assertEquals(vc(1), op2.getClock());
+        assertEquals(vc(1), op1.getClock());
+        assertEquals(vc(2), op2.getClock());
     }
 
     @Test
@@ -226,9 +226,9 @@ public class TTFSOCT2Test {
         site0.generateLocal(insert(0, 0, "abc"));
 
         //site0.generateLocal(insert(0, 1, "x"));
-        TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(0, 1, "x", vc(3, 0, 0)));
-        TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(1, 2, "y", vc(3, 0, 0)));
-        TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(2, 1, 1, vc(3, 0, 0)));
+        TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(0, 1, "x", vc(4, 0, 0)));
+        TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(1, 2, "y", vc(3, 1, 0)));
+        TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(2, 1, 1, vc(3, 0, 1)));
 
         site0.integrateRemote(op1);
         assertEquals("axbc", site0.lookup());
@@ -243,9 +243,9 @@ public class TTFSOCT2Test {
         TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
         site0.generateLocal(insert(0, 0, "abc"));
 
-        TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(0, 1, "x", vc(3, 0, 0)));
-        TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(1, 2, "y", vc(3, 0, 0)));
-        TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(2, 1, 1, vc(3, 0, 0)));
+        TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(0, 1, "x", vc(4, 0, 0)));
+        TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(1, 2, "y", vc(3, 1, 0)));
+        TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(2, 1, 1, vc(3, 0, 1)));
 
         site0.integrateRemote(op1);
         assertEquals("axbc", site0.lookup());
@@ -260,9 +260,9 @@ public class TTFSOCT2Test {
         TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
         List<SequenceMessage> ops = site0.generateLocal(insert(0, 0, "abc"));
 
-        TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(0, 1, "x", vc(3, 0, 0)));
-        TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(1, 2, "y", vc(3, 0, 0)));
-        TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(2, 1, 1, vc(3, 0, 0)));
+        TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(0, 1, "x", vc(4, 0, 0)));
+        TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(1, 2, "y", vc(3, 1, 0)));
+        TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(2, 1, 1, vc(3, 0, 1)));
 
         TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(new TTFDocument(), 1);
         for (SequenceMessage op : ops) {
@@ -281,9 +281,9 @@ public class TTFSOCT2Test {
         TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
         List<SequenceMessage> ops = site0.generateLocal(insert(0, 0, "abc"));
 
-        TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(0, 1, "x", vc(3, 0, 0)));
-        TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(1, 2, "y", vc(3, 0, 0)));
-        TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(2, 1, 1, vc(3, 0, 0)));
+        TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(0, 1, "x", vc(4, 0, 0)));
+        TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(1, 2, "y", vc(3, 1, 0)));
+        TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(2, 1, 1, vc(3, 0, 1)));
 
         TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(new TTFDocument(), 1);
         for (SequenceMessage op : ops) {
@@ -302,9 +302,9 @@ public class TTFSOCT2Test {
         TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
         List<SequenceMessage> ops = site0.generateLocal(insert(0, 0, "abc"));
 
-        TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(0, 1, "x", vc(3, 0, 0)));
-        TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(1, 2, "y", vc(3, 0, 0)));
-        TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(2, 1, 1, vc(3, 0, 0)));
+        TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(0, 1, "x", vc(4, 0, 0)));
+        TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(1, 2, "y", vc(3, 1, 0)));
+        TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(2, 1, 1, vc(3, 0, 1)));
 
         TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
         for (SequenceMessage op : ops) {
@@ -323,9 +323,9 @@ public class TTFSOCT2Test {
         TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
         List<SequenceMessage> ops = site0.generateLocal(insert(0, 0, "abc"));
 
-        TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(0, 1, "x", vc(3, 0, 0)));
-        TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(1, 2, "y", vc(3, 0, 0)));
-        TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(2, 1, 1, vc(3, 0, 0)));
+        TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(0, 1, "x", vc(4, 0, 0)));
+        TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(1, 2, "y", vc(3, 1, 0)));
+        TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(2, 1, 1, vc(3, 0, 1)));
 
         TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
         for (SequenceMessage op : ops) {
