@@ -6,7 +6,9 @@ package crdt.tree.orderedtree;
 
 import collect.Node;
 import collect.OrderedNode;
+import collect.Tree;
 import collect.UnorderedNode;
+import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
@@ -21,11 +23,11 @@ import java.util.Observer;
  * @author urso
  */
 public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Observer {
-    CRDTTree tree;
+    CRDTTree<Positioned<T>> tree;
     OrderedNode<T> root;
 
-    public PositionIdentifierTree(OrderedNode<T> pic, Factory<CRDTTree<T>> tree) {
-        this.tree = tree.create();
+    public PositionIdentifierTree(OrderedNode<T> pic, Factory<CRDT<Tree<Positioned<T>>>> tree) {
+        this.tree = (CRDTTree<Positioned<T>>) tree.create();
         this.root = pic;
         this.tree.addObserver(this); 
     }

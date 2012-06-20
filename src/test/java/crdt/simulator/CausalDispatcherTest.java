@@ -29,6 +29,7 @@ import jbenchmarker.ot.otset.AddWinTransformation;
 import jbenchmarker.ot.otset.DelWinTransformation;
 import jbenchmarker.ot.otset.OTSet;
 import jbenchmarker.ot.soct2.SOCT2;
+import jbenchmarker.ot.soct2.SOCT2GarbageCollector;
 import org.junit.AfterClass;
 import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
@@ -48,7 +49,9 @@ public class CausalDispatcherTest {
         new CommutativeLwwSet(), new ConvergentLwwSet(),
         new CommutativeOrSet(), new ConvergentOrSet(),
         new OTSet(new SOCT2(new AddWinTransformation(), null)),
-        new OTSet(new SOCT2(new DelWinTransformation(), null))};
+        new OTSet(new SOCT2(new DelWinTransformation(), null)),
+        new OTSet(new SOCT2(new AddWinTransformation(), new SOCT2GarbageCollector(5))),
+        new OTSet(new SOCT2(new DelWinTransformation(), new SOCT2GarbageCollector(5)))};
     //Vector<LinkedList<TimeBench>> result = new Vector<LinkedList<TimeBench>>();
     int scale = 100;
 
@@ -93,8 +96,6 @@ public class CausalDispatcherTest {
                     }
                     //cd.view.affiche();
 
-                    System.err.println("diff\n"+l+"\n"+r.getValue().lookup());
-                    System.err.println("fist\n");
                     fail(" ** A= " + i + " ** B= " + r.getKey() + "\n" + sf.toString());
                 }
             }
@@ -176,14 +177,12 @@ public class CausalDispatcherTest {
        }
     }
 
-//    @Ignore
+    @Ignore
     @Test
     public void stressSet() throws PreconditionException, IncorrectTraceException, IOException {
-        int i = 0;
-        while (i <5000) {
+        for (int i = 0; i < 5000; ++i) {
             //System.out.println(" i :"+i++);
-            i++;
-            testRun(set[6], 10, 3, seqopp);          
+            testRun(set[7], 10, 3, seqopp);          
         }
         //writeResult();
     }
@@ -192,10 +191,8 @@ public class CausalDispatcherTest {
     @Ignore
     @Test
     public void stress() throws PreconditionException, IncorrectTraceException, IOException {
-        int i = 0;
-        while (i <5000) {
+        for (int i = 0; i < 5000; ++i) {
             //System.out.println(" i :"+i++);
-            i++;
             testRun(new WordTree(set[7], policy[1]), 10, 3, treeop);
         }
         //writeResult();

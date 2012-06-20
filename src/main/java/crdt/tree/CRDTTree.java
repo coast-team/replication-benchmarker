@@ -4,20 +4,19 @@
  */
 package crdt.tree;
 
-import collect.Node;
 import collect.Tree;
 import collect.UnorderedNode;
 import crdt.CRDT;
 import crdt.CRDTMessage;
-import jbenchmarker.core.Operation;
 import crdt.PreconditionException;
 import java.util.List;
+import jbenchmarker.core.Operation;
 
 /**
  *
  * @author score
  */
-public abstract class CRDTTree<T> extends CRDT<Tree<T>> {
+public abstract class CRDTTree<T> extends CRDT<Tree<T>>  {
     
    abstract public CRDTMessage add(UnorderedNode<T> father, T element) throws PreconditionException;
     

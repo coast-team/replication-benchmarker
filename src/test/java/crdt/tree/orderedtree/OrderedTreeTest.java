@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.logoot.BoundaryStrategy;
-import jbenchmarker.logoot.LogootFactory;
+import crdt.factories.LogootFactory;
 import jbenchmarker.logoot.LogootStrategy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -128,6 +128,7 @@ public class SOCT2 <O extends Operation> implements OTAlgorithm<O> {
         return new SOCT2<O>(ot, replicaNumber, gc);
     }
 
+    @Override
     public int getReplicaNumber() {
         return replicaNumber;
     }

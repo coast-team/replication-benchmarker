@@ -4,22 +4,22 @@
  */
 package crdt.simulator;
 
-import crdt.simulator.random.StandardSeqOpProfile;
 import crdt.CRDT;
 import crdt.Factory;
 import crdt.PreconditionException;
+import crdt.factories.LogootFactory;
+import crdt.factories.TTFFactories;
+import crdt.factories.WootFactories.WootFactory;
+import crdt.factories.WootFactories.WootHFactory;
+import crdt.factories.WootFactories.WootOFactory;
 import crdt.simulator.random.OperationProfile;
+import crdt.simulator.random.StandardSeqOpProfile;
 import java.io.IOException;
+import jbenchmarker.treedoc.TreedocFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Test;
-import jbenchmarker.logoot.LogootFactory;
-import jbenchmarker.ot.ttf.TTFFactory;
-import jbenchmarker.rga.RGAFactory;
-import jbenchmarker.woot.WootFactories.WootFactory;
-import jbenchmarker.woot.WootFactories.WootHFactory;
-import jbenchmarker.woot.WootFactories.WootOFactory;
 import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  *
@@ -27,9 +27,10 @@ import org.junit.Ignore;
  */
 public class CausalDispatcherTestSequence {
 
-    Factory s[] = { new LogootFactory(), //new TreedocFactory(), new jbenchmarker.treedoc.list.TreedocFactory(),
+    Factory s[] = { new LogootFactory(), new TreedocFactory(), new jbenchmarker.treedoc.list.TreedocFactory(),
         new WootFactory(), new WootOFactory(), new WootHFactory(), // new ABTFactory(),
-        new TTFFactory(),
+        new TTFFactories.WithoutGC(), 
+        new TTFFactories.WithGC10(),
     //    new SOCT2Factory(), new RGAFactory()
     };
     
@@ -57,10 +58,10 @@ public class CausalDispatcherTestSequence {
     @Ignore
     @Test
     public void stress() throws PreconditionException, IncorrectTraceException, IOException {
-        int i = 0;
-        while (true) {
-            System.out.println(" i :" + i++);
-            CausalDispatcherTest.testRun(s[0], 100, 4, seqopp);           
+        Factory f = new TTFFactories.WithGC3();
+        for (int i = 0; i < 5000; ++i) {
+//            System.out.println(" i :" + i++);
+            CausalDispatcherTest.testRun(f, 10, 3, uopp);           
         }
     }
     

@@ -47,8 +47,13 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
      * @param siteId SiteID
      */
     public TTFMergeAlgorithm(Document doc, int siteId) {
+        this(doc, siteId, new SOCT2<TTFOperation>(new TTFTransformations(), siteId, null));
+        setReplicaNumber(siteId);
+    }
+
+    public TTFMergeAlgorithm(Document doc, int siteId, OTAlgorithm<TTFOperation> otAlgo) {
         super(doc);
-        otAlgo = new SOCT2<TTFOperation>(new TTFTransformations(), siteId, null);
+        this.otAlgo = otAlgo;
         setReplicaNumber(siteId);
     }
 

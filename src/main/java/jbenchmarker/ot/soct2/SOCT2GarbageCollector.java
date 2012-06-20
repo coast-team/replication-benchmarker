@@ -67,10 +67,7 @@ public class SOCT2GarbageCollector implements Serializable, GarbageCollector {
      */
     @Override
     public void collect(OTAlgorithm soct2Algorithm, OTMessage mess) {
-        
-        System.out.println("**Coollect**");
         this.clocksOfAllSites.put(mess.getSiteId(), mess.getClock());
-
         this.countdownBeforeGC--;
         if (this.countdownBeforeGC == 0) {
             gc(soct2Algorithm);
@@ -78,17 +75,13 @@ public class SOCT2GarbageCollector implements Serializable, GarbageCollector {
         }
     }
 
-    private void gc(OTAlgorithm soct2Algorithm) {
+    private void gc(OTAlgorithm otAlgorithm) {
         if (clocksOfAllSites.entrySet().size() == numberOfReplica-1) {
-            VectorClock commonAncestorVectorClock = soct2Algorithm.getSiteVC().min(this.clocksOfAllSites.values());
-            Iterator<OTMessage> it = soct2Algorithm.getLog().iterator();
-            int count = 0;
-            while (it.hasNext()) {
-                if (commonAncestorVectorClock.greaterThan(it.next().getClock())) {
-                    it.remove();
-                    count++;
-                }
-            }
+            VectorClock commonAncestorVectorClock = 
+                    otAlgorithm.getSiteVC().min(otAlgorithm.getReplicaNumber(), this.clocksOfAllSites);
+            int garbagePoint =
+                    otAlgorithm.getLog().separatePrecedingAndConcurrentOperations(commonAncestorVectorClock);
+            otAlgorithm.getLog().purge(garbagePoint);
         }
 //        Logger.getLogger(getClass().getCanonicalName()).log(Level.INFO, "gc removed {0} operation(s) from a total of {1} operation(s)", new Object[]{count, count + this.mergeAlgorithm.getHistoryLog().getSize()});
     }

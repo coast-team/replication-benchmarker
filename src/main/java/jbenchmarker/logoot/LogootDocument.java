@@ -18,6 +18,7 @@
  */
 package jbenchmarker.logoot;
 
+import collect.RangeList;
 import crdt.Factory;
 import java.math.BigInteger;
 import java.util.ArrayList;

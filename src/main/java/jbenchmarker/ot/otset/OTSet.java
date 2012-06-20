@@ -160,5 +160,8 @@ public class OTSet<T> extends CRDTSet<T> {
     public String toString() {
         return "OTSet{" + "set=" + set + ", soct2=" + otAlgo + ", replicaNumber=" + getReplicaNumber() + '}';
     }
-    
+
+    public OTAlgorithm<OTSetOperations<T>> getOtAlgo() {
+        return otAlgo;
+    }
 }

@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.logoot;
+import crdt.factories.LogootFactory;
 import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;

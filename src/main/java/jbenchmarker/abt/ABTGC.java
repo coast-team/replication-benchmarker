@@ -45,7 +45,7 @@ public class ABTGC {
 	}
 	
 	private void gc(){
-		VectorClock commonAncesstorVC = merge.siteVC.min(allVC.values());
+		VectorClock commonAncesstorVC = merge.siteVC.min(merge.getReplicaNumber(), allVC);
 		Iterator<ABTOperation> it = this.merge.abtlog.Hi.iterator();
 		
 		while(it.hasNext()){

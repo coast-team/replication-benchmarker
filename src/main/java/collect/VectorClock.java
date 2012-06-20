@@ -196,15 +196,14 @@ public class VectorClock extends HashMap<Integer, Integer> {
      * computes minimal vector from current and vector clocks provided in parameters.
      * for each vc in {this} U otherVectorClocks, for each i in min, min[i] <= vc[i] 
      */
-    public VectorClock min(Collection<VectorClock> otherVectorClocks) {
+    public VectorClock min(int localSiteId, Map<Integer, VectorClock> otherVectorClocks) {
         VectorClock min = new VectorClock(this);
-
-        for (VectorClock clock : otherVectorClocks) {
-            Iterator<Map.Entry<Integer, Integer>> componentIterator = clock.entrySet().iterator();
-            while (componentIterator.hasNext()) {
-                Map.Entry<Integer, Integer> i = componentIterator.next();
-                Integer key = i.getKey();
-                min.put(key, Math.min(min.getSafe(key), i.getValue()));
+//        min.put(localSiteId, Math.max(min.getSafe(localSiteId), 0));
+        
+        for (Entry<Integer, VectorClock> clockEntry : otherVectorClocks.entrySet()) {
+            for (Entry<Integer, Integer> entry : min.entrySet()) {
+                int e = entry.getKey();
+                min.put(e, Math.min(min.getSafe(e), clockEntry.getValue().getSafe(e)));
             }
         }
         return min;

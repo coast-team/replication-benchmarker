@@ -16,34 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.woot;
+package collect;
 
-import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.woot.original.*;
-import jbenchmarker.woot.wooth.*;
-import jbenchmarker.woot.wooto.*;
+import java.util.ArrayList;
 
 /**
  *
  * @author urso
  */
-public class WootFactories {
-    public static class WootFactory extends ReplicaFactory {
-        public MergeAlgorithm create(int r) {
-            return new WootMerge(new WootOriginalDocument(), r);
-        }
-    }
-    
-    public static class WootHFactory extends ReplicaFactory {
-        public MergeAlgorithm create(int r) {
-            return new WootHashMerge(new WootHashDocument(), r);
-        }
-    }
-    
-    public static class WootOFactory extends ReplicaFactory {
-        public MergeAlgorithm create(int r) {
-            return new WootMerge(new WootOptimizedDocument(), r);
-        }
+public class RangeList<T> extends ArrayList<T> {
+
+    /**
+     * Removes from this list offset elements starting from i. 
+     * Shifts any succeeding elements to the left (reduces their index). 
+     * This call shortens the list by offset elements. 
+     * (If offset==0, this operation has no effect.)
+     * @param toIndex index of first element to be removed
+     * @param offset number of element to be removed
+     */
+    public void removeRangeOffset(int toIndex, int offset) {
+        removeRange(toIndex, toIndex + offset);
     }
 }

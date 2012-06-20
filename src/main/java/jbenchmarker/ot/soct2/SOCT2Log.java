@@ -18,6 +18,8 @@
  */
 package jbenchmarker.ot.soct2;
 
+import collect.RangeList;
+import collect.VectorClock;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -52,7 +54,7 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
     /**
      * This is log or history of process.
      */
-    protected List<OTMessage<Op>> operations = new ArrayList<OTMessage<Op>>();
+    protected final RangeList<OTMessage<Op>> operations = new RangeList<OTMessage<Op>>();
 
     /**
      * add operation to log without transformation
@@ -87,7 +89,7 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
      */
     public Op merge(OTMessage<Op> operation) {
         Op opt = operation.getOperation();
-        int separationIndex = separatePrecedingAndConcurrentOperations(operation);
+        int separationIndex = separatePrecedingAndConcurrentOperations(operation.getClock());
         for (int i = separationIndex; i < this.operations.size(); i++) {
             opt = transforme.transpose(opt, operations.get(i).getOperation());
         }
@@ -95,7 +97,7 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
         return opt;
     }
 
-    private int separatePrecedingAndConcurrentOperations(OTMessage receivedOperation) {
+    int separatePrecedingAndConcurrentOperations(VectorClock clock) {
         int separationIndex = 0;
         int logSize = operations.size();
 
@@ -104,7 +106,7 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
             int siteIdOfLocalOperation = localOperation.getSiteId();
 
             //if (localOperation.getClock().getSafe(siteIdOfLocalOperation) < receivedOperation.getClock().getSafe(siteIdOfLocalOperation)) { Garbage collection
-            if (localOperation.getClock().getSafe(siteIdOfLocalOperation) <= receivedOperation.getClock().getSafe(siteIdOfLocalOperation)) {    
+            if (localOperation.getClock().getSafe(siteIdOfLocalOperation) <= clock.getSafe(siteIdOfLocalOperation)) {    
             // opi precedes op
                 for (int j = i; j > separationIndex; j--) {
                     // transpose opi backward to seq1
@@ -133,5 +135,7 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
         operations.set(index, messk);
     }
 
- 
+    void purge(int purgePoint) {
+        operations.removeRangeOffset(0, purgePoint);
+    }
 }

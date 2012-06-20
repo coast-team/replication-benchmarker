@@ -16,18 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.logoot;
+package crdt.factories;
 
-import java.util.ArrayList;
+import crdt.CRDT;
+import crdt.Factory;
+import jbenchmarker.core.MergeAlgorithm;
+import jbenchmarker.core.ReplicaFactory;
+import jbenchmarker.logoot.BoundaryStrategy;
+import jbenchmarker.logoot.LogootDocument;
+import jbenchmarker.logoot.LogootMerge;
 
 /**
  *
  * @author urso
  */
-public class RangeList<T> extends ArrayList<T> {
-
-    void removeRangeOffset(int i, int offset) {
-        removeRange(i,i+offset);
+public class LogootFactory extends ReplicaFactory {
+    @Override
+    public LogootMerge create(int r) {
+        return new LogootMerge(new LogootDocument(r, 64, new BoundaryStrategy(1000000000)), r);
     }
-
 }

@@ -22,7 +22,7 @@ import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
-import jbenchmarker.logoot.LogootFactory;
+import crdt.factories.LogootFactory;
 import static jbenchmarker.sim.CausalDispatcherTest.assertConsistency;
 import static jbenchmarker.sim.CausalDispatcherTest.assertGoodViewLength;
 import jbenchmarker.trace.TraceGenerator;

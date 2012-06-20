@@ -50,5 +50,6 @@ public interface OTAlgorithm<O extends Operation> extends Factory<OTAlgorithm<O>
     boolean readyFor(int siteId, VectorClock vcOp);
 
     void setReplicaNumber(int siteId);
-    
+
+    public int getReplicaNumber(); 
 }
