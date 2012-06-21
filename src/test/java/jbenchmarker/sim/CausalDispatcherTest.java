@@ -78,7 +78,7 @@ public class CausalDispatcherTest {
         @Override
         public boolean equals(Object obj) {
             return getOriginalOp().equals(obj);
-        }     
+        }   
     }
 
     static public class RFMock extends ReplicaFactory {
@@ -155,12 +155,12 @@ public class CausalDispatcherTest {
         
         SequenceOperation op1 = op(2,0,1,0);
         lop.add(op1);        
-        List<CRDTMessage> o1 = new ArrayList<CRDTMessage>();
-        o1.add(new OperationBasedOneMessage(new OpMock(op1)));  
+        List<SequenceMessage> o1 = new ArrayList<SequenceMessage>();
+        o1.add(new OpMock(op1));  
 
         cd.run(trace, false);
         assertEquals(cd.getHistory().get(2), lop);        
-        assertEquals(o1.get(0), cd.getGenHistory().get(2).get(0));        
+        assertEquals(o1,cd.getHistory().get(2));        
         cd.reset();
         SequenceOperation op2 = op(1,1,0,0);
         lop.add(op2);  
@@ -168,8 +168,8 @@ public class CausalDispatcherTest {
         o2.add(new OpMock(op2));
         
         cd.run(trace, false);
-        assertEquals(cd.getGenHistory().get(2), lop.subList(0, 1));
-        assertEquals(cd.getGenHistory().get(1), lop.subList(1, 2));
+        assertEquals(cd.getHistory().get(2), lop.subList(0, 1));
+        assertEquals(cd.getHistory().get(1), lop.subList(1, 2));
         assertEquals(o1, cd.getHistory().get(2));        
         assertEquals(o2, cd.getHistory().get(1));
 
@@ -179,8 +179,8 @@ public class CausalDispatcherTest {
         o2.add(new OpMock(op3));
         
         cd.run(trace, false);
-        assertEquals(cd.getGenHistory().get(2), lop.subList(0, 1));
-        assertEquals(cd.getGenHistory().get(1), lop.subList(1, 3));
+        assertEquals(cd.getHistory().get(2), lop.subList(0, 1));
+        assertEquals(cd.getHistory().get(1), lop.subList(1, 3));
         assertEquals(o1, cd.getHistory().get(2));        
         assertEquals(o2, cd.getHistory().get(1));
     
@@ -191,9 +191,9 @@ public class CausalDispatcherTest {
         o3.add(new OpMock(op4));
         
         cd.run(trace, false);
-        assertEquals(cd.getGenHistory().get(2), lop.subList(0, 1));
-        assertEquals(cd.getGenHistory().get(1), lop.subList(1, 3));
-        assertEquals(cd.getGenHistory().get(3), lop.subList(3, 4));        
+        assertEquals(cd.getHistory().get(2), lop.subList(0, 1));
+        assertEquals(cd.getHistory().get(1), lop.subList(1, 3));
+        assertEquals(cd.getHistory().get(3), lop.subList(3, 4));        
         assertEquals(o1, cd.getHistory().get(2));        
         assertEquals(o2, cd.getHistory().get(1));
         assertTrue(o3.equals(cd.getHistory().get(3)) ); // ||  o3b.equals(cd.getHistory().get(3)));

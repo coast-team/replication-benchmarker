@@ -85,20 +85,16 @@ public  class OperationBasedOneMessage implements OperationBasedMessage {
 
     @Override
     public boolean equals(Object obj) {
-        System.out.println("*** equals ***");
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        /*if (getClass() != obj.getClass()) {
             return false;
-        }
+        }*/
         final OperationBasedOneMessage other = (OperationBasedOneMessage) obj;
         if (this.operation != other.operation && (this.operation == null || !this.operation.equals(other.operation))) {
-            System.out.println(""+this.operation.equals(other.operation)+operation +"!= "+other.operation);
-            System.out.println("*** false11 ***");
             return false;
         }
-        System.out.println("*** true ***");
         return true;
     }
 

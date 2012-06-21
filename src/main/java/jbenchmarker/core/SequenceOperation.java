@@ -139,35 +139,25 @@ public class SequenceOperation<T> extends TraceOperation implements Operation, S
      
     @Override
     public boolean equals(Object obj) {
-        System.out.println("ENTER ICI : "+obj);
         if (obj == null) {
             return false;
         }
         if (!(obj instanceof SequenceOperation)) {
-            System.out.println("Pas séquence");
             return false;
         }
         final SequenceOperation other = (SequenceOperation) obj;
         if (this.type != other.type) {
-            System.out.println("bad type");
             return false;
         }
         if (this.position != other.position) {
-                        System.out.println("bad position");
-
             return false;
         }
         if (this.numberOf != other.numberOf) {
-                        System.out.println("bad number");
-
-            return false;
+             return false;
         }
         if ((this.content == null) ? (other.content != null) : !this.content.equals(other.content)) {
-                        System.out.println("bad content");
-
-            return false;
+             return false;
         }
-        System.out.println("SUPER : "+super.equals(obj));
         return super.equals(obj);
     }
 
