@@ -88,9 +88,9 @@ public  class OperationBasedOneMessage implements OperationBasedMessage {
         if (obj == null) {
             return false;
         }
-        /*if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass()) {
             return false;
-        }*/
+        }
         final OperationBasedOneMessage other = (OperationBasedOneMessage) obj;
         if (this.operation != other.operation && (this.operation == null || !this.operation.equals(other.operation))) {
             return false;
