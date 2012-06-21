@@ -127,10 +127,14 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
     @Override
     public void applyOneRemote(CRDTMessage mess){
          try {
-             integrateRemote((SequenceMessage) mess);
+             
+             integrateRemote(CRDTMessage2SequenceMessage(mess));
          }catch (IncorrectTraceException ex) {
             throw new IllegalStateException(ex);
         }
+    }
+    public static SequenceMessage CRDTMessage2SequenceMessage(CRDTMessage mess){
+        return (SequenceMessage) ((OperationBasedOneMessage) mess).getOperation();
     }
     /**
      * return document 

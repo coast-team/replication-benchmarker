@@ -20,12 +20,11 @@ package jbenchmarker.core;
 
 import collect.VectorClock;
 import crdt.CRDT;
+import crdt.RemoteOperation;
 import crdt.simulator.TraceOperation;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * local operation of document.
@@ -148,17 +147,25 @@ public class SequenceOperation<T> extends TraceOperation implements Operation, S
         }
         final SequenceOperation other = (SequenceOperation) obj;
         if (this.type != other.type) {
+            System.out.println("bad type");
             return false;
         }
         if (this.position != other.position) {
+                        System.out.println("bad position");
+
             return false;
         }
         if (this.numberOf != other.numberOf) {
+                        System.out.println("bad number");
+
             return false;
         }
         if ((this.content == null) ? (other.content != null) : !this.content.equals(other.content)) {
+                        System.out.println("bad content");
+
             return false;
         }
+        System.out.println("SUPER : "+super.equals(obj));
         return super.equals(obj);
     }
 
