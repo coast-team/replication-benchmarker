@@ -13,51 +13,53 @@ import jbenchmarker.core.Operation;
  *
  * @author urso
  */
-public class PreemptiveGarbageCollector extends SOCT2GarbageCollector {
+public class PreemptiveGarbageCollector extends AbstractGarbageCollector {
     private int clock = 0;
     private final Map<Integer, Integer> lastCollect = new HashMap<Integer, Integer>(); 
     private final int delay;
-    private final Set<Integer> ghosts = new HashSet<Integer>();
+    private final Set<Integer> alive = new HashSet<Integer>();
     private final List<OTMessage<? extends Operation>> purged = new LinkedList<OTMessage<? extends Operation>>(); 
     
-    public PreemptiveGarbageCollector(int numberOfReplica, int delay) {
-        super(numberOfReplica);
+    public PreemptiveGarbageCollector(int delay) {
+        super();
         this.delay = delay;
     }
 
-    public PreemptiveGarbageCollector(int frequencyGC, int numberOfReplica, int delay) {
-        super(frequencyGC, numberOfReplica);
+    public PreemptiveGarbageCollector(int frequencyGC, int delay) {
+        super(frequencyGC);
         this.delay = delay;
     }
 
     @Override
-    protected void setRemoteClock(int siteId, VectorClock vclock) {
-        super.setRemoteClock(siteId, vclock);
+    protected void setRemoteClock(OTAlgorithm soct2Algorithm, int siteId, VectorClock vclock) {
+        super.setRemoteClock(soct2Algorithm, siteId, vclock);
         lastCollect.put(siteId, clock++);
+        if (!alive.contains(siteId)) {
+            alive.add(siteId);
+            soct2Algorithm.getLog().insertAll(purged);
+            purged.clear();
+        }
     }
 
     @Override
-    protected VectorClock computeMin(OTAlgorithm otAlgorithm) {
-        Map<Integer, VectorClock> clocks = new TreeMap<Integer, VectorClock>(clocksOfAllSites);
-        Iterator<Entry<Integer, VectorClock>> it = clocks.entrySet().iterator();
-        while (it.hasNext()) {
-            Entry<Integer, VectorClock> e = it.next();
-            int replica = e.getKey();
+    protected void gc(OTAlgorithm otAlgorithm) {
+        Map<Integer, VectorClock> clocks = new TreeMap<Integer, VectorClock>();
+        for (int replica : alive) {
             if (lastCollect.get(replica) < clock - delay) {
-                it.remove();
-                ghosts.add(replica);
-            } else if (ghosts.contains(replica)) {
-                ghosts.remove(replica);
-                otAlgorithm.getLog().insertAll(purged);
-                purged.clear();
+                alive.remove(replica);
+            } else {
+                clocks.put(replica, clocksOfAllSites.get(replica));
             }
         }
-        return otAlgorithm.getSiteVC().min(otAlgorithm.getReplicaNumber(), clocks);
+        VectorClock commonAncestorVectorClock = otAlgorithm.getSiteVC().min(otAlgorithm.getReplicaNumber(), clocks);
+        int garbagePoint = otAlgorithm.getLog().separatePrecedingAndConcurrentOperations(commonAncestorVectorClock, 0);
+        
+        purged.addAll(otAlgorithm.getLog().begin(garbagePoint));
+        otAlgorithm.getLog().purge(garbagePoint);
     }
 
     @Override
-    protected void purge(SOCT2Log log, int garbagePoint) {
-        purged.addAll(log.begin(garbagePoint));
-        super.purge(log, garbagePoint);
+    public GarbageCollector create() {
+        return new PreemptiveGarbageCollector(delay);
     }
 }
