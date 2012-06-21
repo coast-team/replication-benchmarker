@@ -18,7 +18,6 @@
  */
 package jbenchmarker.woot;
 
-import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
