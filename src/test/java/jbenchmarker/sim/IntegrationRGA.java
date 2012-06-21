@@ -26,7 +26,7 @@ import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
 import crdt.simulator.CausalSimulator;
-import jbenchmarker.rga.RGAFactory;
+import jbenchmarker.factories.RGAFactory;
 import jbenchmarker.trace.TraceGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;

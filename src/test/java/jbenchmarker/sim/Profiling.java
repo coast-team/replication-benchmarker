@@ -8,7 +8,7 @@ import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
-import jbenchmarker.rga.RGAFactory;
+import jbenchmarker.factories.RGAFactory;
 
 /**
  *

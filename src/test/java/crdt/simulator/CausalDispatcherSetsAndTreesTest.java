@@ -40,7 +40,7 @@ import org.junit.Test;
  *
  * @author urso
  */
-public class CausalDispatcherTest {
+public class CausalDispatcherSetsAndTreesTest {
 
     Factory policy[] = {new WordSkip(), new WordReappear(), new WordRoot(), new WordCompact(),
         new WordIncrementalSkip(), new WordIncrementalReappear(),
@@ -55,7 +55,7 @@ public class CausalDispatcherTest {
     //Vector<LinkedList<TimeBench>> result = new Vector<LinkedList<TimeBench>>();
     int scale = 100;
 
-    public CausalDispatcherTest() {
+    public CausalDispatcherSetsAndTreesTest() {
     }
 
     @BeforeClass
@@ -104,7 +104,7 @@ public class CausalDispatcherTest {
     }
     static final int vocabularySize = 100;
     
-    final static OperationProfile seqopp = new SetOperationProfile(0.70) {
+    final static OperationProfile setopp = new SetOperationProfile(0.70) {
 
         @Override
         public Object nextElement() {
@@ -152,7 +152,7 @@ public class CausalDispatcherTest {
 //        System.out.println("local : " + (l/nl) + "\nRemote : " + (r/nr));
 
         for (Factory<CRDT> sf : set) {
-            testRun(sf, 200, 20, seqopp);
+            testRun(sf, 200, 20, setopp);
         }
     }
     
@@ -182,7 +182,7 @@ public class CausalDispatcherTest {
     public void stressSet() throws PreconditionException, IncorrectTraceException, IOException {
         for (int i = 0; i < 5000; ++i) {
             //System.out.println(" i :"+i++);
-            testRun(set[7], 10, 3, seqopp);          
+            testRun(set[7], 10, 3, setopp);          
         }
         //writeResult();
     }

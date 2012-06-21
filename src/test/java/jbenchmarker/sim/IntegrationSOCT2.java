@@ -26,7 +26,7 @@ import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
 import crdt.simulator.CausalSimulator;
 import java.util.logging.Logger;
-import crdt.factories.TTFFactories;
+import jbenchmarker.factories.TTFFactories;
 import jbenchmarker.trace.TraceGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;

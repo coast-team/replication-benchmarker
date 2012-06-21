@@ -16,12 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.ot.soct2;
+package jbenchmarker.factories;
 
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.ot.soct2.SOCT2;
-import jbenchmarker.ot.soct2.SOCT2GarbageCollector;
+import jbenchmarker.ot.soct2.*;
 import jbenchmarker.ot.ttf.TTFDocument;
 import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
 import jbenchmarker.ot.ttf.TTFOperation;
@@ -29,16 +28,31 @@ import jbenchmarker.ot.ttf.TTFTransformations;
 
 /**
  *
- * @author mehdi
+ * @author oster
  */
-public class SOCT2Factory extends ReplicaFactory {
+public class TTFFactories {
+    static public class WithoutGC extends ReplicaFactory {
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return new TTFMergeAlgorithm(new TTFDocument(), siteId);
+        }
+    }
     
+    static public class WithGC3 extends ReplicaFactory {
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return new TTFMergeAlgorithm(new TTFDocument(), siteId, 
+                    new SOCT2<TTFOperation>(new TTFTransformations(), siteId, 
+                    new SOCT2GarbageCollector(3, 3)));
+        }
+    }
     
-    //SOCT2 with garbage collection and after collecting after 20 op
-    @Override
-    public MergeAlgorithm create(int siteId) {
-        return new TTFMergeAlgorithm(new TTFDocument(), siteId,
-                new SOCT2<TTFOperation>(new TTFTransformations(), siteId,
-                new SOCT2GarbageCollector(20)));
+    static public class WithGC10 extends ReplicaFactory {
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return new TTFMergeAlgorithm(new TTFDocument(), siteId, 
+                    new SOCT2<TTFOperation>(new TTFTransformations(), siteId, 
+                    new SOCT2GarbageCollector(10)));
+        }
     }
 }

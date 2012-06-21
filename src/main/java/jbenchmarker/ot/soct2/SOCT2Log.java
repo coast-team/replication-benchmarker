@@ -20,8 +20,9 @@ package jbenchmarker.ot.soct2;
 
 import collect.RangeList;
 import collect.VectorClock;
+import crdt.Factory;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import jbenchmarker.core.Operation;
@@ -31,9 +32,9 @@ import jbenchmarker.core.Operation;
  * @param <Op> 
  * @author oster
  */
-public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, Serializable {
+public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, Serializable, Factory<SOCT2Log<Op>> {
 
-    private SOCT2TranformationInterface<Op> transforme;
+    protected SOCT2TranformationInterface<Op> transforme;
     
     /**
      * Construct a new log with this transformations.
@@ -87,21 +88,24 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
      * @param operation new operation
      * @return return the transformed operation
      */
-    public Op merge(OTMessage<Op> operation) {
-        Op opt = operation.getOperation();
-        int separationIndex = separatePrecedingAndConcurrentOperations(operation.getClock());
+    public void merge(OTMessage<Op> message) {
+        int separationIndex = separatePrecedingAndConcurrentOperations(message.getClock(), 0);
+        
+        placeOperation(message, separationIndex);   
+    }
+    
+    protected void placeOperation(OTMessage<Op> message, int separationIndex) {  
+        Op opt = message.getOperation();
         for (int i = separationIndex; i < this.operations.size(); i++) {
             opt = transforme.transpose(opt, operations.get(i).getOperation());
         }
-
-        return opt;
+        operations.add(message);
     }
 
-    int separatePrecedingAndConcurrentOperations(VectorClock clock) {
-        int separationIndex = 0;
+    int separatePrecedingAndConcurrentOperations(VectorClock clock, int separationIndex) {
         int logSize = operations.size();
 
-        for (int i = 0; i < logSize; i++) {
+        for (int i = separationIndex; i < logSize; i++) {
             OTMessage localOperation = operations.get(i);
             int siteIdOfLocalOperation = localOperation.getSiteId();
 
@@ -137,5 +141,18 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
 
     void purge(int purgePoint) {
         operations.removeRangeOffset(0, purgePoint);
+    }
+
+    @Override
+    public SOCT2Log<Op> create() {
+        return new SOCT2Log<Op>(transforme);
+    }
+
+    void insertAll(List<OTMessage<Op>> purged) {
+        operations.addAll(0, purged);
+    }
+
+    Collection<OTMessage<Op>> begin(int garbagePoint) {
+        return operations.subList(0, garbagePoint);
     }
 }

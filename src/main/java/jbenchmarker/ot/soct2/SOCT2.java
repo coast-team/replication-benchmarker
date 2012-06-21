@@ -19,7 +19,6 @@ public class SOCT2 <O extends Operation> implements OTAlgorithm<O> {
 
     final private VectorClock siteVC;
     final private SOCT2Log<O> log;
-    final SOCT2TranformationInterface ot;
     //private Document doc;
     private int replicaNumber;
 
@@ -28,12 +27,18 @@ public class SOCT2 <O extends Operation> implements OTAlgorithm<O> {
     /**
      * Make soct2 instance. 
      */
-    public SOCT2(SOCT2TranformationInterface ot, int siteId, Factory<GarbageCollector> gc) {
-        this.ot = ot; 
+    public SOCT2(int siteId, Factory<SOCT2Log<O>> log, Factory<GarbageCollector> gc) {
         this.siteVC = new VectorClock();
-        this.log = new SOCT2Log(ot);
+        this.log = log.create();
         this.replicaNumber = siteId;
         this.gc = gc == null ? null : gc.create();            
+    }
+    
+    /**
+     * Make soct2 instance. 
+     */
+    public SOCT2(SOCT2TranformationInterface ot, int siteId, Factory<GarbageCollector> gc) {
+        this(siteId, new SOCT2Log<O>(ot), gc);            
     }
     
     /**
@@ -42,6 +47,14 @@ public class SOCT2 <O extends Operation> implements OTAlgorithm<O> {
     public SOCT2(SOCT2TranformationInterface ot, Factory<GarbageCollector> gc) {
         this(ot, 0, gc);
     }
+    
+    /**
+     * Make soct2 instance. 
+     */
+    public SOCT2(Factory<SOCT2Log<O>> log, Factory<GarbageCollector> gc) {
+        this(0, log, gc);
+    }
+    
     /**
      * 
      * @return the vector clock of the instance
@@ -107,7 +120,7 @@ public class SOCT2 <O extends Operation> implements OTAlgorithm<O> {
         if (this.readyFor(soct2message.getSiteId(), soct2message.getClock())) {
             this.log.merge(soct2message);
             //this.getDoc().apply((Operation) Soct2message.getOperation());
-            this.log.add(soct2message);
+//            this.log.add(soct2message);
             this.siteVC.inc(soct2message.getSiteId());
             if (gc != null) {
                 this.gc.collect(this, soct2message); //Garbage collector
@@ -125,7 +138,7 @@ public class SOCT2 <O extends Operation> implements OTAlgorithm<O> {
 
     @Override
     public OTAlgorithm<O> create() {
-        return new SOCT2<O>(ot, replicaNumber, gc);
+        return new SOCT2<O>(log, gc);
     }
 
     @Override

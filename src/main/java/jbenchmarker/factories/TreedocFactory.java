@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.treedoc.list;
+package jbenchmarker.factories;
 
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
+import jbenchmarker.treedoc.TreedocMerge;
 
 /**
- * Replicas factory for list-based implementation of Treedoc by Nuno Preguiça.
  * 
  * @author mzawirski
  */
@@ -30,7 +30,6 @@ public class TreedocFactory extends ReplicaFactory {
 
 	@Override
 	public MergeAlgorithm create(int r) {
-		return new TreedocMerge(new TreedocDocument(), r);
+		return new TreedocMerge(r);
 	}
-
 }

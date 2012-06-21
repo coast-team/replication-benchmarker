@@ -16,23 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.logoot;
+package jbenchmarker.factories;
 
-import crdt.CRDT;
-import crdt.Factory;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.logoot.BoundaryStrategy;
-import jbenchmarker.logoot.LogootDocument;
-import jbenchmarker.logoot.LogootMerge;
+import jbenchmarker.treedoc.list.TreedocDocument;
+import jbenchmarker.treedoc.list.TreedocMerge;
 
 /**
- *
- * @author urso
+ * Replicas factory for list-based implementation of Treedoc by Nuno Preguiça.
+ * 
+ * @author mzawirski
  */
-public class LogootFactory extends ReplicaFactory {
-    @Override
-    public LogootMerge create(int r) {
-        return new LogootMerge(new LogootDocument(r, 64, new BoundaryStrategy(1000000000)), r);
-    }
+public class TreedocListFactory extends ReplicaFactory {
+
+	@Override
+	public MergeAlgorithm create(int r) {
+		return new TreedocMerge(new TreedocDocument(), r);
+	}
+
 }

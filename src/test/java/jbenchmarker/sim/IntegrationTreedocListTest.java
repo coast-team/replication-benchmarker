@@ -19,7 +19,7 @@
 package jbenchmarker.sim;
 
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.treedoc.list.TreedocFactory;
+import jbenchmarker.factories.TreedocListFactory;
 
 /**
  * 
@@ -28,6 +28,6 @@ import jbenchmarker.treedoc.list.TreedocFactory;
 public class IntegrationTreedocListTest extends AbstractIntegrationTest {
 	@Override
 	protected ReplicaFactory createFactory() {
-		return new TreedocFactory();
+		return new TreedocListFactory();
 	}
 }

@@ -16,19 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.treedoc;
+package jbenchmarker.factories;
 
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
+import jbenchmarker.rga.RGADocument;
+import jbenchmarker.rga.RGAMerge;
 
-/**
- * 
- * @author mzawirski
- */
-public class TreedocFactory extends ReplicaFactory {
+public class RGAFactory extends ReplicaFactory {
 
-	@Override
+    @Override
 	public MergeAlgorithm create(int r) {
-		return new TreedocMerge(r);
+		return new RGAMerge(new RGADocument(), r);
 	}
 }

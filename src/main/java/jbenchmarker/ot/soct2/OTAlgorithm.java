@@ -51,5 +51,5 @@ public interface OTAlgorithm<O extends Operation> extends Factory<OTAlgorithm<O>
 
     void setReplicaNumber(int siteId);
 
-    public int getReplicaNumber(); 
+    public int getReplicaNumber();
 }

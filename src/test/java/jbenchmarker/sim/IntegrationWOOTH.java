@@ -25,7 +25,7 @@ import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
 import crdt.simulator.CausalSimulator;
-import static crdt.factories.WootFactories.WootHFactory;
+import static jbenchmarker.factories.WootFactories.WootHFactory;
 import jbenchmarker.trace.TraceGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;

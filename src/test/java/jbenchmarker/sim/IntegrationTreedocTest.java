@@ -22,7 +22,7 @@ import crdt.CRDT;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.treedoc.TreedocDocument;
-import jbenchmarker.treedoc.TreedocFactory;
+import jbenchmarker.factories.TreedocFactory;
 
 /**
  * 

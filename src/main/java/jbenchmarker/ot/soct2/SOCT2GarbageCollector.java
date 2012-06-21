@@ -20,7 +20,6 @@ package jbenchmarker.ot.soct2;
 
 import collect.VectorClock;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -34,7 +33,7 @@ public class SOCT2GarbageCollector implements Serializable, GarbageCollector {
      * Recommanded number operation before garbage collecting (20)
      */
     public static final int RECOMMANDED_GC_FREQUENCY_VALUE = 20;
-    final private Map<Integer, VectorClock> clocksOfAllSites = new TreeMap<Integer, VectorClock>();
+    final protected Map<Integer, VectorClock> clocksOfAllSites = new TreeMap<Integer, VectorClock>();
     final private int frequencyGC;
     private int countdownBeforeGC;
     final private int numberOfReplica;
@@ -67,7 +66,7 @@ public class SOCT2GarbageCollector implements Serializable, GarbageCollector {
      */
     @Override
     public void collect(OTAlgorithm soct2Algorithm, OTMessage mess) {
-        this.clocksOfAllSites.put(mess.getSiteId(), mess.getClock());
+        setRemoteClock(mess.getSiteId(), mess.getClock());
         this.countdownBeforeGC--;
         if (this.countdownBeforeGC == 0) {
             gc(soct2Algorithm);
@@ -77,17 +76,30 @@ public class SOCT2GarbageCollector implements Serializable, GarbageCollector {
 
     private void gc(OTAlgorithm otAlgorithm) {
         if (clocksOfAllSites.entrySet().size() == numberOfReplica-1) {
-            VectorClock commonAncestorVectorClock = 
-                    otAlgorithm.getSiteVC().min(otAlgorithm.getReplicaNumber(), this.clocksOfAllSites);
+            VectorClock commonAncestorVectorClock = computeMin(otAlgorithm);
             int garbagePoint =
-                    otAlgorithm.getLog().separatePrecedingAndConcurrentOperations(commonAncestorVectorClock);
-            otAlgorithm.getLog().purge(garbagePoint);
+                    otAlgorithm.getLog().separatePrecedingAndConcurrentOperations(commonAncestorVectorClock, 0);
+            purge(otAlgorithm.getLog(), garbagePoint);
         }
 //        Logger.getLogger(getClass().getCanonicalName()).log(Level.INFO, "gc removed {0} operation(s) from a total of {1} operation(s)", new Object[]{count, count + this.mergeAlgorithm.getHistoryLog().getSize()});
     }
 
+    
+    
     @Override
     public GarbageCollector create() {
         return new SOCT2GarbageCollector(frequencyGC, numberOfReplica);
+    }
+
+    protected void setRemoteClock(int siteId, VectorClock clock) {
+        clocksOfAllSites.put(siteId, clock);
+    }
+
+    protected VectorClock computeMin(OTAlgorithm otAlgorithm) {
+        return otAlgorithm.getSiteVC().min(otAlgorithm.getReplicaNumber(), this.clocksOfAllSites);
+    }
+
+    protected void purge(SOCT2Log log, int garbagePoint) {
+        log.purge(garbagePoint);
     }
 }

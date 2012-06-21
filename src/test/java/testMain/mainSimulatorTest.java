@@ -10,7 +10,7 @@ import jbenchmarker.Main;
 import jbenchmarker.MainSimulation;
 import jbenchmarker.TraceSimul2XML;
 import jbenchmarker.trace.TraceGenerator;
-import crdt.factories.WootFactories.WootHFactory;
+import jbenchmarker.factories.WootFactories.WootHFactory;
 import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;

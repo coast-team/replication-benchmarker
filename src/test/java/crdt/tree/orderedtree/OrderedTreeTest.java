@@ -12,7 +12,7 @@ import crdt.set.CRDTSet;
 import crdt.set.NaiveSet;
 import crdt.set.observedremove.CommutativeOrSet;
 import crdt.set.observedremove.ConvergentOrSet;
-import crdt.simulator.CausalDispatcherTest;
+import crdt.simulator.CausalDispatcherSetsAndTreesTest;
 import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.random.OperationProfile;
 import crdt.simulator.random.OrderedTreeOperationProfile;
@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.logoot.BoundaryStrategy;
-import crdt.factories.LogootFactory;
+import jbenchmarker.factories.LogootFactory;
 import jbenchmarker.logoot.LogootStrategy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -174,7 +174,7 @@ public class OrderedTreeTest {
     @Test
     public void testRunsNaiveLogoot() throws PreconditionException, IncorrectTraceException, IOException {
         for (Factory p : policies) {
-            CausalDispatcherTest.testRun(createTree(new LogootTreeNode(null, 0, 
+            CausalDispatcherSetsAndTreesTest.testRun(createTree(new LogootTreeNode(null, 0, 
                     32, new BoundaryStrategy(100)), new NaiveSet(), p), 1000, 5, otreeop);
         }
     }
@@ -182,7 +182,7 @@ public class OrderedTreeTest {
     @Test
     public void testRunsNaiveWootH() throws PreconditionException, IncorrectTraceException, IOException {
         for (Factory p : policies) {
-            CausalDispatcherTest.testRun(createTree(new WootHashTreeNode(null, 0), new NaiveSet(), p), 1000, 5, otreeop);
+            CausalDispatcherSetsAndTreesTest.testRun(createTree(new WootHashTreeNode(null, 0), new NaiveSet(), p), 1000, 5, otreeop);
         }
     }
     
