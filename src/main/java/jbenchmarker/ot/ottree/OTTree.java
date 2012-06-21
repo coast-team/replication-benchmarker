@@ -15,6 +15,7 @@ import crdt.tree.CRDTTree;
  */
 public class OTTree extends CRDTTree{
     
+    
     @Override
     public CRDTMessage add(UnorderedNode father, Object element) throws PreconditionException {
         throw new UnsupportedOperationException("Not supported yet.");

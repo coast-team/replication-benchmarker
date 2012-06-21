@@ -23,9 +23,9 @@ public abstract class ReplicatedDocument<L> extends Observable implements Factor
         return replicaNumber;
     }
     
-    abstract public ReplicatedMessage applyLocal(Operation op) throws PreconditionException ;
+    abstract public Message applyLocal(Operation op) throws PreconditionException ;
     
-    public void applyRemote(ReplicatedMessage msg){
+    public void applyRemote(Message msg){
         
     }
     public abstract void applyRemote(Operation op);

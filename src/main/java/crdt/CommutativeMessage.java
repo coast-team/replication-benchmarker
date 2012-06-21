@@ -19,7 +19,7 @@ public abstract class CommutativeMessage<T> implements CRDTMessage, Cloneable,Op
     
     @Override
     public CRDTMessage concat(CRDTMessage msg){
-       return new OperationBasedMessages(this,(CommutativeMessage)msg);
+       return new OperationBasedMessagesBag(this,(CommutativeMessage)msg);
    }
     
    /* @Override

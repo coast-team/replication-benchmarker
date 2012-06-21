@@ -9,13 +9,14 @@ import crdt.tree.orderedtree.PositionIdentifier;
 import crdt.tree.orderedtree.Positioned;
 import java.util.LinkedList;
 import java.util.List;
+import jbenchmarker.core.MergeAlgorithm;
 
 /**
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
 public class OTTreeNode implements OrderedNode{
-    LinkedList<OTTreeNode> sons=new LinkedList<OTTreeNode> ();
+    MergeAlgorithm ma;
     int visibleChildren =0;
     @Override
     public int childrenNumber() {

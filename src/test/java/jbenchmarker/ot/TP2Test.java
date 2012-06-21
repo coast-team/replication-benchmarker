@@ -14,6 +14,8 @@ import jbenchmarker.ot.ttf.TTFOperation;
 import jbenchmarker.ot.ttf.TTFTransformations;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+import static org.junit.Assert.fail;
+
 /**
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
@@ -25,10 +27,10 @@ public class TP2Test {
         new TTFTransformations()
     };
     Operation ops[][]={
-        {new OTSetOperations(OTSetOperations.OpType.Add,1, 0),
+        {new OTSetOperations(OTSetOperations.OpType.Add,1, 1),
             new OTSetOperations(OTSetOperations.OpType.Del,1, 0)
         },
-        {new OTSetOperations(OTSetOperations.OpType.Add,1, 0),
+        {new OTSetOperations(OTSetOperations.OpType.Add,1, 1),
             new OTSetOperations(OTSetOperations.OpType.Del,1, 0)
         },
         {new TTFOperation(SequenceOperation.OpType.del,1,1),
@@ -50,10 +52,14 @@ public class TP2Test {
                         res1=ot.transpose(ot.transpose(op, op1),ot.transpose(op2, op1));
                         Operation res2;
                         res2=ot.transpose(ot.transpose(op, op2),ot.transpose(op1, op2));
-                        assertEquals(res1,res2);
+                        if (res1!=res2){
+                            fail("TP2 Fail : ot:"+ot+" "+res1+"!=" +res2+" op: "+op+" op1: "+op1+" op2:"+op2);
+                        }
+                        //assertEquals(res1,res2);
                     }
                 }
             }           
         }
     }
+    
 }
