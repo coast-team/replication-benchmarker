@@ -10,5 +10,4 @@ package jbenchmarker.core;
  */
 public interface Operation<T> extends Cloneable {
     public Operation<T> clone();
- 
 }

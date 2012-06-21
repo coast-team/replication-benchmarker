@@ -118,6 +118,28 @@ public final class OperationBasedMessagesBag implements OperationBasedMessage,Cl
         return traceOperation;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final OperationBasedMessagesBag other = (OperationBasedMessagesBag) obj;
+        if (this.ops != other.ops && (this.ops == null || !this.ops.equals(other.ops))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 37 * hash + (this.ops != null ? this.ops.hashCode() : 0);
+        return hash;
+    }
+
    
 
  

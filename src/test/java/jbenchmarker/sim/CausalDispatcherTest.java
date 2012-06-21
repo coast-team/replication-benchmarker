@@ -24,6 +24,7 @@ import crdt.simulator.Trace;
 import crdt.simulator.CausalSimulator;
 import crdt.CRDT;
 import crdt.CRDTMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.simulator.TraceOperation;
 import java.util.Enumeration;
 import jbenchmarker.core.ReplicaFactory;
@@ -154,13 +155,12 @@ public class CausalDispatcherTest {
         
         SequenceOperation op1 = op(2,0,1,0);
         lop.add(op1);        
-        List<SequenceMessage> o1 = new ArrayList<SequenceMessage>();
-        o1.add(new OpMock(op1));  
+        List<CRDTMessage> o1 = new ArrayList<CRDTMessage>();
+        o1.add(new OperationBasedOneMessage(new OpMock(op1)));  
 
         cd.run(trace, false);
-        assertEquals(cd.getGenHistory().get(2), lop);        
-        assertEquals(o1, cd.getHistory().get(2));        
-        
+        assertEquals(cd.getHistory().get(2), lop);        
+        assertEquals(o1.get(0), cd.getGenHistory().get(2).get(0));        
         cd.reset();
         SequenceOperation op2 = op(1,1,0,0);
         lop.add(op2);  
