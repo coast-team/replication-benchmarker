@@ -4,9 +4,7 @@
  */
 package jbenchmarker.ot.otset;
 
-import crdt.CRDTMessage;
-import crdt.Factory;
-import crdt.PreconditionException;
+import crdt.*;
 import crdt.set.CRDTSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -75,7 +73,7 @@ public class OTSet<T> extends CRDTSet<T>  {
         } else {
             OTSetOperations<T> op = new OTSetOperations(OTSetOperations.OpType.Add, t, getReplicaNumber());
             set.add(t);
-            return otAlgo.estampileMessage(op);
+            return new OperationBasedOneMessage(otAlgo.estampileMessage(op));
         }
     }
 
@@ -92,7 +90,7 @@ public class OTSet<T> extends CRDTSet<T>  {
         if (set.contains(t)) {
             OTSetOperations<T> op = new OTSetOperations(OTSetOperations.OpType.Del, t, getReplicaNumber());
             set.remove(t);
-            return otAlgo.estampileMessage(op);
+            return new OperationBasedOneMessage(otAlgo.estampileMessage(op));
         } else {
             throw new PreconditionException("del : element " + t + " is not present in set");
         }
@@ -127,7 +125,7 @@ public class OTSet<T> extends CRDTSet<T>  {
 
     @Override
     public void applyOneRemote(CRDTMessage msg) {
-        OTSetOperations<T> op = (OTSetOperations<T>) otAlgo.integrateRemote((OTMessage) msg);
+        OTSetOperations<T> op = (OTSetOperations<T>) otAlgo.integrateRemote((OTMessage) ((OperationBasedOneMessage) msg).getOperation());
         switch (op.getType()) {
             case Add:
                 if (!set.contains(op.getElement())) {

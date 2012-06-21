@@ -4,6 +4,8 @@
  */
 package crdt.set.counter;
 
+import crdt.CRDTMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.set.CRDTSet;
 import crdt.set.CommutativeSet;
 import crdt.set.CommutativeSetMessage;
@@ -52,19 +54,19 @@ public class CommutativeCounterSet<T> extends CommutativeSet<T>{
     }
 
     @Override
-    public CounterMessage innerAdd(T t) {        
+    public OperationBasedOneMessage innerAdd(T t) {        
         int c = map.containsKey(t) ? -map.get(t) + 1 : 1;       
         map.put(t, 1);
         lookup.add(t);
-        return new CounterMessage(t, c);
+        return new OperationBasedOneMessage(new CounterMessage(t, c));
     }
 
     @Override
-    public CounterMessage innerRemove(T t) {
+    public OperationBasedOneMessage innerRemove(T t) {
         int c = -map.get(t);
         map.remove(t);
         lookup.remove(t);
-        return new CounterMessage(t, c);
+        return new OperationBasedOneMessage(new CounterMessage(t, c));
     }
 
     @Override
@@ -76,4 +78,8 @@ public class CommutativeCounterSet<T> extends CommutativeSet<T>{
     public CRDTSet<T> create() {
         return new CommutativeCounterSet<T>();
     }
+
+   
+
+
 }

@@ -4,7 +4,7 @@
  */
 package crdt.set;
 
-import crdt.CommutativeMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.PreconditionException;
 import crdt.set.CommutativeSetMessage.OpType;
 import crdt.set.lastwriterwins.TypedMessage;
@@ -29,15 +29,15 @@ public class NaiveSet<T> extends CommutativeSet<T> {
     }
 
     @Override
-    public TypedMessage<T> innerAdd(T t) throws PreconditionException {
+    public OperationBasedOneMessage innerAdd(T t) throws PreconditionException {
         set.add(t);
-        return new TypedMessage<T>(OpType.add, t);
+        return new OperationBasedOneMessage(new TypedMessage<T>(OpType.add, t));
     }
 
     @Override
-    public CommutativeMessage innerRemove(T t) throws PreconditionException {
+    public OperationBasedOneMessage innerRemove(T t) throws PreconditionException {
         set.remove(t);
-        return new TypedMessage<T>(OpType.del, t);
+        return new OperationBasedOneMessage(new TypedMessage<T>(OpType.del, t));
     }
 
     @Override
@@ -54,5 +54,7 @@ public class NaiveSet<T> extends CommutativeSet<T> {
     public Set<T> lookup() {
         return set;
     }
+
+   
 
 }

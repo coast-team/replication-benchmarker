@@ -5,7 +5,7 @@
 package crdt.set.lastwriterwins;
 
 import crdt.CRDTMessage;
-import crdt.CommutativeMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.set.CRDTSet;
 import crdt.set.CommutativeSet;
 import crdt.set.CommutativeSetMessage;
@@ -73,7 +73,7 @@ public class CommutativeLwwSet<T> extends CommutativeSet<T>{
     }
 
     @Override
-    public LwwMessage innerAdd(T t) {
+    public OperationBasedOneMessage innerAdd(T t) {
         LwwMessage newOp = new LwwMessage(LwwMessage.OpType.add, t, 1);
 
         if (mapR.containsKey(t)) {
@@ -82,18 +82,17 @@ public class CommutativeLwwSet<T> extends CommutativeSet<T>{
         }
         mapA.put(t, newOp.getime());
 
-        return  newOp;
-
+        return new  OperationBasedOneMessage(newOp);
     }
 
     @Override
-    public LwwMessage innerRemove(T t) {
+    public OperationBasedOneMessage innerRemove(T t) {
         LwwMessage newOp = new LwwMessage(LwwMessage.OpType.del, t, mapA.get(t) + 1);
 
         mapA.remove(t);
         mapR.put(t, newOp.getime());
 
-        return newOp;
+        return new  OperationBasedOneMessage(newOp);
     }
 
      @Override

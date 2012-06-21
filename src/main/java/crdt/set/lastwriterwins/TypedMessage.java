@@ -4,7 +4,7 @@
  */
 package crdt.set.lastwriterwins;
 
-import crdt.CommutativeMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.set.CommutativeSetMessage;
 
 /**
@@ -32,7 +32,7 @@ public class TypedMessage<T> extends CommutativeSetMessage<T> {
     }
     
     @Override
-    public CommutativeMessage clone() {
+    public CommutativeSetMessage<T> clone() {
         return new TypedMessage(type, content);
     }
 }

@@ -4,7 +4,7 @@
  */
 package crdt.set.observedremove;
 
-import crdt.CommutativeMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.set.CommutativeSetMessage;
 import crdt.set.lastwriterwins.TypedMessage;
 import java.util.HashSet;
@@ -34,7 +34,7 @@ public class OrMessage<T> extends TypedMessage<T> {
     }
 
     @Override
-    public CommutativeMessage clone() {
+    public OrMessage<T> clone() {
         return new OrMessage(type, content, new HashSet(tags));
     }
 }

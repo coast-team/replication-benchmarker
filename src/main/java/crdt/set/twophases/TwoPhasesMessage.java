@@ -5,7 +5,7 @@
 package crdt.set.twophases;
 
 import crdt.set.observedremove.*;
-import crdt.CommutativeMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.set.CommutativeSetMessage;
 import crdt.set.CommutativeSetMessage.OpType;
 import crdt.set.lastwriterwins.TypedMessage;
@@ -37,7 +37,7 @@ public class TwoPhasesMessage<T> extends TypedMessage<T> {
     }
 
     @Override
-    public CommutativeMessage clone() {
+    public TwoPhasesMessage clone() {
         return new TwoPhasesMessage(type, content);
     }  
 }

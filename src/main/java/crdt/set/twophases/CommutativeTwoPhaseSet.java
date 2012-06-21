@@ -5,6 +5,7 @@
 package crdt.set.twophases;
 
 import crdt.CRDTMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.PreconditionException;
 import crdt.set.CRDTSet;
 import crdt.set.CommutativeSetMessage.OpType;
@@ -33,7 +34,7 @@ public class CommutativeTwoPhaseSet<T> extends CRDTSet<T>{
     @Override
     public void applyOneRemote(CRDTMessage Setop) {
         
-        TwoPhasesMessage op = (TwoPhasesMessage) Setop;
+        TwoPhasesMessage op = (TwoPhasesMessage)((OperationBasedOneMessage) Setop).getOperation();
         if (op.getType() == TwoPhasesMessage.OpType.add) {
             //not innerAdd after innerRemove
             if (!setR.contains(op.getContent())) {
@@ -60,15 +61,14 @@ public class CommutativeTwoPhaseSet<T> extends CRDTSet<T>{
         }
 
         setA.add(t);
-
-        return new TwoPhasesMessage(OpType.add, t);
+        return new  OperationBasedOneMessage(new TwoPhasesMessage(OpType.add, t));
     }
 
     @Override
     public CRDTMessage innerRemove(T t) {
         setA.remove(t);
         setR.add(t);
-        return  new TwoPhasesMessage(OpType.del, t);
+        return  new  OperationBasedOneMessage(new TwoPhasesMessage(OpType.del, t));
     }
 
      @Override

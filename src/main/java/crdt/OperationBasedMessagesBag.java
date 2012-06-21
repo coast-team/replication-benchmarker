@@ -4,6 +4,7 @@
  */
 package crdt;
 
+import crdt.simulator.TraceOperation;
 import java.util.LinkedList;
 
 /**
@@ -13,10 +14,11 @@ import java.util.LinkedList;
  * 
  * A message contains many operations.
  */
-public final class OperationBasedMessagesBag extends CommutativeMessage implements Cloneable {
-    private LinkedList<CommutativeMessage> ops = new LinkedList<CommutativeMessage>();
+public final class OperationBasedMessagesBag implements OperationBasedMessage,Cloneable {
+    private LinkedList<OperationBasedOneMessage> ops = new LinkedList<OperationBasedOneMessage>();
 
-    OperationBasedMessagesBag(CommutativeMessage aThis, CommutativeMessage msg) {
+    TraceOperation traceOperation;
+    OperationBasedMessagesBag(OperationBasedMessage aThis, OperationBasedMessage msg) {
 
         
         addMessage(aThis);
@@ -26,11 +28,11 @@ public final class OperationBasedMessagesBag extends CommutativeMessage implemen
     private OperationBasedMessagesBag() {
     }
     
-    void addMessage(CommutativeMessage mess){
+    void addMessage(OperationBasedMessage mess){
         if (mess instanceof OperationBasedMessagesBag){
             ops.addAll(((OperationBasedMessagesBag)mess).getOps());
         }else{
-            ops.add(mess);
+            ops.add((OperationBasedOneMessage )mess);
         }
             
     }
@@ -39,7 +41,7 @@ public final class OperationBasedMessagesBag extends CommutativeMessage implemen
      * return all messages operations
      * @return
      */
-    public LinkedList<CommutativeMessage> getOps() {
+    public LinkedList<OperationBasedOneMessage> getOps() {
         return ops;
     }
     
@@ -50,7 +52,7 @@ public final class OperationBasedMessagesBag extends CommutativeMessage implemen
      */
     @Override
     public CRDTMessage concat(CRDTMessage msg) {
-        CommutativeMessage cmsg = (CommutativeMessage) msg;
+        OperationBasedOneMessage cmsg = (OperationBasedOneMessage) msg;
         OperationBasedMessagesBag ret=new OperationBasedMessagesBag();
         ret.addMessage(this);
         ret.addMessage(cmsg);
@@ -64,8 +66,8 @@ public final class OperationBasedMessagesBag extends CommutativeMessage implemen
     @Override
     public OperationBasedMessagesBag clone() {
         OperationBasedMessagesBag clone = new OperationBasedMessagesBag();
-        for (CommutativeMessage o : ops) {
-            clone.ops.add(o.clone());
+        for (OperationBasedOneMessage o : ops) {
+            clone.ops.add((OperationBasedOneMessage)o.clone());
         }
         return clone;
     }
@@ -78,7 +80,7 @@ public final class OperationBasedMessagesBag extends CommutativeMessage implemen
     public String toString() {
         StringBuilder s = new StringBuilder();
         s.append("BAG:");
-        for (CommutativeMessage m : ops) {
+        for (OperationBasedOneMessage m : ops) {
             s.append(" + ").append(m.toString());
         }
         return s.toString();
@@ -86,7 +88,7 @@ public final class OperationBasedMessagesBag extends CommutativeMessage implemen
 
     //abstract protected String toString();
     
-    //abstract protected CommutativeMessage clone();
+    //abstract protected OperationBasedOneMessage clone();
 
     /**
      * 
@@ -101,10 +103,24 @@ public final class OperationBasedMessagesBag extends CommutativeMessage implemen
 
     @Override
    public void execute(CRDT cmrdt){
-        for (CommutativeMessage o : ops) {
+        for (OperationBasedOneMessage o : ops) {
             cmrdt.applyOneRemote(o);
         }
     }
+
+    @Override
+    public void setTraceOperation(TraceOperation traceOperation) {
+        this.traceOperation=traceOperation;
+    }
+
+    @Override
+    public TraceOperation getTraceOperation() {
+        return traceOperation;
+    }
+
+   
+
+ 
 
     
    

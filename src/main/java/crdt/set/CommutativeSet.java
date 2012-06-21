@@ -5,8 +5,9 @@
 package crdt.set;
 
 import crdt.CRDTMessage;
-import crdt.CommutativeMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.PreconditionException;
+import crdt.RemoteOperation;
 
 /**
  *
@@ -17,7 +18,7 @@ public abstract class CommutativeSet<T> extends CRDTSet<T>  {
     /*final public void applyRemote(CRDTMessage msg) {
         CommutativeSetMessage<T> op = (CommutativeSetMessage<T>) msg;
         applyOneRemoteNotify(op);
-        for (CommutativeMessage<T> m : op.getMsgs()) {
+        for (OperationBasedOneMessage<T> m : op.getMsgs()) {
             applyOneRemoteNotify((CommutativeSetMessage<T>) m);
         }
     }*/
@@ -26,14 +27,14 @@ public abstract class CommutativeSet<T> extends CRDTSet<T>  {
     abstract protected void applyOneInRemote(CommutativeSetMessage<T> op);
     
     @Override
-    abstract public CommutativeMessage innerAdd(T t) throws PreconditionException;
+    abstract public OperationBasedOneMessage innerAdd(T t) throws PreconditionException;
     
     @Override
-    abstract public CommutativeMessage innerRemove(T t) throws PreconditionException;
+    abstract public OperationBasedOneMessage innerRemove(T t) throws PreconditionException;
 
     @Override
     public void applyOneRemote(CRDTMessage opm) {
-        CommutativeSetMessage<T> op =(CommutativeSetMessage)opm;
+        CommutativeSetMessage<T> op =(CommutativeSetMessage)((OperationBasedOneMessage)opm).getOperation();
         T t = op.getContent();
         boolean before = lookup().contains(t);
         applyOneInRemote(op);

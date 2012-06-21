@@ -18,9 +18,7 @@
  */
 package jbenchmarker.core;
 
-import crdt.CRDT;
-import crdt.CRDTMessage;
-import crdt.PreconditionException;
+import crdt.*;
 import crdt.simulator.IncorrectTraceException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -103,12 +101,12 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
         
         // FIXME: when l is an empty list, a NullPointerException is thrown...
         
-        SequenceMessage m = null;
+        CRDTMessage m = null;
         for (SequenceMessage n : l) {
             if (m == null) { 
-                m = n;
+                m = new OperationBasedOneMessage(n);
             } else {
-                m=(SequenceMessage)m.concat(n);
+                m=m.concat(new OperationBasedOneMessage(n));
             }
         }        
         if (DEBUG) states.add(doc.view());

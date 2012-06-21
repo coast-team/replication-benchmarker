@@ -5,7 +5,7 @@
 package jbenchmarker.ot.soct2;
 
 import collect.VectorClock;
-import crdt.CommutativeMessage;
+import crdt.RemoteOperation;
 import jbenchmarker.core.Operation;
 
 /**
@@ -14,7 +14,7 @@ import jbenchmarker.core.Operation;
  * @param <Op> type of operation managed 
  * @author Stephane Martin 
  */
-public class OTMessage<Op extends Operation> extends crdt.CommutativeMessage {
+public class OTMessage<Op extends Operation> implements RemoteOperation {
     
 
     VectorClock vc;

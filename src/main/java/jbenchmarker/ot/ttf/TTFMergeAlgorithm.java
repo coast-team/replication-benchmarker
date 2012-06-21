@@ -21,6 +21,7 @@ package jbenchmarker.ot.ttf;
 import collect.VectorClock;
 import crdt.CRDT;
 import crdt.CRDTMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,9 +80,9 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                     }
                     TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, getReplicaNumber());
                     if (ret == null) {
-                        ret = otAlgo.estampileMessage(op);
+                        ret = new OperationBasedOneMessage(otAlgo.estampileMessage(op));
                     } else {
-                        ret=ret.concat(otAlgo.estampileMessage(op));
+                        ret=ret.concat(new OperationBasedOneMessage(otAlgo.estampileMessage(op)));
                     }
                     doc.apply(op);
                 }
@@ -93,9 +94,9 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                             opt.getContent().get(i),
                             getReplicaNumber());
                     if (ret == null) {
-                        ret = otAlgo.estampileMessage(op);
+                        ret = new OperationBasedOneMessage(otAlgo.estampileMessage(op));
                     } else {
-                        ret=ret.concat(otAlgo.estampileMessage(op));
+                        ret=ret.concat(new OperationBasedOneMessage(otAlgo.estampileMessage(op)));
                     }
                     doc.apply(op);
                 }

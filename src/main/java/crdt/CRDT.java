@@ -35,7 +35,7 @@ public abstract class CRDT<L> extends Observable implements Factory<CRDT<L>> {
         msg.execute(this);
     }
     
-    abstract public void applyOneRemote(CRDTMessage msg);
+    abstract public void applyOneRemote(CRDTMessage op);
     abstract public L lookup();
         
     @Deprecated

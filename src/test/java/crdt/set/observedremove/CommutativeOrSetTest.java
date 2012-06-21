@@ -5,6 +5,7 @@
 package crdt.set.observedremove;
 
 import crdt.CRDTMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.PreconditionException;
 import crdt.set.CommutativeSetMessage.OpType;
 import crdt.set.CrdtSetGeneric;
@@ -174,7 +175,7 @@ public class CommutativeOrSetTest<T> {
         Set stag = new HashSet<Tag>();
         Tag tag = new Tag(1, 1);
         stag.add(tag);
-        CRDTMessage m4 = new OrMessage(OpType.del, 123, stag);
+        CRDTMessage m4 = new OperationBasedOneMessage(new OrMessage(OpType.del, 123, stag));
         result.applyRemote(m4);
 
         //setA = {[123,(Tag)][testApply, Tag][a, Tag]}

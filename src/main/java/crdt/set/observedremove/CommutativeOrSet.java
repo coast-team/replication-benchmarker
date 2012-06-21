@@ -4,6 +4,7 @@
  */
 package crdt.set.observedremove;
 
+import crdt.OperationBasedOneMessage;
 import crdt.PreconditionException;
 import crdt.set.CRDTSet;
 import crdt.set.CommutativeSet;
@@ -64,20 +65,20 @@ public class CommutativeOrSet<T> extends CommutativeSet<T> {
     }
 
     @Override
-    public OrMessage innerAdd(T t) {
+    public OperationBasedOneMessage innerAdd(T t) {
          numOp++;//increment numOp
         final Tag tag = new Tag(getReplicaNumber(), numOp); // create new tag
 
         OrMessage newOp = new OrMessage(OrMessage.OpType.add, t, new HashSet<Tag>(){{add(tag);}});// create op
         mapA.put(t, new HashSet<Tag>(){{add(tag);}});
-        return newOp;
+        return new  OperationBasedOneMessage(newOp);
     }
 
     @Override
-    public OrMessage  innerRemove(T t) throws PreconditionException {
+    public OperationBasedOneMessage  innerRemove(T t) throws PreconditionException {
         OrMessage newOp = new OrMessage(OrMessage.OpType.del, t, (Set<Tag>) mapA.get(t).clone());
         mapA.remove(t);
-        return newOp;
+        return new  OperationBasedOneMessage(newOp);
     }
 
     @Override
@@ -98,4 +99,6 @@ public class CommutativeOrSet<T> extends CommutativeSet<T> {
     public CRDTSet<T> create() {
         return new CommutativeOrSet();
     }
+
+  
 }

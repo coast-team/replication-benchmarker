@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 package crdt.set.counter;
-import crdt.CommutativeMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.set.CommutativeSetMessage;
 
 /**
@@ -29,7 +29,7 @@ public class CounterMessage<T> extends CommutativeSetMessage<T> {
     }
 
     @Override
-    public CommutativeMessage clone() {
+    public CounterMessage clone() {
         return new CounterMessage(this.content, this.counter);
     }
 

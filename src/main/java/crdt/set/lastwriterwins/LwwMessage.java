@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 package crdt.set.lastwriterwins;
-import crdt.CommutativeMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.set.CommutativeSetMessage;
 
 /**
@@ -33,7 +33,7 @@ public class LwwMessage<T> extends TypedMessage<T> {
     }
 
     @Override
-    public CommutativeMessage clone() {
+    public LwwMessage<T> clone() {
         return new LwwMessage(type, content, now);
     }
 }

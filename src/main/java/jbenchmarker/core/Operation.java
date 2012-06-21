@@ -8,7 +8,7 @@ package jbenchmarker.core;
  *
  * @author urso
  */
-public interface Operation extends Cloneable {
-    public Operation clone();
+public interface Operation<T> extends Cloneable {
+    public Operation<T> clone();
  
 }
