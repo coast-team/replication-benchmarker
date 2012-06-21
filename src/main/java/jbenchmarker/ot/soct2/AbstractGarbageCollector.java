@@ -25,10 +25,11 @@ public abstract class AbstractGarbageCollector implements GarbageCollector, Seri
 
     public AbstractGarbageCollector(int frequencyGC) {
         this.frequencyGC = frequencyGC;
+        this.countdownBeforeGC = frequencyGC;
     }
     
     public AbstractGarbageCollector() {
-        this.frequencyGC = RECOMMANDED_GC_FREQUENCY_VALUE;
+        this(RECOMMANDED_GC_FREQUENCY_VALUE);
     }
 
     /**
@@ -38,12 +39,17 @@ public abstract class AbstractGarbageCollector implements GarbageCollector, Seri
     @Override
     public void collect(OTAlgorithm soct2Algorithm, OTMessage mess) {
         setRemoteClock(soct2Algorithm, mess.getSiteId(), mess.getClock());
+    }
+    
+    @Override
+    public void garbage(OTAlgorithm soct2Algorithm, OTMessage mess) {
         this.countdownBeforeGC--;
         if (this.countdownBeforeGC == 0) {
             gc(soct2Algorithm);
             this.countdownBeforeGC = frequencyGC;
         }
     }
+    
 
     protected void setRemoteClock(OTAlgorithm soct2Algorithm, int siteId, VectorClock clock) {
         clocksOfAllSites.put(siteId, clock);

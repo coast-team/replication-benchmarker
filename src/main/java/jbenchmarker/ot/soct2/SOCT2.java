@@ -118,12 +118,13 @@ public class SOCT2 <O extends Operation> implements OTAlgorithm<O> {
     public Operation integrateRemote(OTMessage soct2message) {
 
         if (this.readyFor(soct2message.getSiteId(), soct2message.getClock())) {
-            this.log.merge(soct2message);
-            //this.getDoc().apply((Operation) Soct2message.getOperation());
-//            this.log.add(soct2message);
-            this.siteVC.inc(soct2message.getSiteId());
             if (gc != null) {
                 this.gc.collect(this, soct2message); //Garbage collector
+            }
+            this.log.merge(soct2message);
+            this.siteVC.inc(soct2message.getSiteId());
+            if (gc != null) {
+                this.gc.garbage(this, soct2message); //Garbage collector
             }
             return soct2message.getOperation();
         } else {

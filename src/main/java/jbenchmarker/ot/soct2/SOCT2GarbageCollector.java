@@ -51,6 +51,7 @@ public class SOCT2GarbageCollector extends AbstractGarbageCollector {
         this(RECOMMANDED_GC_FREQUENCY_VALUE, numberOfReplica);
     }
 
+    @Override
     protected void gc(OTAlgorithm otAlgorithm) {
         if (clocksOfAllSites.entrySet().size() == numberOfReplica-1) {
             VectorClock commonAncestorVectorClock = 
@@ -62,14 +63,9 @@ public class SOCT2GarbageCollector extends AbstractGarbageCollector {
         }
 //        Logger.getLogger(getClass().getCanonicalName()).log(Level.INFO, "gc removed {0} operation(s) from a total of {1} operation(s)", new Object[]{count, count + this.mergeAlgorithm.getHistoryLog().getSize()});
     }
-
-    
-    
+ 
     @Override
     public GarbageCollector create() {
         return new SOCT2GarbageCollector(frequencyGC, numberOfReplica);
     }
-
-
-
 }

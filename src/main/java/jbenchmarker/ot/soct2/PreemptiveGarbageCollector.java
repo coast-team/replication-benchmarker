@@ -44,9 +44,11 @@ public class PreemptiveGarbageCollector extends AbstractGarbageCollector {
     @Override
     protected void gc(OTAlgorithm otAlgorithm) {
         Map<Integer, VectorClock> clocks = new TreeMap<Integer, VectorClock>();
-        for (int replica : alive) {
+        Iterator<Integer> it = alive.iterator();
+        while (it.hasNext()) {
+            int replica = it.next();
             if (lastCollect.get(replica) < clock - delay) {
-                alive.remove(replica);
+                it.remove();
             } else {
                 clocks.put(replica, clocksOfAllSites.get(replica));
             }
@@ -60,6 +62,6 @@ public class PreemptiveGarbageCollector extends AbstractGarbageCollector {
 
     @Override
     public GarbageCollector create() {
-        return new PreemptiveGarbageCollector(delay);
+        return new PreemptiveGarbageCollector(frequencyGC, delay);
     }
 }

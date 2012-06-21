@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * local operation of document.
+ * T is a Character or a String.
  * @author urso
  */
 public class SequenceOperation<T> extends TraceOperation implements Operation, Serializable{
