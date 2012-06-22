@@ -21,6 +21,7 @@ package jbenchmarker.ot.ttf;
 import collect.VectorClock;
 import crdt.CRDT;
 import crdt.CRDTMessage;
+import crdt.Factory;
 import crdt.OperationBasedOneMessage;
 import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
@@ -47,17 +48,25 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
      * @param doc TTF Document
      * @param siteId SiteID
      */
+    public TTFMergeAlgorithm(Document doc, int siteId, Factory<OTAlgorithm<TTFOperation>> otAlgo) {
+        super(doc);
+        this.otAlgo = otAlgo.create();
+        setReplicaNumber(siteId);
+    }
+    
+    
     public TTFMergeAlgorithm(Document doc, int siteId) {
         this(doc, siteId, new SOCT2<TTFOperation>(new TTFTransformations(), siteId, null));
         setReplicaNumber(siteId);
     }
 
-    public TTFMergeAlgorithm(Document doc, int siteId, OTAlgorithm<TTFOperation> otAlgo) {
-        super(doc);
-        this.otAlgo = otAlgo;
-        setReplicaNumber(siteId);
+    public TTFMergeAlgorithm(Document doc) {
+        this(doc, 0, new SOCT2<TTFOperation>(new TTFTransformations(), 0, null));
     }
 
+    public TTFMergeAlgorithm(Document doc, Factory<OTAlgorithm<TTFOperation>> otAlgo) {
+        this(doc, 0, otAlgo);
+    }
     /**
      * @return Vector Clock of site
      */
@@ -163,7 +172,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
      */
     @Override
     public CRDT<String> create() {
-        return new TTFMergeAlgorithm(new TTFDocument(), 0);
+        return new TTFMergeAlgorithm(new TTFDocument(), otAlgo);
     }
 
     /*

@@ -47,12 +47,12 @@ public class TTFFactories {
         }
     }
     
-    static public class WithGC20 extends ReplicaFactory {
+    static public class WithGC10 extends ReplicaFactory {
         @Override
         public MergeAlgorithm create(int siteId) {
             return new TTFMergeAlgorithm(new TTFDocument(), siteId, 
                     new SOCT2<TTFOperation>(new TTFTransformations(), siteId, 
-                    new SOCT2GarbageCollector(20)));
+                    new SOCT2GarbageCollector(10)));
         }
     }
     
@@ -79,7 +79,7 @@ public class TTFFactories {
         @Override
         public MergeAlgorithm create(int siteId) {
             return new TTFMergeAlgorithm(new TTFDocument(), siteId, 
-                new SOCT2(new SOCT2Log(ttf), new SOCT2GarbageCollector(20)));
+                new SOCT2(new SOCT2Log(ttf), new SOCT2GarbageCollector(10)));
         }
     }
     

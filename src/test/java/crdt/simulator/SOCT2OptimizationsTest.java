@@ -5,6 +5,7 @@
 package crdt.simulator;
 
 import crdt.CRDT;
+import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
 import java.io.IOException;
@@ -31,85 +32,98 @@ public class SOCT2OptimizationsTest {
     
     @Test
     public void testRunBasic() throws IncorrectTraceException, PreconditionException, IOException {
-        Factory sf = new TTFMergeAlgorithm(new TTFDocument(), 0, 
+        Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
                 new SOCT2(new SOCT2Log(ttf), null));
         CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
     }
     
     @Test
     public void testRunOLL() throws IncorrectTraceException, PreconditionException, IOException {
-        Factory sf = new TTFMergeAlgorithm(new TTFDocument(), 0, 
+        Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
                 new SOCT2(new SOCT2LogOptimizedLast(ttf), null));
         CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
     }
 
     @Test
     public void testRunOLP() throws IncorrectTraceException, PreconditionException, IOException {
-        Factory sf = new TTFMergeAlgorithm(new TTFDocument(), 0,
+        Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
                 new SOCT2(new SOCT2LogOptimizedPlace(ttf), null));
         CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
     }
 
     @Test
     public void testRunOLLP() throws IncorrectTraceException, PreconditionException, IOException {
-        Factory sf = new TTFMergeAlgorithm(new TTFDocument(), 0,
+        Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
                 new SOCT2(new SOCT2LogOptimizedPlaceAndLast(ttf), null));
         CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
     }
     
     @Test
     public void testRunGC() throws IncorrectTraceException, PreconditionException, IOException {
-        Factory sf = new TTFMergeAlgorithm(new TTFDocument(), 0, 
+        Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
                 new SOCT2(new SOCT2Log(ttf), new SOCT2GarbageCollector(10)));
         CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
     }
     
     @Test
     public void testRunOLL_GC() throws IncorrectTraceException, PreconditionException, IOException {
-        Factory sf = new TTFMergeAlgorithm(new TTFDocument(), 0,
+        Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
                 new SOCT2(new SOCT2LogOptimizedLast(ttf), new SOCT2GarbageCollector(10)));
         CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
     } 
     
     @Test
     public void testRunOLP_GC() throws IncorrectTraceException, PreconditionException, IOException {
-        Factory sf = new TTFMergeAlgorithm(new TTFDocument(), 0,
+        Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
                 new SOCT2(new SOCT2LogOptimizedPlace(ttf), new SOCT2GarbageCollector(10)));
         CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
     }
 
     @Test
     public void testRunOLLP_GC() throws IncorrectTraceException, PreconditionException, IOException {
-        Factory sf = new TTFMergeAlgorithm(new TTFDocument(), 0,
+        Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
                 new SOCT2(new SOCT2LogOptimizedPlaceAndLast(ttf), new SOCT2GarbageCollector(10)));
         CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
     }
     
     @Test
     public void testRunPGC() throws IncorrectTraceException, PreconditionException, IOException {
-        Factory sf = new TTFMergeAlgorithm(new TTFDocument(), 0, 
+        Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
                 new SOCT2(new SOCT2Log(ttf), new PreemptiveGarbageCollector(10, 10)));
         CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
     }
     
     @Test
     public void testRunOLL_PGC() throws IncorrectTraceException, PreconditionException, IOException {
-        Factory sf = new TTFMergeAlgorithm(new TTFDocument(), 0,
+        Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
                 new SOCT2(new SOCT2LogOptimizedLast(ttf), new PreemptiveGarbageCollector(10, 10)));
         CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
     } 
     
     @Test
     public void testRunOLP_PGC() throws IncorrectTraceException, PreconditionException, IOException {
-        Factory sf = new TTFMergeAlgorithm(new TTFDocument(), 0,
+        Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
                 new SOCT2(new SOCT2LogOptimizedPlace(ttf), new PreemptiveGarbageCollector(10, 10)));
         CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
     }
 
     @Test
     public void testRunOLLP_PGC() throws IncorrectTraceException, PreconditionException, IOException {
-        Factory sf = new TTFMergeAlgorithm(new TTFDocument(), 0,
+        Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
                 new SOCT2(new SOCT2LogOptimizedPlaceAndLast(ttf), new PreemptiveGarbageCollector(10, 10)));
         CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
+    }
+    
+    @Test 
+    public void testBlock() throws PreconditionException {
+        Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
+                        new SOCT2(new SOCT2Log(ttf), new PreemptiveGarbageCollector(20)));
+        MergeAlgorithm r1 = (MergeAlgorithm) sf.create(), r2 = (MergeAlgorithm) sf.create();
+        r1.setReplicaNumber(0); r2.setReplicaNumber(1);
+       
+        CRDTMessage m1 = r1.insert(0, "a"), m2 = r2.insert(0, "bcdefghijklmnopqrstuvwxyz");
+        r1.applyRemote(m2); r2.applyRemote(m1);
+        
+        assertEquals(r1.lookup(), r2.lookup());      
     }
 }

@@ -36,7 +36,7 @@ public class SOCT2LogOptimizedLast<Op extends Operation> extends SOCT2Log<Op> {
     @Override
     void purge(int purgePoint) {
         super.purge(purgePoint);
-        lastSeparationIndex -= purgePoint;
+        lastSeparationIndex = Math.max(0, lastSeparationIndex - purgePoint);
     }
 
     @Override

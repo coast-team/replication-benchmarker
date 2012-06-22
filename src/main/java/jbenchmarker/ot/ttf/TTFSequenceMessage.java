@@ -45,5 +45,8 @@ public class TTFSequenceMessage extends SequenceMessage {
         return new TTFSequenceMessage((OTMessage)soct2Message.clone(), this.getOriginalOp());
     }
 
-  
+    @Override
+    public String toString() {
+        return soct2Message.toString();
+    }
 }
