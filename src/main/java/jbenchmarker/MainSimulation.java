@@ -85,7 +85,7 @@ public class MainSimulation {
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.runWithMemory(trace, 0, false, false);
+            cd.runWithMemory(trace, scaleMemory, true, true);
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();

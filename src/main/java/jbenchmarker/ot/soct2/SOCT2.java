@@ -6,6 +6,7 @@ package jbenchmarker.ot.soct2;
 
 import collect.VectorClock;
 import crdt.Factory;
+import java.io.Serializable;
 import java.util.Map;
 import jbenchmarker.core.Operation;
 
@@ -15,7 +16,7 @@ import jbenchmarker.core.Operation;
  * @author Stephane Martin
  * Algorithm SOCT2 With document, Log with transformations, and an vector clock.
  */
-public class SOCT2 <O extends Operation> implements OTAlgorithm<O> {
+public class SOCT2 <O extends Operation> implements OTAlgorithm<O>, Serializable {
 
     final private VectorClock siteVC;
     final private SOCT2Log<O> log;

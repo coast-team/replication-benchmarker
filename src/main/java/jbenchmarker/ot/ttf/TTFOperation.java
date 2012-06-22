@@ -18,6 +18,7 @@
  */
 package jbenchmarker.ot.ttf;
 
+import java.io.Serializable;
 import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation.OpType;
 
@@ -28,7 +29,7 @@ import jbenchmarker.core.SequenceOperation.OpType;
  * 
  * TTFOperation Operation Add,Del,up, of TTFsequence
  */
-public class TTFOperation<T> implements Operation{
+public class TTFOperation<T> implements Operation, Serializable{
 
     private int pos;
     private T content;

@@ -6,6 +6,7 @@ package jbenchmarker.ot.soct2;
 
 import collect.VectorClock;
 import crdt.RemoteOperation;
+import java.io.Serializable;
 import jbenchmarker.core.Operation;
 
 /**
@@ -14,7 +15,7 @@ import jbenchmarker.core.Operation;
  * @param <Op> type of operation managed 
  * @author Stephane Martin 
  */
-public class OTMessage<Op extends Operation> implements RemoteOperation {
+public class OTMessage<Op extends Operation> implements RemoteOperation, Serializable {
     
 
     VectorClock vc;

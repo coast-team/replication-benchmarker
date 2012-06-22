@@ -38,7 +38,7 @@ public class CausalDispatcherSequenceTest {
     Factory s[] = { new LogootFactory(), new TreedocFactory(), // new jbenchmarker.treedoc.list.TreedocFactory(),
         new WootFactory(), new WootOFactory(), new WootHFactory(), // new ABTFactory(),
         new TTFFactories.WithoutGC(), 
-        new TTFFactories.WithGC10(),
+        new TTFFactories.WithGC20(),
         
 //        new TTFMergeAlgorithm(new TTFDocument(), 0,
 //                                new SOCT2(new SOCT2LogOptimizedPlace(new TTFTransformations()), null)),

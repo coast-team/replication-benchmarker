@@ -18,6 +18,7 @@
  */
 package jbenchmarker.ot.ttf;
 
+import java.io.Serializable;
 import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 
@@ -25,7 +26,7 @@ import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
  * Is transformation and backward transformation for TTF model
  * @author oster
  */
-public class TTFTransformations implements SOCT2TranformationInterface<TTFOperation> {
+public class TTFTransformations implements SOCT2TranformationInterface<TTFOperation>, Serializable {
 
     @Override
     public  TTFOperation transpose(TTFOperation op1, TTFOperation op2) {

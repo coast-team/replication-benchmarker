@@ -46,6 +46,7 @@ public class Main {
      * @param args the command line arguments
      */
     static int baseSerializ = 10, base = 100;
+
     public static void main(String[] args) throws Exception {
 
         if (args.length < 3 || args.length > 5) {
@@ -77,7 +78,7 @@ public class Main {
              */
             cd.runWithMemory(trace, Integer.valueOf(args[4]), true, true);//0 sans serialisation
             if (ltime == null) {
-                cop =  cd.splittedGenTime().size();
+                cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
                 mop = cd.getMemUsed().size();
                 nbReplica = cd.replicas.size();
@@ -86,24 +87,23 @@ public class Main {
                 mem = new long[nb][mop];
             }
 
-            
             toArrayLong(ltime[ex], cd.replicaGenerationTimes());
             toArrayLong(mem[ex], cd.getMemUsed());
 
             toArrayLong(rtime[ex], cd.splittedGenTime());
-            for (int i = 0; i < cop-1; i++) {
-                rtime[ex][i] /= nbReplica-1;
+            for (int i = 0; i < cop - 1; i++) {
+                rtime[ex][i] /= nbReplica - 1;
             }
-            sum += cd.getRemoteSum()+cd.getLocalSum();
+            sum += cd.getRemoteSum() + cd.getLocalSum();
             cd = null;
             trace = null;
             System.gc();
         }
-        sum = sum/nbReplica;
-        sum = sum /nbExec;
-        
-        System.out.println("average execution time in : "+(sum/Math.pow(10, 6)) +" Mili-second");
-        
+        sum = sum / nbReplica;
+        sum = sum / nbExec;
+
+        System.out.println("average execution time in : " + (sum / Math.pow(10, 6)) + " Mili-second");
+
 
         System.out.println();
 
@@ -111,6 +111,10 @@ public class Main {
         // Name of result file is "[package.]Name[Factory]-trace[.xml].res"
         int i = args[1].lastIndexOf('/'), j = args[1].lastIndexOf('.'),
                 k = args[0].lastIndexOf('.'), l = args[0].lastIndexOf("Factory");
+
+        if (l == -1) {
+            l = args[0].lastIndexOf("Factories");
+        }
 
         if (i == -1) {
             i = args[1].lastIndexOf('\\');
@@ -120,6 +124,10 @@ public class Main {
         if (n.contains("$")) {
             c = n.split("\\$");
             n = c[1];
+        }
+        if (n.equals("TTF")) {
+            String tab[] = args[0].split("\\$");
+            n = n + "" + tab[tab.length - 1];
         }
 
         String fileName = n + "-" + args[1].substring(i + 1, j);
@@ -135,12 +143,12 @@ public class Main {
             computeAverage(mem, thresold);
         }
 
-        String file1 =  writeToFile(ltime, fileName, "usr");
-        String file2 =  writeToFile(rtime, fileName, "gen");
-        String file3 =  writeToFile(mem, fileName, "mem");
-        
-        treatFile(file1, base, "usr");
-        treatFile(file2, base, "gen");
+        String file1 = writeToFile(ltime, fileName, "usr");
+        String file2 = writeToFile(rtime, fileName, "gen");
+        String file3 = writeToFile(mem, fileName, "mem");
+
+        treatFile(file1, base, "gen");
+        treatFile(file2, base, "usr");
         treatFile(file3, baseSerializ, "mem");
     }
 

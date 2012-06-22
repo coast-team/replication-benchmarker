@@ -47,12 +47,108 @@ public class TTFFactories {
         }
     }
     
-    static public class WithGC10 extends ReplicaFactory {
+    static public class WithGC20 extends ReplicaFactory {
         @Override
         public MergeAlgorithm create(int siteId) {
             return new TTFMergeAlgorithm(new TTFDocument(), siteId, 
                     new SOCT2<TTFOperation>(new TTFTransformations(), siteId, 
-                    new SOCT2GarbageCollector(10)));
+                    new SOCT2GarbageCollector(20)));
         }
     }
+    
+    /***********************/
+    static TTFTransformations ttf = new TTFTransformations();
+    
+    public static class WithoutGCLL extends ReplicaFactory {
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return  new TTFMergeAlgorithm(new TTFDocument(), siteId, 
+                new SOCT2(new SOCT2LogOptimizedLast(ttf), null));
+        }
+    }
+
+    public static class WithoutGCLP extends ReplicaFactory {
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return new TTFMergeAlgorithm(new TTFDocument(), siteId,
+                new SOCT2(new SOCT2LogOptimizedPlace(ttf), null));
+        }
+    }
+    
+    public static class WithoutGCLLP extends ReplicaFactory {
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return new TTFMergeAlgorithm(new TTFDocument(), siteId, 
+                new SOCT2(new SOCT2Log(ttf), new SOCT2GarbageCollector(20)));
+        }
+    }
+    
+    public static class WithGCBasic extends ReplicaFactory {
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return new TTFMergeAlgorithm(new TTFDocument(), siteId, 
+                new SOCT2(new SOCT2Log(ttf), new SOCT2GarbageCollector(20)));
+        }
+    }
+    
+    public static class WithLL_GC extends ReplicaFactory {
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return new TTFMergeAlgorithm(new TTFDocument(), siteId,
+                new SOCT2(new SOCT2LogOptimizedLast(ttf), new SOCT2GarbageCollector(20)));
+        }
+    }
+    
+    public static class WithLP_GC extends ReplicaFactory {
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return new TTFMergeAlgorithm(new TTFDocument(), siteId,
+                new SOCT2(new SOCT2LogOptimizedPlace(ttf), new SOCT2GarbageCollector(20)));
+        }
+    }
+    
+    public static class WithLLP_GC extends ReplicaFactory {
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return new TTFMergeAlgorithm(new TTFDocument(), siteId,
+                new SOCT2(new SOCT2LogOptimizedPlaceAndLast(ttf), new SOCT2GarbageCollector(20)));
+        }
+    }
+    
+    public static class WithBasic_PGC extends ReplicaFactory {
+
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return new TTFMergeAlgorithm(new TTFDocument(), siteId,
+                    new SOCT2(new SOCT2Log(ttf), new PreemptiveGarbageCollector(20)));
+        }
+    }
+    
+    public static class WithLL_PGC extends ReplicaFactory {
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return new TTFMergeAlgorithm(new TTFDocument(), siteId,
+                new SOCT2(new SOCT2LogOptimizedLast(ttf), 
+                        new PreemptiveGarbageCollector(20)));
+        }
+    }
+    
+    public static class WithLP_PGC extends ReplicaFactory {
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return new TTFMergeAlgorithm(new TTFDocument(), siteId,
+                new SOCT2(new SOCT2LogOptimizedPlace(ttf), 
+                        new PreemptiveGarbageCollector(20)));
+        }
+    }
+    
+    public static class WithLLP_PGC extends ReplicaFactory {
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return new TTFMergeAlgorithm(new TTFDocument(), siteId,
+                new SOCT2(new SOCT2LogOptimizedPlaceAndLast(ttf), 
+                        new PreemptiveGarbageCollector(20)));
+        }
+    }
+    
 }
