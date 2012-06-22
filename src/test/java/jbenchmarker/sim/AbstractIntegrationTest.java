@@ -46,7 +46,7 @@ public abstract class AbstractIntegrationTest {
 
 	protected abstract ReplicaFactory createFactory();
 
-	protected void assertConsistentViews() {
+	protected void assertConsistentViews(CausalSimulator cd) {
 		String referenceView = null;
 		for (final CRDT replica : cd.getReplicas().values()) {
 			final String view = ((MergeAlgorithm) replica).lookup();
@@ -58,39 +58,41 @@ public abstract class AbstractIntegrationTest {
 		assertNotNull(referenceView);
 	}
         
-//	@Test
-//	public void testExempleRun() throws Exception {
-//		cd.run(TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1), false);
-//		assertConsistentViews();
-//	}
-//
-//	@Test
-//	public void testG1Run() throws Exception {
-//		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1), false);
-//		assertConsistentViews();
-//	}
-//
-//	@Test
-//	public void testG2Run() throws Exception {
-//		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1, 16), false);
-//		assertConsistentViews();
-//	}
-//
-//	@Test
-//	public void testG3Run() throws Exception {
-//		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1), false);
-//		assertConsistentViews();
-//	}
-//
-//	@Test
-//	public void testSerieRun() throws Exception {
-//		cd.run(TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1), false);
-//		assertConsistentViews();
-//	}
+	@Test
+	public void testExempleRun() throws Exception {
+		cd.run(TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1), false);
+		assertConsistentViews(cd);
+	}
+
+	@Test
+	public void testG1Run() throws Exception {
+		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1), false);
+		assertConsistentViews(cd);
+	}
+
+	@Test
+	public void testG2Run() throws Exception {
+		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1, 16), false);
+		assertConsistentViews(cd);
+	}
+
+	@Test
+	public void testG3Run() throws Exception {
+		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1), false);
+		assertConsistentViews(cd);
+	}
+
+	@Test
+	public void testSerieRun() throws Exception {
+		cd.run(TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1), false);
+		assertConsistentViews(cd);
+	}
+        
+        
         
     @Test
     public void testRandom() throws Exception {
         cd.run(new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 1, 10, 3.0, 5), false);
-	assertConsistentViews();
+	assertConsistentViews(cd);
     }
 }

@@ -4,11 +4,20 @@
  */
 package jbenchmarker.ot.soct2;
 
+import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.PreconditionException;
+import crdt.simulator.CausalSimulator;
+import crdt.simulator.IncorrectTraceException;
+import java.io.IOException;
+import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.ot.otset.AddWinTransformation;
 import jbenchmarker.ot.otset.OTSet;
+import jbenchmarker.ot.ttf.TTFDocument;
+import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
+import jbenchmarker.ot.ttf.TTFOperation;
 import jbenchmarker.ot.ttf.TTFTransformations;
+import jbenchmarker.trace.TraceGenerator;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -81,7 +90,7 @@ public class SOCT2GarbageCollectorTest {
     }
 
     /**
-     * Test of garbage collecting method, of class SOCT2GarbageCollector.
+     * Test of preemptive garbage collecting method.
      */
     @Test
     public void testPGC() throws PreconditionException {
@@ -132,5 +141,54 @@ public class SOCT2GarbageCollectorTest {
         assertEquals(1, set2.getOtAlgo().getLog().getSize());
         
         assertTrue(set1.contains(1));
+    }
+    
+    protected void assertConsistentViews(CausalSimulator cd) {
+        String referenceView = null;
+        for (final CRDT replica : cd.getReplicas().values()) {
+            final String view = ((MergeAlgorithm) replica).lookup();
+            if (referenceView == null) {
+                referenceView = view;
+            } else {
+                assertEquals(referenceView, view);
+            }
+        }
+        assertNotNull(referenceView);
+    }
+        
+    TTFTransformations ttf = new TTFTransformations();
+    SOCT2Log logs[] = { 
+        new SOCT2Log(ttf), 
+        new SOCT2LogOptimizedLast(ttf),
+        new SOCT2LogOptimizedPlace(ttf), 
+        new SOCT2LogOptimizedPlaceAndLast(ttf),
+        };
+    GarbageCollector gcs[] = { 
+//        null, 
+//        new SOCT2GarbageCollector(0), 
+//        new PreemptiveGarbageCollector(1, 1), 
+        new PreemptiveGarbageCollector(20),
+    };
+    String traces[] = {
+        "../../traces/xml/exemple.xml", 
+        "../../traces/xml/G1.xml", 
+//        "../../traces/xml/G2.xml", 
+//        "../../traces/xml/G3.xml",
+//        "../../traces/xml/Serie.xml",
+    };
+            
+    @Test
+    public void testBigOne() throws Exception {
+        for (SOCT2Log l : logs) {
+            for (GarbageCollector g : gcs) {
+                for (String t : traces) {
+                    System.out.println(l.getClass().getCanonicalName() + " | " + (g == null ? "No gc" : g.getClass().getCanonicalName()) + " | " + t);
+                    CausalSimulator cd = new CausalSimulator(new TTFMergeAlgorithm(new TTFDocument(), 0,
+                        new SOCT2<TTFOperation>(l, g)));
+                    cd.run(TraceGenerator.traceFromXML(t, 1), false);
+                    assertConsistentViews(cd);
+                }
+            }
+       }
     }
 }

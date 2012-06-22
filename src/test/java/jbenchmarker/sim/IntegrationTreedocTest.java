@@ -19,6 +19,7 @@
 package jbenchmarker.sim;
 
 import crdt.CRDT;
+import crdt.simulator.CausalSimulator;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.treedoc.TreedocDocument;
@@ -35,8 +36,8 @@ public class IntegrationTreedocTest extends AbstractIntegrationTest {
 	}
 
 	@Override
-	protected void assertConsistentViews() {
-		super.assertConsistentViews();
+	protected void assertConsistentViews(CausalSimulator cd) {
+		super.assertConsistentViews(cd);
 		for (CRDT replica : cd.getReplicas().values())
 			((TreedocDocument) ((MergeAlgorithm) replica).getDoc()).printStats();
 	}

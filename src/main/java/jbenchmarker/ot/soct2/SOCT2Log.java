@@ -44,12 +44,8 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
         this.transforme=t;
     }
     
-    /*
-     * Construction without transformation is forbiden.
-     */
-    
-    private SOCT2Log(){
-        
+    void setTransforme(SOCT2TranformationInterface<Op> transforme) {
+        this.transforme = transforme;
     }
     
     /**

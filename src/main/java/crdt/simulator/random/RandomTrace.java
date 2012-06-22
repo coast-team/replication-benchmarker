@@ -44,7 +44,7 @@ public class RandomTrace implements Trace  {
     public OperationProfile getOperationProfile() {
         return op;
     }
-     
+
     static public interface ReplicaProfile {
         boolean willGenerate(int replica, long time, long duration, double probability);
     }

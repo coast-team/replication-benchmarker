@@ -4,6 +4,7 @@
  */
 package crdt.simulator;
 
+import crdt.CRDT;
 import crdt.Factory;
 import crdt.PreconditionException;
 import java.io.IOException;
@@ -15,7 +16,11 @@ import org.junit.*;
 import static crdt.simulator.CausalDispatcherSetsAndTreesTest.*;
 import crdt.simulator.random.OperationProfile;
 import crdt.simulator.random.StandardSeqOpProfile;
+import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.ot.soct2.SOCT2LogOptimizedLast;
+import jbenchmarker.trace.TraceGenerator;
+import static org.junit.Assert.*;
+
 /**
  *
  * @author urso
@@ -62,7 +67,7 @@ public class SOCT2OptimizationsTest {
     @Test
     public void testRunOLL_GC() throws IncorrectTraceException, PreconditionException, IOException {
         Factory sf = new TTFMergeAlgorithm(new TTFDocument(), 0,
-                new SOCT2(new SOCT2LogOptimizedPlace(ttf), new SOCT2GarbageCollector(10)));
+                new SOCT2(new SOCT2LogOptimizedLast(ttf), new SOCT2GarbageCollector(10)));
         CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
     } 
     
@@ -90,7 +95,7 @@ public class SOCT2OptimizationsTest {
     @Test
     public void testRunOLL_PGC() throws IncorrectTraceException, PreconditionException, IOException {
         Factory sf = new TTFMergeAlgorithm(new TTFDocument(), 0,
-                new SOCT2(new SOCT2LogOptimizedPlace(ttf), new PreemptiveGarbageCollector(10, 10)));
+                new SOCT2(new SOCT2LogOptimizedLast(ttf), new PreemptiveGarbageCollector(10, 10)));
         CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
     } 
     

@@ -30,7 +30,7 @@ import java.util.TreeMap;
  */
 public class SOCT2GarbageCollector extends AbstractGarbageCollector {
 
-    final private int numberOfReplica;
+    private int numberOfReplica;
     
     /**
      * New garbage collector instance
@@ -49,6 +49,14 @@ public class SOCT2GarbageCollector extends AbstractGarbageCollector {
      */
     public SOCT2GarbageCollector(int numberOfReplica) {
         this(RECOMMANDED_GC_FREQUENCY_VALUE, numberOfReplica);
+    }
+
+    /**
+     * Not to be used after gc.
+     * @param numberOfReplica 
+     */
+    void setNumberOfReplica(int numberOfReplica) {
+        this.numberOfReplica = numberOfReplica;
     }
 
     @Override
