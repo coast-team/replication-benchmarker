@@ -71,7 +71,7 @@ public class OrderedNodeMock<T> implements OrderedNode<T> {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
+   /* @Override
     public boolean same(OrderedNode<T> other) {
         if (other == null) {
             return false;
@@ -88,7 +88,7 @@ public class OrderedNodeMock<T> implements OrderedNode<T> {
             }
         }
         return true;
-    }
+    }*/
 
     static <T> OrderedNodeMock<T> tree(T ch, Object... cn) {
         OrderedNodeMock on = new OrderedNodeMock(ch);

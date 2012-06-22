@@ -114,8 +114,8 @@ class WootHashTreeNode<T> extends WootHashDocument<WootHashTreeNode<T>> implemen
     }
     
     
-    // TODO : more efficient implementation
-    @Override
+    // TODO : more efficient implementation copy past is bad mokey. Mr McKey
+   /* @Override
     public boolean same(OrderedNode<T> other) {
         if (other == null) {
             return false;
@@ -132,5 +132,5 @@ class WootHashTreeNode<T> extends WootHashDocument<WootHashTreeNode<T>> implemen
             }
         }
         return true;
-    }
+    }*/
 }

@@ -4,46 +4,61 @@
  */
 package jbenchmarker.ot.ottree;
 
-import collect.UnorderedNode;
-import crdt.CRDTMessage;
-import crdt.PreconditionException;
-import crdt.tree.CRDTTree;
+import collect.OrderedNode;
+import crdt.*;
+import crdt.tree.orderedtree.CRDTOrderedTree;
+import java.util.LinkedList;
+import java.util.List;
+import jbenchmarker.ot.soct2.OTAlgorithm;
+import jbenchmarker.ot.soct2.OTMessage;
 
 /**
  *
  * @author Stephane Martin
  */
-public class OTTree extends CRDTTree{
-    
-    
-    @Override
-    public CRDTMessage add(UnorderedNode father, Object element) throws PreconditionException {
-        throw new UnsupportedOperationException("Not supported yet.");
+public class OTTree<T> extends CRDTOrderedTree<T> {
+
+    OTTreeNode root;
+    OTAlgorithm soct2;
+
+    public OTTree(OTAlgorithm soct2) {
+        this.root = new OTTreeNode(null, this);
+        this.soct2 = soct2;
     }
 
     @Override
-    public CRDTMessage remove(UnorderedNode subtree) throws PreconditionException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public CRDTMessage add(List<Integer> path, int p, T element) throws PreconditionException {
+        List<Integer> npath = new LinkedList<Integer>();
+        npath.addAll(path);
+        npath.add(p);
+        npath = root.viewToModelRecurcive(npath);
+        OTTreeRemoteOperation<T> n = new OTTreeRemoteOperation<T>(npath, element, this.soct2.getReplicaNumber(), OTTreeRemoteOperation.OpType.ins);
+        root.apply(n, 0);
+        return new OperationBasedOneMessage(soct2.estampileMessage(n));
     }
 
     @Override
-    public UnorderedNode getRoot() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public CRDTMessage remove(List<Integer> path) throws PreconditionException {
+        List<Integer> npath;
+        npath = root.viewToModelRecurcive(path);
+        OTTreeRemoteOperation<T> n = new OTTreeRemoteOperation<T>(npath, this.soct2.getReplicaNumber(), OTTreeRemoteOperation.OpType.del);
+        root.apply(n, 0);
+        return new OperationBasedOneMessage(soct2.estampileMessage(n));
     }
 
     @Override
-    public void applyOneRemote(CRDTMessage msg) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void applyOneRemote(CRDTMessage op) {
+        OTTreeRemoteOperation opt = (OTTreeRemoteOperation) soct2.integrateRemote((OTMessage) ((OperationBasedOneMessage) op).getOperation());
+        root.apply(opt, 0);
     }
 
     @Override
-    public Object lookup() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public OrderedNode<T> lookup() {
+        return root;
     }
 
     @Override
-    public Object create() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public CRDT<OrderedNode<T>> create() {
+        return new OTTree<T>((OTAlgorithm)soct2.create());
     }
-    
 }

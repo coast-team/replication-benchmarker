@@ -42,7 +42,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
     //private TTFDocument ;
 
     /**
-     * Make new TTFMerge algorithm with docuement (TTFDocuement) and site id or
+     * Make new TTFMerge algorithm with docuement (TTFDocument) and site id or
      * replicat id.
      *
      * @param doc TTF Document
@@ -74,53 +74,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
         return otAlgo.getSiteVC();
     }
 
-    public CRDTMessage generateLocalCRDT(SequenceOperation opt) {
-        TTFDocument doc = (TTFDocument) this.getDoc();
-        List<SequenceMessage> generatedOperations = new ArrayList<SequenceMessage>();
-        CRDTMessage ret = null;
-        int mpos = doc.viewToModel(opt.getPosition());
-        switch (opt.getType()) {
-            case del:
-                int visibleIndex = 0;
-                for (int i = 0; i < opt.getNumberOf(); i++) {
-                    // TODO: could be improved with an iterator on only visible characters
-                    while (!doc.getChar(mpos + visibleIndex).isVisible()) {
-                        visibleIndex++;
-                    }
-                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, getReplicaNumber());
-                    if (ret == null) {
-                        ret = new OperationBasedOneMessage(otAlgo.estampileMessage(op));
-                    } else {
-                        ret=ret.concat(new OperationBasedOneMessage(otAlgo.estampileMessage(op)));
-                    }
-                    doc.apply(op);
-                }
-                break;
-            case ins:
-                for (int i = 0; i < opt.getContent().size(); i++) {
-                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.ins,
-                            mpos + i,
-                            opt.getContent().get(i),
-                            getReplicaNumber());
-                    if (ret == null) {
-                        ret = new OperationBasedOneMessage(otAlgo.estampileMessage(op));
-                    } else {
-                        ret=ret.concat(new OperationBasedOneMessage(otAlgo.estampileMessage(op)));
-                    }
-                    doc.apply(op);
-                }
-                break;
-            case unsupported:
-                UnsupportedOperation op = UnsupportedOperation.create(opt);
-                //this.siteVC.inc(this.getReplicaNumber());
-                generatedOperations.add(op);
-                break;
-            case up:
-                break;
-        }
-        return ret;
-    }
-
+   
     /*
      * This integrate local modifications and generate message to another
      * replicas
@@ -183,14 +137,6 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
         integrateOneRemoteOperation(((TTFSequenceMessage) mess).getSoct2Message());
     }
 
-    /*public void integrateRemote(CRDTMessage mess) throws IncorrectTraceException {
-        OTMessage soctMess = (OTMessage) mess;
-        integrateOneRemoteOperation(soctMess);
-        for (Object m : soctMess.getMsgs()) {
-            integrateOneRemoteOperation((OTMessage) m);
-        }
-
-    }*/
 
     private void integrateOneRemoteOperation(OTMessage mess) {
         Operation op = otAlgo.integrateRemote(mess);

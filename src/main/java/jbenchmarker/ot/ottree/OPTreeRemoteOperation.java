@@ -4,22 +4,25 @@
  */
 package jbenchmarker.ot.ottree;
 
+import crdt.RemoteOperation;
+import java.util.List;
 import jbenchmarker.core.Operation;
 
 /**
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class OTTreeOperation implements Operation{
+public class OPTreeRemoteOperation<T> implements RemoteOperation{
 
-    static enum OpType{Add,Del,ChLabel,ChOrder};
-    
-    OpType opType;
-    
-    
+    List<Integer> path;
+    T contain;
+    static public enum OpType{ins,del,chT};
+    int position;
+    int siteId;
     @Override
     public Operation clone() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+    
     
 }

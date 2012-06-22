@@ -86,9 +86,4 @@ public interface OrderedNode<T> {
      */
     public void setReplicaNumber(int replicaNumber);
     
-    /**
-     * Sets the replica number 
-     * @param replicaNumber number
-     */
-    public boolean same(OrderedNode<T> other);
 }

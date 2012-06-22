@@ -139,6 +139,7 @@ public class TTFDocument<T> implements Document {
      * 
      * @return sise of document without invisible character
      */
+    @Override
     public int viewLength() {
         return size;
     }

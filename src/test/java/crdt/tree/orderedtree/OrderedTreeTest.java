@@ -30,6 +30,10 @@ import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.logoot.BoundaryStrategy;
 import jbenchmarker.factories.LogootFactory;
 import jbenchmarker.logoot.LogootStrategy;
+import jbenchmarker.ot.ottree.OTTree;
+import jbenchmarker.ot.ottree.OTTreeTranformation;
+import jbenchmarker.ot.soct2.SOCT2;
+import jbenchmarker.ot.soct2.SOCT2Log;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -41,11 +45,12 @@ import org.junit.Test;
 public class OrderedTreeTest {
     
     private void assertSameTree(OrderedNode on, OrderedNode ot) {
-        assertTrue(ot + " expected : " + on, on.same(ot));
+        assertTrue(ot + " expected : " + on, CRDTOrderedTree.sameNode(on, ot));
+        System.out.println("->"+ot+on);
     }
     
     private void assertSameTree(OrderedNode on, PositionIdentifierTree ot) {
-        assertTrue(ot.lookup() + " expected : " + on, on.same(ot.lookup()));
+        assertTrue(ot.lookup() + " expected : " + on, CRDTOrderedTree.sameNode(on, ot.lookup()));
     }
     
     static class IntegerPos implements PositionIdentifier {
@@ -186,4 +191,8 @@ public class OrderedTreeTest {
         }
     }
     
+    public void testRunsOTTree() throws PreconditionException, IncorrectTraceException, IOException {
+        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
+        CausalDispatcherSetsAndTreesTest.testRun(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null)), 1000, 5, otreeop);
+    }
 }

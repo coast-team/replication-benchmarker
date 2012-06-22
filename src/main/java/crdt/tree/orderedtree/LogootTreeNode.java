@@ -76,8 +76,7 @@ class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> implements Ord
         return new LogootTreeNode<T>(elem, replicaNumber, nbBit, strategy);
     }
 
-    @Override
-    public boolean same(OrderedNode<T> other) {
+/*    public boolean same(OrderedNode<T> other) {
         if (other == null) {
             return false;
         }
@@ -94,7 +93,7 @@ class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> implements Ord
         }
         return true;
     }
-    
+    */
     @Override
     public String toString() {
         return value + "{" + getElements() + '}';
