@@ -84,18 +84,19 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
      * @param operation new operation
      * @return return the transformed operation
      */
-    public void merge(OTMessage<Op> message) {
+    public Op merge(OTMessage<Op> message) {
         int separationIndex = separatePrecedingAndConcurrentOperations(message.getClock(), 0);
         
-        placeOperation(message, separationIndex);   
+        return placeOperation(message, separationIndex);   
     }
     
-    protected void placeOperation(OTMessage<Op> message, int separationIndex) {  
+    protected Op placeOperation(OTMessage<Op> message, int separationIndex) {  
         Op opt = message.getOperation();
         for (int i = separationIndex; i < this.operations.size(); i++) {
             opt = transforme.transpose(opt, operations.get(i).getOperation());
         }
         operations.add(message);
+        return opt;
     }
 
     int separatePrecedingAndConcurrentOperations(VectorClock clock, int separationIndex) {

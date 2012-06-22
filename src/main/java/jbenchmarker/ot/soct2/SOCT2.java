@@ -122,12 +122,12 @@ public class SOCT2 <O extends Operation> implements OTAlgorithm<O>, Serializable
             if (gc != null) {
                 this.gc.collect(this, soct2message); //Garbage collector
             }
-            this.log.merge(soct2message);
+            Operation op = this.log.merge(soct2message);
             this.siteVC.inc(soct2message.getSiteId());
             if (gc != null) {
                 this.gc.garbage(this, soct2message); //Garbage collector
             }
-            return soct2message.getOperation();
+            return op;
         } else {
             throw new RuntimeException("it seems causal reception is broken in " + this.replicaNumber + " v: " + siteVC + " vs " + soct2message.getClock() + " from " + soct2message.getSiteId());
         }

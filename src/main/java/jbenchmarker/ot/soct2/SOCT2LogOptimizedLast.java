@@ -21,16 +21,16 @@ public class SOCT2LogOptimizedLast<Op extends Operation> extends SOCT2Log<Op> {
     }
 
     @Override
-    public void merge(OTMessage<Op> operation) {
+    public Op merge(OTMessage<Op> operation) {
         int startSeparation = 0;
         if (operations.size() > 0) {
-            OTMessage<Op> last = operations.get(operations.size()-1);
+            OTMessage<Op> last = getLast();
             if (last.getClock().get(last.getSiteId()) <= operation.getClock().getSafe(last.getSiteId())) {
                 startSeparation = lastSeparationIndex;
             }
         }
         lastSeparationIndex = separatePrecedingAndConcurrentOperations(operation.getClock(), startSeparation);
-        placeOperation(operation, lastSeparationIndex);            
+        return placeOperation(operation, lastSeparationIndex);            
     }
 
     @Override
@@ -48,5 +48,9 @@ public class SOCT2LogOptimizedLast<Op extends Operation> extends SOCT2Log<Op> {
     @Override
     public SOCT2Log<Op> create() {
         return new SOCT2LogOptimizedLast<Op>(transforme);
+    }
+
+    protected OTMessage<Op> getLast() {
+        return operations.get(operations.size()-1);
     }
 }

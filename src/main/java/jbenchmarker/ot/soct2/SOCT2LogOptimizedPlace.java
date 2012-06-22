@@ -19,12 +19,15 @@ public class SOCT2LogOptimizedPlace<Op extends Operation> extends SOCT2Log<Op> {
     }
 
     @Override
-    protected void placeOperation(OTMessage<Op> message, int separationIndex) {
-        Op opt = message.getOperation();
+    protected Op placeOperation(OTMessage<Op> message, int separationIndex) {
+        Op opt = message.getOperation(), oo = (Op) opt.clone();
         operations.add(separationIndex, message);
         for (int i = separationIndex + 1; i < this.operations.size(); ++i) {
-            transforme.transpose(operations.get(i).getOperation(), opt);
+            Op opi = (Op) operations.get(i).getOperation().clone();
+            transforme.transpose(operations.get(i).getOperation(), oo);
+            oo = transforme.transpose(oo, opi);
         }
+        return oo;
     }
 
     @Override
