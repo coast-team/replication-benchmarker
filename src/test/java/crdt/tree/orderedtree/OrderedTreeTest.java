@@ -46,7 +46,6 @@ public class OrderedTreeTest {
     
     private void assertSameTree(OrderedNode on, OrderedNode ot) {
         assertTrue(ot + " expected : " + on, CRDTOrderedTree.sameNode(on, ot));
-        System.out.println("->"+ot+on);
     }
     
     private void assertSameTree(OrderedNode on, PositionIdentifierTree ot) {
@@ -191,6 +190,7 @@ public class OrderedTreeTest {
         }
     }
     
+    @Test
     public void testRunsOTTree() throws PreconditionException, IncorrectTraceException, IOException {
         //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
         CausalDispatcherSetsAndTreesTest.testRun(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null)), 1000, 5, otreeop);

@@ -12,7 +12,7 @@ import jbenchmarker.core.Operation;
  * @author urso
  */
 public  class OperationBasedOneMessage implements OperationBasedMessage {
-    TraceOperation traceOperation;
+    //TraceOperation traceOperation;
     //private LinkedList<CommutativeMessage<T>> msgs = new LinkedList<CommutativeMessage<T>>();
 
     /*public LinkedList<CommutativeMessage<T>> getMsgs() {
@@ -20,10 +20,10 @@ public  class OperationBasedOneMessage implements OperationBasedMessage {
     }*/
     RemoteOperation operation;
 
-    public OperationBasedOneMessage(TraceOperation traceOperation, RemoteOperation operation) {
+   /* public OperationBasedOneMessage(/*TraceOperation traceOperation, RemoteOperation operation) {
         this.traceOperation = traceOperation;
         this.operation = operation;
-    }
+    }*/
 
     public OperationBasedOneMessage(RemoteOperation operation) {
         this.operation = operation;
@@ -48,7 +48,7 @@ public  class OperationBasedOneMessage implements OperationBasedMessage {
     
     @Override
     public OperationBasedOneMessage clone(){
-        return new OperationBasedOneMessage(this.traceOperation,(RemoteOperation)this.operation.clone());
+        return new OperationBasedOneMessage((RemoteOperation)this.operation.clone());
     }
 
     @Override
@@ -60,7 +60,7 @@ public  class OperationBasedOneMessage implements OperationBasedMessage {
         cmrdt.applyOneRemote(this);   
     }
 
-    @Override
+    /*@Override
     public void setTraceOperation(TraceOperation traceOperation) {
         this.traceOperation=traceOperation;
     }
@@ -68,7 +68,7 @@ public  class OperationBasedOneMessage implements OperationBasedMessage {
     @Override
     public TraceOperation getTraceOperation() {
         return traceOperation;
-    }
+    }*/
 
     public RemoteOperation getOperation() {
         return operation;

@@ -22,7 +22,7 @@ public class OTTree<T> extends CRDTOrderedTree<T> {
     OTAlgorithm soct2;
 
     public OTTree(OTAlgorithm soct2) {
-        this.root = new OTTreeNode(null, this);
+        this.root = new OTTreeNode(null, null);
         this.soct2 = soct2;
     }
 
@@ -61,4 +61,36 @@ public class OTTree<T> extends CRDTOrderedTree<T> {
     public CRDT<OrderedNode<T>> create() {
         return new OTTree<T>((OTAlgorithm)soct2.create());
     }
+    @Override
+    public void setReplicaNumber(int replica){
+        super.setReplicaNumber(replica);
+        soct2.setReplicaNumber(replica);
+    }
+    @Override
+    public String toString(){
+        return ""+this.soct2.getReplicaNumber()/*+"["+root+"]"*/;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final OTTree<T> other = (OTTree<T>) obj;
+        if (this.root != other.root && (this.root == null || !this.root.equals(other.root))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 13 * hash + (this.root != null ? this.root.hashCode() : 0);
+        return hash;
+    }
+    
 }

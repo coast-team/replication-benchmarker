@@ -17,7 +17,7 @@ import java.util.LinkedList;
 public final class OperationBasedMessagesBag implements OperationBasedMessage,Cloneable {
     private LinkedList<OperationBasedOneMessage> ops = new LinkedList<OperationBasedOneMessage>();
 
-    TraceOperation traceOperation;
+    /*TraceOperation traceOperation;*/
     OperationBasedMessagesBag(OperationBasedMessage aThis, OperationBasedMessage msg) {
 
         
@@ -108,7 +108,7 @@ public final class OperationBasedMessagesBag implements OperationBasedMessage,Cl
         }
     }
 
-    @Override
+   /* @Override
     public void setTraceOperation(TraceOperation traceOperation) {
         this.traceOperation=traceOperation;
     }
@@ -116,7 +116,7 @@ public final class OperationBasedMessagesBag implements OperationBasedMessage,Cl
     @Override
     public TraceOperation getTraceOperation() {
         return traceOperation;
-    }
+    }*/
 
     @Override
     public boolean equals(Object obj) {

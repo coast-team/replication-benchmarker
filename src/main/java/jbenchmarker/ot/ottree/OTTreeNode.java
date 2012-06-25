@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.core.Operation;
-import jbenchmarker.ot.soct2.SOCT2;
 
 /**
  *
@@ -19,11 +18,11 @@ import jbenchmarker.ot.soct2.SOCT2;
  */
 public class OTTreeNode<T> implements OrderedNode<T> {
 
-    int visibleChildren = 0;
-    boolean visible;
-    OTTreeNode<T> father;
-    T contains;
-    ArrayList<OTTreeNode<T>> childrens;
+    private int visibleChildren = 0;
+    private boolean visible;
+    private OTTreeNode<T> father;
+    private T elem;
+    private ArrayList<OTTreeNode<T>> childrens;
 
     public boolean isVisible() {
         return visible;
@@ -84,7 +83,7 @@ public class OTTreeNode<T> implements OrderedNode<T> {
      */
     public OTTreeNode(OTTreeNode<T> father, T contains) {
         this.father = father;
-        this.contains = contains;
+        this.elem = contains;
         this.visible = true;
         this.childrens=new ArrayList();
     }
@@ -113,7 +112,7 @@ public class OTTreeNode<T> implements OrderedNode<T> {
 
     @Override
     public T getValue() {
-        return contains;
+        return elem;
     }
 
     @Override
@@ -157,9 +156,47 @@ public class OTTreeNode<T> implements OrderedNode<T> {
     }
 
     @Override
-    public String toString() {
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final OTTreeNode<T> other = (OTTreeNode<T>) obj;
+        if (this.visibleChildren != other.visibleChildren) {
+            return false;
+        }
+        if (this.visible != other.visible) {
+            return false;
+        }
+        if (this.elem != other.elem && (this.elem == null || !this.elem.equals(other.elem))) {
+            return false;
+        }
+        if (this.childrens != other.childrens && (this.childrens == null || !this.childrens.equals(other.childrens))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 29 * hash + this.visibleChildren;
+        hash = 29 * hash + (this.visible ? 1 : 0);
+        hash = 29 * hash + (this.elem != null ? this.elem.hashCode() : 0);
+        hash = 29 * hash + (this.childrens != null ? this.childrens.hashCode() : 0);
+        return hash;
+    }
+
+    
+    @Override
+    public String toString(){
         StringBuilder t=new StringBuilder();
-                t.append("OTTreeNode{" + "visibleChildren=" + visibleChildren + ", visible=" + visible + ", father=" + father + ", contains=" + contains );
+                t.append(/*"OTTreeNode{" + /*"visibleChildren=" + visibleChildren +
+                        ", visible=" + visible +
+                        /*", father=" + father==null?"null":father.contains +*/ 
+                        /*", contains=" +*/ "OTTreeNode "+elem+(this.isVisible()?"":"*") +"{ ");
                 for (OTTreeNode n:this.childrens){
                     if (n.isVisible()){
                         t.append(n);

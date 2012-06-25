@@ -11,8 +11,8 @@ import crdt.simulator.TraceOperation;
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
 public interface OperationBasedMessage extends CRDTMessage, Cloneable {
-     public void setTraceOperation(TraceOperation traceOperation);
-    public TraceOperation getTraceOperation();
+  /*   public void setTraceOperation(TraceOperation traceOperation);
+    public TraceOperation getTraceOperation();*/
     @Override
     public OperationBasedMessage clone();
 

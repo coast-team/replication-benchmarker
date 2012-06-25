@@ -5,6 +5,7 @@
 package jbenchmarker.ot.ottree;
 
 import crdt.RemoteOperation;
+import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.core.Operation;
 
@@ -42,7 +43,7 @@ public class OTTreeRemoteOperation<T> implements RemoteOperation{
     }
     @Override
     public Operation clone() {
-        return new OTTreeRemoteOperation(path, contain, siteId, type);
+        return new OTTreeRemoteOperation(new LinkedList(path), contain, siteId, type);
     }
 
     public T getContain() {
