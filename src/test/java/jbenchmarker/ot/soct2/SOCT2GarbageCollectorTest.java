@@ -64,13 +64,13 @@ public class SOCT2GarbageCollectorTest {
         
         set1.applyRemote(op2);
         
-        assertEquals(1, set1.getOtAlgo().getLog().getSize());
+        assertEquals(2, set1.getOtAlgo().getLog().getSize());
         assertEquals(1, set2.getOtAlgo().getLog().getSize());
 
         set2.applyRemote(op1);
         
-        assertEquals(1, set1.getOtAlgo().getLog().getSize());
-        assertEquals(1, set2.getOtAlgo().getLog().getSize());
+        assertEquals(2, set1.getOtAlgo().getLog().getSize());
+        assertEquals(2, set2.getOtAlgo().getLog().getSize());
 
         CRDTMessage op3 = set1.add(3),
                 op4 = set2.add(4);        
@@ -80,13 +80,13 @@ public class SOCT2GarbageCollectorTest {
 
         set1.applyRemote(op4);
 
-        assertEquals(1, set1.getOtAlgo().getLog().getSize());
+        assertEquals(2, set1.getOtAlgo().getLog().getSize());
         assertEquals(2, set2.getOtAlgo().getLog().getSize());
 
         set2.applyRemote(op3);
 
-        assertEquals(1, set1.getOtAlgo().getLog().getSize());
-        assertEquals(1, set2.getOtAlgo().getLog().getSize());
+        assertEquals(2, set1.getOtAlgo().getLog().getSize());
+        assertEquals(2, set2.getOtAlgo().getLog().getSize());
     }
 
     /**
@@ -103,18 +103,18 @@ public class SOCT2GarbageCollectorTest {
         CRDTMessage op1 = set1.add(1),
                 op2 = set2.add(1);
         
-        assertEquals(1, set1.getOtAlgo().getLog().getSize());
-        assertEquals(1, set2.getOtAlgo().getLog().getSize());        
+        assertEquals(0, set1.getOtAlgo().getLog().getSize());
+        assertEquals(0, set2.getOtAlgo().getLog().getSize());        
         
         set1.applyRemote(op2);
         
-        assertEquals(1, set1.getOtAlgo().getLog().getSize());
-        assertEquals(1, set2.getOtAlgo().getLog().getSize());
+        assertEquals(2, set1.getOtAlgo().getLog().getSize());
+        assertEquals(0, set2.getOtAlgo().getLog().getSize());
 
         set2.applyRemote(op1);
         
-        assertEquals(1, set1.getOtAlgo().getLog().getSize());
-        assertEquals(1, set2.getOtAlgo().getLog().getSize());
+        assertEquals(2, set1.getOtAlgo().getLog().getSize());
+        assertEquals(2, set2.getOtAlgo().getLog().getSize());
 
         set3.applyRemote(op1);
         
@@ -127,18 +127,18 @@ public class SOCT2GarbageCollectorTest {
 
         set1.applyRemote(op4);
 
-        assertEquals(1, set1.getOtAlgo().getLog().getSize());
+        assertEquals(2, set1.getOtAlgo().getLog().getSize());
         assertEquals(2, set2.getOtAlgo().getLog().getSize());
 
         set2.applyRemote(op3);
 
-        assertEquals(1, set1.getOtAlgo().getLog().getSize());
-        assertEquals(1, set2.getOtAlgo().getLog().getSize());
+        assertEquals(2, set1.getOtAlgo().getLog().getSize());
+        assertEquals(2, set2.getOtAlgo().getLog().getSize());
         
         set1.applyRemote(op5);
 
-        assertEquals(3, set1.getOtAlgo().getLog().getSize());
-        assertEquals(1, set2.getOtAlgo().getLog().getSize());
+        assertEquals(4, set1.getOtAlgo().getLog().getSize());
+        assertEquals(2, set2.getOtAlgo().getLog().getSize());
         
         assertTrue(set1.contains(1));
     }
@@ -161,7 +161,7 @@ public class SOCT2GarbageCollectorTest {
         new SOCT2Log(ttf), 
         new SOCT2LogOptimizedLast(ttf),
         new SOCT2LogOptimizedPlace(ttf), 
-        new SOCT2LogOptimizedPlaceAndLast(ttf),
+//        new SOCT2LogOptimizedPlaceAndLast(ttf),
         };
     GarbageCollector gcs[] = { 
 //        null, 

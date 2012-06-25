@@ -117,12 +117,29 @@ public class SOCT2OptimizationsTest {
     @Test 
     public void testBlock() throws PreconditionException {
         Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
-                        new SOCT2(new SOCT2Log(ttf), new PreemptiveGarbageCollector(20)));
+                        new SOCT2(new SOCT2LogOptimizedPlaceAndLast(ttf), new PreemptiveGarbageCollector(20)));
         MergeAlgorithm r1 = (MergeAlgorithm) sf.create(), r2 = (MergeAlgorithm) sf.create();
         r1.setReplicaNumber(0); r2.setReplicaNumber(1);
        
-        CRDTMessage m1 = r1.insert(0, "a"), m2 = r2.insert(0, "bcdefghijklmnopqrstuvwxyz");
-        r1.applyRemote(m2); r2.applyRemote(m1);
+        CRDTMessage m1 = r1.insert(0, "a").clone(), 
+                m2 = r2.insert(0, "bcdefghijklmnopqrstuvwxyz").clone();
+        r1.applyRemote(m2); 
+        r2.applyRemote(m1);
+        
+        assertEquals(r1.lookup(), r2.lookup());      
+    }
+        
+    @Test 
+    public void testBlock2() throws PreconditionException {
+        Factory sf = new TTFMergeAlgorithm(new TTFDocument(),
+                        new SOCT2(new SOCT2LogOptimizedPlaceAndLast(ttf), new PreemptiveGarbageCollector(20)));
+        MergeAlgorithm r1 = (MergeAlgorithm) sf.create(), r2 = (MergeAlgorithm) sf.create();
+        r1.setReplicaNumber(1); r2.setReplicaNumber(0);
+       
+        CRDTMessage m1 = r1.insert(0, "a").clone(),
+                m2 = r2.insert(0, "bcdefghijklmnopqrstuvwxyz").clone();
+        r1.applyRemote(m2); 
+        r2.applyRemote(m1);
         
         assertEquals(r1.lookup(), r2.lookup());      
     }

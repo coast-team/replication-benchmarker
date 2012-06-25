@@ -38,21 +38,16 @@ public abstract class AbstractGarbageCollector implements GarbageCollector, Seri
      */
     @Override
     public void collect(OTAlgorithm soct2Algorithm, OTMessage mess) {
-        setRemoteClock(soct2Algorithm, mess.getSiteId(), mess.getClock());
+         clocksOfAllSites.put(mess.getSiteId(), mess.getClock());
     }
     
     @Override
-    public void garbage(OTAlgorithm soct2Algorithm, OTMessage mess) {
+    public void garbage(OTAlgorithm soct2Algorithm) {
         this.countdownBeforeGC--;
         if (this.countdownBeforeGC == 0) {
             gc(soct2Algorithm);
             this.countdownBeforeGC = frequencyGC;
         }
-    }
-    
-
-    protected void setRemoteClock(OTAlgorithm soct2Algorithm, int siteId, VectorClock clock) {
-        clocksOfAllSites.put(siteId, clock);
     }
     
     abstract protected void gc(OTAlgorithm soct2Algorithm);

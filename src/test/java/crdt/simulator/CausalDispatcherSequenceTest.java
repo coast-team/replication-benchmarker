@@ -20,6 +20,7 @@ import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
 import jbenchmarker.ot.ttf.TTFOperation;
 import jbenchmarker.ot.ttf.TTFTransformations;
 import jbenchmarker.factories.TreedocFactory;
+import jbenchmarker.factories.WootFactories.WootHFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -32,15 +33,15 @@ import org.junit.Test;
 public class CausalDispatcherSequenceTest {
 
     Factory s[] = { 
-//        new LogootFactory(), 
-//        new TreedocFactory(), 
+        new LogootFactory(), 
+        new TreedocFactory(), 
 //        new jbenchmarker.treedoc.list.TreedocFactory(),
 //        new WootFactory(), 
 //        new WootOFactory(), 
-//        new WootHFactory(), 
+        new WootHFactory(), 
 //        new ABTFactory(),
-//        new TTFFactories.WithoutGC(), 
-//        new TTFFactories.WithGC10(),
+        new TTFFactories.WithoutGC(), 
+        new TTFFactories.WithGC3(),
         new TTFFactories.WithLL_PGC(),
         
 //        new TTFMergeAlgorithm(new TTFDocument(), 0,
@@ -74,11 +75,8 @@ public class CausalDispatcherSequenceTest {
     @Test
     public void stress() throws PreconditionException, IncorrectTraceException, IOException {
 //        Factory f = new TTFFactories.WithGC3();
-        Factory f = new TTFFactories.WithBasic_PGC();
-        for (int i = 0; i < 5000; ++i) {
-//            System.out.println(" i :" + i++);
-            CausalDispatcherSetsAndTreesTest.testRun(f, 2, 2, seqopp);           
-        }
+        Factory f = new TTFFactories.WithLLP_PGC();
+        CausalDispatcherSetsAndTreesTest.testRunX(f, 2000, 20, 5, seqopp);           
     }
     
     @Test

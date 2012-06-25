@@ -18,9 +18,9 @@ import jbenchmarker.core.Operation;
 public class OTMessage<Op extends Operation> implements RemoteOperation, Serializable {
     
 
-    VectorClock vc;
-    int siteID;
-    Op operation;
+    protected VectorClock vc;
+    protected int siteID;
+    protected Op operation;
 
     /**
      * Construct of this object with followed elements 

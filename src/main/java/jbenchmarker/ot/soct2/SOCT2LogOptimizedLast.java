@@ -42,7 +42,7 @@ public class SOCT2LogOptimizedLast<Op extends Operation> extends SOCT2Log<Op> {
     @Override
     void insertAll(List<OTMessage<Op>> purged) {
         super.insertAll(purged);
-        lastSeparationIndex += purged.size();
+        lastSeparationIndex = 0;
     }
 
     @Override

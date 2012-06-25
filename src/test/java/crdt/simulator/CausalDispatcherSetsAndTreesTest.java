@@ -66,41 +66,47 @@ public class CausalDispatcherSetsAndTreesTest {
     public static void tearDownClass() throws Exception {
     }
 
-    public static CausalSimulator testRun(Factory<CRDT> factory, int duration, int rn, OperationProfile opp) throws PreconditionException, IncorrectTraceException, IOException {
-        CausalSimulator cd = new CausalSimulator(factory);
-        cd.run(new RandomTrace(duration, RandomTrace.FLAT, opp, 0.2, 10, 3, rn), false);
-        //System.out.println(cd.getlTime());
+    public static void testRun(Factory<CRDT> factory, int times, int duration, OperationProfile opp) throws PreconditionException, IncorrectTraceException, IOException {
+        testRunX(factory, times, duration, 3, opp);
+    }
+        
+    public static void testRunX(Factory<CRDT> factory, int times, int duration, int nbreplica, OperationProfile opp) throws PreconditionException, IncorrectTraceException, IOException {
+        for (int t = 0; t < times; ++t) {
+            //System.out.println(t);
+            CausalSimulator cd = new CausalSimulator(factory);
+            cd.run(new RandomTrace(duration, RandomTrace.FLAT, opp, 0.4, 3, 2, nbreplica), false);
+            //System.out.println(cd.getlTime());
 
-        //result.add(cd.getlTime());
+            //result.add(cd.getlTime());
 
-        //System.out.println(factory + "\nlocal : " + cd.getLocalAvg() + "   --- remote : " + cd.getRemoteAvg());
+            //System.out.println(factory + "\nlocal : " + cd.getLocalAvg() + "   --- remote : " + cd.getRemoteAvg());
 
-        Object l = null;
-        int i = 0;
-        for (Entry<Integer, CRDT> r : cd.replicas.entrySet()) {
-            if (l == null) {
-                l = r.getValue().lookup();
-                i = r.getKey();
-            } else {
-                if (//(l instanceof OrderedNode && !((OrderedNode) l).same((OrderedNode) r.getValue().lookup())) ||  
-                        !l.equals(r.getValue().lookup())) {
-                    StringBuilder sf = new StringBuilder();
-                    sf.append("**** ").append(r.getValue().toString()).append('\n');
-                    for (Entry<Integer, CRDT> e : cd.replicas.entrySet()) {
-                        int j = e.getKey();
-                        sf.append("Local ").append(j).append(":\n").append(cd.getHistory().get(j)).
-                                append("\nMessages ").append(":\n").append(cd.getGenHistory().get(j)).
-                                append("\nResult ").append(":\n").append(cd.replicas.get(j).lookup()).
-                                //                                append("\nSet ").append(":\n").append(((WordTree) cd.replicas.get(j)).words.lookup()).
-                                append("\n---------\n");
+            Object l = null;
+            int i = 0;
+            for (Entry<Integer, CRDT> r : cd.replicas.entrySet()) {
+                if (l == null) {
+                    l = r.getValue().lookup();
+                    i = r.getKey();
+                } else {
+                    if (//(l instanceof OrderedNode && !((OrderedNode) l).same((OrderedNode) r.getValue().lookup())) ||  
+                            !l.equals(r.getValue().lookup())) {
+                        StringBuilder sf = new StringBuilder();
+                        sf.append("**** ").append(r.getValue().toString()).append('\n');
+                        for (Entry<Integer, CRDT> e : cd.replicas.entrySet()) {
+                            int j = e.getKey();
+                            sf.append("Local ").append(j).append(":\n").append(cd.getHistory().get(j)).
+                                    append("\nMessages ").append(":\n").append(cd.getGenHistory().get(j)).
+                                    append("\nResult ").append(":\n").append(cd.replicas.get(j).lookup()).
+                                    //                                append("\nSet ").append(":\n").append(((WordTree) cd.replicas.get(j)).words.lookup()).
+                                    append("\n---------\n");
+                        }
+                        //cd.view.affiche();
+
+                        fail(" ** A= " + i + " ** B= " + r.getKey() + "\n" + sf.toString());
                     }
-                    //cd.view.affiche();
-
-                    fail(" ** A= " + i + " ** B= " + r.getKey() + "\n" + sf.toString());
                 }
             }
         }
-        return cd;
     }
     static final int vocabularySize = 100;
     

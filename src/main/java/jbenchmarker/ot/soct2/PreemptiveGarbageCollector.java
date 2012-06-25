@@ -31,11 +31,11 @@ public class PreemptiveGarbageCollector extends AbstractGarbageCollector {
     }
 
     @Override
-    protected void setRemoteClock(OTAlgorithm soct2Algorithm, int siteId, VectorClock vclock) {
-        super.setRemoteClock(soct2Algorithm, siteId, vclock);
-        lastCollect.put(siteId, clock++);
-        if (!alive.contains(siteId)) {
-            alive.add(siteId);
+    public void collect(OTAlgorithm soct2Algorithm, OTMessage mess) {
+        super.collect(soct2Algorithm, mess);
+        lastCollect.put(mess.getSiteId(), clock++);
+        if (!alive.contains(mess.getSiteId())) {
+            alive.add(mess.getSiteId());
             soct2Algorithm.getLog().insertAll(purged);
             purged.clear();
         }

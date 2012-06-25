@@ -18,6 +18,6 @@ public interface GarbageCollector extends Factory<GarbageCollector> {
      */
     void collect(OTAlgorithm otalgo, OTMessage mess);
     
-    void garbage(OTAlgorithm soct2Algorithm, OTMessage mess);
+    void garbage(OTAlgorithm soct2Algorithm);
 
 }
