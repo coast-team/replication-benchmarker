@@ -193,6 +193,9 @@ public class OrderedTreeTest {
     @Test
     public void testRunsOTTree() throws PreconditionException, IncorrectTraceException, IOException {
         //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
-        CausalDispatcherSetsAndTreesTest.testRun(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null)), 1000, 5, otreeop);
+        for(int p=0;p<10000;p++){
+            
+            CausalDispatcherSetsAndTreesTest.testRun(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null)), 200, 3, otreeop);
+        }
     }
 }

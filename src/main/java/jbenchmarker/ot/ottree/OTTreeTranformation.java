@@ -27,7 +27,7 @@ public class OTTreeTranformation implements SOCT2TranformationInterface<OTTreeRe
         /*
          * op2 must have short path or same size
          */
-        if (op1.getPath().size() > op2.getPath().size()) {
+        if (op1.getPath().size() < op2.getPath().size()) {
             return;
         }
         /*
@@ -53,7 +53,9 @@ public class OTTreeTranformation implements SOCT2TranformationInterface<OTTreeRe
 
     @Override
     public OTTreeRemoteOperation transpose(OTTreeRemoteOperation op1, OTTreeRemoteOperation op2) {
+        //System.out.print(""+op1.getType()+ op1.getPath()+op2.getType()+op2.getPath());
         pathAdapt(op1, op2, 1);
+        //System.out.println("->" + op1.getPath());
         return op1;
         /*
          * if (op1.getType() == OTTreeRemoteOperation.OpType.ins &&
@@ -81,7 +83,10 @@ public class OTTreeTranformation implements SOCT2TranformationInterface<OTTreeRe
 
     @Override
     public OTTreeRemoteOperation transposeBackward(OTTreeRemoteOperation op1, OTTreeRemoteOperation op2) {
+        //System.out.print("\n" + op1.getPath());
         pathAdapt(op1, op2, -1);
+        //System.out.println("->" + op1.getPath());
+
         return op1;
 
         /*

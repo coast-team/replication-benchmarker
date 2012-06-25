@@ -31,13 +31,14 @@ public class OTTreeNode<T> implements OrderedNode<T> {
     public List<Integer> viewToModelRecurcive(List<Integer> list) {
         LinkedList<Integer> ret = new LinkedList();
         ret.add(viewToModel(list.get(0)));
-        if (ret.size() > 1) {
-            ret.addAll(childrens.get(ret.get(0)).viewToModelRecurcive(list.subList(1, list.size() - 1)));
+        if (list.size() > 1) {
+            ret.addAll(childrens.get(ret.get(0)).viewToModelRecurcive(list.subList(1, list.size() )));
         }
         return ret;
     }
 
     public int viewToModel(int positionInView) {
+        //System.out.print("posview:"+positionInView);
         int positionInchildrens = 0;
         int visibleCharacterCount = 0;
 
@@ -48,6 +49,7 @@ public class OTTreeNode<T> implements OrderedNode<T> {
             positionInchildrens++;
         }
 
+        //System.out.println("->"+positionInchildrens);
         return positionInchildrens;
     }
     /*

@@ -77,6 +77,11 @@ public class OTTreeRemoteOperation<T> implements RemoteOperation{
     public void setSiteId(int siteId) {
         this.siteId = siteId;
     }
+
+    @Override
+    public String toString() {
+        return "OTTreeRemoteOperation{" + "path=" + path + ", contain=" + contain + ", siteId=" + siteId + ", type=" + type + '}';
+    }
     
     
 }
