@@ -68,7 +68,7 @@ public class OTTree<T> extends CRDTOrderedTree<T> {
     }
     @Override
     public String toString(){
-        return ""+this.soct2.getReplicaNumber()/*+"["+root+"]"*/;
+        return ""+this.soct2.getReplicaNumber()+"["+root+"]";
     }
 
     @Override

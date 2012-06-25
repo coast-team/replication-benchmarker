@@ -60,7 +60,6 @@ public class OTTreeNode<T> implements OrderedNode<T> {
         OTTreeRemoteOperation<T> oop = (OTTreeRemoteOperation<T>) op;
         int pos = oop.getPath().get(level);
         if (level == oop.getPath().size() - 1) {
-
             if (oop.getType() == OTTreeRemoteOperation.OpType.del) {
                 OTTreeNode c = this.childrens.get(pos);
                 if (c.isVisible()) {
