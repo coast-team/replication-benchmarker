@@ -34,7 +34,7 @@ public class OTTreeTranformation implements SOCT2TranformationInterface<OTTreeRe
          * op1 and op2 must have same common path
          */
         for (i = 0; i < op2.getPath().size() - 1; i++) {
-            if (op1.getPath().get(i) != op2.getPath().get(i)) {
+            if (!op1.getPath().get(i) .equals(op2.getPath().get(i))) {
                 return;
             }
         }

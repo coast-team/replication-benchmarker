@@ -30,7 +30,6 @@ public class TTFTransformations implements SOCT2TranformationInterface<TTFOperat
 
     @Override
     public  TTFOperation transpose(TTFOperation op1, TTFOperation op2) {
-
         if (op1.getType() == OpType.ins && op2.getType() == OpType.ins) {
             if (op1.getPosition() < op2.getPosition()) {
                 return op1;
