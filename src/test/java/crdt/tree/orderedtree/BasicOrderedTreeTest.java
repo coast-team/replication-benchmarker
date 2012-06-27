@@ -35,17 +35,18 @@ public class BasicOrderedTreeTest {
                     +"\n\nexpected Tree :\n "+t
                     +"\n\n tree found :\n"+tree2.lookup());
         }
-        tree1.remove(Arrays.asList(1,0));
+        mess=tree1.remove(Arrays.asList(1,0));
         OrderedNodeMock t2=tree(null, tree('a'),tree('b','d'));
-        if (!CRDTOrderedTree.sameNode(tree1.lookup(), t)){
+        if (!CRDTOrderedTree.sameNode(tree1.lookup(), t2)){
             Assert.failNotEquals("Two tree is different",t2,tree1.lookup());
         }
+        tree2.applyRemote(mess);
          if (!tree1.lookup().equals(tree2.lookup())){
             Assert.fail("Tree are not integrated correctly :\n"+mess
                     +"\n\nexpected Tree :\n "+t
                     +"\n\n tree found :\n"+tree2.lookup());
         }
-         tree2.applyRemote(mess);
+         
     }
     @Test
     public void insertionTest()throws Exception {
