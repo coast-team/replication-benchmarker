@@ -30,6 +30,7 @@ import static org.junit.Assert.*;
  */
 public class TTFDocumentTest {
 
+   
     @Test
     public void testViewToModel() {
         TTFDoc model;

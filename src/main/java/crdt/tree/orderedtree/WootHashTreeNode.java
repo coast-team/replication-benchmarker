@@ -20,7 +20,7 @@ import jbenchmarker.woot.wooth.WootHashNode;
  *
  * @author urso
  */
-class WootHashTreeNode<T> extends WootHashDocument<WootHashTreeNode<T>> implements OrderedNode<T> {
+class WootHashTreeNode<T> extends WootHashDocument<WootHashTreeNode<T>> implements PositionnedNode<T>{
     private final T value;
     private Map<WootIdentifier, WootPosition> positions = new HashMap<WootIdentifier, WootPosition>();
 

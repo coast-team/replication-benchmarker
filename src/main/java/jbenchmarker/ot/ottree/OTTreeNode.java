@@ -32,7 +32,7 @@ public class OTTreeNode<T> implements OrderedNode<T> {
         LinkedList<Integer> ret = new LinkedList();
         ret.add(viewToModel(list.get(0)));
         if (list.size() > 1) {
-            ret.addAll(childrens.get(ret.get(0)).viewToModelRecurcive(list.subList(1, list.size() )));
+            ret.addAll(childrens.get(ret.get(0)).viewToModelRecurcive(list.subList(1, list.size())));
         }
         return ret;
     }
@@ -73,7 +73,7 @@ public class OTTreeNode<T> implements OrderedNode<T> {
                 ++visibleChildren;
             }
         } else {
-            childrens.get(pos).apply(op, level+1);
+            childrens.get(pos).apply(op, level + 1);
         }
 
     }
@@ -86,7 +86,7 @@ public class OTTreeNode<T> implements OrderedNode<T> {
         this.father = father;
         this.elem = contains;
         this.visible = true;
-        this.childrens=new ArrayList();
+        this.childrens = new ArrayList();
     }
 
     public void setVisible(boolean visible) {
@@ -98,7 +98,7 @@ public class OTTreeNode<T> implements OrderedNode<T> {
      */
     @Override
     public int childrenNumber() {
-       return this.visibleChildren;
+        return this.visibleChildren;
     }
 
     @Override
@@ -107,33 +107,8 @@ public class OTTreeNode<T> implements OrderedNode<T> {
     }
 
     @Override
-    public OrderedNode<T> getChild(Positioned<T> p) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public T getValue() {
         return elem;
-    }
-
-    @Override
-    public Positioned<T> getPositioned(int p) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public PositionIdentifier getNewPosition(int p, T element) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void add(PositionIdentifier pi, T element) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void remove(PositionIdentifier pi, T element) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -190,26 +165,24 @@ public class OTTreeNode<T> implements OrderedNode<T> {
         return hash;
     }
 
-    
     @Override
-    public String toString(){
-        StringBuilder t=new StringBuilder();
-                t.append(/*"OTTreeNode{" + /*"visibleChildren=" + visibleChildren +
-                        ", visible=" + visible +
-                        /*", father=" + father==null?"null":father.contains +*/ 
-                        /*", contains=" +*/ "OTTreeNode "+elem+(this.isVisible()?"":"*") +"{ ");
-                for (OTTreeNode n:this.childrens){
-                    if (n.isVisible()){
-                        t.append(n);
-                    }
-                }
-                t.append("}");
-        
+    public String toString() {
+        StringBuilder t = new StringBuilder();
+        t.append(/*
+                 * "OTTreeNode{" + /*"visibleChildren=" + visibleChildren + ",
+                 * visible=" + visible + /*", father=" +
+                 * father==null?"null":father.contains +
+                 */
+                /*
+                 * ", contains=" +
+                 */"OTTreeNode " + elem + (this.isVisible() ? "" : "*") + "{ ");
+        for (OTTreeNode n : this.childrens) {
+            if (n.isVisible()) {
+                t.append(n);
+            }
+        }
+        t.append("}");
+
         return t.toString();
     }
-
-  
-
-  
-    
 }

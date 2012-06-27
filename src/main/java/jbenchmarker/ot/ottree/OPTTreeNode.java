@@ -30,15 +30,15 @@ public class OPTTreeNode<T> implements OrderedNode<T> {
         return visible;
     }
 
-    public List<Integer> viewToModelRecurcive(List<Integer> list){
-        LinkedList <Integer> ret = new LinkedList();
+    public List<Integer> viewToModelRecurcive(List<Integer> list) {
+        LinkedList<Integer> ret = new LinkedList();
         ret.add(viewToModel(list.get(0)));
-        if (ret.size()>1){
-            ret.addAll(childrens.get(ret.get(0)).viewToModelRecurcive(list.subList(1, list.size()-1)));
+        if (ret.size() > 1) {
+            ret.addAll(childrens.get(ret.get(0)).viewToModelRecurcive(list.subList(1, list.size() - 1)));
         }
         return ret;
     }
-    
+
     public int viewToModel(int positionInView) {
         int positionInchildrens = 0;
         int visibleCharacterCount = 0;
@@ -52,9 +52,10 @@ public class OPTTreeNode<T> implements OrderedNode<T> {
 
         return positionInchildrens;
     }
-    public void remoteApply(Operation op){
-        
+
+    public void remoteApply(Operation op) {
     }
+
     public void apply(Operation op) {
         OPTTreeNodeOperation<T> oop = (OPTTreeNodeOperation<T>) op;
         int pos = oop.getPosition();
@@ -74,8 +75,7 @@ public class OPTTreeNode<T> implements OrderedNode<T> {
 
     /*
      * public OTTreeNode(OTTreeNode<T> father, T contains) { this.father =
-     * father; this.contains = contains; this.visible = true;
-    }
+     * father; this.contains = contains; this.visible = true; }
      */
     public OPTTreeNode(OPTTreeNode<T> father, T contains, SOCT2<OPTTreeNodeOperation> soct2) {
         this.father = father;
@@ -102,40 +102,15 @@ public class OPTTreeNode<T> implements OrderedNode<T> {
     }
 
     @Override
-    public OrderedNode<T> getChild(Positioned<T> p) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public T getValue() {
         return contains;
     }
 
     @Override
-    public Positioned<T> getPositioned(int p) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public PositionIdentifier getNewPosition(int p, T element) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void add(PositionIdentifier pi, T element) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void remove(PositionIdentifier pi, T element) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public List<? extends OrderedNode<T>> getElements() {
         LinkedList ret = new LinkedList();
-        for (OPTTreeNode  n:childrens){
-            if (n.isVisible()){
+        for (OPTTreeNode n : childrens) {
+            if (n.isVisible()) {
                 ret.add(n);
             }
         }
@@ -151,6 +126,4 @@ public class OPTTreeNode<T> implements OrderedNode<T> {
     public void setReplicaNumber(int replicaNumber) {
         soct2.setReplicaNumber(replicaNumber);
     }
-
-  
 }

@@ -19,6 +19,7 @@
 package jbenchmarker.ot;
 
 import collect.VectorClock;
+import crdt.CRDTMessage;
 import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -513,6 +514,31 @@ public class TTFSOCT2Test {
         integrateSeqAtSite(ops2b, site1);
     }
 
+    @Test
+    public void testTP() throws Exception {
+        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(new TTFDocument(), 1);
+        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
+        TTFMergeAlgorithm site3 = new TTFMergeAlgorithm(new TTFDocument(), 3);
+        //TTFMergeAlgorithm site4 = new TTFMergeAlgorithm(new TTFDocument(), 4);
+        CRDTMessage mess1 = site1.insert(0, "a").clone();
+        CRDTMessage mess2 = site1.remove(0, 1).clone();
+        CRDTMessage mess3 = site2.insert(0, "b").clone();
+        /*
+         * site3.applyRemote(mess1); site3.applyRemote(mess2);
+        site3.applyRemote(mess3);
+         */
+        site1.applyRemote(mess3.clone());
+
+        site3.applyRemote(mess1.clone());
+        System.out.println("site3 " + site3.lookup());
+        site3.applyRemote(mess3.clone());
+        System.out.println("site3 " + site3.lookup());
+        site3.applyRemote(mess2.clone());
+        assertEquals(site1.lookup(), site3.lookup());
+        System.out.println("site1 " + site1.lookup());
+
+    }
+
     // helpers
     private static SequenceOperation insert(int r, int p, String s) {
         return insert(r, p, s, null);
@@ -553,8 +579,8 @@ public class TTFSOCT2Test {
         sb.append("]");
         return sb.toString();
     }
-    
-      public static TTFSequenceMessage TTFSequenceMessageFrom(SequenceOperation opt) {
+
+    public static TTFSequenceMessage TTFSequenceMessageFrom(SequenceOperation opt) {
         TTFOperation op;
         if (opt.getType() == OpType.ins) {
             op = new TTFOperation(opt.getType(), opt.getPosition(), opt.getContent().get(0), opt.getReplica());

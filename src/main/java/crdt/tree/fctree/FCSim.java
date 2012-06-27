@@ -8,6 +8,6 @@ package crdt.tree.fctree;
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class FCDepRelation {
+public class FCSim {
     
 }

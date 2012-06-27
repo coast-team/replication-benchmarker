@@ -23,25 +23,25 @@ import java.util.Observer;
  * @author urso
  */
 public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Observer {
-    CRDTTree<Positioned<T>> tree;
-    OrderedNode<T> root;
 
-    public PositionIdentifierTree(OrderedNode<T> pic, Factory<CRDT<Tree<Positioned<T>>>> tree) {
+    CRDTTree<Positioned<T>> tree;
+    PositionnedNode<T> root;
+
+    public PositionIdentifierTree(PositionnedNode<T> pic, Factory<CRDT<Tree<Positioned<T>>>> tree) {
         this.tree = (CRDTTree<Positioned<T>>) tree.create();
         this.root = pic;
-        this.tree.addObserver(this); 
+        this.tree.addObserver(this);
     }
-
 
     @Override
     public CRDTMessage add(List<Integer> path, int p, T element) throws PreconditionException {
         OrderedNode<T> f = root;
         UnorderedNode<Positioned<T>> uf = tree.getRoot();
         for (int i : path) {
-            uf = uf.getChild(f.getPositioned(i));
+            uf = uf.getChild(((PositionnedNode<T>) f).getPositioned(i));
             f = f.getChild(i);
         }
-        PositionIdentifier pi = f.getNewPosition(p, element);
+        PositionIdentifier pi = ((PositionnedNode<T>) f).getNewPosition(p, element);
         CRDTMessage msg = tree.add(uf, new Positioned(pi, element));
         return msg;
     }
@@ -51,7 +51,7 @@ public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Obs
         OrderedNode<T> f = root;
         UnorderedNode<Positioned<T>> uf = tree.getRoot();
         for (int i : path) {
-            uf = uf.getChild(f.getPositioned(i));
+            uf = uf.getChild(((PositionnedNode<T>) f).getPositioned(i));
             f = f.getChild(i);
         }
         CRDTMessage msg = tree.remove(uf);
@@ -70,7 +70,7 @@ public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Obs
 
     @Override
     public PositionIdentifierTree<T> create() {
-        return new PositionIdentifierTree<T>(root.createNode(null), tree);
+        return new PositionIdentifierTree<T>((PositionnedNode)root.createNode(null), tree);
     }
 
     @Override
@@ -78,25 +78,24 @@ public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Obs
         TreeOperation<Positioned<T>> op = (TreeOperation<Positioned<T>>) arg;
         PositionIdentifier pi = op.getContent().getPi();
         T t = op.getContent().getElem();
+        PositionnedNode<T> father = (PositionnedNode<T>) link(op.getNode());
         if (op.getType() == TreeOperation.OpType.add) {
-            OrderedNode<T> father = link(op.getNode());
             father.add(pi, t);
         } else if (op.getType() == TreeOperation.OpType.del) {
-            OrderedNode<T> father = link(op.getNode());
             father.remove(pi, t);
         } else { // move seems to bug
-            OrderedNode<T> father = link(op.getNode()), 
-                    dest = link(op.getDest());
+
+            PositionnedNode<T> dest =(PositionnedNode<T>) link(op.getDest());
             father.remove(pi, t);
             dest.add(pi, t);
-        }      
+        }
     }
 
     private OrderedNode link(Node<Positioned<T>> node) {
         List<Positioned<T>> path = node.getPath();
-        OrderedNode<T> father = root;
+        PositionnedNode<T> father = root;
         for (Positioned<T> p : path) {
-            father = father.getChild(p);
+            father = (PositionnedNode)father.getChild(p);
         }
         return father;
     }
@@ -107,6 +106,4 @@ public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Obs
         tree.setReplicaNumber(replicaNumber);
         root.setReplicaNumber(replicaNumber);
     }
-
-    
 }

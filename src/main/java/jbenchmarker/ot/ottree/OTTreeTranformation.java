@@ -38,7 +38,6 @@ public class OTTreeTranformation implements SOCT2TranformationInterface<OTTreeRe
                 return;
             }
         }
-
         if ((Integer) op1.getPath().get(i) < (Integer) op2.getPath().get(i)) {
             return;
         }

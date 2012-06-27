@@ -4,9 +4,11 @@
  */
 package crdt.tree.orderedtree;
 
-import collect.Node;
 import collect.OrderedNode;
+import crdt.CRDTMessage;
+import crdt.OperationBasedMessagesBag;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -26,39 +28,20 @@ public class OrderedNodeMock<T> implements OrderedNode<T> {
         return children.size(); 
     }
 
-    @Override
-    public OrderedNode<T> getChild(int p) {
-        return children.get(p);
+    public List<OrderedNodeMock<T>> getChildrens() {
+        return children;
     }
 
     @Override
-    public OrderedNode<T> getChild(Positioned<T> p) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public OrderedNodeMock<T> getChild(int p) {
+        return children.get(p);
     }
+
+   
 
     @Override
     public T getValue() {
         return value;
-    }
-
-    @Override
-    public Positioned<T> getPositioned(int p) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public PositionIdentifier getNewPosition(int p, T element) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void add(PositionIdentifier pi, T element) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void remove(PositionIdentifier pi, T element) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -101,14 +84,29 @@ public class OrderedNodeMock<T> implements OrderedNode<T> {
         }
         return on;
     }
-    
+    static CRDTMessage makeOrderedTreeByMock(OrderedNodeMock mock, CRDTOrderedTree tree)throws Exception{
+        return  makeOrderedTreeByMock(mock,tree,new LinkedList<Integer>());
+        
+    } 
+    static private CRDTMessage makeOrderedTreeByMock(OrderedNodeMock mock, CRDTOrderedTree tree,LinkedList<Integer> path)throws Exception {
+        CRDTMessage mess=new OperationBasedMessagesBag();
+        for(int i=0;i<mock.childrenNumber();i++){
+            mess=mess.concat(tree.add(path, i, mock.getChild(i).getValue()));
+            path.addLast(i);
+            mess=mess.concat(makeOrderedTreeByMock(mock.getChild(i),tree,path));
+            path.removeLast();
+        }
+        return mess;
+    }
     @Override
     public String toString() {
         return value + "{" + getElements() + '}';
     }
-    
+
     @Override
     public void setReplicaNumber(int replicaNumber) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+    
+   
 }

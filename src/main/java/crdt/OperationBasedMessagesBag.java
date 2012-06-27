@@ -19,16 +19,16 @@ public final class OperationBasedMessagesBag implements OperationBasedMessage,Cl
 
     /*TraceOperation traceOperation;*/
     OperationBasedMessagesBag(OperationBasedMessage aThis, OperationBasedMessage msg) {
-
-        
         addMessage(aThis);
         addMessage(msg);
     }
 
-    private OperationBasedMessagesBag() {
+    public OperationBasedMessagesBag() {
     }
     
     void addMessage(OperationBasedMessage mess){
+        if (mess==null)
+            return;
         if (mess instanceof OperationBasedMessagesBag){
             ops.addAll(((OperationBasedMessagesBag)mess).getOps());
         }else{
@@ -52,10 +52,9 @@ public final class OperationBasedMessagesBag implements OperationBasedMessage,Cl
      */
     @Override
     public CRDTMessage concat(CRDTMessage msg) {
-        OperationBasedOneMessage cmsg = (OperationBasedOneMessage) msg;
         OperationBasedMessagesBag ret=new OperationBasedMessagesBag();
         ret.addMessage(this);
-        ret.addMessage(cmsg);
+        ret.addMessage((OperationBasedMessage)msg);
         return ret;
     } 
     

@@ -16,6 +16,7 @@ import crdt.simulator.CausalDispatcherSetsAndTreesTest;
 import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.random.OperationProfile;
 import crdt.simulator.random.OrderedTreeOperationProfile;
+import crdt.tree.fctree.FCTree;
 import static crdt.tree.orderedtree.OrderedNodeMock.tree;
 import crdt.tree.wordtree.WordConnectionPolicy;
 import crdt.tree.wordtree.WordTree;
@@ -70,7 +71,7 @@ public class OrderedTreeTest {
 
     PositionIdentifierTree createTree(OrderedNode root, Factory<CRDTSet> sf, Factory<WordConnectionPolicy> wcp) {
         WordTree wt = new WordTree(sf.create(), wcp);
-        return new PositionIdentifierTree(root.createNode(null), wt);       
+        return new PositionIdentifierTree((PositionnedNode)root.createNode(null), wt);       
     }
     
     Factory<MergeAlgorithm> lf = new  LogootFactory();
@@ -167,7 +168,7 @@ public class OrderedTreeTest {
         // new WordIncrementalRoot(), new WordIncrementalCompact(), 
         new WordIncrementalSkipOpti()};
     
-    private OperationProfile otreeop = new OrderedTreeOperationProfile(0.6, 0.4) {
+    private OperationProfile otreeop = new OrderedTreeOperationProfile(0.6, 0.7) {
 
         @Override
         public Object nextElement() {
@@ -193,9 +194,17 @@ public class OrderedTreeTest {
     @Test
     public void testRunsOTTree() throws PreconditionException, IncorrectTraceException, IOException {
         //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
-        for(int p=0;p<10000;p++){
+        //for(int p=0;p<10000;p++){
             
-            CausalDispatcherSetsAndTreesTest.testRun(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null)), 200, 3, otreeop);
-        }
+            CausalDispatcherSetsAndTreesTest.testRun(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null)), 200, 500, otreeop);
+        //}
+    }
+     @Test
+    public void testRunsFCTree() throws PreconditionException, IncorrectTraceException, IOException {
+        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
+        //for(int p=0;p<10000;p++){
+            
+            CausalDispatcherSetsAndTreesTest.testRun(new FCTree(), 2000, 3, otreeop);
+        //}
     }
 }
