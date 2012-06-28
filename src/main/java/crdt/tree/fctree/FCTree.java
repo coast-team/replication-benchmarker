@@ -83,7 +83,7 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
     }
 
     public FCTree() {
-        FCIdentifier idroot=new FCIdentifier(0, 0);
+        FCIdentifier idroot=new FCIdentifier(-1, 0);
         root=new FCNode(root, null, null, idroot);
         map.put(idroot, root);
     }

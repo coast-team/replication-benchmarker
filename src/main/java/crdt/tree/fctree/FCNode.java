@@ -71,13 +71,25 @@ public class FCNode<T> implements OrderedNode<T> {
     }
     public void addChildren(FCNode node){
         int i=0;
-        for (FCNode nodec:childrens){
-            if (node.getPosition().compareTo(node.getId(),nodec.getId(),nodec.getPosition())<0){
+        int min=0;
+        int max=childrens.size()-1;
+        
+        while (min<=max){
+            i=(int)(min+max)/2;
+            int p=childrens.get(i).nodePositionCompareTo(node);
+            if (p<0){
+                min=i+1;
+            }else if(p>0){
+                max=i-1;
+            }else{
                 break;
             }
-            i++;
+                
         }
-        childrens.add(i, node);
+        childrens.add(min, node);
+    }
+    public int nodePositionCompareTo(FCNode node){
+        return this.getPosition().compareTo(this.getId(),node.getId(),node.getPosition());
     }
     public void delChildren(FCNode node){
         childrens.remove(node);

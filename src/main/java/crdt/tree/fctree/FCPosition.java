@@ -15,37 +15,42 @@ import java.util.List;
  */
 public class FCPosition {
 
-    List <Byte> position;
+    List<Byte> position;
 
-    public static LinkedList<Byte> conv(List <Byte>b,FCIdentifier id){
-         LinkedList<Byte> s1 = new LinkedList<Byte>();
-         s1.addAll(b);
-         for (byte bb:id.toString().getBytes()){
-             s1.add(bb);
-         }
-         return s1;
+    public static LinkedList<Byte> conv(List<Byte> b, FCIdentifier id) {
+        LinkedList<Byte> s1 = new LinkedList<Byte>();
+        s1.addAll(b);
+        for (byte bb : id.toString().getBytes()) {
+            s1.add(bb);
+            //System.out.print("" + bb);
+        }
+        //System.out.println();
+        return s1;
     }
+
     int compareTo(FCIdentifier id1, FCIdentifier id2, FCPosition f2) {
-        Iterator<Byte> s1 = conv(this.position,id1).iterator();
-        Iterator<Byte> s2 = conv(f2.position,id2).iterator();
-        while (s1.hasNext() && s2.hasNext()){
-            byte b1=s1.next();
-            byte b2=s2.next();
-            if (b1<b2)
+        Iterator<Byte> s1 = conv(this.position, id1).iterator();
+        Iterator<Byte> s2 = conv(f2.position, id2).iterator();
+        while (s1.hasNext() && s2.hasNext()) {
+            byte b1 = s1.next();
+            byte b2 = s2.next();
+            if (b1 < b2) {
                 return -1;
-            if (b1>b2)
+            }
+            if (b1 > b2) {
                 return 1;
+            }
         }
         if (s1.hasNext()) {
             return 1;
         }
-        if (s2.hasNext()){
+        if (s2.hasNext()) {
             return -1;
         }
         return 0;
     }
 
-    public FCPosition(List <Byte> position) {
+    public FCPosition(List<Byte> position) {
         this.position = position;
     }
 
@@ -75,11 +80,8 @@ public class FCPosition {
         return hash;
     }
 
-    
-    
-
     @Override
     public String toString() {
-        return "FCPosition{" +  position + '}';
+        return "FCPosition{" + position + '}';
     }
 }
