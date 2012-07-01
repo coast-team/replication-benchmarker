@@ -91,7 +91,7 @@ public class SequenceOperation<T> extends TraceOperation implements Operation, S
         return type;
     }
 
-    SequenceOperation(OpType type, int replica, int position, int offset, List<T> content, VectorClock VC) {
+    public SequenceOperation(OpType type, int replica, int position, int offset, List<T> content, VectorClock VC) {
         super(replica, VC);
         this.type = type;
         this.position = position;

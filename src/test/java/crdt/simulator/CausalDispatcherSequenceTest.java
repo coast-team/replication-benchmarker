@@ -21,6 +21,7 @@ import jbenchmarker.ot.ttf.TTFOperation;
 import jbenchmarker.ot.ttf.TTFTransformations;
 import jbenchmarker.factories.TreedocFactory;
 import jbenchmarker.factories.WootFactories.WootHFactory;
+import jbenchmarker.factories.WootFactories.WootOFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -41,8 +42,8 @@ public class CausalDispatcherSequenceTest {
         new WootHFactory(), 
 //        new ABTFactory(),
         new TTFFactories.WithoutGC(), 
-        new TTFFactories.WithGC3(),
-        new TTFFactories.WithLL_PGC(),
+//        new TTFFactories.WithGC3(),
+//        new TTFFactories.WithLL_PGC(),
         
 //        new TTFMergeAlgorithm(new TTFDocument(), 0,
 //                                new SOCT2(new SOCT2LogOptimizedPlace(new TTFTransformations()), null)),
@@ -75,8 +76,8 @@ public class CausalDispatcherSequenceTest {
     @Test
     public void stress() throws PreconditionException, IncorrectTraceException, IOException {
 //        Factory f = new TTFFactories.WithGC3();
-        Factory f = new TTFFactories.WithLLP_PGC();
-        CausalDispatcherSetsAndTreesTest.testRunX(f, 2000, 20, 5, seqopp);           
+        Factory f = new WootHFactory();
+        CausalDispatcherSetsAndTreesTest.testRunX(f, 200, 20, 5, uopp);           
     }
     
     @Test

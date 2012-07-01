@@ -158,27 +158,17 @@ public class CausalDispatcherSetsAndTreesTest {
 //        System.out.println("local : " + (l/nl) + "\nRemote : " + (r/nr));
 
         for (Factory<CRDT> sf : set) {
-            testRun(sf, 200, 20, setopp);
+            testRun(sf, 2000, 10, setopp);
         }
     }
     
-//    @Ignore
-    @Test
-    public void testRunWord() throws IncorrectTraceException, PreconditionException, IOException {
-        for (Factory<CRDT> sf : set) {
-            for (Factory<WordPolicy> pf : policy) {
-                //System.out.println(new WordTree(sf, pf));
-                testRun(new WordTree(sf, pf), 200, 5, treeop);
-            }
-       }
-    }
     
     @Test
     public void testRunLogootTree() throws IncorrectTraceException, PreconditionException, IOException {
         for (Factory<CRDT> sf : set) {
             for (Factory<WordPolicy> pf : policy) {
                 //System.out.println(new WordTree(sf, pf));
-                testRun(new WordTree(sf, pf), 200, 5, treeop);
+                testRun(new WordTree(sf, pf), 500, 20, treeop);
             }
        }
     }
@@ -186,22 +176,14 @@ public class CausalDispatcherSetsAndTreesTest {
     @Ignore
     @Test
     public void stressSet() throws PreconditionException, IncorrectTraceException, IOException {
-        for (int i = 0; i < 5000; ++i) {
-            //System.out.println(" i :"+i++);
-            testRun(set[7], 10, 3, setopp);          
-        }
-        //writeResult();
+        testRun(set[7], 10000, 5, setopp);          
     }
     
     
     @Ignore
     @Test
-    public void stress() throws PreconditionException, IncorrectTraceException, IOException {
-        for (int i = 0; i < 5000; ++i) {
-            //System.out.println(" i :"+i++);
-            testRun(new WordTree(set[7], policy[1]), 10, 3, treeop);
-        }
-        //writeResult();
+    public void stressTree() throws PreconditionException, IncorrectTraceException, IOException {
+        testRun(new WordTree(set[7], policy[1]), 5000, 10, treeop);
     }
     
    /* void writeResult() throws IOException {
