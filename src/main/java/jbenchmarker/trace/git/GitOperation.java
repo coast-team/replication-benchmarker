@@ -20,7 +20,7 @@ import jbenchmarker.trace.git.model.FileEdition;
 public class GitOperation extends TraceOperation {
     SequenceOperation<String> sop;
         
-    public GitOperation(FileEdition f, Edition e, int replica, VectorClock VC) {
+    public GitOperation(int replica, VectorClock VC, FileEdition f, Edition e) {
         super(replica, new VectorClock(VC));
         SequenceOperation.OpType type;
         switch (e.getType()) {

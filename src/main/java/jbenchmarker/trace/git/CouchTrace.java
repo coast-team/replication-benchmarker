@@ -15,7 +15,6 @@ import jbenchmarker.trace.git.model.Commit;
 import jbenchmarker.trace.git.model.Edition;
 import jbenchmarker.trace.git.model.FileEdition;
 import jbenchmarker.trace.git.model.Patch;
-import org.eclipse.jgit.diff.RawText;
 import org.ektorp.CouchDbConnector;
 
 /**
@@ -47,7 +46,25 @@ public class CouchTrace implements Trace {
     }
 
     class Walker implements Enumeration<TraceOperation> {
-  
+
+        class MergeOperation extends TraceOperation {
+
+            MergeOperation(int replica, VectorClock VC, Commit merge) {
+                super(replica, VC);               
+            }          
+
+            @Override
+            public Operation getOperation(CRDT replica) {
+                return null;
+            }
+
+            @Override
+            public String toString() {
+                return "MergeOperation";
+            }
+        }
+        
+        
         private LinkedList<Commit> pendingCommit;
         private LinkedList<Commit> startingCommit;
         private LinkedList<String> children;
@@ -80,13 +97,13 @@ public class CouchTrace implements Trace {
                 if (editions != null && !editions.isEmpty()) {
                     Edition e = editions.pollFirst();
                     currentVC.inc(commit.getReplica());
-                    op = new GitOperation(fileEdit, e, commit.getReplica(), currentVC);
+                    op = new GitOperation(commit.getReplica(), currentVC, fileEdit, e);
                 } else if (files != null && !files.isEmpty()) {
                     fileEdit = files.pollFirst();
                     editions = new LinkedList<Edition>(fileEdit.getListDiff());
                 } else if (children != null && !children.isEmpty()) {
                     Patch p = patchCRUD.get(children.pollFirst() + commit.getId());
-                    files = new LinkedList<FileEdition>(p.getListEdit());
+                    files = new LinkedList<FileEdition>(p.getEdits());
                 } else if (init) {
                     if (commit != null) {
                         startVC.put(commit.getId(), currentVC);
@@ -95,7 +112,7 @@ public class CouchTrace implements Trace {
                         // Treat content of commit without parent
                         commit = startingCommit.pollFirst();
                         Patch p = patchCRUD.get(commit.patchId());
-                        files = new LinkedList<FileEdition>(p.getListEdit());
+                        files = new LinkedList<FileEdition>(p.getEdits());
                         currentVC = new VectorClock(); 
                     } else {
                         init = false;

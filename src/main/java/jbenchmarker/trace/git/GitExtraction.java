@@ -182,6 +182,7 @@ public class GitExtraction {
             RevCommit commit = it.next();
             Commit co = new Commit(commit, children.getAll(commit));
             if (head == null) {
+                // Head commit
                 co.setId("HEAD");
                 head = co;
                 if (path != null) {
@@ -189,16 +190,11 @@ public class GitExtraction {
                 }
                 identifiers.put(commit, 1);
             }
-            co.setReplica(Collections.min(identifiers.getAll(commit)));
-            // Final case : patch without parent
+            co.setReplica(Collections.min(identifiers.getAll(commit)));          
             if (commit.getParentCount() == 0) {
+                // Final case : patch without parent
                 List<FileEdition> edits = new LinkedList<FileEdition>(); 
-                TreeWalk walk = new TreeWalk(repository);
-                walk.addTree(commit.getTree());
-                walk.setRecursive(true);
-                if (path != null) {
-                    walk.setFilter(PathFilter.create(paths.get(commit)));
-                }
+                TreeWalk walk = walker(commit, paths.get(commit));
                 while (walk.next()) { 
                     ObjectId id = walk.getObjectId(0);
                     edits.add(new FileEdition(walk.getPathString(), 
@@ -206,16 +202,29 @@ public class GitExtraction {
                 }
                 patchCrud.add(new Patch(co, edits));
             } else {
+                if (commit.getParentCount() > 1) {
+                    // Merge case -> store state
+                    List<String> mpaths = new LinkedList<String>();
+                    List<byte[]> mraws = new LinkedList<byte[]>();
+                    TreeWalk twalk = walker(commit, paths.get(commit));
+                    while (twalk.next()) {
+                        ObjectId id = twalk.getObjectId(0);
+                        mpaths.add(twalk.getPathString());
+                        mraws.add(open(twalk.getPathString(), id));
+                    }
+                    patchCrud.add(new Patch(co, mpaths, mraws));
+                }
+
+                // Computes replica identifiers
                 Iterator<Integer> itid = identifiers.getAll(commit).iterator();
-                List<FileEdition> edits = new LinkedList<FileEdition>(); 
-                                
+       
                 for (int p = 0; p < commit.getParentCount(); ++p) {
                     RevCommit parent = commit.getParent(p);
                     children.put(parent, co.getId());
-                    TreeWalk walk = walker(commit, parent);
-                    if (path != null) {
-                        walk.setFilter(PathFilter.create(paths.get(commit)));
-                    }
+                    List<FileEdition> edits = new LinkedList<FileEdition>();
+                    TreeWalk walk = walker(commit, parent, paths.get(commit));
+                    
+                    // compute diff
                     for (DiffEntry entry : DiffEntry.scan(walk)) {
                         edits.add(createDiffResult(entry));
                         if (path != null) {
@@ -230,7 +239,7 @@ public class GitExtraction {
                         ++freeId;
                     }
                 }
-                // distribute available ids
+
                 int i = 0;
                 while (itid.hasNext()) {
                     identifiers.put(commit.getParent(i), itid.next());
@@ -242,24 +251,24 @@ public class GitExtraction {
         return head;
     } 
     
-//                int min = Integer.MAX_VALUE;
-//                int imin = -1;
-//                            if (path != null && edit.getListEdit().size() < min) {
-//                            imin = p;
-//                            min = edit.getListEdit().size();
-//                        }
-//            co.setMinimunDiff(imin);
-    
-    void addFile(Commit co, TreeWalk walk) throws IOException {
-
-    }
-
-    
-    private TreeWalk walker(RevCommit commit, RevCommit parent) throws IOException {
+    private TreeWalk walker(RevCommit commit, RevCommit parent, String path) throws IOException {
         TreeWalk walk = new TreeWalk(repository);
         walk.addTree(parent.getTree());
         walk.addTree(commit.getTree());
         walk.setRecursive(true);
+        if (path != null) {
+            walk.setFilter(PathFilter.create(path));
+        }
+        return walk;
+    }
+    
+    private TreeWalk walker(RevCommit commit, String path) throws IOException {
+        TreeWalk walk = new TreeWalk(repository);
+        walk.addTree(commit.getTree());
+        walk.setRecursive(true);
+        if (path != null) {
+            walk.setFilter(PathFilter.create(path));
+        }
         return walk;
     }
 }

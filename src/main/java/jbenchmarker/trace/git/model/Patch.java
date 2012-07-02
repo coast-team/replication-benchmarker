@@ -25,28 +25,43 @@ import org.ektorp.support.TypeDiscriminator;
 public class Patch {
     public static final String content = "CONTENT";
     
-    protected List<FileEdition> listEdit;
-    
-    @TypeDiscriminator  
-    protected String commitId;
-    
-    protected String parentId;
+    protected List<FileEdition> edits;
+    protected List<String> paths;
+    protected List<byte[]> raws;
     
     public Patch() {
     }
     
+    /**
+     * Classical diff constructor.
+     * @param commit
+     * @param parent
+     * @param listEdit 
+     */
     public Patch(Commit commit, RevCommit parent, List<FileEdition> listEdit) {
-        this.commitId = commit.getId();
-        this.parentId = ObjectId.toString(parent);
-        this.listEdit = listEdit;
-        this.id = commitId + parentId;
+        this.edits = listEdit;
+        this.id = commit.getId() + ObjectId.toString(parent);
     }
     
+    /**
+     * Base commit patch constructor.
+     * @param commit
+     * @param listEdit 
+     */
     public Patch(Commit commit, List<FileEdition> listEdit) {
-        this.commitId = commit.getId();
-        this.parentId = null;
-        this.listEdit = listEdit;
-        this.id = commitId + content;
+        this.edits = listEdit;
+        this.id = commit.getId() + content;
+    }
+    
+    /**
+     * Merge commit patch constuctor
+     * @param commit
+     * @param listEdit 
+     */
+    public Patch(Commit commit, List<String> paths, List<byte[]> raws) {       
+        this.paths = paths;
+        this.raws = raws;
+        this.id = commit.getId() + content;
     }
     
     @JsonProperty("_id")
@@ -67,36 +82,36 @@ public class Patch {
         return revision;
     }
 
-    public String getCommitId() {
-        return commitId;
+    public List<FileEdition> getEdits() {
+        return edits;
     }
 
-    public void setCommitId(String commitId) {
-        this.commitId = commitId;
+    public void setEdits(List<FileEdition> listEdit) {
+        this.edits = listEdit;
     }
 
-    public List<FileEdition> getListEdit() {
-        return listEdit;
+    public List<String> getPaths() {
+        return paths;
     }
 
-    public void setListEdit(List<FileEdition> listEdit) {
-        this.listEdit = listEdit;
+    public void setPaths(List<String> paths) {
+        this.paths = paths;
     }
 
-    public String getParentId() {
-        return parentId;
+    public List<byte[]> getRaws() {
+        return raws;
     }
 
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
+    public void setRaws(List<byte[]> raws) {
+        this.raws = raws;
     }
 
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
         s.append("Patch : \n");
-        if (listEdit != null) {
-            for (FileEdition e : listEdit) {
+        if (edits != null) {
+            for (FileEdition e : edits) {
                 s.append(e.toString());
             }
         } 

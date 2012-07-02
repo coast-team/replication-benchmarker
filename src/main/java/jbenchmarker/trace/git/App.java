@@ -51,13 +51,13 @@ public class App {
         //                + "\"views\":"
         //                + "{ \"all\": { \"map\": \"function(doc) { if (doc.message)  emit(null, doc) }\"}}}");
 
-//        GitExtraction ge = new GitExtraction(repository, commitCRUD, patchCRUD);
-//        ge.parseRepository("Makefile");
+        GitExtraction ge = new GitExtraction(repository, commitCRUD, patchCRUD);
+        ge.parseRepository("Makefile");
 
-        CouchTrace couchTrace = new CouchTrace(commitCRUD, patchCRUD);
-        CausalSimulator cd = new CausalSimulator(new LogootFactory<String>());
-        cd.run(couchTrace, false);
-        System.out.println(cd.replicas.get(1).lookup());
+//        CouchTrace couchTrace = new CouchTrace(commitCRUD, patchCRUD);
+//        CausalSimulator cd = new CausalSimulator(new LogootFactory<String>());
+//        cd.run(couchTrace, false);
+//        System.out.println(cd.replicas.get(1).lookup());
     }
 }
 // git : 967 authors, 30000 commits: Total time: 5:46:52.821s 
