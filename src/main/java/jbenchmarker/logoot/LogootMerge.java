@@ -18,24 +18,20 @@
  */
 package jbenchmarker.logoot;
 
-import collect.OrderedNode;
 import crdt.CRDT;
-import crdt.tree.orderedtree.PositionIdentifier;
-import java.math.BigInteger;
+import crdt.simulator.IncorrectTraceException;
+import java.util.ArrayList;
+import java.util.List;
+import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.core.Document;
-
-import java.util.*;
 
 /**
  *
  * @author mehdi urso
  */
 public class LogootMerge<T> extends MergeAlgorithm {
-
-
 
     // nbBit <= 64
     public LogootMerge(Document doc, int r) {
@@ -44,52 +40,62 @@ public class LogootMerge<T> extends MergeAlgorithm {
     }
 
     @Override
+    public LogootDocument<T> getDoc() {
+        return (LogootDocument<T>) super.getDoc();
+    }
+   
+    @Override
     protected void integrateRemote(SequenceMessage op) {
         getDoc().apply(op);
     }
 
     @Override
-    protected List<SequenceMessage> generateLocal(SequenceOperation opt) {
+    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
-        LogootDocument<T> lg = (LogootDocument<T>) (this.getDoc());
-        int N = 0, offset = 0;
-        int position = opt.getPosition();
-
-        if (opt.getType() == SequenceOperation.OpType.ins) {
-            N = opt.getContent().size();
-            List<T> content = opt.getContent();
-            ArrayList<LogootIdentifier> patch = lg.generateIdentifiers(position, N);
-
-            ArrayList<T> lc = new ArrayList<T>(patch.size());
-            for (int cmpt = 0; cmpt < patch.size(); cmpt++) {
-                T c = content.get(cmpt);
-                LogootOperation<T> log = LogootOperation.insert(opt, patch.get(cmpt), c);
-                lop.add(log);
-                lc.add(c);
-            }
-            lg.insert(position, patch, lc);
-
-        } else {
-            offset = opt.getNumberOf();
-            for (int k = 1; k <= offset; k++) {
-                LogootOperation<T> wop = LogootOperation.Delete(opt, lg.getId(position + k));
-                lop.add(wop);
-            }
-            lg.remove(position, offset);
-        }      
+        int offset = opt.getNumberOf(), position = opt.getPosition();
+        
+        for (int k = 1; k <= offset; k++) {
+            LogootOperation<T> wop = LogootOperation.Delete(opt, getDoc().getId(position + k));
+            lop.add(wop);
+        }
+        getDoc().remove(position, offset);
         return lop;
     }
 
+    @Override
+    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+        List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
+        int N = opt.getContent().size(), position = opt.getPosition();
+        
+        List<T> content = opt.getContent();
+        ArrayList<LogootIdentifier> patch = getDoc().generateIdentifiers(position, N);
 
+        ArrayList<T> lc = new ArrayList<T>(patch.size());
+        for (int cmpt = 0; cmpt < patch.size(); cmpt++) {
+            T c = content.get(cmpt);
+            LogootOperation<T> log = LogootOperation.insert(opt, patch.get(cmpt), c);
+            lop.add(log);
+            lc.add(c);
+        }
+        getDoc().insert(position, patch, lc);
+        return lop;
+    }
+
+    @Override
+    protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
+        List<SequenceMessage> lop = localDelete(opt);
+        lop.addAll(localInsert(opt));
+        return lop;
+    }
 
     @Override
     public CRDT<String> create() {
-        return new LogootMerge(((LogootDocument) getDoc()).create(), 0);
+        return new LogootMerge(getDoc().create(), 0);
     }
 
     @Override
     public void setReplicaNumber(int replicaNumber) {
         super.setReplicaNumber(replicaNumber);
-        ((LogootDocument) getDoc()).setReplicaNumber(replicaNumber);
+        getDoc().setReplicaNumber(replicaNumber);
     }
 }

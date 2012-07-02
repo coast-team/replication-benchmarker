@@ -18,9 +18,6 @@
  */
 package jbenchmarker.factories;
 
-import crdt.CRDT;
-import crdt.Factory;
-import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.logoot.BoundaryStrategy;
 import jbenchmarker.logoot.LogootDocument;
@@ -30,9 +27,9 @@ import jbenchmarker.logoot.LogootMerge;
  *
  * @author urso
  */
-public class LogootFactory extends ReplicaFactory {
+public class LogootFactory<T> extends ReplicaFactory {
     @Override
-    public LogootMerge create(int r) {
-        return new LogootMerge(new LogootDocument(r, 64, new BoundaryStrategy(1000000000)), r);
+    public LogootMerge<T> create(int r) {
+        return new LogootMerge<T>(new LogootDocument(r, 64, new BoundaryStrategy(1000000000)), r);
     }
 }

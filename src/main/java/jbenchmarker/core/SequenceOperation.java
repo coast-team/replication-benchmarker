@@ -58,8 +58,6 @@ public class SequenceOperation<T> extends TraceOperation implements Operation, S
     }
 
     
-
-    
     public enum OpType {ins, del, up, unsupported}; 
     
     private OpType type;                  // type of operation : insert or delete
@@ -175,7 +173,10 @@ public class SequenceOperation<T> extends TraceOperation implements Operation, S
 
     @Override
     public String toString() {
-        return "SequenceOperation{" + "replica=" + getReplica() + ", VC=" + getVectorClock() + ", type=" + type + ", position=" + position + (type==OpType.del ? ", offset=" + numberOf : ", content=" + content) + '}';
+        return "SequenceOperation{" + "replica=" + getReplica() + ", VC=" + getVectorClock() +
+                ", type=" + type + ", position=" + position + 
+                (type == OpType.ins ? "" : ", offset=" + numberOf) + 
+                (type == OpType.del ? "" : ", content=" + content) + '}';
     }
     
     public int getRange() {

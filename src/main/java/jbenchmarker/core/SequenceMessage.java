@@ -26,6 +26,8 @@ import java.io.Serializable;
  * @author urso
  */
 public abstract class SequenceMessage implements RemoteOperation,Serializable,Message {
+    public enum MessageType {ins, del}; 
+    
     final private SequenceOperation originalOp;       // Trace operation issuing this one
 
     public SequenceOperation getOriginalOp() {

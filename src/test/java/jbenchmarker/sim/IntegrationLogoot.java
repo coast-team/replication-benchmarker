@@ -21,6 +21,7 @@ package jbenchmarker.sim;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
+import crdt.simulator.random.StandardDiffProfile;
 import crdt.simulator.random.StandardSeqOpProfile;
 import jbenchmarker.factories.LogootFactory;
 import static jbenchmarker.sim.CausalDispatcherTest.assertConsistency;
@@ -39,7 +40,7 @@ public class IntegrationLogoot {
     public void testLogootExempleRun() throws Exception {
         System.out.println("Integration test with logoot");
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
-        CausalSimulator cd = new CausalSimulator(new LogootFactory());
+        CausalSimulator cd = new CausalSimulator(new LogootFactory<Character>());
 
         cd.run(trace, false);
         String r = "Salut Monsieurjour MehdiFin";
@@ -52,7 +53,7 @@ public class IntegrationLogoot {
     @Test
     public void testLogootG1Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
-        CausalSimulator cd = new CausalSimulator(new LogootFactory());
+        CausalSimulator cd = new CausalSimulator(new LogootFactory<Character>());
 
         assertConsistency(cd, trace);
     }
@@ -61,7 +62,7 @@ public class IntegrationLogoot {
     @Test
     public void testLogootG2Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
-        CausalSimulator cd = new CausalSimulator(new LogootFactory());
+        CausalSimulator cd = new CausalSimulator(new LogootFactory<Character>());
 
         assertConsistency(cd, trace);
     }
@@ -70,7 +71,7 @@ public class IntegrationLogoot {
     @Test
     public void testLogootG3Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
-        CausalSimulator cd = new CausalSimulator(new LogootFactory());
+        CausalSimulator cd = new CausalSimulator(new LogootFactory<Character>());
 
         assertConsistency(cd, trace);
     }
@@ -79,7 +80,7 @@ public class IntegrationLogoot {
     @Test
     public void testLogootSerieRun() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
-        CausalSimulator cd = new CausalSimulator(new LogootFactory());
+        CausalSimulator cd = new CausalSimulator(new LogootFactory<Character>());
 
         assertConsistency(cd, trace);
     }
@@ -90,7 +91,7 @@ public class IntegrationLogoot {
     public void testLogootProfile() throws Exception {
         for (int i = 0; i < 20; ++i) {
             Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
-            CausalSimulator cd = new CausalSimulator(new LogootFactory());
+            CausalSimulator cd = new CausalSimulator(new LogootFactory<Character>());
 
             cd.run(trace, false);
         }    
@@ -100,10 +101,18 @@ public class IntegrationLogoot {
     @Test
     public void testLogootRandom() throws Exception {
         Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
-        CausalSimulator cd = new CausalSimulator(new LogootFactory());
+        CausalSimulator cd = new CausalSimulator(new LogootFactory<Character>());
 
         assertConsistency(cd, trace);  
         assertGoodViewLength(cd);
     }
     
+    @Test
+    public void testLogootRandomDiff() throws Exception {
+        Trace trace = new RandomTrace(4, RandomTrace.FLAT, StandardDiffProfile.BASIC, 0.1, 10, 3.0, 13);
+        CausalSimulator cd = new CausalSimulator(new LogootFactory<String>());
+
+        assertConsistency(cd, trace);  
+        assertGoodViewLength(cd);
+    }
 }

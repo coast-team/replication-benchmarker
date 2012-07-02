@@ -18,26 +18,30 @@
  */
 package crdt.simulator.random;
 
-import crdt.CRDT;
-import jbenchmarker.core.Operation;
 import collect.VectorClock;
-import crdt.simulator.random.OperationProfile;
+import crdt.CRDT;
+import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
+import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  * A profile that generates operation.
+ * T is either a character or a string 
  * @author urso
  */
-public abstract class SequenceOperationProfile implements OperationProfile {
+public abstract class SequenceOperationProfile<T> implements OperationProfile {
+    protected final RandomGauss r = new RandomGauss();
 
     abstract public SequenceOperation.OpType nextType();
     
-    abstract public int nextPosition(int length);
+    public int nextPosition(int length) {
+       return (int) (length*r.nextDouble());
+    }
     
-    abstract public String nextContent();
+    abstract public List<T> nextContent();
 
     abstract public int nextOffset(int position, int l);
 
@@ -47,13 +51,10 @@ public abstract class SequenceOperationProfile implements OperationProfile {
 
         int l = replica.viewLength();
         int position = nextPosition(l);
+        OpType type = (l == 0) ? OpType.ins : nextType();
+        int offset = (type == OpType.ins) ? 0 : nextOffset(position, l);
+        List<T> content = (type == OpType.del) ? null : nextContent(); 
 
-        if (l == 0 || nextType() == OpType.ins) {
-            String content = nextContent();
-            return SequenceOperation.insert(crdt.getReplicaNumber(), position, content, vectorClock);
-        } else {
-            int offset = nextOffset(position, l);
-            return SequenceOperation.delete(crdt.getReplicaNumber(), position, offset, vectorClock);
-        }
+        return new SequenceOperation<T>(type, crdt.getReplicaNumber(), position, offset, content, vectorClock);
     }
 }

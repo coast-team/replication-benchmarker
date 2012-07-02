@@ -4,10 +4,7 @@
  */
 package jbenchmarker.logoot;
 
-import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.Operation;
-import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.*;
 
 /**
  * Logoot document for counting concurrent deletes. 
@@ -33,7 +30,7 @@ public class LogootCounter extends LogootDocument {
         LogootIdentifier idToSearch = lg.getIdentifiant();
         int pos = dicho(idToSearch);
         //Insertion et Delete
-        if ((lg.getType() == SequenceOperation.OpType.del) && !getId(pos).equals(idToSearch)) {
+        if ((lg.getType() == SequenceMessage.MessageType.ins) && !getId(pos).equals(idToSearch)) {
             count++;
         }
         super.apply(op);

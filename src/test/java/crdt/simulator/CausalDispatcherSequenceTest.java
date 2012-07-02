@@ -9,6 +9,7 @@ import crdt.Factory;
 import crdt.PreconditionException;
 import jbenchmarker.factories.*;
 import crdt.simulator.random.OperationProfile;
+import crdt.simulator.random.StandardDiffProfile;
 import crdt.simulator.random.StandardSeqOpProfile;
 import java.io.IOException;
 import jbenchmarker.core.Operation;
@@ -94,5 +95,10 @@ public class CausalDispatcherSequenceTest {
         for (Factory<CRDT> sf : s) {
             CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
         }
+    }
+    
+    @Test
+    public void testLogootUpdate() throws IncorrectTraceException, PreconditionException, IOException {
+        CausalDispatcherSetsAndTreesTest.testRun((Factory) new LogootFactory<String>(), 1000, 20, StandardDiffProfile.SMALL);
     }
 }

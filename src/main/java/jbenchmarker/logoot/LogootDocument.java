@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 
 /**
@@ -104,7 +105,7 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         LogootIdentifier idToSearch = lg.getIdentifiant();
         int pos = dicho(idToSearch);
         //Insertion et Delete
-        if (lg.getType() == SequenceOperation.OpType.ins) {
+        if (lg.getType() == SequenceMessage.MessageType.ins) {
             idTable.add(pos, idToSearch);
             document.add(pos, (T) lg.getContent());
         } else if (idTable.get(pos).equals(idToSearch)) {

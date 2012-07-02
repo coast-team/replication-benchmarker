@@ -26,21 +26,21 @@ import jbenchmarker.core.SequenceOperation.OpType;
  *
  * @author mehdi urso
  */
-public class LogootOperation<T> extends SequenceMessage
-{
-
-    final private LogootIdentifier identif;
+public class LogootOperation<T> extends SequenceMessage {
     
+    final private LogootIdentifier identif;
     final private T content;
+    final private MessageType type;
 
-    private LogootOperation(SequenceOperation o, LogootIdentifier identif, T content) {
+    private LogootOperation(SequenceOperation o, MessageType type, LogootIdentifier identif, T content) {
         super(o);
+        this.type = type;
         this.identif = identif;
         this.content = content;
     }
     
-    public OpType getType() {
-        return this.getOriginalOp().getType();
+    public MessageType getType() {
+        return this.type;
     }
 
     public LogootIdentifier getIdentifiant() {
@@ -52,17 +52,17 @@ public class LogootOperation<T> extends SequenceMessage
     }
 
     static <T> LogootOperation insert(SequenceOperation o, LogootIdentifier idf, T cont) {
-        return new LogootOperation(o, idf, cont);
+        return new LogootOperation(o, MessageType.ins, idf, cont);
     }
 
     public static LogootOperation Delete(SequenceOperation o, LogootIdentifier idf) {
-        return new LogootOperation(o, idf, (char) 0);
+        return new LogootOperation(o, MessageType.del, idf, null);
     }
 
     // FIXME: shoud clone the operation and its parameters
     @Override
     public SequenceMessage clone() {
-        return new LogootOperation(this.getOriginalOp(), this.identif.clone(), this.content);
+        return new LogootOperation(this.getOriginalOp(), type, this.identif.clone(), this.content);
     }
 
 }

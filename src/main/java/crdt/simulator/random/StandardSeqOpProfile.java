@@ -18,25 +18,24 @@
  */
 package crdt.simulator.random;
 
-import crdt.simulator.random.SequenceOperationProfile;
-import crdt.CRDT;
-import jbenchmarker.core.Operation;
-import jbenchmarker.core.Document;
-import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.sim.RandomGauss;
+import java.util.LinkedList;
+import java.util.List;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  * A profile that generates operation.
  * @author urso
  */
-public class StandardSeqOpProfile extends SequenceOperationProfile {
+public class StandardSeqOpProfile extends SequenceOperationProfile<Character> {
  
     private final double perIns, perBlock, sdvBlockSize;
     private final int avgBlockSize;
-    private final RandomGauss r;
 
+    static final public StandardSeqOpProfile BASIC = new StandardSeqOpProfile(0.8, 0.1, 50, 5.0);
+    static final public StandardSeqOpProfile WITHOUT_BLOCK = new StandardSeqOpProfile(0.8, 0, 0, 0);
+    static final public StandardSeqOpProfile ONLY_BLOCK = new StandardSeqOpProfile(0.8, 1, 50, 5.0);
+    static final public StandardSeqOpProfile ALL_INS  = new StandardSeqOpProfile(1, 0.1, 50, 5.0);
+    
     /**
      * Constructor of profile
      * @param perIns  percentage of ins vs del operation 
@@ -49,7 +48,6 @@ public class StandardSeqOpProfile extends SequenceOperationProfile {
         this.perBlock = perBlock;
         this.avgBlockSize = avgBlockSize;
         this.sdvBlockSize = sdvBlockSize;
-        this.r = new RandomGauss();
     }
 
     @Override
@@ -58,21 +56,15 @@ public class StandardSeqOpProfile extends SequenceOperationProfile {
     }
     
     @Override
-    public int nextPosition(int length) {
-       return (int) (length*r.nextDouble());
-    }
-    
-    @Override
-    public String nextContent() {
+    public List<Character> nextContent() {
         int length = (r.nextDouble() < perBlock) ? 
                      (int) r.nextLongGaussian(avgBlockSize, sdvBlockSize) : 1;
-        StringBuilder s = new StringBuilder();
+        List<Character> s = new LinkedList<Character>();
         for (int i = 0; i < length; i++) {
-            s.append((char) ('a' + r.nextInt(26)));
+            s.add((char) ('a' + r.nextInt(26)));
         }
-        return s.toString();
+        return s;
     }
-
 
     @Override
     public int nextOffset(int position, int l) {

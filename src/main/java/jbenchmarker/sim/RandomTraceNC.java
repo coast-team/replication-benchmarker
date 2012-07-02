@@ -25,6 +25,7 @@ import java.util.NavigableSet;
 import java.util.Random;
 import java.util.Set;
 import collect.VectorClock;
+import crdt.simulator.random.RandomGauss;
 import jbenchmarker.core.SequenceOperation;
 
 /**
