@@ -129,17 +129,23 @@ public class CausalSimulator extends Simulator {
         while (it.hasMoreElements()) {
             tour++;
             final TraceOperation opt = it.nextElement();
+
+System.out.println(opt);            
             
             final int r = opt.getReplica();
-            CRDT a = this.getReplicas().get(r);
-            if (a == null) {
-                a = this.newReplica(r);
+              
+
+            CRDT localReplica = this.getReplicas().get(r);
+            if (localReplica == null) {
+                localReplica = this.newReplica(r);
                 clocks.put(r, new VectorClock());
                 genHistory.put(r, new ArrayList<CRDTMessage>());
                 history.put(r, new ArrayList<TraceOperation>());
             }
             
-            
+System.out.println("--- BEFORE ---"); 
+System.out.println(localReplica.lookup());  
+
             // For testing can be removed
             // causalCheck(opt, clocks);
             
@@ -163,7 +169,7 @@ public class CausalSimulator extends Simulator {
                     CRDTMessage op = genHistory.get(e).get(t.getVectorClock().get(e) - 1);
                     CRDTMessage optime = op.clone();
                     tmp = System.nanoTime();
-                    a.applyRemote(optime);
+                    localReplica.applyRemote(optime);
                     long after = System.nanoTime(); 
                     remoteSum += (after - tmp);
                     if (detail) {
@@ -174,7 +180,7 @@ public class CausalSimulator extends Simulator {
                     vc.inc(e);
                 }
             }
-            Operation op = opt.getOperation(a);
+            Operation op = opt.getOperation(localReplica);
             history.get(r).add(opt);
             orderTrace.put(opt, numTrace++);
 
@@ -183,7 +189,7 @@ public class CausalSimulator extends Simulator {
             }
             tmp = System.nanoTime();
             
-            final CRDTMessage m = a.applyLocal(op);
+            final CRDTMessage m = localReplica.applyLocal(op);
             long after = System.nanoTime(); 
             localSum += (after - tmp);
             if (detail) {
@@ -194,12 +200,13 @@ public class CausalSimulator extends Simulator {
             nbLocal++;
             final CRDTMessage msg = m.clone();
             
+System.out.println("--- AFTER ---"); 
+System.out.println(localReplica.lookup());  
+            
             genHistory.get(r).add(msg);
             clocks.get(r).inc(r);
             globalClock.inc(r);
-           ifSerializ();
-           
-           
+            ifSerializ();      
         }
         ifSerializ();
         
