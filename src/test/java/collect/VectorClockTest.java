@@ -16,9 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.core;
+package collect;
 
-import collect.VectorClock;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -72,8 +71,19 @@ public class VectorClockTest {
      * Test of greaterThan method, of class VectorClock.
      */
     @Test
-    public void testGreaterThan() {
+    public void testGreaterThanSame() {
         System.out.println("greaterThan");
+        VectorClock O = new VectorClock();
+        VectorClock V = new VectorClock();
+        
+        O.put(2, 1); 
+        V.put(2, 2);
+        assertFalse(O.greaterThan(V));
+        assertTrue(V.greaterThan(O));
+    }
+        
+    @Test
+    public void testGreaterThan() {
         VectorClock O = new VectorClock();
         VectorClock V = new VectorClock();
         

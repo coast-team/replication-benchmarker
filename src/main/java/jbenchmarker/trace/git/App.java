@@ -57,6 +57,7 @@ public class App {
         CouchTrace couchTrace = new CouchTrace(commitCRUD, patchCRUD);
         CausalSimulator cd = new CausalSimulator(new LogootFactory<String>());
         cd.run(couchTrace, false);
+        System.out.println(cd.replicas.get(1).lookup());
     }
 }
 // git : 967 authors, 30000 commits: Total time: 5:46:52.821s 

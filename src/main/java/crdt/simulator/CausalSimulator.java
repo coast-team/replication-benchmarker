@@ -128,23 +128,16 @@ public class CausalSimulator extends Simulator {
         genHistory = new HashMap<Integer, List<CRDTMessage>>();
         while (it.hasMoreElements()) {
             tour++;
-            final TraceOperation opt = it.nextElement();
-
-System.out.println(opt);            
-            
-            final int r = opt.getReplica();
-              
-
+            final TraceOperation opt = it.nextElement();                      
+            final int r = opt.getReplica();             
             CRDT localReplica = this.getReplicas().get(r);
+            
             if (localReplica == null) {
                 localReplica = this.newReplica(r);
                 clocks.put(r, new VectorClock());
                 genHistory.put(r, new ArrayList<CRDTMessage>());
                 history.put(r, new ArrayList<TraceOperation>());
-            }
-            
-System.out.println("--- BEFORE ---"); 
-System.out.println(localReplica.lookup());  
+            } 
 
             // For testing can be removed
             // causalCheck(opt, clocks);
@@ -182,7 +175,9 @@ System.out.println(localReplica.lookup());
             }
             Operation op = opt.getOperation(localReplica);
             history.get(r).add(opt);
-            orderTrace.put(opt, numTrace++);
+            if (detail) {
+                orderTrace.put(opt, numTrace++);
+            }
 
             if (writer != null) {
                 storeOp(writer, op);
@@ -198,10 +193,7 @@ System.out.println(localReplica.lookup());
                 remoteTime.add(0L);
             }
             nbLocal++;
-            final CRDTMessage msg = m.clone();
-            
-System.out.println("--- AFTER ---"); 
-System.out.println(localReplica.lookup());  
+            final CRDTMessage msg = m.clone(); 
             
             genHistory.get(r).add(msg);
             clocks.get(r).inc(r);
@@ -251,7 +243,6 @@ System.out.println(localReplica.lookup());
         if (writer != null) {
             writer.close();
         }
-        
     }
 
     public static void insertCausalOrder(List<TraceOperation> concurrentOps, TraceOperation opt) {

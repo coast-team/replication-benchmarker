@@ -42,8 +42,9 @@ public class RandomOperation extends TraceOperation {
     @Override
     public Operation getOperation(CRDT replica) {
         return opp.nextOperation(replica, getVectorClock());
-    }
-      @Override
+    }      
+    
+    @Override
     public Operation clone() {
         try {
             return (Operation) super.clone();

@@ -21,7 +21,7 @@ public class GitOperation extends TraceOperation {
     SequenceOperation<String> sop;
         
     public GitOperation(FileEdition f, Edition e, int replica, VectorClock VC) {
-        super(replica, VC);
+        super(replica, new VectorClock(VC));
         SequenceOperation.OpType type;
         switch (e.getType()) {
         case DELETE: 

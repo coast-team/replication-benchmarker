@@ -5,13 +5,17 @@
 package jbenchmarker.trace.git;
 
 import collect.VectorClock;
+import crdt.CRDT;
 import crdt.simulator.Trace;
 import crdt.simulator.TraceOperation;
 import java.util.*;
+import jbenchmarker.core.Operation;
+import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.trace.git.model.Commit;
 import jbenchmarker.trace.git.model.Edition;
 import jbenchmarker.trace.git.model.FileEdition;
 import jbenchmarker.trace.git.model.Patch;
+import org.eclipse.jgit.diff.RawText;
 import org.ektorp.CouchDbConnector;
 
 /**
@@ -43,57 +47,55 @@ public class CouchTrace implements Trace {
     }
 
     class Walker implements Enumeration<TraceOperation> {
-
+  
         private LinkedList<Commit> pendingCommit;
-        private Iterator<Commit> startingCommit;
-        private Iterator<String> currentChild;
-        private String nextChild;
-        private Iterator<FileEdition> currentFile;
-        private Iterator<Edition> currentEdition;
+        private LinkedList<Commit> startingCommit;
+        private LinkedList<String> children;
+        private LinkedList<FileEdition> files;
+        private LinkedList<Edition> editions;
         private FileEdition fileEdit;
         private Commit commit;
         private VectorClock currentVC;
         private HashMap<String, VectorClock> startVC = new HashMap<String, VectorClock>();
-        private HashSet<String> allreadyGenerated = new HashSet<String>();
+        private HashSet<String> mergeCommit = new HashSet<String>();
         private boolean init = true;
         
         public Walker() {
-            startingCommit = initCommit.iterator();
+            startingCommit = new LinkedList<Commit>(initCommit);
             pendingCommit = new LinkedList<Commit>(initCommit);
         }
 
         @Override
         public boolean hasMoreElements() {
-            return (currentEdition != null && currentEdition.hasNext()) 
-                    || (currentFile != null && currentFile.hasNext()) 
-                    || (nextChild != null) 
-                    || (pendingCommit.size() > 0);
+            return (editions != null && !editions.isEmpty()) 
+                    || (files != null && !files.isEmpty()) 
+                    || (children != null && !children.isEmpty()) 
+                    || (!pendingCommit.isEmpty());
         }
 
         @Override
         public TraceOperation nextElement() {
             TraceOperation op = null;
             while (op == null) {
-                if (currentEdition != null && currentEdition.hasNext()) {
-                    Edition e = currentEdition.next();
+                if (editions != null && !editions.isEmpty()) {
+                    Edition e = editions.pollFirst();
                     currentVC.inc(commit.getReplica());
                     op = new GitOperation(fileEdit, e, commit.getReplica(), currentVC);
-                } else if (currentFile != null && currentFile.hasNext()) {
-                    fileEdit = currentFile.next();
-                    currentEdition = fileEdit.getListDiff().iterator();
-                } else if (nextChild != null) {
-                    Patch p = patchCRUD.get(nextChild + commit.getId());
-                    currentFile = p.getListEdit().iterator();
-                    nextChild = nextNotGenerated();
+                } else if (files != null && !files.isEmpty()) {
+                    fileEdit = files.pollFirst();
+                    editions = new LinkedList<Edition>(fileEdit.getListDiff());
+                } else if (children != null && !children.isEmpty()) {
+                    Patch p = patchCRUD.get(children.pollFirst() + commit.getId());
+                    files = new LinkedList<FileEdition>(p.getListEdit());
                 } else if (init) {
                     if (commit != null) {
                         startVC.put(commit.getId(), currentVC);
                     }
-                    if (startingCommit.hasNext()) {
+                    if (!startingCommit.isEmpty()) {
                         // Treat content of commit without parent
-                        commit = startingCommit.next();
+                        commit = startingCommit.pollFirst();
                         Patch p = patchCRUD.get(commit.patchId());
-                        currentFile = p.getListEdit().iterator();
+                        files = new LinkedList<FileEdition>(p.getListEdit());
                         currentVC = new VectorClock(); 
                     } else {
                         init = false;
@@ -103,7 +105,7 @@ public class CouchTrace implements Trace {
                     if (commit != null) {
                         // Adds children to pending commits
                         for (int i = 0; i < commit.childrenCount(); ++i) {
-                            Commit child = addIfNotPresent(commit.getChildren().get(i));
+                            Commit child = foundPending(commit.getChildren().get(i));
                             VectorClock vc = startVC.get(child.getId());
 
                             child.getParents().remove(commit.getId());
@@ -122,8 +124,7 @@ public class CouchTrace implements Trace {
                             pendingCommit.addLast(candidate);
                         } else {
                             commit = candidate;
-                            currentChild = commit.getChildren().iterator();
-                            nextChild = nextNotGenerated();
+                            pureChildren(commit.getChildren());
                             currentVC = startVC.get(commit.getId());
                         }                   
                     } else throw new NoSuchElementException("No more operation");
@@ -133,30 +134,36 @@ System.out.println(commit);
             return op;
         }
 
-        private Commit addIfNotPresent(String childId) {
-            Commit child = null;
+        private Commit foundPending(String childId) {
             for (Commit c : pendingCommit) {
                 if (c.getId().equals(childId)) {
-                    child = c;
+                    return c;
                 }
             }
-            if (child == null) {
-                child = commitCRUD.get(childId);
-                pendingCommit.addLast(child);
-            }
-            return child;
+            return null;
         }
 
-        private String nextNotGenerated() {
-            String next = null;
-            while (next == null && currentChild.hasNext()) {
-                String child = currentChild.next();
-                if (!allreadyGenerated.contains(child)) {
-                    next = child;
-                    allreadyGenerated.add(next);
+        /**
+         * Add to children only id which are not merge.
+         * Add unknown child to pending. Identify merge commit.
+         */ 
+        private void pureChildren(List<String> childrenId) {
+            children = new LinkedList<String>(childrenId);
+            Iterator<String> it = children.iterator();
+            while (it.hasNext()) {
+                String cid = it.next();
+                Commit child = foundPending(cid);
+                if (child == null) {
+                    child = commitCRUD.get(cid);
+                    if (child.parentCount() > 1) {
+                        mergeCommit.add(cid);
+                    }
+                    pendingCommit.addLast(child);
+                }
+                if (mergeCommit.contains(cid)) {
+                    it.remove();
                 }
             }
-            return next;
         }
     }
     
