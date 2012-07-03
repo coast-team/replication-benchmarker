@@ -25,6 +25,8 @@ import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
 import crdt.simulator.CausalSimulator;
+import crdt.simulator.random.StandardDiffProfile;
+import jbenchmarker.factories.LogootFactory;
 import static jbenchmarker.factories.WootFactories.WootHFactory;
 import jbenchmarker.trace.TraceGenerator;
 import org.junit.Test;
@@ -110,6 +112,15 @@ public class IntegrationWOOTH {
         
         assertConsistency(cd, trace);
         assertGoodViewLength(cd);
+    }
+        
+    @Test
+    public void testWootHRandomDiff() throws Exception {
+        Trace trace = new RandomTrace(420, RandomTrace.FLAT, StandardDiffProfile.BASIC, 0.1, 10, 3.0, 13);
+        CausalSimulator cd = new CausalSimulator(new WootHFactory());
+
+        assertConsistency(cd, trace);  
+        //assertGoodViewLength(cd);
     }
     
     @Test

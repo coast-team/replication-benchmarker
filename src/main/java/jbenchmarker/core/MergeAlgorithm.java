@@ -181,7 +181,9 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
      * Default behavior of localUpdate is to throw IncorrectTraceException.
      */
     protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
-        throw new IncorrectTraceException("Unsupported operation " + opt);
+        List<SequenceMessage> lop = localDelete(opt);
+        lop.addAll(localInsert(opt));
+        return lop;
     }
     
     /**

@@ -24,6 +24,7 @@ import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;
+import jbenchmarker.woot.WootPosition;
 
 /**
  *
@@ -146,11 +147,12 @@ public class WootHashDocument<T> implements Document {
     }
     
     public WootOperation delete(SequenceOperation o, WootIdentifier id) {
-        return new WootOperation(o, id);
+        return new WootOperation(o, SequenceOperation.OpType.del, id, null);
     }
     
     public WootOperation insert(SequenceOperation o, WootIdentifier ip, WootIdentifier in, T content) {
-        return new WootOperation(o, nextIdentifier(), ip, in, content);
+        return new WootOperation(o, SequenceOperation.OpType.ins, 
+                new WootPosition(nextIdentifier(), ip, in), content);
     }
 
     private void insertBetween(WootHashNode wn, WootHashNode ip, WootHashNode in) {

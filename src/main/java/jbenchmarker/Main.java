@@ -35,6 +35,7 @@ import java.io.PrintWriter;
 import java.util.Hashtable;
 import java.util.Iterator;
 import jbenchmarker.trace.TraceGenerator;
+import jbenchmarker.trace.git.GitTrace;
 
 /**
  *
@@ -49,7 +50,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        if (args.length < 3 || args.length > 5) {
+        if (args.length < 2 || args.length > 5) {
             System.err.println("Arguments : Factory Trace [nb_exec [thresold]]");
             System.err.println("- Factory : a jbenchmaker.core.ReplicaFactory implementation ");
             System.err.println("- Trace : a xml file of a trace ");
@@ -62,13 +63,17 @@ public class Main {
         Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[0]).newInstance();
         int nbExec = (args.length > 2) ? Integer.valueOf(args[2]) : 1;
         int nb = (nbExec > 1) ? nbExec + 1 : nbExec;
-        double thresold = (args.length > 3) ? Double.valueOf(args[3]) : 2.0;
+        double thresold = (args.length > 2) ? Double.valueOf(args[3]) : 2.0;
+        int nbrTrace = (args.length > 3) ? Integer.valueOf(args[4]) : 0;
         long ltime[][] = null, mem[][] = null, rtime[][] = null;
         int cop = 0, uop = 0, nbReplica = 0, mop = 0;
         long st = System.currentTimeMillis();
         for (int ex = 0; ex < nbExec; ex++) {
             System.out.println("execution ::: " + ex);
-            Trace trace = TraceGenerator.traceFromXML(args[1], 1);
+//            Trace trace = TraceGenerator.traceFromXML(args[1], 1);
+        GitTrace trace = GitTrace.create("/Users/urso/Rech/github/git", "http://localhost:5984", "Makefile", false);
+//        GitTrace trace = GitTrace.create("/Users/urso/Rech/github/linux", "http://localhost:5984", "MAINTAINERS", false);
+
             CausalSimulator cd = new CausalSimulator(rf);
             /*
              * trace : trace xml
@@ -76,7 +81,10 @@ public class Main {
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.runWithMemory(trace, Integer.valueOf(args[4]), true, true);//0 sans serialisation
+            cd.runWithMemory(trace, nbrTrace, true, true);//0 sans serialisation
+
+            System.out.println("nb replica : " + cd.replicas.size() + ", nb operation : " + cd.getNbLocal());
+            
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();

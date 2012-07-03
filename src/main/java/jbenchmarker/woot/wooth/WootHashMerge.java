@@ -46,30 +46,38 @@ public class WootHashMerge<T> extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
         WootHashDocument wdoc = this.getDoc();
         int p = opt.getPosition();
-        if (opt.getType() == SequenceOperation.OpType.del) {
-            WootHashNode w = wdoc.getVisible(p);
-            for (int i = 0; i < opt.getNumberOf(); i++) {
-                WootOperation wop = wdoc.delete(opt, w.getId());
-                lop.add(wop);
-                wdoc.apply(wop);
-                if (i+1 < opt.getNumberOf()) w = wdoc.nextVisible(w);
-            }         
-        } else {
-           WootHashNode ip = wdoc.getPrevious(p), in = wdoc.getNext(ip);
-           WootIdentifier idp =  ip.getId(), idn =  in.getId();
-           for (int i = 0; i < opt.getContent().size(); i++) {
-                WootOperation wop = wdoc.insert(opt, idp, idn, opt.getContent().get(i));
-                idp = wop.getId();
-                lop.add(wop);
-                wdoc.apply(wop);
-           } 
+        WootHashNode w = wdoc.getVisible(p);
+        for (int i = 0; i < opt.getNumberOf(); i++) {
+            WootOperation wop = wdoc.delete(opt, w.getId());
+            lop.add(wop);
+            wdoc.apply(wop);
+            if (i + 1 < opt.getNumberOf()) {
+                w = wdoc.nextVisible(w);
+            }
         }
         return lop;
     }
+
+    @Override
+    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+        List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
+        WootHashDocument wdoc = this.getDoc();
+        int p = opt.getPosition();
+        WootHashNode ip = wdoc.getPrevious(p), in = wdoc.getNext(ip);
+        WootIdentifier idp = ip.getId(), idn = in.getId();
+        for (int i = 0; i < opt.getContent().size(); i++) {
+            WootOperation wop = wdoc.insert(opt, idp, idn, opt.getContent().get(i));
+            idp = wop.getId();
+            lop.add(wop);
+            wdoc.apply(wop);
+        }
+        return lop;
+    }
+
 
     @Override
     public WootHashDocument getDoc() {

@@ -29,7 +29,7 @@ import jbenchmarker.woot.wooto.*;
  *
  * @author urso
  */
-public class WootFactories {
+public class WootFactories extends ReplicaFactory {
     public static class WootFactory extends ReplicaFactory {
         public MergeAlgorithm create(int r) {
             return new WootMerge(new WootOriginalDocument(), r);
@@ -47,4 +47,10 @@ public class WootFactories {
             return new WootMerge(new WootOptimizedDocument(), r);
         }
     }
+         
+    @Override
+    public MergeAlgorithm create(int r) {
+        return new WootHashMerge(new WootHashDocument(), r);
+    }
+    
 }

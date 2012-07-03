@@ -8,6 +8,7 @@ import collect.VectorClock;
 import crdt.CRDT;
 import crdt.simulator.Trace;
 import crdt.simulator.TraceOperation;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
@@ -22,20 +23,66 @@ import org.eclipse.jgit.diff.DiffAlgorithm;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.diff.RawTextComparator;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.CouchDbInstance;
+import org.ektorp.DbPath;
+import org.ektorp.http.HttpClient;
+import org.ektorp.http.StdHttpClient;
+import org.ektorp.impl.StdCouchDbConnector;
+import org.ektorp.impl.StdCouchDbInstance;
 
 /**
  *
  * @author urso
  */
-public class CouchTrace implements Trace {
+public class GitTrace implements Trace {
     private CommitCRUD commitCRUD;
     private PatchCRUD patchCRUD;  
     private List<Commit> initCommit;
     private final DiffAlgorithm diffAlgorithm;
         
+    /**
+     * Creates a git extractor using a git directory a couch db URL and a file path 
+     * @param gitdir directory that contains ".git"
+     * @param couchURL URL of couch BD 
+     * @param path a path in the gir repository 
+     * @param clean if true recreates db
+     * @return a new git extractor
+     * @throws IOException if git directory not accessible
+     */
+    public static GitTrace create(String gitdir, String couchURL, String path, boolean cleanDB) throws IOException {
+        FileRepositoryBuilder builder = new FileRepositoryBuilder();
+        Repository repo = builder.setGitDir(new File(gitdir + "/.git")).readEnvironment() 
+                .findGitDir().build();
+
+        HttpClient httpClient = new StdHttpClient.Builder().url(couchURL).build();
+        CouchDbInstance dbInstance = new StdCouchDbInstance(httpClient);
+        String prefix = clearName(gitdir, path), 
+                co = prefix + "_commit", pa = prefix + "_patch";
+        CouchDbConnector dbcc = new StdCouchDbConnector(co, dbInstance); 
+        CouchDbConnector dbcp = new StdCouchDbConnector(pa, dbInstance);
+        CommitCRUD commitCRUD;
+        PatchCRUD patchCRUD;    
+
+        if (cleanDB || !dbInstance.checkIfDbExists(new DbPath(co)) 
+                || !dbInstance.checkIfDbExists(new DbPath(pa))) {
+            clearDB(dbInstance, co);
+            clearDB(dbInstance, pa);
+            commitCRUD = new CommitCRUD(dbcc);
+            patchCRUD = new PatchCRUD(dbcp);
+            GitExtraction ge = new GitExtraction(repo, commitCRUD, patchCRUD, GitExtraction.defaultDiffAlgorithm, path);
+            ge.parseRepository();
+        } else {
+            commitCRUD = new CommitCRUD(dbcc);
+            patchCRUD = new PatchCRUD(dbcp);    
+        }        
+        return new GitTrace(commitCRUD, patchCRUD);
+    }
+        
     // TODO : Working view
-    public CouchTrace(CommitCRUD dbc, PatchCRUD dbp) {
+    public GitTrace(CommitCRUD dbc, PatchCRUD dbp) {
         commitCRUD = dbc;
         patchCRUD = dbp;
         initCommit = commitCRUD.getAll();
@@ -49,7 +96,7 @@ public class CouchTrace implements Trace {
     }
 
     
-    public CouchTrace(CouchDbConnector db) {
+    public GitTrace(CouchDbConnector db) {
         this(new CommitCRUD(db), new PatchCRUD(db));
     }
     
@@ -90,7 +137,7 @@ public class CouchTrace implements Trace {
                             first = nextElement().getOperation(replica);
                         }
                     } catch (IOException ex) {
-                        Logger.getLogger(CouchTrace.class.getName()).log(Level.SEVERE, "During merge correction computation", ex);
+                        Logger.getLogger(GitTrace.class.getName()).log(Level.SEVERE, "During merge correction computation", ex);
                     }
                 }            
                 return first;
@@ -229,5 +276,18 @@ public class CouchTrace implements Trace {
     @Override
     public Enumeration<TraceOperation> enumeration() {
         return new Walker();
+    }
+        
+    public static void clearDB(CouchDbInstance dbInstance, String path) {
+        if (dbInstance.checkIfDbExists(new DbPath(path))) {
+            dbInstance.deleteDatabase(path);
+        }
+    }
+    
+    public static String clearName(String gitdir, String path) {
+        String []d = gitdir.split("/");
+        gitdir = d[d.length-1];
+        path = path.replaceAll("[^a-zA-Z0-9]", "");
+        return gitdir + "_" + path;
     }
 }

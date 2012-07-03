@@ -18,6 +18,8 @@
  */
 package jbenchmarker.woot.wooth;
 
+import crdt.CRDTMessage;
+import crdt.PreconditionException;
 import crdt.simulator.IncorrectTraceException;
 import java.util.List;
 import jbenchmarker.core.SequenceMessage;
@@ -41,35 +43,34 @@ public class WootHMergeTest {
     }
      
     /**
-     * Test of generateLocal method, of class WootHashMerge.
+     * Test of applyLocal method, of class WootHashMerge.
      */
     @Test
-    public void testGenerateLocal() throws IncorrectTraceException {
-        System.out.println("generateLocal");
+    public void testapplyLocal() throws IncorrectTraceException, PreconditionException {
+        System.out.println("applyLocal");
         WootHashMerge instance = new WootHashMerge(new WootHashDocument(), 1);
-        
-        List<SequenceMessage> r = instance.generateLocal(insert(0,"a"));
+        CRDTMessage r = instance.applyLocal(insert(0,"a"));
         assertEquals(1, r.size());
-        assertEquals('a', ((WootOperation) r.get(0)).getContent());
+        assertEquals('a', ((WootOperation) r).getContent());
         assertEquals("a", instance.lookup());        
 
-        r = instance.generateLocal(insert(0,"bc"));
+        r = instance.applyLocal(insert(0,"bc"));
         assertEquals(2, r.size());
         assertEquals("bca", instance.lookup());         
 
-        r = instance.generateLocal(delete(0,1));
+        r = instance.applyLocal(delete(0,1));
         assertEquals(1, r.size());
         assertEquals("ca", instance.lookup()); 
 
-        r = instance.generateLocal(insert(1,"efg"));
+        r = instance.applyLocal(insert(1,"efg"));
         assertEquals(3, r.size());
         assertEquals("cefga", instance.lookup()); 
 
-        r = instance.generateLocal(delete(1,2));
+        r = instance.applyLocal(delete(1,2));
         assertEquals(2, r.size());
         assertEquals("cga", instance.lookup()); 
 
-        r = instance.generateLocal(delete(1,2));
+        r = instance.applyLocal(delete(1,2));
         assertEquals(2, r.size());
         assertEquals("c", instance.lookup()); 
     }
@@ -78,10 +79,10 @@ public class WootHMergeTest {
      * Testing out of bound insert.
      */
     @Test(expected=NullPointerException.class)
-    public void testGenerateInsIncorrect() throws IncorrectTraceException {
+    public void testGenerateInsIncorrect() throws IncorrectTraceException, PreconditionException {
         WootHashMerge instance = new WootHashMerge(new WootHashDocument(), 1);
         
-        instance.generateLocal(insert(10,"a"));
+        instance.applyLocal(insert(10,"a"));
         fail("Out of bound insert not detected.");    
     }
     
@@ -89,18 +90,18 @@ public class WootHMergeTest {
      * Testing out of bound del.
      */
     @Test(expected=NullPointerException.class)
-    public void testGenerateDelIncorrect() throws IncorrectTraceException {
+    public void testGenerateDelIncorrect() throws IncorrectTraceException, PreconditionException {
         WootHashMerge instance = new WootHashMerge(new WootHashDocument(), 1);
         
-        instance.generateLocal(delete(0,1));
+        instance.applyLocal(delete(0,1));
         fail("Out of bound delete not detected.");    
     }
     
     
     @Test
-    public void accent() throws IncorrectTraceException {
+    public void accent() throws IncorrectTraceException, PreconditionException {
         WootHashMerge instance = new WootHashMerge(new WootHashDocument(), 1);
-        List<SequenceMessage> r = instance.generateLocal(insert(0,"à"));
+        CRDTMessage r = instance.applyLocal(insert(0,"à"));
         assertEquals(1, r.size());
     }
    

@@ -203,6 +203,7 @@ System.out.println(tour);
         // Final : applyRemote all pending remote CRDTMessage (not the best complexity)
         for (CRDT r : replicas.values()) {
             int n = r.getReplicaNumber();
+System.out.println("final : " + n); 
             concurrentOps.clear();
             VectorClock vc = clocks.get(n);
             for (Entry<Integer, Integer> e : globalClock.entrySet()) {

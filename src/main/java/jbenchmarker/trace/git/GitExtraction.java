@@ -1,19 +1,22 @@
 package jbenchmarker.trace.git;
 
-import jbenchmarker.trace.git.model.Patch;
-import jbenchmarker.trace.git.model.FileEdition;
-import jbenchmarker.trace.git.model.Edition;
-import jbenchmarker.trace.git.model.Commit;
 import collect.HashMapSet;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import jbenchmarker.trace.git.model.Commit;
+import jbenchmarker.trace.git.model.Edition;
+import jbenchmarker.trace.git.model.FileEdition;
+import jbenchmarker.trace.git.model.Patch;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import static org.eclipse.jgit.diff.DiffEntry.Side.NEW;
 import static org.eclipse.jgit.diff.DiffEntry.Side.OLD;
 import org.eclipse.jgit.diff.*;
-import org.eclipse.jgit.errors.*;
+import org.eclipse.jgit.errors.AmbiguousObjectException;
+import org.eclipse.jgit.errors.CorruptObjectException;
+import org.eclipse.jgit.errors.LargeObjectException;
+import org.eclipse.jgit.errors.MissingObjectException;
 import static org.eclipse.jgit.lib.FileMode.GITLINK;
 import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.patch.FileHeader;
@@ -21,12 +24,19 @@ import org.eclipse.jgit.patch.FileHeader.PatchType;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevSort;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.storage.pack.PackConfig;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.CouchDbInstance;
+import org.ektorp.DbPath;
+import org.ektorp.http.HttpClient;
+import org.ektorp.http.StdHttpClient;
+import org.ektorp.impl.StdCouchDbConnector;
+import org.ektorp.impl.StdCouchDbInstance;
 import org.ektorp.support.CouchDbRepositorySupport;
 import org.ektorp.support.GenericRepository;
 
@@ -54,10 +64,11 @@ public class GitExtraction {
     private final GenericRepository<Patch> patchCrud;
     private final GenericRepository<Commit> commitCrud;
     private final Git git;   
+    private final String path;
     public static final DiffAlgorithm defaultDiffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
     
     public GitExtraction(Repository repo, CouchDbRepositorySupport<Commit> dbc,  
-            CouchDbRepositorySupport<Patch> dbp, DiffAlgorithm diffAlgorithm) {
+            CouchDbRepositorySupport<Patch> dbp, DiffAlgorithm diffAlgorithm, String path) {
         this.repository = repo;
         this.reader = repo.newObjectReader();
    	this.source = ContentSource.create(reader);
@@ -66,15 +77,12 @@ public class GitExtraction {
         this.patchCrud = dbp;
         this.commitCrud = dbc;
         this.git = new Git(repo);
+        this.path = path;
     }
     
-    public GitExtraction(Repository repo, CouchDbConnector db ) {
-        this(repo, new CommitCRUD(db), new PatchCRUD(db));
-    }
-    
-    public GitExtraction(Repository repo, CouchDbRepositorySupport<Commit> dbc,  
-            CouchDbRepositorySupport<Patch> dbp) {
-        this(repo, dbc, dbp, DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS));
+    // TODO : resolve problem of diff docuement in same DB
+    private GitExtraction(Repository repo, CouchDbConnector db ) {
+        this(repo, new CommitCRUD(db), new PatchCRUD(db), defaultDiffAlgorithm, "");
     }
     
     private byte[] getBytes(ObjectLoader ldr, ObjectId id) throws IOException {
@@ -166,11 +174,11 @@ public class GitExtraction {
     }
     
 // TODO : No parent
-    public Commit parseRepository() throws IOException, GitAPIException {
-        return parseRepository(null);
+    public Commit parseRepository() throws IOException {
+        return parseRepository(path);
     } 
         
-    public Commit parseRepository(String path) throws IOException, GitAPIException {
+    Commit parseRepository(String path) throws IOException {
         HashMap<String, String> paths = new HashMap<String, String>();
         HashMapSet<String, Integer> identifiers = new HashMapSet<String, Integer>();
         HashMapSet<String, String> children = new HashMapSet<String, String>();

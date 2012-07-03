@@ -29,40 +29,17 @@ import jbenchmarker.core.SequenceOperation.OpType;
 public class WootOperation<T> extends SequenceMessage {
     final private Cloneable identifier;   // next   
     final private T content;
-        
-    /**
-     * Constructor for insert operation
-     * @param o a trace insert
-     * @param id identifier to insert
-     * @param ip identifier of previous element
-     * @param in identifier of next element
-     * @param content content of element
-     */
-    public WootOperation(SequenceOperation o, WootIdentifier id, WootIdentifier ip, WootIdentifier in, T content) {
+    final private SequenceOperation.OpType type;
+
+    public WootOperation(SequenceOperation o, OpType type, Cloneable identifier, T content) {
         super(o);
-        this.identifier = new WootPosition(id, ip, in);
+        this.identifier = identifier;
         this.content = content;
-    }
-
-    /**
-     * Constructore for delete operation
-     * @param o a trace delete
-     * @param id identifier to delete
-     */
-    public WootOperation(SequenceOperation o, WootIdentifier id) {
-        super(o);
-        this.identifier = id;
-        this.content = null;        
-    }
-
-    private WootOperation(SequenceOperation o, Cloneable id, T content) {
-        super(o);
-        this.identifier = id;
-        this.content = content;        
+        this.type = type;
     }
     
     public OpType getType() {
-        return this.getOriginalOp().getType();
+        return type;
     }
 
     public WootIdentifier getId() {
@@ -85,7 +62,7 @@ public class WootOperation<T> extends SequenceMessage {
 
     @Override
     public SequenceMessage clone() {
-        return new WootOperation(this.getOriginalOp(), 
+        return new WootOperation(this.getOriginalOp(), type,
                 identifier instanceof WootIdentifier ? 
                 ((WootIdentifier) identifier).clone() : 
                 ((WootPosition) identifier).clone(), 
