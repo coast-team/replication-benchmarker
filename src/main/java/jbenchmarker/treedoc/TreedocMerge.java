@@ -42,30 +42,32 @@ public class TreedocMerge extends MergeAlgorithm {
 	}
 
 	@Override
-	protected List<SequenceMessage> generateLocal(SequenceOperation opt)
+        protected List<SequenceMessage> localInsert(SequenceOperation opt)
+                throws IncorrectTraceException {
+                final TreedocDocument doc = ((TreedocDocument) getDoc());
+                final List<SequenceMessage> ops = new LinkedList<SequenceMessage>();
+
+                final TreedocIdentifier id = doc.insertAt(
+                    restrictedIndex(opt.getPosition(), true), opt.getContent(), getReplicaNumber());
+                ops.add(new TreedocOperation(opt, id, opt.getContent()));
+                return ops;
+        }
+
+        @Override
+	protected List<SequenceMessage> localDelete(SequenceOperation opt)
 			throws IncorrectTraceException {
 		final TreedocDocument doc = ((TreedocDocument) getDoc());
 		final List<SequenceMessage> ops = new LinkedList<SequenceMessage>();
 
-		switch (opt.getType()) {
-		case ins:
-			final TreedocIdentifier id = doc.insertAt(
-					restrictedIndex(opt.getPosition(), true), opt.getContentAsString(), getReplicaNumber());
-			ops.add(new TreedocOperation(opt, id, opt.getContentAsString()));
-			break;
-		case del:
-			// TODO: implement batch delete more efficiently?
-			for (int i = opt.getPosition(); i < opt.getPosition()
+
+		// TODO: implement batch delete more efficiently?
+		for (int i = opt.getPosition(); i < opt.getPosition()
 					+ opt.getNumberOf(); i++) {
-				final TreedocIdentifier deletedId = doc
+			final TreedocIdentifier deletedId = doc
 						.deleteAt(restrictedIndex(i, false));
-				ops.add(new TreedocOperation(opt, deletedId));
-			}
-			break;
-		default:
-			throw new IncorrectTraceException("Unsupported operation type");
+			ops.add(new TreedocOperation(opt, deletedId));
 		}
-		return ops;
+                return ops;
 	}
 
 	protected int restrictedIndex(final int index, final boolean insert) {

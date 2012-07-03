@@ -18,6 +18,7 @@
  */
 package jbenchmarker.treedoc;
 
+import java.util.List;
 import jbenchmarker.treedoc.TreedocIdentifier.Recorder;
 
 /**
@@ -25,7 +26,7 @@ import jbenchmarker.treedoc.TreedocIdentifier.Recorder;
  * 
  * @author mzawirski
  */
-public class TreedocRoot extends TreedocNode {
+public class TreedocRoot<T> extends TreedocNode<T> {
 	private final UniqueTagGenerator tagGenerator;
 
 	public TreedocRoot(final UniqueTagGenerator tagGenerator) {
@@ -33,7 +34,7 @@ public class TreedocRoot extends TreedocNode {
 		this.tagGenerator = tagGenerator;
 	}
 
-	public void insertAt(final TreedocIdentifier id, final String content) {
+	public void insertAt(final TreedocIdentifier id, final List<T> content) {
 		findAndInsertNode(id.iterator(), content);
 	}
 
@@ -41,19 +42,19 @@ public class TreedocRoot extends TreedocNode {
 		findAndDeleteNode(id.iterator());
 	}
 
-	public TreedocIdentifier insertAt(final int index, final String content,
+	public TreedocIdentifier insertAt(final int index, final List<T> content,
 			final int replicaId) {
 		final TreedocNode newNode = new TreedocNode(
 				tagGenerator.nextTag(replicaId));
-		newNode.createBalancedSubtreeOfContent(content, 0, content.length());
+		newNode.createBalancedSubtreeOfContent(content, 0, content.size());
 		final Recorder idRecorder = new Recorder();
 		final TreedocNode precedingNode;
 		if (index == 0) {
 			precedingNode = this;
-			precedingNode.subtreeSize += content.length();
+			precedingNode.subtreeSize += content.size();
 		} else {
 			precedingNode = findNthContentAndAlterSize(new DecreasingCounter(
-					index), idRecorder, content.length());
+					index), idRecorder, content.size());
 		}
 		precedingNode.insertAfter(newNode, idRecorder);
 		return idRecorder.createIdentifier();
@@ -74,7 +75,7 @@ public class TreedocRoot extends TreedocNode {
 	public String getContent() {
 		final StringBuilder buffer = new StringBuilder(getSubtreeSize());
 		getSubtreeContent(buffer);
-		if (buffer.length() != getSubtreeSize())
+		if (content instanceof Character && buffer.length() != getSubtreeSize())
 			throw new RuntimeException("Unexpected document size: got "
 					+ buffer.length() + ", want " + getSubtreeSize());
 		return buffer.toString();

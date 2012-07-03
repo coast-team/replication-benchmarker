@@ -20,10 +20,17 @@ package jbenchmarker.sim;
 
 import crdt.CRDT;
 import crdt.simulator.CausalSimulator;
+import crdt.simulator.Trace;
+import crdt.simulator.random.RandomTrace;
+import crdt.simulator.random.StandardDiffProfile;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.treedoc.TreedocDocument;
 import jbenchmarker.factories.TreedocFactory;
+import jbenchmarker.factories.WootFactories;
+import org.junit.Test;
+
+import static jbenchmarker.sim.CausalDispatcherTest.*;
 
 /**
  * 
@@ -41,4 +48,13 @@ public class IntegrationTreedocTest extends AbstractIntegrationTest {
 		for (CRDT replica : cd.getReplicas().values())
 			((TreedocDocument) ((MergeAlgorithm) replica).getDoc()).printStats();
 	}
+        
+    @Test
+    public void testTreedocRandomDiff() throws Exception {
+        Trace trace = new RandomTrace(420, RandomTrace.FLAT, StandardDiffProfile.BASIC, 0.1, 10, 3.0, 13);
+        CausalSimulator cd = new CausalSimulator(new TreedocFactory());
+
+        assertConsistency(cd, trace);  
+        //assertGoodViewLength(cd);
+    }
 }

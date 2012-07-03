@@ -53,6 +53,6 @@ public class TreedocDocument extends TreedocRoot implements Document {
 
     @Override
     public int viewLength() {
-        return getContent().length();
+        return getSubtreeSize();
     }
 }

@@ -19,6 +19,7 @@
 package jbenchmarker.treedoc;
 
 import java.util.Iterator;
+import java.util.List;
 
 import jbenchmarker.treedoc.TreedocIdentifier.ComponentScanner;
 import jbenchmarker.treedoc.TreedocIdentifier.EdgeDirection;
@@ -32,7 +33,7 @@ import jbenchmarker.treedoc.TreedocIdentifier.Recorder;
  * 
  * @author mzawirski
  */
-class TreedocNode {
+class TreedocNode<T> {
 	// TODO: export as a setting
 	static final boolean USE_DISAMBIGUATORS_TRICK = true;
 
@@ -92,7 +93,7 @@ class TreedocNode {
 	/**
 	 * Node content, valid only if !tombstone.
 	 */
-	protected char content;
+	protected T content;
 	protected int subtreeSize;
 	protected boolean tombstone;
 	protected TreedocNode leftChildren[];
@@ -101,7 +102,7 @@ class TreedocNode {
 	/**
 	 * Creates non-empty node.
 	 */
-	protected TreedocNode(final UniqueTag uniqueTag, final char content) {
+	protected TreedocNode(final UniqueTag uniqueTag, final T content) {
 		this.uniqueTag = uniqueTag;
 		this.content = content;
 		this.subtreeSize = 1;
@@ -176,11 +177,11 @@ class TreedocNode {
 	}
 
 	protected void findAndInsertNode(
-			final Iterator<ComponentScanner> idIterator, final String content) {
-		subtreeSize += content.length();
+			final Iterator<ComponentScanner> idIterator, final List<T> content) {
+		subtreeSize += content.size();
 		if (!idIterator.hasNext()) {
 			// Fill in the last subtree on the path with the content.
-			createBalancedSubtreeOfContent(content, 0, content.length());
+			createBalancedSubtreeOfContent(content, 0, content.size());
 		} else {
 			final TreedocIdentifier.ComponentScanner component = idIterator
 					.next();
@@ -225,7 +226,7 @@ class TreedocNode {
 	 * @param length
 	 *            size of content to create.
 	 */
-	protected void createBalancedSubtreeOfContent(final String content,
+	protected void createBalancedSubtreeOfContent(final List<T> content,
 			final int begin, final int length) {
 		// Invariant: leftSubtree + rightSubtree + 1 = length
 		final int leftSubtree = (length - 1) / 2;
@@ -239,7 +240,7 @@ class TreedocNode {
 			leftChild.createBalancedSubtreeOfContent(content, begin,
 					leftSubtree);
 		}
-		this.content = content.charAt(begin + leftSubtree);
+		this.content = content.get(begin + leftSubtree);
 		this.tombstone = false;
 		if (subtreeSize != 0 && subtreeSize != length) {
 			throw new IllegalStateException(

@@ -18,6 +18,7 @@
  */
 package jbenchmarker.treedoc;
 
+import java.util.List;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
@@ -26,9 +27,17 @@ import jbenchmarker.core.SequenceOperation.OpType;
  * 
  * @author mzawirski
  */
-public class TreedocOperation extends SequenceMessage {
+public class TreedocOperation<T> extends SequenceMessage {
 	private final TreedocIdentifier id;
-	private final String content;
+	private final List<T> content;
+        private final OpType type;
+
+    public TreedocOperation(SequenceOperation o, OpType type, TreedocIdentifier id, List<T> content) {
+        super(o);
+        this.id = id;
+        this.content = content;
+        this.type = type;
+    }
 
 	/**
 	 * Creates Treedoc operation with dummy content.
@@ -40,6 +49,7 @@ public class TreedocOperation extends SequenceMessage {
 	 */
 	public TreedocOperation(final SequenceOperation o, final TreedocIdentifier id) {
 		super(o);
+                this.type = OpType.del;
 		this.id = id;
 		this.content = null; // Dummy.
 	}
@@ -55,26 +65,27 @@ public class TreedocOperation extends SequenceMessage {
 	 *            content expressed as a single character.
 	 */
 	public TreedocOperation(final SequenceOperation o, final TreedocIdentifier id,
-			final String content) {
-		super(o);
+			final List<T> content) {
+		super(o);         
+                this.type = OpType.ins;
 		this.id = id;
 		this.content = content;
 	}
 
 	public OpType getType() {
-		return getOriginalOp().getType();
+		return type;
 	}
 
 	public TreedocIdentifier getId() {
 		return id;
 	}
 
-	public String getContent() {
+	public List<T> getContent() {
 		return content;
 	}
 
 	@Override
 	public TreedocOperation clone() {
-		return new TreedocOperation(getOriginalOp(), id.clone(), content);
+		return new TreedocOperation(getOriginalOp(), type, id.clone(), content);
 	}
 }

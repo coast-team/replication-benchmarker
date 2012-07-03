@@ -18,6 +18,8 @@
  */
 package jbenchmarker.treedoc;
 
+import java.util.LinkedList;
+import java.util.List;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
@@ -42,65 +44,73 @@ public class TreedocRootTest {
 		assertEquals("", root.getContent());
 	}
 
+        void insertAt(TreedocRoot root, int p, String s, int id) {
+            List<Character> l = new LinkedList<Character>();
+            for (int i = 0; i < s.length(); ++i) {
+                l.add(s.charAt(i));
+            }
+            root.insertAt(p, l, id);
+        }
+        
 	@Test
 	public void testCreateSingle() {
-		root.insertAt(0, "a", REPLICA_ID);
+		insertAt(root, 0, "a", REPLICA_ID);
 		assertEquals(1, root.getSubtreeSize());
 		assertEquals("a", root.getContent());
 	}
 
 	@Test
 	public void testInsertAtBeginning() {
-		root.insertAt(0, "b", REPLICA_ID);
-		root.insertAt(0, "a", REPLICA_ID);
+		insertAt(root, 0, "b", REPLICA_ID);
+		insertAt(root, 0, "a", REPLICA_ID);
 		assertEquals(2, root.getSubtreeSize());
 		assertEquals("ab", root.getContent());
 	}
 
 	@Test
 	public void testInsertAtEnd() {
-		root.insertAt(0, "a", REPLICA_ID);
-		root.insertAt(1, "b", REPLICA_ID);
+		insertAt(root, 0, "a", REPLICA_ID);
+		insertAt(root, 1, "b", REPLICA_ID);
 		assertEquals(2, root.getSubtreeSize());
 		assertEquals("ab", root.getContent());
 	}
 
 	@Test
 	public void testInsertAtMiddle() {
-		root.insertAt(0, "a", REPLICA_ID);
-		root.insertAt(1, "c", REPLICA_ID);
-		root.insertAt(1, "b", REPLICA_ID);
+		insertAt(root, 0, "a", REPLICA_ID);
+		insertAt(root, 1, "c", REPLICA_ID);
+		insertAt(root, 1, "b", REPLICA_ID);
 		assertEquals("abc", root.getContent());
 	}
 
 	@Test
 	public void testInsertsDeletesInterleaved() {
-		root.insertAt(0, "a", REPLICA_ID);
-		root.insertAt(1, "b", REPLICA_ID);
-		root.insertAt(1, "c", REPLICA_ID);
+		insertAt(root, 0, "a", REPLICA_ID);
+		insertAt(root, 1, "b", REPLICA_ID);
+		insertAt(root, 1, "c", REPLICA_ID);
 		root.deleteAt(1);
-		root.insertAt(1, "e", REPLICA_ID);
+		insertAt(root, 1, "e", REPLICA_ID);
 		root.deleteAt(0);
-		root.insertAt(0, "d", REPLICA_ID);
+		insertAt(root, 0, "d", REPLICA_ID);
 		root.deleteAt(2);
-		root.insertAt(2, "f", REPLICA_ID);
+		insertAt(root, 2, "f", REPLICA_ID);
 		assertEquals("def", root.getContent());
 	}
 
 	@Test
 	public void testInsertsDeletesInserts() {
-		root.insertAt(0, "a", REPLICA_ID);
+		insertAt(root, 0, "a", REPLICA_ID);
 		root.deleteAt(0);
-		root.insertAt(0, "b", REPLICA_ID);
-		root.insertAt(1, "c", REPLICA_ID);
-		root.insertAt(2, "d", REPLICA_ID);
+		insertAt(root, 0, "b", REPLICA_ID);
+		insertAt(root, 1, "c", REPLICA_ID);
+		insertAt(root, 2, "d", REPLICA_ID);
 		assertEquals("bcd", root.getContent());
 	}
 
 	@Test
 	public void test() {
-		root.insertAt(0, "a", REPLICA_ID);
+		insertAt(root, 0, "a", REPLICA_ID);
 		root.deleteAt(0);
-		root.insertAt(0, "b", REPLICA_ID);
+		insertAt(root, 0, "b", REPLICA_ID);
 	}
 }
