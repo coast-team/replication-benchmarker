@@ -36,6 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import jbenchmarker.core.SequenceOperation;
@@ -107,15 +108,19 @@ public class CausalSimulator extends Simulator {
         remoteSum = 0L;
         nbRemote = 0L;
     }
+
+    private HashMap<TraceOperation, Integer> orderTrace;
+    private boolean detail;
     
     @Override
     public void run(Trace trace, boolean detail) throws IncorrectTraceException, PreconditionException, IOException {
+        this.detail = detail;
         long tmp;
         final Map<Integer, VectorClock> clocks = new HashMap<Integer, VectorClock>();
         final VectorClock globalClock = new VectorClock();
         final List<TraceOperation> concurrentOps = new LinkedList<TraceOperation>();
         final Enumeration<TraceOperation> it = trace.enumeration();
-        final HashMap<TraceOperation, Integer> orderTrace = new HashMap();        
+        orderTrace = new HashMap();        
         int numTrace = 0;
         
         PrintWriter writer = null;
@@ -128,6 +133,9 @@ public class CausalSimulator extends Simulator {
         genHistory = new HashMap<Integer, List<CRDTMessage>>();
         while (it.hasMoreElements()) {
             tour++;
+
+System.out.println(tour); 
+            
             final TraceOperation opt = it.nextElement();                      
             final int r = opt.getReplica();             
             CRDT localReplica = this.getReplicas().get(r);
@@ -139,8 +147,12 @@ public class CausalSimulator extends Simulator {
                 history.put(r, new ArrayList<TraceOperation>());
             } 
 
-            // For testing can be removed
-            // causalCheck(opt, clocks);
+//System.out.println(opt);            
+//System.out.println("--- BEFORE ---");   
+//System.out.println(localReplica.lookup());
+
+// For testing can be removed
+//causalCheck(opt, clocks);
             
             VectorClock vc = clocks.get(r);
             
@@ -157,21 +169,7 @@ public class CausalSimulator extends Simulator {
                         }
                     }
                 }
-                for (TraceOperation t : concurrentOps) {
-                    int e = t.getReplica();
-                    CRDTMessage op = genHistory.get(e).get(t.getVectorClock().get(e) - 1);
-                    CRDTMessage optime = op.clone();
-                    tmp = System.nanoTime();
-                    localReplica.applyRemote(optime);
-                    long after = System.nanoTime(); 
-                    remoteSum += (after - tmp);
-                    if (detail) {
-                        int num = orderTrace.get(t); 
-                        remoteTime.set(num, remoteTime.get(num) + after - tmp);
-                    }
-                    nbRemote++;
-                    vc.inc(e);
-                }
+                play(localReplica, vc, concurrentOps);
             }
             Operation op = opt.getOperation(localReplica);
             history.get(r).add(opt);
@@ -202,44 +200,19 @@ public class CausalSimulator extends Simulator {
         }
         ifSerializ();
         
-        Set<Integer> notComplete = new TreeSet<Integer>();
-        notComplete.addAll(replicas.keySet());
-
         // Final : applyRemote all pending remote CRDTMessage (not the best complexity)
-        while (!notComplete.isEmpty()) {
-
-            Iterator<Integer> i = notComplete.iterator();
-            while (i.hasNext()) {
-                int r = i.next();
-                CRDT a = this.getReplicas().get(r);
-                VectorClock vc = clocks.get(r);
-                if (vc.equals(globalClock)) {
-                    i.remove();
-                } else {
-                    for (int s : replicas.keySet()) {
-                        for (int j = vc.getSafe(s); (j < globalClock.get(s))
-                                && vc.readyFor(s, history.get(s).get(j).getVectorClock()); j++) {
-                            CRDTMessage op = genHistory.get(s).get(j);
-                            CRDTMessage optime = op.clone();
-
-                            tmp = System.nanoTime();
-                            a.applyRemote(optime);
-                            long after = System.nanoTime(); 
-                            if (detail) {
-                                int num = orderTrace.get(history.get(s).get(j));                            
-                                remoteTime.set(num, remoteTime.get(num) + after - tmp);
-                            }
-                            remoteSum += (after - tmp);
-                            nbRemote++;
-                            tour++;
-                            vc.inc(s);
-                            ifSerializ();    
-                        }
-                    }
+        for (CRDT r : replicas.values()) {
+            int n = r.getReplicaNumber();
+            concurrentOps.clear();
+            VectorClock vc = clocks.get(n);
+            for (Entry<Integer, Integer> e : globalClock.entrySet()) {
+                for (int j = vc.getSafe(e.getKey()); j < e.getValue(); ++j) {
+                    insertCausalOrder(concurrentOps, history.get(e.getKey()).get(j));
                 }
             }
+            play(r, vc, concurrentOps);
         }
-        ifSerializ();
+
         if (writer != null) {
             writer.close();
         }
@@ -257,7 +230,26 @@ public class CausalSimulator extends Simulator {
         }
         it.add(opt);
     }
-
+    
+    void play(CRDT r, VectorClock vc, List<TraceOperation> concurrentOps) throws IOException {
+        for (TraceOperation t : concurrentOps) {
+            int e = t.getReplica();
+            CRDTMessage op = genHistory.get(e).get(t.getVectorClock().get(e) - 1);
+            CRDTMessage optime = op.clone();
+            long tmp = System.nanoTime();
+            r.applyRemote(optime);
+            long after = System.nanoTime();
+            remoteSum += (after - tmp);
+            if (detail) {
+                int num = orderTrace.get(t);
+                remoteTime.set(num, remoteTime.get(num) + after - tmp);
+            }
+            nbRemote++;
+            vc.inc(e);
+            ifSerializ();
+        }
+    }
+    
     /**
      * Reset all replicas
      */

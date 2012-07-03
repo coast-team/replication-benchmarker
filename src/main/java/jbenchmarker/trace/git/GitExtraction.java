@@ -19,8 +19,11 @@ import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.patch.FileHeader.PatchType;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevSort;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.pack.PackConfig;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.ektorp.CouchDbConnector;
@@ -51,7 +54,8 @@ public class GitExtraction {
     private final GenericRepository<Patch> patchCrud;
     private final GenericRepository<Commit> commitCrud;
     private final Git git;   
-
+    public static final DiffAlgorithm defaultDiffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
+    
     public GitExtraction(Repository repo, CouchDbRepositorySupport<Commit> dbc,  
             CouchDbRepositorySupport<Patch> dbp, DiffAlgorithm diffAlgorithm) {
         this.repository = repo;
@@ -125,7 +129,7 @@ public class GitExtraction {
         return getBytes(ldr, id.toObjectId());
     }
         
-    public List<Edition> edits(final EditList edits, final RawText a, final RawText b)
+    static public List<Edition> edits(final EditList edits, final RawText a, final RawText b)
             throws IOException {
         List<Edition> editions = new LinkedList<Edition>();
         for (int curIdx = 0; curIdx < edits.size(); ++curIdx) {
@@ -141,13 +145,13 @@ public class GitExtraction {
         return edits(editList, a, b);
     }
 
-    public FileEdition createDiffResult(DiffEntry ent) throws CorruptObjectException, MissingObjectException, IOException {
-
-        final FileHeader.PatchType type;
+    /*
+     * Creates a file edition corresponding to a diff entry (without content if merge is true)
+     */
+    public FileEdition createDiffResult(DiffEntry ent, boolean merge) throws CorruptObjectException, MissingObjectException, IOException {
+        FileHeader.PatchType type = PatchType.UNIFIED;
         List<Edition> elist = null;
-        if (ent.getOldMode() == GITLINK || ent.getNewMode() == GITLINK) {
-            type = PatchType.UNIFIED;
-        } else {
+        if (ent.getOldMode() != GITLINK && ent.getNewMode() != GITLINK && !merge) {
             byte[] aRaw = open(OLD, ent);
             byte[] bRaw = open(NEW, ent);
 
@@ -155,7 +159,6 @@ public class GitExtraction {
                     || RawText.isBinary(aRaw) || RawText.isBinary(bRaw)) {
                 type = PatchType.BINARY;
             } else {
-                type = PatchType.UNIFIED;
                 elist = diff(aRaw, bRaw);
             }
         }
@@ -168,33 +171,37 @@ public class GitExtraction {
     } 
         
     public Commit parseRepository(String path) throws IOException, GitAPIException {
-        HashMap<RevCommit, String> paths = new HashMap<RevCommit, String>();
-        HashMapSet<RevCommit, Integer> identifiers = new HashMapSet<RevCommit, Integer>();
-        HashMapSet<RevCommit, String> children = new HashMapSet<RevCommit, String>();
+        HashMap<String, String> paths = new HashMap<String, String>();
+        HashMapSet<String, Integer> identifiers = new HashMapSet<String, Integer>();
+        HashMapSet<String, String> children = new HashMapSet<String, String>();
         int freeId = 2;
-        Commit head = null;
-        LogCommand log = git.log();
+        Commit head = null;       
+
+        RevWalk revwalk = new RevWalk(repository);
+        revwalk.sort(RevSort.TOPO);
         if (path != null) {
-            log.addPath(path);
-        }
-        Iterator<RevCommit> it = log.call().iterator();
+            revwalk.setTreeFilter(AndTreeFilter.create(PathFilter.create(path), TreeFilter.ANY_DIFF));
+        }  
+        revwalk.markStart(revwalk.parseCommit(repository.resolve("HEAD")));      
+        Iterator<RevCommit> it = revwalk.iterator();
+        
         while (it.hasNext()) {
             RevCommit commit = it.next();
-            Commit co = new Commit(commit, children.getAll(commit));
+            Commit co = new Commit(commit, children.getAll(ObjectId.toString(commit)));
             if (head == null) {
                 // Head commit
                 co.setId("HEAD");
                 head = co;
                 if (path != null) {
-                    paths.put(commit, path);
+                    paths.put("HEAD", path);
                 }
-                identifiers.put(commit, 1);
+                identifiers.put("HEAD", 1);
             }
-            co.setReplica(Collections.min(identifiers.getAll(commit)));          
+            co.setReplica(Collections.min(identifiers.getAll(co.getId())));          
             if (commit.getParentCount() == 0) {
                 // Final case : patch without parent
                 List<FileEdition> edits = new LinkedList<FileEdition>(); 
-                TreeWalk walk = walker(commit, paths.get(commit));
+                TreeWalk walk = walker(commit, paths.get(co.getId()));
                 while (walk.next()) { 
                     ObjectId id = walk.getObjectId(0);
                     edits.add(new FileEdition(walk.getPathString(), 
@@ -202,11 +209,12 @@ public class GitExtraction {
                 }
                 patchCrud.add(new Patch(co, edits));
             } else {
+                boolean merge = false;
                 if (commit.getParentCount() > 1) {
                     // Merge case -> store state
                     List<String> mpaths = new LinkedList<String>();
                     List<byte[]> mraws = new LinkedList<byte[]>();
-                    TreeWalk twalk = walker(commit, paths.get(commit));
+                    TreeWalk twalk = walker(commit, paths.get(co.getId()));
                     while (twalk.next()) {
                         ObjectId id = twalk.getObjectId(0);
                         mpaths.add(twalk.getPathString());
@@ -216,33 +224,34 @@ public class GitExtraction {
                 }
 
                 // Computes replica identifiers
-                Iterator<Integer> itid = identifiers.getAll(commit).iterator();
+                Iterator<Integer> itid = identifiers.getAll(co.getId()).iterator();
        
                 for (int p = 0; p < commit.getParentCount(); ++p) {
                     RevCommit parent = commit.getParent(p);
-                    children.put(parent, co.getId());
+                    String parentId = ObjectId.toString(parent);
+                    children.put(parentId, co.getId());
                     List<FileEdition> edits = new LinkedList<FileEdition>();
-                    TreeWalk walk = walker(commit, parent, paths.get(commit));
+                    TreeWalk walk = walker(commit, parent, paths.get(co.getId()));
                     
                     // compute diff
                     for (DiffEntry entry : DiffEntry.scan(walk)) {
-                        edits.add(createDiffResult(entry));
+                        edits.add(createDiffResult(entry, merge));
                         if (path != null) {
-                            paths.put(parent, entry.getOldPath());
+                            paths.put(parentId, entry.getOldPath());
                         }
                     }
                     patchCrud.add(new Patch(co, parent, edits));
                     if (itid.hasNext()) {
-                        identifiers.put(parent, itid.next());
-                    } else if (!identifiers.containsKey(parent)) {
-                        identifiers.put(parent, freeId);
+                        identifiers.put(parentId, itid.next());
+                    } else if (!identifiers.containsKey(ObjectId.toString(parent))) {
+                        identifiers.put(parentId, freeId);
                         ++freeId;
                     }
                 }
 
                 int i = 0;
                 while (itid.hasNext()) {
-                    identifiers.put(commit.getParent(i), itid.next());
+                    identifiers.put(ObjectId.toString(commit.getParent(i)), itid.next());
                     i = (i + 1) % commit.getParentCount();
                 }
             }

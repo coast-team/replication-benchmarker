@@ -53,4 +53,18 @@ public class GitExtractionTest {
         assertEquals("coucou", result2.getMessage());
         assertEquals(42, result2.getReplica());
     }
+    
+    @Test
+    public void storeAnrRetrieve() throws MalformedURLException {
+        HttpClient httpClient = new StdHttpClient.Builder().url("http://localhost:5984").build();
+
+        CouchDbInstance dbInstance = new StdCouchDbInstance(httpClient);
+        if (dbInstance.checkIfDbExists(new DbPath("test_commit"))) {
+            dbInstance.deleteDatabase("test_commit");
+        }
+        CouchDbConnector db = new StdCouchDbConnector("test", dbInstance);
+        db.createDatabaseIfNotExists();
+        
+        fail("Not implemented yet");
+    }
 }

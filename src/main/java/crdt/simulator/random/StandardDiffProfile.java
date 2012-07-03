@@ -57,7 +57,7 @@ public class StandardDiffProfile extends SequenceOperationProfile<String> {
 
     @Override
     public SequenceOperation.OpType nextType() {
-        return (r.nextDouble() < perUp) ? SequenceOperation.OpType.up : 
+        return (r.nextDouble() < perUp) ? SequenceOperation.OpType.update : 
                 (r.nextDouble() < perIns) ? SequenceOperation.OpType.ins : SequenceOperation.OpType.del;            
     }
     

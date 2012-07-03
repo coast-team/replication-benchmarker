@@ -100,9 +100,11 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
         case del:
             l =  localDelete(opt);
             break;
-        case up:
+        case update:
             l = localUpdate(opt);
             break;
+        case noop:
+            return CRDTMessage.emptyMessage;
         default:
             throw new IncorrectTraceException("Unsupported operation : " + opt);
         }

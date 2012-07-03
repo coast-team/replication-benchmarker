@@ -31,7 +31,7 @@ public class GitOperation extends TraceOperation {
             type = SequenceOperation.OpType.ins;
             break;
         case REPLACE:
-            type = SequenceOperation.OpType.up;
+            type = SequenceOperation.OpType.update;
             break;
         default:
             type = SequenceOperation.OpType.unsupported;    
@@ -42,7 +42,7 @@ public class GitOperation extends TraceOperation {
 
     @Override
     public Operation getOperation(CRDT replica) {
-        return sop;
+        return sop.getOperation(replica);
     }
 
     @Override

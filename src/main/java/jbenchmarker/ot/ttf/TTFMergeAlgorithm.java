@@ -113,7 +113,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
                 //this.siteVC.inc(this.getReplicaNumber());
                 generatedOperations.add(op);
                 break;
-            case up:
+            case update:
                 break;
         }
         return generatedOperations;

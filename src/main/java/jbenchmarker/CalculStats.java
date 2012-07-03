@@ -31,7 +31,7 @@ public class CalculStats {
                     ins.add((double)so.getContentAsString().length());
                 }else if(so.getType().equals(OpType.del)){
                      del.add((double)so.getNumberOf());
-                }else if(so.getType().equals(OpType.up)){
+                }else if(so.getType().equals(OpType.update)){
                     up.add((double)(so.getContentAsString().length()-so.getNumberOf()));
                 }
         }

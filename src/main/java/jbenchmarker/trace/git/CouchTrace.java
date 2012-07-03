@@ -8,13 +8,20 @@ import collect.VectorClock;
 import crdt.CRDT;
 import crdt.simulator.Trace;
 import crdt.simulator.TraceOperation;
+import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.trace.git.model.Commit;
 import jbenchmarker.trace.git.model.Edition;
 import jbenchmarker.trace.git.model.FileEdition;
 import jbenchmarker.trace.git.model.Patch;
+import org.eclipse.jgit.diff.DiffAlgorithm;
+import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.diff.RawText;
+import org.eclipse.jgit.diff.RawTextComparator;
 import org.ektorp.CouchDbConnector;
 
 /**
@@ -25,7 +32,8 @@ public class CouchTrace implements Trace {
     private CommitCRUD commitCRUD;
     private PatchCRUD patchCRUD;  
     private List<Commit> initCommit;
-    
+    private final DiffAlgorithm diffAlgorithm;
+        
     // TODO : Working view
     public CouchTrace(CommitCRUD dbc, PatchCRUD dbp) {
         commitCRUD = dbc;
@@ -37,30 +45,60 @@ public class CouchTrace implements Trace {
                 it.remove();
             }
         }
-
+        diffAlgorithm = GitExtraction.defaultDiffAlgorithm;
     }
 
     
     public CouchTrace(CouchDbConnector db) {
         this(new CommitCRUD(db), new PatchCRUD(db));
     }
-
+    
+    List<Edition> diff(byte[] aRaw, byte[] bRaw) throws IOException {
+        final RawText a = new RawText(aRaw);
+        final RawText b = new RawText(bRaw);
+        final EditList editList = diffAlgorithm.diff(RawTextComparator.DEFAULT, a, b);
+        return GitExtraction.edits(editList, a, b);
+    }
+        
     class Walker implements Enumeration<TraceOperation> {
 
-        class MergeOperation extends TraceOperation {
+        class MergeCorrection extends TraceOperation {
 
-            MergeOperation(int replica, VectorClock VC, Commit merge) {
-                super(replica, VC);               
+            Patch patch;
+            Operation first;
+            
+            MergeCorrection(int replica, VectorClock VC, Commit merge) {
+                super(replica, new VectorClock(VC));               
+                getVectorClock().inc(replica);
+                patch = patchCRUD.get(merge.patchId());
             }          
 
+            /**
+             * Introduce to the trace on-the-fly correction operations to obtain the merge result.
+             * @param replica the replica that will originate the correction
+             * @return the first edit of the correction operation
+             */
             @Override
             public Operation getOperation(CRDT replica) {
-                return null;
+                if (first == null) {
+                    try {
+                        List<Edition> l = diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
+                        if (l.isEmpty()) {
+                            first = SequenceOperation.noop(replica.getReplicaNumber(), getVectorClock());
+                        } else {
+                            editions.addAll(l);
+                            first = nextElement().getOperation(replica);
+                        }
+                    } catch (IOException ex) {
+                        Logger.getLogger(CouchTrace.class.getName()).log(Level.SEVERE, "During merge correction computation", ex);
+                    }
+                }            
+                return first;
             }
 
             @Override
             public String toString() {
-                return "MergeOperation";
+                return "MergeCorrection{" + "first=" + first + '}';
             }
         }
         
@@ -120,12 +158,13 @@ public class CouchTrace implements Trace {
                     }
                 } else {
                     if (commit != null) {
-                        // Adds children to pending commits
+                        // Remove itself from children (topological sort).
                         for (int i = 0; i < commit.childrenCount(); ++i) {
                             Commit child = foundPending(commit.getChildren().get(i));
-                            VectorClock vc = startVC.get(child.getId());
-
                             child.getParents().remove(commit.getId());
+
+                            // Update starting VC of future commits
+                            VectorClock vc = startVC.get(child.getId());
                             if (vc == null) {
                                 startVC.put(child.getId(), currentVC);
                             } else {
@@ -142,12 +181,15 @@ public class CouchTrace implements Trace {
                         } else {
                             commit = candidate;
                             pureChildren(commit.getChildren());
-                            currentVC = startVC.get(commit.getId());
+                            currentVC = startVC.get(commit.getId());                           
+                            if (mergeCommit.contains(commit.getId())) {
+                                return new MergeCorrection(commit.getReplica(), currentVC, commit);
+                            }
                         }                   
                     } else throw new NoSuchElementException("No more operation");
                 }
             }
-System.out.println(commit);
+//System.out.println(commit);
             return op;
         }
 

@@ -40,7 +40,7 @@ public class SequenceOperation<T> extends TraceOperation implements Operation, S
 //
         if (this.getType() == OpType.ins && this.position > sizeDoc) {
             this.position = sizeDoc;//a position exceeds document size
-        } else if (this.getType() == OpType.del) {
+        } else if (this.getType() != OpType.ins) {
             if (this.position >= sizeDoc) {
                this.position = sizeDoc - 1;//a position exceeds document size
             }
@@ -53,12 +53,13 @@ public class SequenceOperation<T> extends TraceOperation implements Operation, S
 
     @Override
     public Operation clone() {
-        return new SequenceOperation(type,this.getReplica(),position,numberOf,new ArrayList(content),new VectorClock(this.getVectorClock()));
+        return new SequenceOperation(type, this.getReplica(), position, numberOf, 
+                new ArrayList(content), new VectorClock(this.getVectorClock()));
                  
     }
 
     
-    public enum OpType {ins, del, up, unsupported}; 
+    public enum OpType {ins, del, update, unsupported, noop}; 
     
     private OpType type;                  // type of operation : insert or delete
     private int position;                 // position in the document
@@ -123,16 +124,25 @@ public class SequenceOperation<T> extends TraceOperation implements Operation, S
          for (int i = 0; i < content.length(); ++i) {
             l.add(content.charAt(i));
          }        
-         return new SequenceOperation(OpType.up, replica, position, offset,l, VC);
-     }    
+         return new SequenceOperation<Character>(OpType.update, replica, position, offset, l, VC);
+     }  
      
+     static public <T> SequenceOperation<T> update(int replica, int position, int offset, List<T> content, VectorClock VC){
+         return new SequenceOperation(OpType.update, replica, position, offset, content, VC);
+     }
+     
+     /** 
+      * Construction of a noop operation (usefull for pure merge) 
+      */
+     public static SequenceOperation noop(int replica, VectorClock VC) {
+        return new SequenceOperation(OpType.noop, replica, -1, -1, null, VC);
+     }
      
      /*
      * Construction of a stylage operation
      */
      static public SequenceOperation<Character> unsupported(int replica, VectorClock VC){
-         List<Character> l = new ArrayList<Character>();                 
-         return new SequenceOperation(OpType.unsupported, replica, -1, 0, l, VC);
+         return new SequenceOperation(OpType.unsupported, replica, -1, -1, null, VC);
      }    
      
      
