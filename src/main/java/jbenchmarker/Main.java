@@ -63,8 +63,8 @@ public class Main {
         Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[0]).newInstance();
         int nbExec = (args.length > 2) ? Integer.valueOf(args[2]) : 1;
         int nb = (nbExec > 1) ? nbExec + 1 : nbExec;
-        double thresold = (args.length > 2) ? Double.valueOf(args[3]) : 2.0;
-        int nbrTrace = (args.length > 3) ? Integer.valueOf(args[4]) : 0;
+        double thresold = (args.length > 3) ? Double.valueOf(args[3]) : 2.0;
+        int nbrTrace = (args.length > 4) ? Integer.valueOf(args[4]) : 0;
         long ltime[][] = null, mem[][] = null, rtime[][] = null;
         int cop = 0, uop = 0, nbReplica = 0, mop = 0;
         long st = System.currentTimeMillis();
@@ -90,16 +90,16 @@ public class Main {
                 uop = cd.replicaGenerationTimes().size();
                 mop = cd.getMemUsed().size();
                 nbReplica = cd.replicas.size();
-                ltime = new long[nb][uop];
-                rtime = new long[nb][cop];
-                mem = new long[nb][mop];
+                ltime = new long[nb][];
+                rtime = new long[nb][];
+                mem = new long[nb][];
             }
 
-            toArrayLong(ltime[ex], cd.replicaGenerationTimes());
-            toArrayLong(mem[ex], cd.getMemUsed());
+            ltime[ex] = toArrayLong(cd.replicaGenerationTimes());
+            mem[ex] = toArrayLong(cd.getMemUsed());
 
-            toArrayLong(rtime[ex], cd.splittedGenTime());
-            for (int i = 0; i < cop - 1; i++) {
+            rtime[ex] = toArrayLong(cd.splittedGenTime());
+            for (int i = 0; i < minLength(rtime) - 1; i++) {
                 rtime[ex][i] /= nbReplica - 1;
             }
             sum += cd.getRemoteSum() + cd.getLocalSum();
@@ -160,10 +160,12 @@ public class Main {
         treatFile(file3, baseSerializ, "mem");
     }
 
-    private static void toArrayLong(long[] t, List<Long> l) {
+    private static long[] toArrayLong(List<Long> l) {
+        long t[] = new long[l.size()];
         for (int i = 0; i < l.size(); ++i) {
             t[i] = l.get(i);
         }
+        return t;
     }
 
     /**
@@ -172,7 +174,7 @@ public class Main {
     private static String writeToFile(long[][] data, String fileName, String type) throws IOException {
         String nameFile = fileName + '-' + type + ".res";
         BufferedWriter out = new BufferedWriter(new FileWriter(nameFile));
-        for (int op = 0; op < data[0].length; ++op) {
+        for (int op = 0; op <  minLength(data); ++op) {
             for (int ex = 0; ex < data.length; ++ex) {
                 out.append(data[ex][op] + "\t");
             }
@@ -183,8 +185,9 @@ public class Main {
     }
 
     public static void computeAverage(long[][] data, double thresold) {
-        int nbExpe = data.length - 1;
-        for (int op = 0; op < data[0].length; ++op) {
+        int nbExpe = data.length - 1, length = minLength(data);
+        data[nbExpe] = new long[length];
+        for (int op = 0; op < length; ++op) {
             long sum = 0;
             for (int ex = 0; ex < nbExpe; ++ex) {
                 sum += data[ex][op];
@@ -246,5 +249,13 @@ public class Main {
         String tab[] = ligne.split("\t");
         float t = Float.parseFloat(tab[(tab.length) - 1]);
         return ((int) t);
+    }
+
+    private static int minLength(long[][] data) {
+        int m = data[0].length;
+        for (long[] t : data) {
+            if (t != null && t.length < m) m = t.length;
+        }
+        return m;
     }
 }

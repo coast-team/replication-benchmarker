@@ -115,8 +115,8 @@ public class GitTrace implements Trace {
             Operation first;
             
             MergeCorrection(int replica, VectorClock VC, Commit merge) {
-                super(replica, new VectorClock(VC));               
-                getVectorClock().inc(replica);
+                super(replica, new VectorClock(VC));  
+                getVectorClock().inc(replica);   
                 patch = patchCRUD.get(merge.patchId());
             }          
 
@@ -131,6 +131,7 @@ public class GitTrace implements Trace {
                     try {
                         List<Edition> l = diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
                         if (l.isEmpty()) {
+                            currentVC.inc(replica.getReplicaNumber());           
                             first = SequenceOperation.noop(replica.getReplicaNumber(), getVectorClock());
                         } else {
                             editions.addAll(l);

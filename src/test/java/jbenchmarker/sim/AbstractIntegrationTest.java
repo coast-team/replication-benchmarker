@@ -90,9 +90,5 @@ public abstract class AbstractIntegrationTest {
         
         
         
-    @Test
-    public void testRandom() throws Exception {
-        cd.run(new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 1, 10, 3.0, 5), false);
-	assertConsistentViews(cd);
-    }
+
 }

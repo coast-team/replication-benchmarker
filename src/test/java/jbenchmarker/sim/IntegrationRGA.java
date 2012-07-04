@@ -26,7 +26,9 @@ import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
 import crdt.simulator.CausalSimulator;
+import crdt.simulator.random.StandardDiffProfile;
 import jbenchmarker.factories.RGAFactory;
+import jbenchmarker.factories.WootFactories;
 import jbenchmarker.trace.TraceGenerator;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -113,5 +115,14 @@ public class IntegrationRGA {
                 assertEquals(crdtSim.lookup(), crdtReal.lookup());
             }
         }
+    }
+    
+    @Test
+    public void testRGARandomDiff() throws Exception {
+        Trace trace = new RandomTrace(2000, RandomTrace.FLAT, StandardDiffProfile.BASIC, 0.1, 10, 3.0, 13);
+        CausalSimulator cd = new CausalSimulator(new RGAFactory());
+
+        assertConsistency(cd, trace);  
+        //assertGoodViewLength(cd);
     }
 }

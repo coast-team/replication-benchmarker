@@ -23,6 +23,7 @@ import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardDiffProfile;
+import crdt.simulator.random.StandardSeqOpProfile;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.treedoc.TreedocDocument;
@@ -48,10 +49,16 @@ public class IntegrationTreedocTest extends AbstractIntegrationTest {
 		for (CRDT replica : cd.getReplicas().values())
 			((TreedocDocument) ((MergeAlgorithm) replica).getDoc()).printStats();
 	}
-        
+            
+    @Test
+    public void testRandom() throws Exception {
+        cd.run(new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 1, 10, 3.0, 5), false);
+	assertConsistentViews(cd);
+    }
+    
     @Test
     public void testTreedocRandomDiff() throws Exception {
-        Trace trace = new RandomTrace(420, RandomTrace.FLAT, StandardDiffProfile.BASIC, 0.1, 10, 3.0, 13);
+        Trace trace = new RandomTrace(4200, RandomTrace.FLAT, StandardDiffProfile.BASIC, 0.1, 10, 3.0, 13);
         CausalSimulator cd = new CausalSimulator(new TreedocFactory());
 
         assertConsistency(cd, trace);  

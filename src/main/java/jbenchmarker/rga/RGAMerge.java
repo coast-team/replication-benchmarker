@@ -55,7 +55,36 @@ public class RGAMerge extends MergeAlgorithm {
 	}
 
 	@Override
-	protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
+	protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+		List<SequenceMessage> lop 		= new ArrayList<SequenceMessage>();
+		RGADocument 	rgadoc 	= (RGADocument)(this.getDoc());
+		RGAS4Vector 	s4vtms, s4vpos = null;
+		RGAOperation 	rgaop;		
+		RGANode		target = null;	
+                
+		int	 p	= opt.getPosition();
+		int offset; 	
+		
+                offset = opt.getContent().size();
+		if(p==0) s4vpos = null;
+		else s4vpos	= rgadoc.getVisibleS4V(p); // if head, s4vpos = null; if after tail, s4vpos= the last one. 		
+			
+		for(int i=0; i < offset ; i++) {
+			this.siteVC.inc(this.getReplicaNumber());
+			s4vtms = new RGAS4Vector(this.getReplicaNumber(), this.siteVC);
+			rgaop = new RGAOperation(opt, p+i, s4vpos, opt.getContent().get(i), s4vtms);
+			s4vpos = s4vtms; // The s4v of the current insert becomes the s4vpos of next insert.
+			lop.add(rgaop);
+			rgadoc.apply(rgaop);
+			
+//			purger.setLastVC(this.getReplicaNumber(),this.siteVC);
+		}
+
+		return lop;
+	}
+        
+        @Override
+	protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
 		List<SequenceMessage> lop 		= new ArrayList<SequenceMessage>();
 		RGADocument 	rgadoc 	= (RGADocument)(this.getDoc());
 		RGAS4Vector 	s4vtms, s4vpos = null;
@@ -65,25 +94,14 @@ public class RGAMerge extends MergeAlgorithm {
 		int	 p			= opt.getPosition();
 		int offset; 	
 		
-		if(opt.getType()==SequenceOperation.OpType.del) {
-			offset = opt.getNumberOf();
-			target = rgadoc.getVisibleNode(p+1);
-		} else {
-			offset = opt.getContent().size();
-			if(p==0) s4vpos = null;
-			else s4vpos	= rgadoc.getVisibleS4V(p); // if head, s4vpos = null; if after tail, s4vpos= the last one. 		
-		}		
+		offset = opt.getNumberOf();
+		target = rgadoc.getVisibleNode(p+1);		
 		
 		for(int i=0; i < offset ; i++) {
 			this.siteVC.inc(this.getReplicaNumber());
 			s4vtms = new RGAS4Vector(this.getReplicaNumber(), this.siteVC);
-			if(opt.getType() == SequenceOperation.OpType.del) {
-				rgaop = new RGAOperation(opt, p+1, target.getKey(), s4vtms);
-				target = target.getNextVisible();
-			} else {
-				rgaop = new RGAOperation(opt, p+i, s4vpos, opt.getContent().get(i), s4vtms);
-				s4vpos = s4vtms; // The s4v of the current insert becomes the s4vpos of next insert.
-			}
+			rgaop = new RGAOperation(opt, p+1, target.getKey(), s4vtms);
+			target = target.getNextVisible();
 			lop.add(rgaop);
 			rgadoc.apply(rgaop);
 			

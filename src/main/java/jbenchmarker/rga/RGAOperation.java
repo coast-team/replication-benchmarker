@@ -36,6 +36,7 @@ public class RGAOperation<T> extends SequenceMessage {
 	private T 				content;
 	private boolean			lor;  // to be local or remote
 	private int					intpos;
+        private OpType type;
 	
 	public RGAOperation(SequenceOperation o) {
 		super(o);
@@ -65,27 +66,30 @@ public class RGAOperation<T> extends SequenceMessage {
 		
 		return ret;
 	}
-	/*
-	 * for insert
-	 */
-	public RGAOperation(SequenceOperation o, int pos, RGAS4Vector s4vpos, T c, RGAS4Vector s4vtms){
+    
+	public RGAOperation(SequenceOperation o, OpType type, int pos, RGAS4Vector s4vpos, T c, RGAS4Vector s4vtms){
 		super(o);
+                this.type = type;
 		this.s4vpos 	= s4vpos;
 		this.s4vtms	= s4vtms;
 		this.intpos		= pos;
 		this.content 	= c;
 		this.lor = LOCAL;
+                this.type = OpType.ins;
+	}
+        
+	/*
+	 * for insert
+	 */
+	public RGAOperation(SequenceOperation o, int pos, RGAS4Vector s4vpos, T c, RGAS4Vector s4vtms){
+		this(o, OpType.ins, pos, s4vpos, c, s4vtms);
 	}
 	
 	/*
 	 * for delete
 	 */
 	public RGAOperation(SequenceOperation o, int pos, RGAS4Vector s4vpos, RGAS4Vector s4vtms){
-		super(o);
-		this.s4vpos	= s4vpos;
-		this.s4vtms	= s4vtms;
-		this.intpos 	= pos;
-		this.lor = LOCAL;
+		this(o, OpType.del, pos, s4vpos, null, s4vtms);
 	}	
 	
 	public int getIntPos(){
@@ -105,13 +109,13 @@ public class RGAOperation<T> extends SequenceMessage {
 	}
 	
 	public OpType getType(){
-		return this.getOriginalOp().getType();
+		return type;
 	}
 
     @Override
     public SequenceMessage clone() {
-        return new RGAOperation(this.getOriginalOp(), intpos, 
+        return new RGAOperation(this.getOriginalOp(), type, intpos, 
                 s4vpos == null ? s4vpos : s4vpos.clone(), content,  
-                s4vtms == null ? s4vtms :s4vtms.clone());
+                s4vtms == null ? s4vtms : s4vtms.clone());
     }
 }

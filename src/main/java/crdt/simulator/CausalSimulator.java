@@ -180,6 +180,9 @@ System.out.println(tour);
             if (writer != null) {
                 storeOp(writer, op);
             }
+            if (!vc.readyFor(r, opt.getVectorClock())) {
+                throw new IncorrectTraceException("replica " + r + " with vc " + vc + " not ready for " + opt.getVectorClock());
+            }
             tmp = System.nanoTime();
             
             final CRDTMessage m = localReplica.applyLocal(op);
@@ -232,11 +235,14 @@ System.out.println("final : " + n);
         it.add(opt);
     }
     
-    void play(CRDT r, VectorClock vc, List<TraceOperation> concurrentOps) throws IOException {
+    void play(CRDT r, VectorClock vc, List<TraceOperation> concurrentOps) throws IOException, IncorrectTraceException {
         for (TraceOperation t : concurrentOps) {
             int e = t.getReplica();
             CRDTMessage op = genHistory.get(e).get(t.getVectorClock().get(e) - 1);
             CRDTMessage optime = op.clone();
+            if (!vc.readyFor(e, t.getVectorClock())) {
+                throw new IncorrectTraceException("replica " + r.getReplicaNumber() + " with vc " + vc + " not ready for " + t.getVectorClock());
+            }
             long tmp = System.nanoTime();
             r.applyRemote(optime);
             long after = System.nanoTime();
