@@ -47,11 +47,13 @@ public class RandomOperation extends TraceOperation implements Serializable,Loca
     public LocalOperation adaptTo(CRDT replica) {
         if (op == null) {
             op = opp.nextOperation(replica);
+            return op;
+        }else{
+            return op.adaptTo(replica);
         }
-        return op;
+        
     }
 
-    
     @Override
     public RandomOperation clone() {
         try {
