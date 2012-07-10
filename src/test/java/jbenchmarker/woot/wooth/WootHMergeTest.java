@@ -19,10 +19,9 @@
 package jbenchmarker.woot.wooth;
 
 import crdt.CRDTMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.PreconditionException;
 import crdt.simulator.IncorrectTraceException;
-import java.util.List;
-import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.woot.WootOperation;
 import org.junit.Test;
@@ -49,12 +48,13 @@ public class WootHMergeTest {
     public void testapplyLocal() throws IncorrectTraceException, PreconditionException {
         System.out.println("applyLocal");
         WootHashMerge instance = new WootHashMerge(new WootHashDocument(), 1);
-        CRDTMessage r = instance.applyLocal(insert(0,"a"));
-        assertEquals(1, r.size());
-        assertEquals('a', ((WootOperation) r).getContent());
+        OperationBasedOneMessage r1 = (OperationBasedOneMessage)instance.applyLocal(insert(0,"a"));
+        assertEquals(1, r1.size());
+        assertEquals('a', ((WootOperation) r1.getOperation()).getContent());
         assertEquals("a", instance.lookup());        
 
-        r = instance.applyLocal(insert(0,"bc"));
+        CRDTMessage r;
+        r =instance.applyLocal(insert(0,"bc"));
         assertEquals(2, r.size());
         assertEquals("bca", instance.lookup());         
 

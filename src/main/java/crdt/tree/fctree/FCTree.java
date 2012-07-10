@@ -120,6 +120,7 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
      */
     @Override
     public void setReplicaNumber(int replica) {
+        super.setReplicaNumber(replica);
         idFactory.setReplicaNumber(replica);
     }
 

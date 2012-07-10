@@ -20,7 +20,7 @@ public class TreeOperation<T> implements LocalOperation {
 
     @Override
     public LocalOperation adaptTo(CRDT replica) {
-        //TODO : make correct adaptation function
+        //TODO : make correct adaptation function For TreeOperation
         return this;
     }
     

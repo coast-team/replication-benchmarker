@@ -1,10 +1,6 @@
 package jbenchmarker.trace.git;
 
-import jbenchmarker.trace.git.CommitCRUD;
 import java.net.MalformedURLException;
-import java.util.NoSuchElementException;
-import java.util.Iterator;
-import java.util.List;
 import jbenchmarker.trace.git.model.Commit;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
@@ -13,10 +9,9 @@ import org.ektorp.http.HttpClient;
 import org.ektorp.http.StdHttpClient;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.impl.StdCouchDbInstance;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 /**
  *
@@ -54,6 +49,7 @@ public class GitExtractionTest {
         assertEquals(42, result2.getReplica());
     }
     
+    @Ignore
     @Test
     public void storeAnrRetrieve() throws MalformedURLException {
         HttpClient httpClient = new StdHttpClient.Builder().url("http://localhost:5984").build();

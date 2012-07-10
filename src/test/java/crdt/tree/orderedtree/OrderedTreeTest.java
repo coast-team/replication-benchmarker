@@ -180,14 +180,14 @@ public class OrderedTreeTest {
     public void testRunsNaiveLogoot() throws PreconditionException, IncorrectTraceException, IOException {
         for (Factory p : policies) {
             CausalDispatcherSetsAndTreesTest.testRun(createTree(new LogootTreeNode(null, 0, 
-                    32, new BoundaryStrategy(100)), new NaiveSet(), p), 1000, 5, otreeop);
+                    32, new BoundaryStrategy(100)), new NaiveSet(), p), 1000, 500, otreeop);
         }
     }
     
     @Test
     public void testRunsNaiveWootH() throws PreconditionException, IncorrectTraceException, IOException {
         for (Factory p : policies) {
-            CausalDispatcherSetsAndTreesTest.testRun(createTree(new WootHashTreeNode(null, 0), new NaiveSet(), p), 1000, 5, otreeop);
+            CausalDispatcherSetsAndTreesTest.testRun(createTree(new WootHashTreeNode(null, 0), new NaiveSet(), p), 1000, 500, otreeop);
         }
     }
     
@@ -204,7 +204,7 @@ public class OrderedTreeTest {
         //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
         //for(int p=0;p<10000;p++){
             
-            CausalDispatcherSetsAndTreesTest.testRun(new FCTree(), 500, 500, otreeop);
+            CausalDispatcherSetsAndTreesTest.testRun(new FCTree(), 500,500, otreeop);
         //}
     }
 }

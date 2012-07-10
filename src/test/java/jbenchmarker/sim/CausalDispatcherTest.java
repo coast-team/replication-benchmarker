@@ -90,36 +90,48 @@ public class CausalDispatcherTest {
             SequenceOperation opt;
 
         public TraceMock(TraceOperation top) {
+            super(top.getReplica(),top.getVectorClock());
             this.opt=(SequenceOperation)top.getOperation();
         }
         
-        TraceMock(SequenceOperation opt) {
-           // super();
-            this.opt=opt;
-        }
+
             
        
 
         @Override
         public boolean equals(Object obj) {
-            return opt.equals(obj);
+            if (!(obj instanceof TraceOperation))
+                return false;
+            TraceOperation to=(TraceOperation)obj;
+            return opt.equals(to.getOperation()) 
+                    && this.getVectorClock().equals(to.getVectorClock()) 
+                    && this.getReplica()== to.getReplica();
         }
-
+        
         @Override
         public LocalOperation getOperation() {
             return opt;
         }
+
+        @Override
+        public String toString() {
+            return "TraceMock{" + "opt=" + opt + super.toString() +'}';
+        }
+        
     }
 
     static public class RFMock extends ReplicaFactory {
 
+        @Override
         public MergeAlgorithm create(int r) {
             return new MergeAlgorithm(new Document() {
 
+                @Override
                 public String view() {
                     return "";
                 }
 
+                @Override
                 public void apply(Operation op) {
                 }
 
@@ -129,10 +141,12 @@ public class CausalDispatcherTest {
                 }
             }, r) {
 
+                @Override
                 protected void integrateRemote(SequenceMessage op) {
                     this.getDoc().apply(op);
                 }
 
+                @Override
                 protected List<SequenceMessage> generateLocal(SequenceOperation opt) {
                     List<SequenceMessage> l = new ArrayList<SequenceMessage>();
                     SequenceMock op = new SequenceMock(opt);
@@ -189,7 +203,7 @@ public class CausalDispatcherTest {
         o1.add(new TraceMock(op1));  
 
         cd.run(trace, false);
-        assertEquals(cd.getHistory().get(2), lop);        
+        assertEquals(cd.getHistory().get(2), lop);
         assertEquals(o1,cd.getHistory().get(2));        
         cd.reset();
         TraceOperation op2 = op(1,1,0,0);
