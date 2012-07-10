@@ -4,10 +4,7 @@
  */
 package crdt.simulator;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.util.Enumeration;
 
 /**
@@ -32,36 +29,34 @@ public class TraceFromFile implements Trace {
     @Override
     public Enumeration<TraceOperation> enumeration() {
         return new Enumeration<TraceOperation>() {
-
+            TraceOperation nextElement;
+                        
             @Override
             public boolean hasMoreElements() {
-                try {
-                    boolean ret=input.available() > 0;
-                    if (!ret){
-                        input.close();
-                    }
-                    return ret;
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    return false;
-                }
+                  nextElement=readOperation();
+                  return nextElement!=null;
             }
 
             @Override
             public TraceOperation nextElement() {
-                try {
+                        
+               return nextElement;
+
+            }
+            private TraceOperation readOperation() {
+                 try {
                     Object obj = input.readObject();
                     if (obj instanceof TraceOperation) {
-
                         return (TraceOperation) obj;
                     } else {
                         throw new Exception("File is not a trace");
                     }
+                 } catch (EOFException ex1){
+                     return null;
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     return null;
                 }
-
             }
         };
     }

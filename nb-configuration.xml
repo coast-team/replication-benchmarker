@@ -10,6 +10,7 @@ Without this configuration present, some functionality in the IDE may be limited
         <configurations>
             <configuration id="run ABT G1 " profiles=""/>
             <configuration id="treesim" profiles=""/>
+            <configuration id="TraceViewer" profiles=""/>
         </configurations>
     </config-data>
 </project-shared-configuration>
