@@ -51,4 +51,9 @@ public class Positioned<T> {
         hash = 97 * hash + (this.elem != null ? this.elem.hashCode() : 0);
         return hash;
     }
+
+    @Override
+    public String toString() {
+        return "Positioned{" + "pi=" + pi + ", elem=" + elem + '}';
+    }
 }

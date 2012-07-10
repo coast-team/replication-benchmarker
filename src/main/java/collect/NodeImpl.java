@@ -95,7 +95,7 @@ public class NodeImpl<T>  extends AbstractNode<T> implements UnorderedNode<T> {
 
     @Override
     public String toString() {
-        return "" + value + children;
+        return value + "[" + children.values() + ']';
     }
 
     @Override

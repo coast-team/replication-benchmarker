@@ -139,11 +139,11 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         return new LogootDocument<T>(replicaNumber, nbBit, strategy);
     }
     
-    void incClock() {
+    protected void incClock() {
         this.myClock++;
     }
 
-    int getClock() {
+    protected int getClock() {
         return this.myClock;
     }
 

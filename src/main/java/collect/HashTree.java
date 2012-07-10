@@ -42,7 +42,7 @@ public class HashTree<T> extends Observable implements Tree<T> {
             father = root;
         }
         NodeImpl<T> here = ((NodeImpl<T>) father).getChild(t);
-        if (here!= null) {
+        if (here != null) {
             return here;
         }
         if ((countObservers() > 0) && connected(father)) {
@@ -87,7 +87,7 @@ public class HashTree<T> extends Observable implements Tree<T> {
         NodeImpl<T> ni = (NodeImpl<T>)n;
         if (ni.getFather() != null) {
             NodeImpl<T> father = (NodeImpl<T>) ni.getFather();
-            father.getChildren().remove(n.getValue());
+//            father.getChildren().remove(n.getValue());
             if ((countObservers() > 0) && connected(father)) {
                 setChanged();
                 notifyObservers(new TreeOperation<T>(TreeOperation.OpType.del, father, n.getValue()));

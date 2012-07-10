@@ -14,12 +14,23 @@ import jbenchmarker.logoot.LogootStrategy;
  *
  * @author urso
  */
+// TODO : optimize space occupation by factoring common elements
 public class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> implements PositionnedNode<T> {
     private final T value;
+    private final Clock clock;
     
-    public LogootTreeNode(T value, int r, int nbBit, LogootStrategy strategy) {
+    static private class Clock {
+        int value = 0; 
+    }
+    
+    private LogootTreeNode(T value, int r, int nbBit, LogootStrategy strategy, Clock c) {
         super(r, nbBit, strategy);
         this.value = value;
+        this.clock = c;
+    }
+    
+    public LogootTreeNode(T value, int r, int nbBit, LogootStrategy strategy) {
+        this(value, r, nbBit, strategy, new Clock());
     }
     
     @Override
@@ -73,7 +84,17 @@ public class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> impleme
 
     @Override
     public LogootTreeNode<T> createNode(T elem) {
-        return new LogootTreeNode<T>(elem, replicaNumber, nbBit, strategy);
+        return new LogootTreeNode<T>(elem, replicaNumber, nbBit, strategy, clock);
+    }
+
+    @Override
+    protected int getClock() {
+        return clock.value;
+    }
+
+    @Override
+    protected void incClock() {
+        ++clock.value;
     }
 
 /*    public boolean same(OrderedNode<T> other) {
