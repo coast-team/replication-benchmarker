@@ -27,6 +27,7 @@ import crdt.tree.CRDTTree;
 import crdt.tree.TreeOperation;
 import java.util.ArrayList;
 import java.util.Iterator;
+import jbenchmarker.core.LocalOperation;
 
 /**
  * A profile that generates operation.
@@ -48,9 +49,10 @@ public abstract class TreeOperationProfile<T> implements OperationProfile {
         this.perAdd = perIns;
         this.r = new RandomGauss();
     }
-    
+
     @Override
-    public TreeOperation<T> nextOperation(CRDT crdt, VectorClock vectorClock) {
+    public LocalOperation nextOperation(CRDT crdt) {
+   
         Iterator<? extends Node<T>> it = ((CRDTTree<T>) crdt).lookup().getBFSIterator(null);
         ArrayList<Node<T>> l = new ArrayList<Node<T>>();  
         while (it.hasNext()) {

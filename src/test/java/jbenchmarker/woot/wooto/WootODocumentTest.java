@@ -51,11 +51,11 @@ public class WootODocumentTest {
 
     // helpers
     WootOperation ins(WootDocument r, WootOptimizedNode n, WootIdentifier cp, WootIdentifier cn) {
-        return r.insert(SequenceOperation.insert(0, 0, "", null), 
+        return r.insert(SequenceOperation.insert( 0, ""), 
                 n.getId(), cp, cn, n.getContent());
     }
     WootOperation del(WootDocument r, WootOptimizedNode n) {
-        return r.delete(SequenceOperation.delete(0, 0, 0, null), n.getId());
+        return r.delete(SequenceOperation.delete( 0, 0), n.getId());
     }
     
     @BeforeClass

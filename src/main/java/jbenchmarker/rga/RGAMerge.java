@@ -47,7 +47,7 @@ public class RGAMerge extends MergeAlgorithm {
 	protected void integrateRemote(SequenceMessage op) throws IncorrectTraceException {
 		RGAOperation rgaop  = (RGAOperation) op;
 		RGADocument	 rgadoc = (RGADocument)(this.getDoc());
-		this.siteVC.inc(rgaop.getOriginalOp().getReplica());
+		this.siteVC.inc(rgaop.getReplica());
 		rgadoc.apply(rgaop);
 //		purger.setLastVC(rgaop.getS4VTms().sid, rgaop.getOriginalOp().getVectorClock());
 		//RGANode tau = purger.tryPurge();
@@ -94,7 +94,7 @@ public class RGAMerge extends MergeAlgorithm {
 		int	 p			= opt.getPosition();
 		int offset; 	
 		
-		offset = opt.getNumberOf();
+		offset = opt.getLenghOfADel();
 		target = rgadoc.getVisibleNode(p+1);		
 		
 		for(int i=0; i < offset ; i++) {

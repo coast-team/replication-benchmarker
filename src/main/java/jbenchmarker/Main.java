@@ -24,18 +24,14 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import jbenchmarker.core.MergeAlgorithm;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
+import crdt.simulator.TraceFromFile;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.Hashtable;
-import java.util.Iterator;
-import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.trace.git.GitTrace;
 
 /**
  *
@@ -70,8 +66,9 @@ public class Main {
         long st = System.currentTimeMillis();
         for (int ex = 0; ex < nbExec; ex++) {
             System.out.println("execution ::: " + ex);
-//            Trace trace = TraceGenerator.traceFromXML(args[1], 1);
-        GitTrace trace = GitTrace.create("/Users/urso/Rech/github/git", "http://localhost:5984", "Makefile", false);
+           // Trace trace = TraceGenerator.traceFromXML(args[1], 1);
+            Trace trace = new TraceFromFile(args[1]);
+     //   GitTrace trace = GitTrace.create("/Users/urso/Rech/github/git", "http://localhost:5984", "Makefile", false);
 //        GitTrace trace = GitTrace.create("/Users/urso/Rech/github/linux", "http://localhost:5984", "MAINTAINERS", false);
 
             CausalSimulator cd = new CausalSimulator(rf);

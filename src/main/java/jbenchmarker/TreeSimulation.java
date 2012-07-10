@@ -4,42 +4,119 @@
  */
 package jbenchmarker;
 
+import collect.OrderedNode;
 import crdt.CRDT;
 import crdt.Factory;
+import crdt.set.CRDTSet;
+import crdt.set.NaiveSet;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
-import crdt.simulator.random.StandardSeqOpProfile;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.Hashtable;
-import java.util.Iterator;
+import crdt.simulator.random.StandardOrderedTreeOpProfile;
+import crdt.tree.fctree.FCTree;
+import crdt.tree.orderedtree.LogootTreeNode;
+import crdt.tree.orderedtree.PositionIdentifierTree;
+import crdt.tree.orderedtree.PositionnedNode;
+import crdt.tree.orderedtree.WootHashTreeNode;
+import crdt.tree.wordtree.WordConnectionPolicy;
+import crdt.tree.wordtree.WordTree;
+import crdt.tree.wordtree.policy.*;
+import java.beans.XMLEncoder;
+import java.io.*;
+import java.util.LinkedList;
 import java.util.List;
+import jbenchmarker.logoot.BoundaryStrategy;
+import jbenchmarker.ot.ottree.OTTree;
+import jbenchmarker.ot.ottree.OTTreeTranformation;
+import jbenchmarker.ot.soct2.SOCT2;
+import jbenchmarker.ot.soct2.SOCT2Log;
+import org.codehaus.jackson.map.ObjectWriter;
+
 /**
  *
- * @author score
+ * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class MainSimulation {
+public class TreeSimulation {
+    static PositionIdentifierTree createTree(OrderedNode root, Factory<CRDTSet> sf, Factory<WordConnectionPolicy> wcp) {
+        WordTree wt = new WordTree(sf.create(), wcp);
+        return new PositionIdentifierTree((PositionnedNode)root.createNode(null), wt);       
+    }
+    static Factory policy[] = {new WordSkip(), new WordReappear(), new WordRoot(), new WordCompact(),
+        new WordIncrementalSkip(), new WordIncrementalReappear(),
+        new WordIncrementalRoot(), new WordIncrementalCompact(), new WordIncrementalSkipOpti()};
+    
+   static  Factory set[] = {/*new CommutativeCounterSet(), new ConvergentCounterSet(),
+        new CommutativeLwwSet(), new ConvergentLwwSet(),
+        new CommutativeOrSet(), new ConvergentOrSet(),
+        new OTSet(new SOCT2(new AddWinTransformation(), null)),
+        new OTSet(new SOCT2(new DelWinTransformation(), null)),
+        new OTSet(new SOCT2(new AddWinTransformation(), new SOCT2GarbageCollector(5))),
+        new OTSet(new SOCT2(new DelWinTransformation(), new SOCT2GarbageCollector(5))),*/
+        new NaiveSet()};
+   
+   static  String setstr[] = {
+   /*"CommutativeCounterSet"
+           ,"ConvergentCounterSet"
+           ,"CommutativeLwwSet"
+           ,"ConvergentLwwSet"
+           ,"CommutativeOrSet"
+           ,"ConvergentOrSet"
+           ,"OTset Addwin without gc"
+           ,"OTset delwin without gc"
+           ,"OTset Addwin with gc"
+           ,"OTset delwin with gc"
+           ,*/"NaiveSet"};
+  /*static Factory<CRDT> fact[]={
+      new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null),
+      new PositionIdentifierTree((PositionnedNode)root.createNode(null), wt),   
+          
+      
+  };*/
 
+    static OrderedNode nodes[] = {new LogootTreeNode(null, 0, 32, new BoundaryStrategy(100)),new WootHashTreeNode(null,0)};
+  static List<Factory<CRDT>> fact=new LinkedList();
+  static List<String> factstr=new LinkedList<String>();
+  static void generateFactory(){
+      
+      for (Factory <WordConnectionPolicy>pol:policy){
+          for (int i=0; i<set.length;i++){
+              for (OrderedNode node:nodes){
+                fact.add(createTree(node, set[i], pol));
+                factstr.add("WordTree "+node.getClass().getName()+", "+setstr[i]+", "+pol.getClass().getName());
+              }
+              
+          }
+      }
+      fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null)));
+      factstr.add("OTTree");
+      fact.add(new FCTree());
+      factstr.add("FCTree");
+      
+  }
     static int base = 100;
     static int baseSerializ = 10;
     static public void main(String[] args) throws Exception {
-
-        if (args.length < 14) {
+        
+        
+        
+        
+        
+        
+        generateFactory();
+        
+        
+        if (args.length < 12) {
             System.err.println("Arguments :");
-            System.err.println("- Factory :  import crdt.Factory<CRDT> implementation ");
+            System.err.println("- Factory number ");
+            for (int p=0;p<factstr.size();p++){
+                System.out.println(""+p+". "+factstr.get(p));
+            }
             System.err.println("- Number of execu : ");
             System.err.println("- duration : ");
             System.err.println("- perIns : ");
             System.err.println("- perBlock : ");
-            System.err.println("- avgBlockSize : ");
-            System.err.println("- sdvBlockSize : ");
+            /*System.err.println("- avgBlockSize : ");
+            System.err.println("- sdvBlockSize : ");*/
             System.err.println("- probability : ");
             System.err.println("- delay : ");
             System.err.println("- sdv : ");
@@ -49,36 +126,71 @@ public class MainSimulation {
             System.err.println("- name File : ");
             System.exit(1);
         }
-        Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[0]).newInstance();
         
-        int nbExec = Integer.valueOf(args[1]);
+        
+        int j=0;
+        
+         System.err.println("Arguments :");
+            System.err.println("- Factory number : "+ args[j]+" \n\t"+factstr.get(Integer.parseInt(args[j++])));
+          
+            System.err.println("- Number of execu : "+args[j++]);
+            System.err.println("- duration : "+args[j++]);
+            System.err.println("- perIns : "+args[j++]);
+            System.err.println("- perChild : "+args[j++]);
+            /*System.err.println("- avgBlockSize : ");
+            System.err.println("- sdvBlockSize : ");*/
+            System.err.println("- probability : "+args[j++]);
+            System.err.println("- delay : "+args[j++]);
+            System.err.println("- sdv : "+args[j++]);
+            System.err.println("- replicas : "+args[j++]);
+            System.err.println("- thresold : "+args[j++]);
+            System.err.println("- scale for serealization : "+args[j++]);
+            System.err.println("- name File : "+args[j++]);
+        j=0;
+        Factory<CRDT> rf = (Factory<CRDT>) fact.get(Integer.parseInt(args[j++]));
+       
+        
+        int nbExec = Integer.valueOf(args[j++]);
         int nb = 1;
         if (nbExec > 1) {
             nb = nbExec + 1;
         }
-        long duration = Long.valueOf(args[2]);
-        double perIns = Double.valueOf(args[3]);
-        double perBlock = Double.valueOf(args[4]);
-        int avgBlockSize = Integer.valueOf(args[5]);
-        double sdvBlockSize = Double.valueOf(args[6]);
-        double probability = Double.valueOf(args[7]);
-        long delay = Long.valueOf(args[8]);
-        double sdv = Double.valueOf(args[9]);
-        int replicas = Integer.valueOf(args[10]);
-        int thresold = Integer.valueOf(args[11]);
-        int scaleMemory = Integer.valueOf(args[12]);
+        long duration = Long.valueOf(args[j++]);
+        double perIns = Double.valueOf(args[j++]);
+        double perChild = Double.valueOf(args[j++]);
+        /*int avgBlockSize = Integer.valueOf(args[5]);
+        double sdvBlockSize = Double.valueOf(args[6]);*/
+        double probability = Double.valueOf(args[j++]);
+        long delay = Long.valueOf(args[j++]);
+        double sdv = Double.valueOf(args[j++]);
+        int replicas = Integer.valueOf(args[j++]);
+        int thresold = Integer.valueOf(args[j++]);
+        int scaleMemory = Integer.valueOf(args[j++]);
+        String nameUsr = args[j++];
+        
         
         long ltime[][] = null, rtime[][] = null, mem[][] = null;
         int minSizeGen = 0, minSizeInteg = 0, minSizeMem = 0, nbrReplica = 0;
         int cop = 0, uop = 0, mop = 0;
-        String nameUsr = args[13];
+        
         Long sum = 0L;
         for (int ex = 0; ex < nbExec; ex++) {
             System.out.println("execution : "+ ex);
+            /*Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
+                    new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);*/
+            
             Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
-                    new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
+                    new StandardOrderedTreeOpProfile(perIns, perChild), probability, delay, sdv, replicas);
+            System.out.println("perIns"+perIns+", perChild"+perChild+" probability "+probability+"delay "+ delay+"sdv+"+sdv+"+, replicas"+replicas);
             CausalSimulator cd = new CausalSimulator(rf);
-            cd.setLogging(nameUsr);//file result
+            cd.setLogging(nameUsr);
+            //file result
+            /*ObjectOutputStream enc=new ObjectOutputStream(new FileOutputStream(nameUsr));
+            //XMLEncoder enc=new XMLEncoder(new FileOutputStream(nameUsr));
+            enc.writeObject(trace);
+            enc.flush();
+            enc.close();
+            */
             /*
              * trace : trace xml
              * args[4] : scalle for serialization
@@ -236,5 +348,7 @@ public class MainSimulation {
                 data[nbExpe][op] = sum2 /k;
         }
     }
+
+
 
 }

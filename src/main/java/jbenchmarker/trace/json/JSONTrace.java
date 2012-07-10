@@ -49,7 +49,7 @@ public class JSONTrace implements Trace{
             String sir = gson.toJson(ejs);
             fw.write(sir+"\n");
             
-            SequenceOperation so = TraceGenerator.oneJSON2OP(e, vectorClockMapper);
+            TraceOperation so = TraceGenerator.oneJSON2OP(e, vectorClockMapper);
             ops.add(so);         
             s.close();
             res = buf.readLine();
@@ -90,7 +90,7 @@ public class JSONTrace implements Trace{
                 String sir = gson.toJson(ejs);
                 fw.write(sir+"\n");
                 
-                SequenceOperation so = TraceGenerator.oneJSON2OP(e, vectorClockMapper);
+                TraceOperation so = TraceGenerator.oneJSON2OP(e, vectorClockMapper);
                 ops.add(so);                
             }
             s.close();

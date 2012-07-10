@@ -10,7 +10,7 @@ import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.PreconditionException;
 import java.util.List;
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.LocalOperation;
 
 /**
  *
@@ -23,7 +23,7 @@ public abstract class CRDTTree<T> extends CRDT<Tree<T>>  {
    abstract public CRDTMessage remove(UnorderedNode<T> subtree) throws PreconditionException;
     
    @Override
-   final public CRDTMessage applyLocal(Operation op) throws PreconditionException {
+   final public CRDTMessage applyLocal(LocalOperation op) throws PreconditionException {
        TreeOperation<T> top = (TreeOperation<T>) op;
        if (top.getType() == TreeOperation.OpType.add)
            return add((UnorderedNode<T>) top.getNode(), top.getContent());

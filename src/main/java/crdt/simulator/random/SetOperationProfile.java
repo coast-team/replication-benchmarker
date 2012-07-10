@@ -46,7 +46,7 @@ public abstract class SetOperationProfile<T> implements OperationProfile {
     }
     
     @Override
-    public SetOperation nextOperation(CRDT crdt, VectorClock vectorClock) {
+    public SetOperation nextOperation(CRDT crdt) {
         Set<T> s = ((CRDTSet<T>) crdt).lookup();       
         if (!full(s) && (s.isEmpty()  || r.nextDouble() < perIns)) {
             T elem = nextElement();

@@ -5,9 +5,9 @@
 package crdt.set;
 import crdt.CRDT;
 import crdt.CRDTMessage;
-import jbenchmarker.core.Operation;
 import java.util.*;
 import crdt.PreconditionException;
+import jbenchmarker.core.LocalOperation;
 
 /**
  *
@@ -32,7 +32,7 @@ public abstract class CRDTSet<T> extends CRDT<Set<T>>  {
     abstract public boolean contains (T t);
     
     @Override
-    final public CRDTMessage applyLocal(Operation op) throws PreconditionException {
+    final public CRDTMessage applyLocal(LocalOperation op) throws PreconditionException {
         
         SetOperation<T> s = (SetOperation<T>) op;
         CRDTMessage msg;

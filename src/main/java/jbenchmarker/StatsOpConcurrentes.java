@@ -31,11 +31,11 @@ public class StatsOpConcurrentes {
         
         while(en1.hasMoreElements()){
             opConcurente = 0;            
-            SequenceOperation so1 = (SequenceOperation)en1.nextElement();
+            TraceOperation so1 = (TraceOperation)en1.nextElement();
             Enumeration<TraceOperation> en2 = trace.enumeration();
         
              while(en2.hasMoreElements()){
-                SequenceOperation so2 = (SequenceOperation)en2.nextElement();
+                TraceOperation so2 = (TraceOperation)en2.nextElement();
                 if(so1==so2){
                 }else if(so1.getVectorClock().concurrent(so2.getVectorClock())){                   
                     opConcurente++;

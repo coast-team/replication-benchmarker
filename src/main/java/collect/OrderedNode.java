@@ -4,15 +4,14 @@
  */
 package collect;
 
-import crdt.tree.orderedtree.PositionIdentifier;
-import crdt.tree.orderedtree.Positioned;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  *
  * @author urso
  */
-public interface OrderedNode<T> {
+public interface OrderedNode<T> extends Serializable{
 
     /**
      * Number of children

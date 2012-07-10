@@ -52,7 +52,7 @@ public class LogootMerge<T> extends MergeAlgorithm {
     @Override
     protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
-        int offset = opt.getNumberOf(), position = opt.getPosition();
+        int offset = opt.getLenghOfADel(), position = opt.getPosition();
         
         for (int k = 1; k <= offset; k++) {
             LogootOperation<T> wop = LogootOperation.Delete(opt, getDoc().getId(position + k));

@@ -18,28 +18,20 @@
  */
 package crdt.simulator;
 
-import jbenchmarker.core.Operation;
 import collect.VectorClock;
-import crdt.*;
-import java.io.BufferedWriter;
+import crdt.CRDT;
+import crdt.CRDTMessage;
+import crdt.Factory;
+import crdt.PreconditionException;
 import java.io.ByteArrayOutputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
-import jbenchmarker.core.SequenceOperation;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jbenchmarker.core.LocalOperation;
 
 /**
  *
@@ -95,7 +87,7 @@ public class CausalSimulator extends Simulator {
     public double getLocalAvg(){
         return localSum/((double)nbLocal);
     }
-    
+    ObjectOutputStream writer = null;
     //Viewer view =null; /*new DiagSequence(20);*/
     /**
      * Runs a causally ordered trace. Throws exception if not causally ordered
@@ -123,9 +115,9 @@ public class CausalSimulator extends Simulator {
         orderTrace = new HashMap();        
         int numTrace = 0;
         
-        PrintWriter writer = null;
+        
         if (logging != null){
-            writer = new PrintWriter(new BufferedWriter(new FileWriter(logging)));
+            writer = new ObjectOutputStream(new FileOutputStream(logging));
         }
         
         setOp = new HashSet();
@@ -134,7 +126,7 @@ public class CausalSimulator extends Simulator {
         while (it.hasMoreElements()) {
             tour++;
 
-System.out.println(tour); 
+//System.out.println(tour); 
             
             final TraceOperation opt = it.nextElement();                      
             final int r = opt.getReplica();             
@@ -171,15 +163,14 @@ System.out.println(tour);
                 }
                 play(localReplica, vc, concurrentOps);
             }
-            Operation op = opt.getOperation(localReplica);
+            LocalOperation op = opt.getOperation();
+            op=op.adaptTo(localReplica);
             history.get(r).add(opt);
             if (detail) {
                 orderTrace.put(opt, numTrace++);
             }
-
-            if (writer != null) {
-                storeOp(writer, op);
-            }
+            storeOp(opt);
+            //storeOp(new TraceOperationImpl(op,opt.getReplica(),opt.getVectorClock()));
             if (!vc.readyFor(r, opt.getVectorClock())) {
                 throw new IncorrectTraceException("replica " + r + " with vc " + vc + " not ready for " + opt.getVectorClock());
             }
@@ -206,7 +197,7 @@ System.out.println(tour);
         // Final : applyRemote all pending remote CRDTMessage (not the best complexity)
         for (CRDT r : replicas.values()) {
             int n = r.getReplicaNumber();
-System.out.println("final : " + n); 
+//System.out.println("final : " + n); 
             concurrentOps.clear();
             VectorClock vc = clocks.get(n);
             for (Entry<Integer, Integer> e : globalClock.entrySet()) {
@@ -338,15 +329,24 @@ System.out.println("final : " + n);
         return l;
     }
     
-    public void storeOp(PrintWriter writer, Operation op) {
+    public void storeOp(TraceOperation op) {
         // TODO : generalize for any kind of operation
-        String trace = "";
-        SequenceOperation sOp = (SequenceOperation) op;
-        if (sOp.getType() == SequenceOperation.OpType.ins) {
-            trace = "Ins|" + sOp.getContentAsString() + "|" + sOp.getPosition() + "|" + sOp.getVectorClock() + "|" + sOp.getReplica();
-        } else {
-            trace = "del|" + sOp.getNumberOf() + "|" + sOp.getPosition() + "|" + sOp.getVectorClock() + "|" + sOp.getReplica();
+       if (writer==null)
+           return;
+       try {
+  //          System.out.println(""+op);
+            writer.writeObject(op);
+           // System.out.println(""+op);
+            /*String trace = "";
+            SequenceOperation sOp = (SequenceOperation) op;
+            if (sOp.getType() == SequenceOperation.OpType.ins) {
+                trace = "Ins|" + sOp.getContentAsString() + "|" + sOp.getPosition() + "|" + sOp.getVectorClock() + "|" + sOp.getReplica();
+            } else {
+                trace = "del|" + sOp.getNumberOf() + "|" + sOp.getPosition() + "|" + sOp.getVectorClock() + "|" + sOp.getReplica();
+            }
+            writer.append(trace+"\n");*/
+        } catch (IOException ex) {
+            Logger.getLogger(CausalSimulator.class.getName()).log(Level.SEVERE, null, ex);
         }
-        writer.append(trace+"\n");
     }
 }

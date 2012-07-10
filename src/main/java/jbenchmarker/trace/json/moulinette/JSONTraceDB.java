@@ -216,7 +216,7 @@ public class JSONTraceDB implements Trace{
                       
                                 
                         //Création d'une nouvelle SequenceOperation
-                        SequenceOperation sop = TraceGenerator.oneJSONDB2OP(repli,d,e,vectorClockMapper);
+                        TraceOperation sop = TraceGenerator.oneJSONDB2OP(repli,d,e,vectorClockMapper);
                         
                     }//fin itération sur les lignes d'une opération
                 }//fin itération sur fileOperation pour vectorclocker

@@ -51,11 +51,11 @@ public class WootHashMerge<T> extends MergeAlgorithm {
         WootHashDocument wdoc = this.getDoc();
         int p = opt.getPosition();
         WootHashNode w = wdoc.getVisible(p);
-        for (int i = 0; i < opt.getNumberOf(); i++) {
+        for (int i = 0; i < opt.getLenghOfADel(); i++) {
             WootOperation wop = wdoc.delete(opt, w.getId());
             lop.add(wop);
             wdoc.apply(wop);
-            if (i + 1 < opt.getNumberOf()) {
+            if (i + 1 < opt.getLenghOfADel()) {
                 w = wdoc.nextVisible(w);
             }
         }

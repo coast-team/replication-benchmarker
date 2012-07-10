@@ -7,9 +7,9 @@ package crdt.tree.orderedtree;
 import collect.OrderedNode;
 import crdt.CRDT;
 import crdt.CRDTMessage;
-import jbenchmarker.core.Operation;
 import crdt.PreconditionException;
 import java.util.List;
+import jbenchmarker.core.LocalOperation;
 
 /**
  *
@@ -22,7 +22,7 @@ public abstract class CRDTOrderedTree<T> extends CRDT<OrderedNode<T>> {
     abstract public CRDTMessage remove(List<Integer> path) throws PreconditionException;
 
     @Override
-    final public CRDTMessage applyLocal(Operation op) throws PreconditionException {
+    final public CRDTMessage applyLocal(LocalOperation op) throws PreconditionException {
         OrderedTreeOperation<T> top = (OrderedTreeOperation<T>) op;
         if (top.getType() == OrderedTreeOperation.OpType.add) {
             return add(top.getPath(), top.getPosition(), top.getContent());
@@ -53,6 +53,13 @@ public abstract class CRDTOrderedTree<T> extends CRDT<OrderedNode<T>> {
         return true;
     }
 
+    public OrderedNode<T> getNodeFromPath(List<Integer> path){
+        OrderedNode<T> node=this.lookup();
+        for (Integer i:path){
+            node=node.getChild(i);
+        }
+        return node;
+    }
     public boolean sameLookup(CRDTOrderedTree tree) {
         return sameNode(this.lookup(), (OrderedNode) tree.lookup());
     }

@@ -4,16 +4,26 @@
  */
 package crdt.set;
 
+import crdt.CRDT;
 import crdt.tree.orderedtree.OrderedTreeOperation;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jbenchmarker.core.Operation;
-
+import jbenchmarker.core.LocalOperation;
 /**
  *
  * @author score
  */
-public class SetOperation<T> implements Operation {
+public class SetOperation<T> implements LocalOperation {
+
+    @Override
+    public LocalOperation adaptTo(CRDT replica) {
+        //TODO: Correct Adaption 
+        return this;
+        /*if (this.type==OpType.del && !((CRDTSet)replica).contains(this.content)){
+            
+        }*/
+    }
     
     public enum OpType {add, del}; 
     private OpType type;

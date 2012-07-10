@@ -10,29 +10,30 @@ import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.TypeVariable;
 import java.util.List;
+
 /**
  *
- * @author score
+ * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class MainSimulation {
-
+public class SimulationWorker {
+    
+    
     static int base = 100;
     static int baseSerializ = 10;
-    static public void main(String[] args) throws Exception {
-
-        if (args.length < 14) {
-            System.err.println("Arguments :");
+    static public void main(String... args) throws Exception {
+        SimulatorConfiguration config=null;
+        for (String arg:args){
+            
+        }
+        
+        
+        
+        if (config==null) {
+            /*System.err.println("Arguments :");
             System.err.println("- Factory :  import crdt.Factory<CRDT> implementation ");
             System.err.println("- Number of execu : ");
             System.err.println("- duration : ");
@@ -46,17 +47,16 @@ public class MainSimulation {
             System.err.println("- replicas : ");
             System.err.println("- thresold : ");
             System.err.println("- scale for serealization : ");
-            System.err.println("- name File : ");
+            System.err.println("- name File : ");*/
             System.exit(1);
         }
-        Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[0]).newInstance();
-        
-        int nbExec = Integer.valueOf(args[1]);
+        //Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[0]).newInstance();
+        int nbExec = config.getNbexec();
         int nb = 1;
         if (nbExec > 1) {
             nb = nbExec + 1;
         }
-        long duration = Long.valueOf(args[2]);
+        /*long duration = Long.valueOf(args[2]);
         double perIns = Double.valueOf(args[3]);
         double perBlock = Double.valueOf(args[4]);
         int avgBlockSize = Integer.valueOf(args[5]);
@@ -64,9 +64,9 @@ public class MainSimulation {
         double probability = Double.valueOf(args[7]);
         long delay = Long.valueOf(args[8]);
         double sdv = Double.valueOf(args[9]);
-        int replicas = Integer.valueOf(args[10]);
-        int thresold = Integer.valueOf(args[11]);
-        int scaleMemory = Integer.valueOf(args[12]);
+        int replicas = Integer.valueOf(args[10]);*/
+        //int thresold = config.getThresold();
+        //int scaleMemory = config.getScaleMemory();
         
         long ltime[][] = null, rtime[][] = null, mem[][] = null;
         int minSizeGen = 0, minSizeInteg = 0, minSizeMem = 0, nbrReplica = 0;
@@ -75,17 +75,20 @@ public class MainSimulation {
         Long sum = 0L;
         for (int ex = 0; ex < nbExec; ex++) {
             System.out.println("execution : "+ ex);
-            Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
-                    new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
-            CausalSimulator cd = new CausalSimulator(rf);
-            cd.setLogging(nameUsr);//file result
+            /*Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
+                    new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);*/
+            Trace trace = config.getTrace();
+            CausalSimulator cd = new CausalSimulator(config.getRf());
+            if(config.getOutLog()!=null){
+                cd.setLogging(config.getOutLog());//file result
+            }
             /*
              * trace : trace xml
              * args[4] : scalle for serialization
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.runWithMemory(trace, scaleMemory, true, true);
+            cd.runWithMemory(trace, config.getScaleMemory(), config.isTimeExecution(), config.isOverHead());
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
@@ -118,7 +121,7 @@ public class MainSimulation {
             }
             sum += cd.getRemoteSum()+cd.getLocalSum();           
             cd = null;
-            trace = null;
+            //trace = null; .???
             System.gc();
         }
         sum = sum/nbrReplica;
@@ -126,9 +129,9 @@ public class MainSimulation {
         System.out.println("Best execution time in :"+(sum/Math.pow(10, 9)) +" second");
         
         if (nbExec > 1) {
-            computeAverage(ltime, thresold, minSizeGen);
-            computeAverage(mem, thresold, minSizeMem);
-            computeAverage(rtime, thresold, minSizeInteg);
+            computeAverage(ltime, config.getThresold(), minSizeGen);
+            computeAverage(mem, config.getThresold(), minSizeMem);
+            computeAverage(rtime, config.getThresold(), minSizeInteg);
         }
         
         String file = writeToFile(ltime, nameUsr, "usr", minSizeGen);
@@ -236,5 +239,5 @@ public class MainSimulation {
                 data[nbExpe][op] = sum2 /k;
         }
     }
-
+    
 }

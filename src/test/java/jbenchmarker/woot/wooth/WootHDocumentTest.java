@@ -161,8 +161,8 @@ public class WootHDocumentTest {
     public void testApply() {
         System.out.println("apply");
         WootHashDocument instance = new WootHashDocument();
-        SequenceOperation ins = SequenceOperation.insert(0, 0, "", null),
-                del = SequenceOperation.delete(0, 0, 0, null);
+        SequenceOperation ins = SequenceOperation.insert( 0, ""),
+                del = SequenceOperation.delete( 0, 0);
         WootIdentifier a = new WootIdentifier(1,1), b = new WootIdentifier(1,2),
                 c = new WootIdentifier(2,1), d = new WootIdentifier(2,2), 
                 e = new WootIdentifier(3,1), f = new WootIdentifier(3,2),
@@ -202,7 +202,7 @@ public class WootHDocumentTest {
     @Test
     public void wootPuzzle() {
         System.out.println("Woot Puzzle");
-        SequenceOperation ins = SequenceOperation.insert(0, 0, "", null);
+        SequenceOperation ins = SequenceOperation.insert( 0, "");
         WootHashDocument instance = new WootHashDocument();
         WootIdentifier a = new WootIdentifier(1,1), b = new WootIdentifier(3,1),
                 c = new WootIdentifier(2,1);

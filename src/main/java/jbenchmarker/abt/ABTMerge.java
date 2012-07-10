@@ -54,8 +54,8 @@ public class ABTMerge extends MergeAlgorithm {
 		ABTOperation abtop = (ABTOperation)op;		
 		ABTOperation top = null;
 		ABTDocument abtdoc = (ABTDocument)(this.getDoc());
-		if (this.readyFor(abtop.sid, abtop.vc)) throw new RuntimeException("it seems causal reception is broken");
-		this.siteVC.inc(abtop.getOriginalOp().getReplica());
+		if (this.readyFor(abtop.getReplica(), abtop.vc)) throw new RuntimeException("it seems causal reception is broken");
+		this.siteVC.inc(abtop.getReplica());
 
 		top = abtlog.updateHR(abtop);		
 
@@ -74,16 +74,16 @@ public class ABTMerge extends MergeAlgorithm {
 
 		int offset;
 		int p = opt.getPosition();
-		if(opt.getType() ==  SequenceOperation.OpType.del) offset = opt.getNumberOf();
+		if(opt.getType() ==  SequenceOperation.OpType.del) offset = opt.getLenghOfADel();
 		else offset = opt.getContent().size();
 		
 		for(int i=0;i<offset;i++){
 			this.siteVC.inc(this.getReplicaNumber());
 			
 			if(opt.getType() == SequenceOperation.OpType.del){
-				abtop = new ABTOperation(opt,p+1, siteVC);
+				abtop = new ABTOperation(opt,this.getReplicaNumber() ,p+1, siteVC);
 			} else {
-				abtop = new ABTOperation(opt,p+i, opt.getContent().get(i), siteVC);
+				abtop = new ABTOperation(opt,this.getReplicaNumber(),p+i, opt.getContent().get(i), siteVC);
 			}
 			
 			abtdoc.apply(abtop);

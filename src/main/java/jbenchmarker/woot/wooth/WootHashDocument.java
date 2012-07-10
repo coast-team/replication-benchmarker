@@ -1,20 +1,20 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2011 INRIA / LORIA / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2011
+ * INRIA / LORIA / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.woot.wooth;
 
@@ -31,6 +31,7 @@ import jbenchmarker.woot.WootPosition;
  * @author urso
  */
 public class WootHashDocument<T> implements Document {
+
     final private WootHashNode<T> first;
     final private Map<WootIdentifier, WootHashNode<T>> map;
     private int size = 0;
@@ -54,35 +55,42 @@ public class WootHashDocument<T> implements Document {
     @Override
     public String view() {
         StringBuilder s = new StringBuilder();
-        for (WootHashNode w=first; w!=null; w = w.getNext()) 
-            if (w.isVisible()) s.append(w.getContent());
+        for (WootHashNode w = first; w != null; w = w.getNext()) {
+            if (w.isVisible()) {
+                s.append(w.getContent());
+            }
+        }
         return s.toString();
     }
-    
+
     public T find(WootIdentifier id) {
         return map.get(id).getContent();
     }
 
     public boolean has(WootIdentifier id) {
-        for (WootHashNode w=first; w!=null; w = w.getNext()) 
-            if (w.isVisible()) return true;
-        return false;    
-    }    
-    
+        for (WootHashNode w = first; w != null; w = w.getNext()) {
+            if (w.isVisible()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void apply(Operation op) {
         WootOperation<T> wop = (WootOperation<T>) op;
-        
+
         if (wop.getType() == SequenceOperation.OpType.del) {
             del(wop.getId());
-        } else { 
+        } else {
             add(wop.getId(), wop.getContent(), wop.getIp(), wop.getIn());
-        }        
+        }
     }
 
     protected void add(WootIdentifier id, T content, WootIdentifier ip, WootIdentifier in) {
-        WootHashNode wp = map.get(ip), wn = map.get(in),
-                w = new WootHashNode(id, content, true, null, Math.max(wp.getDegree(), wn.getDegree()) + 1);
+        WootHashNode wp = map.get(ip);
+        WootHashNode wn = map.get(in);
+        WootHashNode w = new WootHashNode(id, content, true, null, Math.max(wp.getDegree(), wn.getDegree()) + 1);
         insertBetween(w, wp, wn);
         map.put(id, w);
         ++size;
@@ -91,8 +99,7 @@ public class WootHashDocument<T> implements Document {
     protected void del(WootIdentifier id) {
         setVisible(id, false);
     }
-    
-    
+
     protected void setVisible(WootIdentifier id, boolean b) {
         WootHashNode<T> e = map.get(id);
         if (!b && e.isVisible()) {
@@ -102,16 +109,20 @@ public class WootHashDocument<T> implements Document {
         }
         e.setVisible(b);
     }
-    
+
     /**
      * pth visible character
      */
     public WootHashNode<T> getVisible(int p) {
-        int j=-1;        
+        int j = -1;
         WootHashNode w = first;
-        while (j<p) {
-            if (w.isVisible()) j++;
-            if (j<p) w = w.getNext();
+        while (j < p) {
+            if (w.isVisible()) {
+                j++;
+            }
+            if (j < p) {
+                w = w.getNext();
+            }
         }
         return w;
     }
@@ -119,39 +130,42 @@ public class WootHashDocument<T> implements Document {
     /**
      * next visible character starting from v model position.
      */
-    public WootHashNode nextVisible(WootHashNode v) { 
+    public WootHashNode nextVisible(WootHashNode v) {
         v = v.getNext();
         while (!v.isVisible()) {
             v = v.getNext();
         }
-        return v; 
+        return v;
     }
 
     /**
      * Previous character of pth visible character. 0 for 0th
      */
     public WootHashNode getPrevious(int p) {
-        if (p==0) return first;
-        return getVisible(p-1);
+        if (p == 0) {
+            return first;
+        }
+        return getVisible(p - 1);
     }
-    
+
     /**
-     * Next character of pth visible characterstarting from v model position. IE for last visible. 
+     * Next character of pth visible characterstarting from v model position. IE
+     * for last visible.
      */
     public WootHashNode getNext(WootHashNode v) {
         v = v.getNext();
-        while ( !v.isVisible() && v.getNext() != null) {
+        while (!v.isVisible() && v.getNext() != null) {
             v = v.getNext();
         }
-        return v; 
+        return v;
     }
-    
+
     public WootOperation delete(SequenceOperation o, WootIdentifier id) {
         return new WootOperation(o, SequenceOperation.OpType.del, id, null);
     }
-    
+
     public WootOperation insert(SequenceOperation o, WootIdentifier ip, WootIdentifier in, T content) {
-        return new WootOperation(o, SequenceOperation.OpType.ins, 
+        return new WootOperation(o, SequenceOperation.OpType.ins,
                 new WootPosition(nextIdentifier(), ip, in), content);
     }
 
@@ -163,8 +177,9 @@ public class WootHashDocument<T> implements Document {
             WootHashNode e = ip.getNext().getNext();
             int dMin = ip.getNext().getDegree();
             while (e != in) {
-                if (e==null)
+                if (e == null) {
                     System.out.println("bug");
+                }
                 if (e.getDegree() < dMin) {
                     dMin = e.getDegree();
                 }
@@ -179,12 +194,14 @@ public class WootHashDocument<T> implements Document {
                         in = e;
                     }
                 }
-                if (e!=in) e=e.getNext();
+                if (e != in) {
+                    e = e.getNext();
+                }
             }
             insertBetween(wn, ip, in);
         }
     }
-    
+
     WootHashNode getFirst() {
         return first;
     }
@@ -193,7 +210,7 @@ public class WootHashDocument<T> implements Document {
     public int viewLength() {
         return size;
     }
-    
+
     protected WootIdentifier nextIdentifier() {
         clock++;
         return new WootIdentifier(this.replicaNumber, clock);

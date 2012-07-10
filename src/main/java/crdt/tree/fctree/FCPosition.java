@@ -4,7 +4,7 @@
  */
 package crdt.tree.fctree;
 
-import java.util.Arrays;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,10 +13,16 @@ import java.util.List;
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class FCPosition {
+public class FCPosition implements Serializable {
 
     List<Byte> position;
 
+    /**
+     * convert a position with identifier string representation to sequence of byte to ordering them
+     * @param b position bytes
+     * @param id identifier
+     * @return b and id are concatened.
+     */
     public static LinkedList<Byte> conv(List<Byte> b, FCIdentifier id) {
         LinkedList<Byte> s1 = new LinkedList<Byte>();
         s1.addAll(b);
@@ -50,10 +56,18 @@ public class FCPosition {
         return 0;
     }
 
+    /**
+     * Make object from position.
+     * @param position
+     */
     public FCPosition(List<Byte> position) {
         this.position = position;
     }
 
+    /**
+     * Return the position
+     * @return
+     */
     public List<Byte> getPosition() {
         return position;
     }

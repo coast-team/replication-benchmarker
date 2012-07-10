@@ -8,6 +8,7 @@ import collect.VectorClock;
 import crdt.CRDT;
 import crdt.simulator.TraceOperation;
 import java.util.List;
+import jbenchmarker.core.LocalOperation;
 import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.trace.git.model.Edition;
@@ -36,17 +37,19 @@ public class GitOperation extends TraceOperation {
         default:
             type = SequenceOperation.OpType.unsupported;    
         }
-        sop = new SequenceOperation<String>(type, replica, e.getBeginA(), 
-                e.getEndA() - e.getBeginA(), e.getCb(), new VectorClock(VC));
+        sop = new SequenceOperation<String>(type, /*replica,*/ e.getBeginA(), 
+                e.getEndA() - e.getBeginA(), e.getCb()/*, new VectorClock(VC)*/);
     }
 
     @Override
-    public Operation getOperation(CRDT replica) {
-        return sop.getOperation(replica);
+    public LocalOperation getOperation() {
+        return sop;
     }
 
     @Override
     public String toString() {
         return "GitOperation{" + "sop=" + sop + '}';
     }
+
+   
 }

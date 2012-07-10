@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jbenchmarker.core.LocalOperation;
 import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.trace.git.model.Commit;
@@ -109,10 +110,10 @@ public class GitTrace implements Trace {
         
     class Walker implements Enumeration<TraceOperation> {
 
-        class MergeCorrection extends TraceOperation {
+        class MergeCorrection extends TraceOperation implements LocalOperation {
 
             Patch patch;
-            Operation first;
+            LocalOperation first;
             
             MergeCorrection(int replica, VectorClock VC, Commit merge) {
                 super(replica, new VectorClock(VC));  
@@ -120,22 +121,34 @@ public class GitTrace implements Trace {
                 patch = patchCRUD.get(merge.patchId());
             }          
 
-            /**
+            /** 
              * Introduce to the trace on-the-fly correction operations to obtain the merge result.
              * @param replica the replica that will originate the correction
              * @return the first edit of the correction operation
              */
+            
             @Override
-            public Operation getOperation(CRDT replica) {
+            public LocalOperation getOperation(/*CRDT replica*/) {
+                /**/
+                  throw new UnsupportedOperationException("Not supported yet.");           
+            }
+           
+            @Override
+            public String toString() {
+                return "MergeCorrection{" + "first=" + first + '}';
+            }
+
+            @Override
+            public LocalOperation adaptTo(CRDT replica) {
                 if (first == null) {
                     try {
                         List<Edition> l = diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
                         if (l.isEmpty()) {
                             currentVC.inc(replica.getReplicaNumber());           
-                            first = SequenceOperation.noop(replica.getReplicaNumber(), getVectorClock());
+                            first = SequenceOperation.noop(/*replica.getReplicaNumber(), getVectorClock()*/);
                         } else {
                             editions.addAll(l);
-                            first = nextElement().getOperation(replica);
+                            first = nextElement().getOperation().adaptTo(replica);
                         }
                     } catch (IOException ex) {
                         Logger.getLogger(GitTrace.class.getName()).log(Level.SEVERE, "During merge correction computation", ex);
@@ -145,9 +158,14 @@ public class GitTrace implements Trace {
             }
 
             @Override
-            public String toString() {
-                return "MergeCorrection{" + "first=" + first + '}';
+            public MergeCorrection clone() {
+                //return new MergeCorrection(replica, VC,  merge) {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
+
+          
+
+            
         }
         
         

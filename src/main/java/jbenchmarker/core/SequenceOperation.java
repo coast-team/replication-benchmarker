@@ -20,8 +20,6 @@ package jbenchmarker.core;
 
 import collect.VectorClock;
 import crdt.CRDT;
-import crdt.RemoteOperation;
-import crdt.simulator.TraceOperation;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +29,9 @@ import java.util.List;
  * T is a Character or a String.
  * @author urso
  */
-public class SequenceOperation<T> extends TraceOperation implements Operation, Serializable{
+public class SequenceOperation<T> /*extends TraceOperation */implements LocalOperation, Serializable{
 
-    @Override
+   /* @Override
     public Operation getOperation(CRDT replica) {
         
         int sizeDoc = ((MergeAlgorithm) replica).getDoc().viewLength();
@@ -49,21 +47,39 @@ public class SequenceOperation<T> extends TraceOperation implements Operation, S
             }
         }
         return this;
-    }
+    }*/
 
     @Override
-    public Operation clone() {
-        return new SequenceOperation(type, this.getReplica(), position, numberOf, 
-                new ArrayList(content), new VectorClock(this.getVectorClock()));
+    public SequenceOperation clone() {
+        throw new UnsupportedOperationException("Not implemented yet");
+      /*  return new SequenceOperation(type, this.getReplica(), position, numberOf, 
+                new ArrayList(content), new VectorClock(this.getVectorClock()));*/
                  
     }
 
-    
+    @Override
+    public LocalOperation adaptTo(CRDT replica) {
+       
+        int sizeDoc = ((MergeAlgorithm) replica).getDoc().viewLength();
+//
+        if (this.getType() == OpType.ins && this.position > sizeDoc) {
+            this.position = sizeDoc;//a position exceeds document size
+        } else if (this.getType() != OpType.ins) {
+            if (this.position >= sizeDoc) {
+               this.position = sizeDoc - 1;//a position exceeds document size
+            }
+            if ((this.position + this.lenghOfADel) > sizeDoc) {
+                this.lenghOfADel = sizeDoc - this.position; //delete document at position exceeds document size
+            }
+        }
+        return this;
+    }
+ 
     public enum OpType {ins, del, update, unsupported, noop}; 
     
     private OpType type;                  // type of operation : insert or delete
     private int position;                 // position in the document
-    private int numberOf;                   // length of a del
+    private int lenghOfADel;                   // length of a del
     private List<T> content;          // content of an ins
     
     public List<T> getContent() {
@@ -78,8 +94,8 @@ public class SequenceOperation<T> extends TraceOperation implements Operation, S
         return s.toString();
     }
 
-    public int getNumberOf() {
-        return numberOf;
+    public int getLenghOfADel() {
+        return lenghOfADel;
     }
 
     public int getPosition() {
@@ -90,59 +106,59 @@ public class SequenceOperation<T> extends TraceOperation implements Operation, S
         return type;
     }
 
-    public SequenceOperation(OpType type, int replica, int position, int offset, List<T> content, VectorClock VC) {
-        super(replica, VC);
+    public SequenceOperation(OpType type/*, /*int replica*/, int position, int offset, List<T> content/*/*, VectorClock VC*/) {
+        //super(replica, VC);
         this.type = type;
         this.position = position;
-        this.numberOf = offset;
+        this.lenghOfADel = offset;
         this.content = content;
     }
 
     /*
      * Construction of an insert operation (character)
      */
-    static public SequenceOperation<Character> insert(int replica, int position, String content, VectorClock VC) {
+    static public SequenceOperation<Character> insert(/*/*int replica, */int position, String content/*/*, VectorClock VC*/) {
         List<Character> l = new ArrayList<Character>();
         for (int i = 0; i < content.length(); ++i) {
             l.add(content.charAt(i));
         }        
-        return new SequenceOperation(OpType.ins, replica, position, 0, l, VC);
+        return new SequenceOperation(OpType.ins, /*replica,*/ position, 0, l/*,/* VC*/);
     }
     
     /*
      * Construction of an delete operation
      */
-    static public SequenceOperation delete(int replica, int position, int offset, VectorClock VC) {
-        return new SequenceOperation(OpType.del, replica, position, offset, null, VC);
+    static public SequenceOperation delete(/*int replica,*/ int position, int offset /*VectorClock VC*/) {
+        return new SequenceOperation(OpType.del, /*replica,*/ position, offset, null/*, VC*/);
     }
     
     /*
      * Construction of an update operation
      */
-     static public SequenceOperation<Character> update(int replica, int position, int offset, String content, VectorClock VC){
+     static public SequenceOperation<Character> update(/*int replica, */int position, int offset, String content/*, VectorClock VC*/){
          List<Character> l = new ArrayList<Character>();
          for (int i = 0; i < content.length(); ++i) {
             l.add(content.charAt(i));
          }        
-         return new SequenceOperation<Character>(OpType.update, replica, position, offset, l, VC);
+         return new SequenceOperation<Character>(OpType.update,/* replica, */position, offset, l/*, VC*/);
      }  
      
-     static public <T> SequenceOperation<T> update(int replica, int position, int offset, List<T> content, VectorClock VC){
-         return new SequenceOperation(OpType.update, replica, position, offset, content, VC);
+     static public <T> SequenceOperation<T> update(/*int replica, */int position, int offset, List<T> content/*, VectorClock VC*/){
+         return new SequenceOperation(OpType.update,/*replica,*/ position, offset, content/*, VC*/);
      }
      
      /** 
       * Construction of a noop operation (usefull for pure merge) 
       */
-     public static SequenceOperation noop(int replica, VectorClock VC) {
-        return new SequenceOperation(OpType.noop, replica, -1, -1, null, VC);
+     public static SequenceOperation noop(/*int replica*//*, VectorClock VC*/) {
+        return new SequenceOperation(OpType.noop, /*replica, */-1, -1, null/*, VC*/);
      }
      
      /*
      * Construction of a stylage operation
      */
-     static public SequenceOperation<Character> unsupported(int replica, VectorClock VC){
-         return new SequenceOperation(OpType.unsupported, replica, -1, -1, null, VC);
+     static public SequenceOperation<Character> unsupported(/*int replica*//*, VectorClock VC*/){
+         return new SequenceOperation(OpType.unsupported,/*replica,*/ -1, -1, null/*, VC*/);
      }    
      
      
@@ -161,7 +177,7 @@ public class SequenceOperation<T> extends TraceOperation implements Operation, S
         if (this.position != other.position) {
             return false;
         }
-        if (this.numberOf != other.numberOf) {
+        if (this.lenghOfADel != other.lenghOfADel) {
              return false;
         }
         if ((this.content == null) ? (other.content != null) : !this.content.equals(other.content)) {
@@ -175,21 +191,26 @@ public class SequenceOperation<T> extends TraceOperation implements Operation, S
         int hash = 7;
         hash = 89 * hash + (this.type != null ? this.type.hashCode() : 0);
         hash = 89 * hash + this.position;
-        hash = 89 * hash + this.numberOf;
+        hash = 89 * hash + this.lenghOfADel;
         hash = 89 * hash + (this.content != null ? this.content.hashCode() : 0);
         return 89 * hash + super.hashCode();
     }
 
-
     @Override
+    public String toString() {
+        return "SequenceOperation{" + "type=" + type + ", position=" + position + ", numberOf=" + lenghOfADel + ", content=" + content + '}';
+    }
+
+
+    /*@Override
     public String toString() {
         return "SequenceOperation{" + "replica=" + getReplica() + ", VC=" + getVectorClock() +
                 ", type=" + type + ", position=" + position + 
                 (type == OpType.ins ? "" : ", offset=" + numberOf) + 
                 (type == OpType.del ? "" : ", content=" + content) + '}';
-    }
+    }*/
     
     public int getRange() {
-        return (type == OpType.ins) ? content.size() : numberOf;  
+        return (type == OpType.ins) ? content.size() : lenghOfADel;  
     }
 }

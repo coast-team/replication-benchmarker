@@ -71,6 +71,17 @@
             <timezone>+1</timezone>
         </developer>
         <developer>
+            <id>stemarti</id>
+            <name>Stéĥane Martin</name>
+            <email>stephane.martin@loria.fr</email>
+            <organization>Nancy-Université</organization>
+            <organizationUrl>http://www.uhp-nancy.fr/</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
             <id>knowhunger</id>
             <name>Hyun-Gul Roh</name>
             <email>knowhunger@gmail.com</email>
@@ -276,6 +287,11 @@
             <groupId>org.ektorp</groupId>
             <artifactId>org.ektorp.android</artifactId>
             <version>1.2.2</version>
+        </dependency>
+        <dependency>
+         <groupId>org.reflections</groupId>
+         <artifactId>reflections</artifactId>
+         <version>0.9.8</version>
         </dependency>
     </dependencies>
 </project>

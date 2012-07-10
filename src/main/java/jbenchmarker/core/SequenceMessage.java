@@ -29,13 +29,23 @@ public abstract class SequenceMessage implements RemoteOperation,Serializable,Me
     public enum MessageType {ins, del}; 
     
     final private SequenceOperation originalOp;       // Trace operation issuing this one
-
+    private int replica;
     public SequenceOperation getOriginalOp() {
         return originalOp;
     }
+
+    public int getReplica() {
+        return replica;
+    }
+
+    public SequenceMessage(SequenceOperation originalOp) {
+        this.originalOp = originalOp;
+    }
     
-    public SequenceMessage(SequenceOperation o) {
+    
+    public SequenceMessage(SequenceOperation o,int replica) {
         this.originalOp = o;
+        this.replica=replica;
     }
 
     @Override

@@ -28,13 +28,30 @@ import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.ReplicaFactory;
 import collect.VectorClock;
 import jbenchmarker.sim.PlaceboFactory.PlaceboDocument;
-
+import crdt.simulator.TraceOperation;
 /**
  * Check that operation are received in causal order.
  * @author urso
  */
 public class CausalCheckerFactory extends ReplicaFactory {
 //   @Override
+    class CausalCheckerFactoryMessage extends SequenceMessage{
+        VectorClock v;
+        public CausalCheckerFactoryMessage(SequenceOperation o,VectorClock v, int replica) {
+            super(o, replica);
+            this.v=v;
+        }
+
+        public VectorClock getV() {
+            return v;
+        }
+        
+        @Override
+        public SequenceMessage clone() {
+            return this;
+        }
+        
+    }
     private static class CCMerge extends MergeAlgorithm {
 
         public CCMerge(int r) {
@@ -45,29 +62,31 @@ public class CausalCheckerFactory extends ReplicaFactory {
 
         @Override
         protected void integrateRemote(SequenceMessage op) throws IncorrectTraceException {
-            check(op.getOriginalOp());
-            this.getDoc().apply(op);
-            vc.inc(op.getOriginalOp().getReplica());
+            CausalCheckerFactoryMessage ops=(CausalCheckerFactoryMessage) op;
+            check(ops);
+            this.getDoc().apply(op.getOriginalOp());
+            vc.inc(op.getReplica());
         }
 
-        @Override
-        protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
+        /*@Override
+        protected List<SequenceMessage> generateLocal(LocalOperation opt) throws IncorrectTraceException {
             check(opt);
             List<SequenceMessage> l = new ArrayList<SequenceMessage>(1);
-            SequenceMessage op = new SequenceMessage(opt) {
-
-                public SequenceMessage clone() {
-                    return this;
-                }
-            };
+            SequenceMessage op = new CausalCheckerFactoryMessage(opt,opt.getVectorClock(),this.getReplicaNumber());
             l.add(op);
             this.getDoc().apply(op);
             vc.inc(this.getReplicaNumber());
             return l;
+        }*/
+
+        private void check(TraceOperation op) throws IncorrectTraceException {
+            if (!vc.readyFor(op.getReplica(), op.getVectorClock())) {
+                throw new IncorrectTraceException("Replica " + this.getReplicaNumber() + "[vc:"+this.vc+"] not ready for " + op);
+            }
         }
 
-        private void check(SequenceOperation op) throws IncorrectTraceException {
-            if (!vc.readyFor(op.getReplica(), op.getVectorClock())) {
+        private void check(CausalCheckerFactoryMessage op) throws IncorrectTraceException {
+            if (!vc.readyFor(op.getReplica(), op.getV())) {
                 throw new IncorrectTraceException("Replica " + this.getReplicaNumber() + "[vc:"+this.vc+"] not ready for " + op);
             }
         }

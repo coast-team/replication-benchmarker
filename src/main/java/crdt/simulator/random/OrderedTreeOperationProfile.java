@@ -18,15 +18,10 @@
  */
 package crdt.simulator.random;
 
-import collect.Node;
 import collect.OrderedNode;
-import collect.UnorderedNode;
-import crdt.CRDT;
 import collect.VectorClock;
-import crdt.tree.CRDTTree;
-import crdt.tree.TreeOperation;
+import crdt.CRDT;
 import crdt.tree.orderedtree.OrderedTreeOperation;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,23 +46,33 @@ public abstract class OrderedTreeOperationProfile<T> implements OperationProfile
     }
     
     @Override
-    public OrderedTreeOperation<T> nextOperation(CRDT crdt, VectorClock vectorClock) {
+    public OrderedTreeOperation<T> nextOperation(CRDT crdt) {
         OrderedNode<T> node = (OrderedNode<T>) crdt.lookup();
         List<Integer> path = new LinkedList<Integer>();
         int n = node.childrenNumber();
  
-        while (n > 0 && r.nextDouble() < perChild) {
+        while (n > 0 && r.nextDouble() < 1.0-(perChild*1.0/n)) {
             int i = r.nextInt(n);
             path.add(i);
             node = node.getChild(i);           
             n = node.childrenNumber();
         }
-
-        if (path.isEmpty() || n == 0 || r.nextDouble() < perAdd) {
+        
+        if (path.isEmpty()/* || n == 0*/ || r.nextDouble() < perAdd) {
+            /*Generate add operation*/
             return new OrderedTreeOperation<T>(path, n==0 ? 0 : r.nextInt(n), nextElement());
         } else {
+            /*Generate del operation*/
             return new OrderedTreeOperation<T>(path);
         }        
+    }
+
+    public double getPerAdd() {
+        return perAdd;
+    }
+
+    public double getPerChild() {
+        return perChild;
     }
     
     abstract public T nextElement();

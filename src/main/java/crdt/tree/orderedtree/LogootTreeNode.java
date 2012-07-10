@@ -14,7 +14,7 @@ import jbenchmarker.logoot.LogootStrategy;
  *
  * @author urso
  */
-class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> implements PositionnedNode<T> {
+public class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> implements PositionnedNode<T> {
     private final T value;
     
     public LogootTreeNode(T value, int r, int nbBit, LogootStrategy strategy) {

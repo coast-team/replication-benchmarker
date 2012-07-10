@@ -31,12 +31,12 @@ public class LogootDocumentTest {
 
     // helpers
     LogootOperation ins(LogootIdentifier n, char c) {
-        return LogootOperation.insert(SequenceOperation.insert(0, 0, "", null),
+        return LogootOperation.insert(SequenceOperation.insert( 0, ""),
                 n, c);
     }
 
     LogootOperation del(LogootIdentifier n) {
-        return LogootOperation.Delete(SequenceOperation.delete(0, 0, 0, null), n);
+        return LogootOperation.Delete(SequenceOperation.delete( 0, 0), n);
     }
 
     @Test

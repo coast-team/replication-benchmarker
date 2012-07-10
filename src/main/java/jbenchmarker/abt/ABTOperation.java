@@ -35,36 +35,36 @@ public class ABTOperation<T> extends SequenceMessage{
 	protected T 			c;
 	protected int 			pos;
 	protected VectorClock 	vc;
-	protected final int		sid;	
+	//protected final int		sid;	
 	
-	public ABTOperation(SequenceOperation o){
-		super(o);
-		this.sid = this.getOriginalOp().getReplica();
+	public ABTOperation(SequenceOperation o,int replica){
+		super(o,replica);
+		//this.sid = this.getOriginalOp().getReplica();
 //		this.c	 ='\0';
 	}
 	
 	//delete
-	public ABTOperation(SequenceOperation o, int p, VectorClock vc) {
-		super(o);
+	public ABTOperation(SequenceOperation o, int replica, int p, VectorClock vc) {
+		super(o,replica);
 		// TODO Auto-generated constructor stub
-		this.sid = this.getOriginalOp().getReplica();
+		//this.sid = this.getReplica();
 		this.pos = p;		
 		this.vc  = new VectorClock(vc);
 //		this.c   = '\0';
 	}
 	
 	//insert
-	public ABTOperation(SequenceOperation o, int p, T c, VectorClock vc) {
-		super(o);
+	public ABTOperation(SequenceOperation o, int replica,  int p, T c, VectorClock vc) {
+		super(o,replica);
 		// TODO Auto-generated constructor stub
-		this.sid = this.getOriginalOp().getReplica();
+		//this.sid = this.getOriginalOp().getReplica();
 		this.pos = p;
 		this.vc  = new VectorClock(vc);
 		this.c	 = c;
 	}
 
 	public static Causality getRelation(ABTOperation op1, ABTOperation op2){
-		Causality c = VectorClock.comp(op1.sid, op1.vc, op2.sid, op2.vc);
+		Causality c = VectorClock.comp(op1.getReplica(), op1.vc, op2.getReplica(), op2.vc);
 /*		boolean x=op1.vc.greaterThan(op2.vc);
 		boolean y=op2.vc.greaterThan(op1.vc);
 		if(x && y) {
@@ -91,7 +91,7 @@ public class ABTOperation<T> extends SequenceMessage{
 	@Override
 	public SequenceMessage clone() {
 		// TODO Auto-generated method stub
-		ABTOperation op = new ABTOperation(getOriginalOp());
+		ABTOperation op = new ABTOperation(getOriginalOp(),this.getReplica());
 		op.pos = this.pos;
 		op.c   = this.c;
 		op.vc  = this.vc;		// do not copy vector clock. 
@@ -105,7 +105,7 @@ public class ABTOperation<T> extends SequenceMessage{
 		Formatter fmt = new Formatter();
 		Formatter fmt2 = new Formatter();
 		fmt.format("%4d", this.pos);
-		fmt2.format("%2d", this.sid);
+		fmt2.format("%2d", this.getReplica());
 		ret=fmt2+".";	
 		
 		if(getType()==OpType.ins) {

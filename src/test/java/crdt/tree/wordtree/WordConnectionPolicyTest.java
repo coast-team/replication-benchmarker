@@ -8,7 +8,7 @@ import crdt.tree.wordtree.policy.WordIncrementalCompact;
 import crdt.tree.wordtree.policy.WordIncrementalRoot;
 import crdt.tree.wordtree.policy.WordIncrementalSkipOpti;
 import crdt.tree.wordtree.policy.WordIncrementalReappear;
-import crdt.tree.PseudoSet;
+import crdttest.tree.PseudoSet;
 import crdt.tree.wordtree.policy.WordIncrementalSkip;
 import crdt.tree.wordtree.policy.WordCompact;
 import crdt.tree.wordtree.policy.WordReappear;

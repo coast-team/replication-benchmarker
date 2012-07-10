@@ -87,7 +87,7 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
      * @throws PreconditionException
      */
     @Override
-    public CRDTMessage applyLocal(jbenchmarker.core.Operation op) throws PreconditionException {
+    public CRDTMessage applyLocal(LocalOperation op) throws PreconditionException {
         if (!(op instanceof SequenceOperation)) {
             throw new PreconditionException("Not a sequenceOperation : " + op);
         }
@@ -124,11 +124,11 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
     }
 
     final public CRDTMessage insert(int position, String content) throws PreconditionException {
-        return applyLocal(SequenceOperation.insert(getReplicaNumber(), position, content, null));
+        return applyLocal(SequenceOperation.insert( position, content));
     }
 
     final public CRDTMessage remove(int position, int offset) throws PreconditionException {
-        return applyLocal(SequenceOperation.delete(getReplicaNumber(), position, offset, null));
+        return applyLocal(SequenceOperation.delete(position, offset));
     }
     
     /**

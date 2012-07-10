@@ -5,17 +5,24 @@
 package crdt.tree;
 
 import collect.Node;
-import crdt.set.*;
+import crdt.CRDT;
 import crdt.tree.orderedtree.OrderedTreeOperation;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jbenchmarker.core.LocalOperation;
 import jbenchmarker.core.Operation;
 
 /**
  *
  * @author score
  */
-public class TreeOperation<T> implements Operation {
+public class TreeOperation<T> implements LocalOperation {
+
+    @Override
+    public LocalOperation adaptTo(CRDT replica) {
+        //TODO : make correct adaptation function
+        return this;
+    }
     
     public enum OpType {add, del, move}; 
     private final OpType type;

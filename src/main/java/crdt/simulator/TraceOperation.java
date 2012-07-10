@@ -21,37 +21,55 @@ package crdt.simulator;
 import collect.VectorClock;
 import crdt.CRDT;
 import crdt.tree.orderedtree.OrderedTreeOperation;
+import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jbenchmarker.core.LocalOperation;
 import jbenchmarker.core.Operation;
 
 /**
  *
  * @author urso
  */
-abstract public class TraceOperation implements Operation {
+abstract public class TraceOperation implements Serializable{
     
-    final private int replica;
-    final private VectorClock VC;
+     private int replica;
+    private VectorClock vectorClock;
 
+    public TraceOperation() {
+    }
+    
     public TraceOperation(int replica, VectorClock VC) {
         this.replica = replica;
-        this.VC = VC;
+        this.vectorClock = VC;
+    }
+
+   /* public VectorClock getVC() {
+        return VC;
+    }*/
+
+    public void setVectorClock(VectorClock VC) {
+        this.vectorClock = VC;
     }
 
     public VectorClock getVectorClock() {
-        return VC;
+        return vectorClock;
+    }
+
+    public void setReplica(int replica) {
+        this.replica = replica;
     }
 
     public int getReplica() {
         return replica;
     }
-
-    abstract public Operation getOperation(CRDT replica);
+    
+    public abstract LocalOperation getOperation();
+    //abstract public Operation getOperation(CRDT replica);/* Why an operation on a trace depend on replica ?*/
 
     @Override
     public String toString() {
-        return "TO{VC=" + VC + '}';
+        return "TO{N°Rep="+replica+", VC=" + vectorClock +'}';
     }
 
     @Override
@@ -66,7 +84,7 @@ abstract public class TraceOperation implements Operation {
         if (this.replica != other.replica) {
             return false;
         }
-        if (this.VC != other.VC && (this.VC == null || !this.VC.equals(other.VC))) {
+        if (this.vectorClock != other.vectorClock && (this.vectorClock == null || !this.vectorClock.equals(other.vectorClock))) {
             return false;
         }
         return true;
@@ -76,13 +94,13 @@ abstract public class TraceOperation implements Operation {
     public int hashCode() {
         int hash = 3;
         hash = 23 * hash + this.replica;
-        hash = 23 * hash + (this.VC != null ? this.VC.hashCode() : 0);
+        hash = 23 * hash + (this.vectorClock != null ? this.vectorClock.hashCode() : 0);
         return hash;
     }
       @Override
-    public Operation clone() {
+    public TraceOperation clone() {
         try {
-            return (Operation) super.clone();
+            return (TraceOperation) super.clone();
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(OrderedTreeOperation.class.getName()).log(Level.SEVERE, null, ex);
         }

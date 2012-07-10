@@ -1,20 +1,20 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2011 INRIA / LORIA / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2011
+ * INRIA / LORIA / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.trace;
 
@@ -38,39 +38,39 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-
+import crdt.simulator.TraceOperationImpl;
 
 /**
  *
  * @author urso
  */
 public class TraceGenerator {
-    
-    
-    
+
     /*
-     * Returns a association between replica number to the ordered list of trace operation. 
+     * Returns a association between replica number to the ordered list of trace
+     * operation.
      */
-    public static Map<Integer, List<SequenceOperation>> historyPerReplica(List<SequenceOperation> trace) {
-        Map<Integer, List<SequenceOperation>> histories = new HashMap<Integer, List<SequenceOperation>>();
-        for (SequenceOperation opt : trace) {
+    public static Map<Integer, List<TraceOperation>> historyPerReplica(List<TraceOperation> trace) {
+        Map<Integer, List<TraceOperation>> histories = new HashMap<Integer, List<TraceOperation>>();
+        for (TraceOperation opt : trace) {
             int r = opt.getReplica();
-            List<SequenceOperation> l = histories.get(r);
-            if (l==null) {
-                l = new ArrayList<SequenceOperation>();
+            List<TraceOperation> l = histories.get(r);
+            if (l == null) {
+                l = new ArrayList<TraceOperation>();
                 histories.put(r, l);
             }
             l.add(opt);
         }
         return histories;
     }
-    
+
     /**
-     * Parses one elmeent into a trace operation
+     * Parses one element into a trace operation
+     *
      * @param e JDOM Element
-     * @return the parsed Trace operation 
+     * @return the parsed Trace operation
      */
-    public static SequenceOperation oneXML2OP(Element e) {
+    public static TraceOperation oneXML2OP(Element e) {
         int p = Integer.parseInt(e.getChildText("Position"));
         int r = Integer.parseInt(e.getChildText("NumReplica"));
         List vce = e.getChild("VectorClock").getChildren();
@@ -82,12 +82,12 @@ public class TraceGenerator {
                     Integer.parseInt(entry.getChildText("Clock")));
         }
         if (e.getChildText("Type").equals("Ins")) {
-            return SequenceOperation.insert(r, p, e.getChildText("Text"), v);
+            return new TraceOperationImpl(SequenceOperation.insert(p, e.getChildText("Text")), r, v);
         } else {
-            return SequenceOperation.delete(r, p, Integer.parseInt(e.getChildText("Offset")), v);
+            return new TraceOperationImpl(SequenceOperation.delete(p, Integer.parseInt(e.getChildText("Offset"))), r, v);
         }
     }
-    
+
     static class XMLTrace implements Trace {
 
         int docnum;
@@ -110,7 +110,7 @@ public class TraceGenerator {
 
             Iterator children;
             int docnum;
-            SequenceOperation next;
+            TraceOperation next;
             boolean goNext;
             int size;
             int line;
@@ -161,106 +161,106 @@ public class TraceGenerator {
             return new TraceIterator(docnum, children, size);
         }
     }
-    
+
     /**
      * Parses one elmeent into a trace operation
+     *
      * @param e JSON Element
-     * @return the parsed Trace operation 
+     * @return the parsed Trace operation
      */
-    public static SequenceOperation oneJSON2OP(ElementJSON e, VectorClockCSMapper vectorClockMapper) {
+    public static TraceOperationImpl oneJSON2OP(ElementJSON e, VectorClockCSMapper vectorClockMapper) {
         int pos = e.getVal().getPosition();
         String ui = e.getVal().getUserId();
         int repli = vectorClockMapper.userId(ui);
         VectorClockCS vc = e.getVal().getVector_clock();
         VectorClock v = vectorClockMapper.toVectorClock(vc);
-        
+
         if (e.getVal().getOperation().equals("insertion")) {
-            return SequenceOperation.insert(repli, pos, e.getVal().getChars_inserted(), v);
-        } else if(e.getVal().getOperation().equals("suppression")){
-            return SequenceOperation.delete(repli, pos, e.getVal().getNumber_charDeleted(), v);
-        }else if(e.getVal().getOperation().equals("remplacement")){
-            return SequenceOperation.update(repli,pos,e.getVal().getNumber_charDeleted(),e.getVal().getChars_inserted(), v);
-        }else{//stylage
-            return SequenceOperation.unsupported(repli, v);
+            return new TraceOperationImpl(SequenceOperation.insert( pos, e.getVal().getChars_inserted()),repli, v);
+        } else if (e.getVal().getOperation().equals("suppression")) {
+            return new TraceOperationImpl(SequenceOperation.delete( pos, e.getVal().getNumber_charDeleted()),repli, v);
+        } else if (e.getVal().getOperation().equals("remplacement")) {
+            return new TraceOperationImpl(SequenceOperation.update( pos, e.getVal().getNumber_charDeleted(), e.getVal().getChars_inserted()),repli, v);
+        } else {//stylage
+            return  new TraceOperationImpl(SequenceOperation.unsupported(),repli, v);
         }
     }
-    
-    
-     /**
+
+    /**
      * Parses one JSON elmeent from a CouchBase DataBase into a trace operation
-     * TO DO : variable pos is wrong. It must be the  
-     * @return the parsed Trace operation 
+     * TO DO : variable pos is wrong. It must be the
+     *
+     * @return the parsed Trace operation
      */
-    public static SequenceOperation oneJSONDB2OP(int rep,DocumentJSON d, ElementModif e, VectorClockMapper vectorClockMapper) {
+    public static TraceOperation oneJSONDB2OP(int rep, DocumentJSON d, ElementModif e, VectorClockMapper vectorClockMapper) {
         int pos = d.get(e);
-        
+
         int repli = rep;
 
         //clone VectorClock : TO TEST
         VectorClock v = new VectorClock(vectorClockMapper.get(rep));
-        
+
         v.inc(rep);
         //v is now the last vectorClock of replica rep
         vectorClockMapper.put(rep, v);
-        
+
         if (e.getType() == TypeModif.addText) {
-            return SequenceOperation.insert(repli, pos, e.getLigne(), v);
-        } else if(e.getType() == TypeModif.delText){
+            return new TraceOperationImpl(SequenceOperation.insert( pos, e.getLigne()),repli, v);
+        } else if (e.getType() == TypeModif.delText) {
             //when a line deleted, offset is the length of the line deleted
-            return SequenceOperation.delete(repli, pos, e.getLigne().length(), v);
-        }else{
-            return SequenceOperation.unsupported(repli, v);
+            return new TraceOperationImpl(SequenceOperation.delete( pos, e.getLigne().length()),repli, v);
+        } else {
+            return new TraceOperationImpl(SequenceOperation.unsupported(),repli, v);
         }
-    }
-    
-    /**
-     *  Extract trace form JSON document
-     */
-    public static Trace traceFromJson(String nomFichier) throws FileNotFoundException, IOException{
-        return new JSONTrace(nomFichier);
-    }
-    
-    public static Trace traceFromJson(String nomFichier,String padid) throws FileNotFoundException, IOException{
-        return new JSONTrace(nomFichier,padid);
-    }
-    /**
-     *  Extract trace form XML JDOM document
-     */
-    public static Trace traceFromXML(Document document, int docnum) throws JDOMException, IOException  {
-        List trace = document.getRootElement().getChild("Trace").getChildren();
-        
-        return new XMLTrace(docnum, trace.iterator()); 
     }
 
     /**
-     *  Extract trace form XML JDOM document up to size operations
+     * Extract trace form JSON document
      */
-    public static Trace traceFromXML(Document document, int docnum, int size) throws JDOMException, IOException  {
-        List trace = document.getRootElement().getChild("Trace").getChildren();
-        
-        return new XMLTrace(docnum, trace.iterator(), size); 
+    public static Trace traceFromJson(String nomFichier) throws FileNotFoundException, IOException {
+        return new JSONTrace(nomFichier);
     }
-    
-    
+
+    public static Trace traceFromJson(String nomFichier, String padid) throws FileNotFoundException, IOException {
+        return new JSONTrace(nomFichier, padid);
+    }
+
+    /**
+     * Extract trace form XML JDOM document
+     */
+    public static Trace traceFromXML(Document document, int docnum) throws JDOMException, IOException {
+        List trace = document.getRootElement().getChild("Trace").getChildren();
+
+        return new XMLTrace(docnum, trace.iterator());
+    }
+
+    /**
+     * Extract trace form XML JDOM document up to size operations
+     */
+    public static Trace traceFromXML(Document document, int docnum, int size) throws JDOMException, IOException {
+        List trace = document.getRootElement().getChild("Trace").getChildren();
+
+        return new XMLTrace(docnum, trace.iterator(), size);
+    }
+
     /**
      * Extract trace form XML uri.
      */
-    public static Trace traceFromXML(String uri, int docnum) throws JDOMException, IOException  {        
+    public static Trace traceFromXML(String uri, int docnum) throws JDOMException, IOException {
         return traceFromXML((new SAXBuilder()).build(uri), docnum);
     }
 
     /**
      * Extract trace form XML uri.
      */
-    public static Trace traceFromXML(String uri, int docnum, int size) throws JDOMException, IOException  {        
+    public static Trace traceFromXML(String uri, int docnum, int size) throws JDOMException, IOException {
         return traceFromXML((new SAXBuilder()).build(uri), docnum, size);
     }
-    
-    
+
     /**
      * Verifies causality of an operation according to replicas VectorClock.
      */
-    public static void causalCheck(SequenceOperation opt, Map<Integer, VectorClock> vcs) throws IncorrectTraceException {
+    public static void causalCheck(TraceOperation opt, Map<Integer, VectorClock> vcs) throws IncorrectTraceException {
         int r = opt.getReplica();
         if (opt.getVectorClock().getSafe(r) == 0) {
             throw new IncorrectTraceException("Zero/no entry in VC for replica" + opt);
@@ -274,10 +274,12 @@ public class TraceGenerator {
         }
         for (int i : opt.getVectorClock().keySet()) {
             if ((i != r) && (opt.getVectorClock().get(i) > 0)) {
-                if (vcs.get(i)==null) 
+                if (vcs.get(i) == null) {
                     throw new IncorrectTraceException("Missing replica " + i + " for " + opt);
-                if (vcs.get(i).getSafe(i) < opt.getVectorClock().get(i))
+                }
+                if (vcs.get(i).getSafe(i) < opt.getVectorClock().get(i)) {
                     throw new IncorrectTraceException("Missing causal operation before " + opt + " on replica " + i);
+                }
             }
         }
     }

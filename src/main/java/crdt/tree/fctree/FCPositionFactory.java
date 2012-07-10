@@ -4,6 +4,7 @@
  */
 package crdt.tree.fctree;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -11,7 +12,7 @@ import java.util.LinkedList;
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class FCPositionFactory {
+public class FCPositionFactory implements Serializable{
 
     FCPosition createBetween(FCNode n1, FCNode n2) {
         Iterator<Byte> s1;

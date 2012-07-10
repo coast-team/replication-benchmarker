@@ -88,7 +88,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
         switch (opt.getType()) {
             case del:
                 int visibleIndex = 0;
-                for (int i = 0; i < opt.getNumberOf(); i++) {
+                for (int i = 0; i < opt.getLenghOfADel(); i++) {
                     // TODO: could be improved with an iterator on only visible characters
                     while (!doc.getChar(mpos + visibleIndex).isVisible()) {
                         visibleIndex++;

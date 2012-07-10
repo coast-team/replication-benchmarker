@@ -117,7 +117,7 @@ public class ABTLog {
 				hh.add(op2);
 				break;
 			case HB:				
-				throw new RuntimeException(op1.sid+":"+op1.vc+"  "+op1.sid+":"+op2.vc+": Causality violation");
+				throw new RuntimeException(op1.getReplica()+":"+op1.vc+"  "+op1.getReplica()+":"+op2.vc+": Causality violation");
 			}
 			 
 		}
@@ -174,7 +174,7 @@ public class ABTLog {
 				o1.pos = o1.pos + 1;
 			} else if(o2.getType()==OpType.ins && 
 					  o1.getType()==OpType.ins &&
-					  o2.sid < o1.sid){
+					  o2.getReplica() < o1.getReplica()){
 				o1.pos = o1.pos + 1;
 			} else if(o2.getType()==OpType.del &&
 					  o1.getType()==OpType.del){
@@ -222,7 +222,7 @@ public class ABTLog {
 			Formatter fmt = new Formatter();
 			fmt.format("%4d", i);
 			System.out.print("|"+fmt+":"+H.get(i-1)+"\t| ");
-			System.out.println("\t"+H.get(i-1).sid+":"+H.get(i-1).vc+"     ");			
+			System.out.println("\t"+H.get(i-1).getReplica()+":"+H.get(i-1).vc+"     ");			
 		}
 		if(H.size()>0) System.out.println("+-----------------------+");
 	}
@@ -238,9 +238,9 @@ public class ABTLog {
 			else System.out.print("|\t\t\t| ");
 			if(i<=Hd.size()) System.out.print("|"+fmt+":"+Hd.get(i-1)+"\t|");
 			else System.out.print("|\t\t\t|");
-			if(i<=Hi.size()) System.out.print("\t"+Hi.get(i-1).sid+":"+Hi.get(i-1).vc+"     ");
+			if(i<=Hi.size()) System.out.print("\t"+Hi.get(i-1).getReplica()+":"+Hi.get(i-1).vc+"     ");
 			else System.out.print("\t\t\t");
-			if(i<=Hd.size()) System.out.print("\t"+Hd.get(i-1).sid+":"+Hd.get(i-1).vc);
+			if(i<=Hd.size()) System.out.print("\t"+Hd.get(i-1).getReplica()+":"+Hd.get(i-1).vc);
 			System.out.println("");
 		}
 		System.out.println("+-----------------------+ +---------------------+");

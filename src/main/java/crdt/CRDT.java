@@ -4,14 +4,15 @@
  */
 package crdt;
 
-import jbenchmarker.core.Operation;
+import java.io.Serializable;
 import java.util.Observable;
+import jbenchmarker.core.LocalOperation;
 
 /**
  * A CRDT is a factory. create() returns a new CRDT with the same behavior. 
  * @author urso
  */
-public abstract class CRDT<L> extends Observable implements Factory<CRDT<L>> {
+public abstract class CRDT<L> extends Observable implements Factory<CRDT<L>>,Serializable {
     private int replicaNumber;
 
     public CRDT(int replicaNumber) {
@@ -29,7 +30,7 @@ public abstract class CRDT<L> extends Observable implements Factory<CRDT<L>> {
         return replicaNumber;
     }
     
-    abstract public CRDTMessage applyLocal(Operation op) throws PreconditionException ;
+    abstract public CRDTMessage applyLocal(LocalOperation op) throws PreconditionException ;
     
     final public void applyRemote(CRDTMessage msg){
         msg.execute(this);

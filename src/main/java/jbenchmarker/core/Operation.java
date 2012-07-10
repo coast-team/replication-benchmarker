@@ -4,10 +4,12 @@
  */
 package jbenchmarker.core;
 
+import java.io.Serializable;
+
 /**
  *
  * @author urso
  */
-public interface Operation<T> extends Cloneable {
+public interface Operation<T> extends Cloneable,Serializable {
     public Operation<T> clone();
 }

@@ -19,8 +19,7 @@
 package crdt.simulator.random;
 
 import crdt.CRDT;
-import jbenchmarker.core.Operation;
-import collect.VectorClock;
+import jbenchmarker.core.LocalOperation;
 
 /**
  * Profile to generate random operations.
@@ -32,5 +31,5 @@ public interface OperationProfile {
      * Ramdonly generate a new CRDT operation
      * @return 
      */
-    public Operation nextOperation(CRDT a, VectorClock vectorClock);
+    public LocalOperation nextOperation(CRDT a);
 }

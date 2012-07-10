@@ -18,14 +18,13 @@
  */
 package crdt.simulator.random;
 
-import collect.VectorClock;
 import crdt.CRDT;
 import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
+import jbenchmarker.core.LocalOperation;
 
 /**
  * A profile that generates operation.
@@ -46,7 +45,7 @@ public abstract class SequenceOperationProfile<T> implements OperationProfile {
     abstract public int nextOffset(int position, int l);
 
     @Override
-    public Operation nextOperation(CRDT crdt, VectorClock vectorClock) {
+    public LocalOperation nextOperation(CRDT crdt) {
         Document replica = ((MergeAlgorithm) crdt).getDoc();
 
         int l = replica.viewLength();
@@ -55,6 +54,6 @@ public abstract class SequenceOperationProfile<T> implements OperationProfile {
         int offset = (type == OpType.ins) ? 0 : nextOffset(position, l);
         List<T> content = (type == OpType.del) ? null : nextContent(); 
 
-        return new SequenceOperation<T>(type, crdt.getReplicaNumber(), position, offset, content, vectorClock);
+        return new SequenceOperation<T>(type,  position, offset, content);
     }
 }

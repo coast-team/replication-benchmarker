@@ -37,13 +37,13 @@ public class LogootMergeTest
       
          // helpers
     SequenceOperation insert(int p, String s) {
-        return SequenceOperation.insert(1, p, s, null); //Replica , position , content , VH
+        return SequenceOperation.insert( p, s); //Replica , position , content , VH
     }
     SequenceOperation delete(int p, int o) {
-         return SequenceOperation.delete(1, p, o, null);//Replica , position , offset , VH
+         return SequenceOperation.delete( p, o);//Replica , position , offset , VH
     }
     SequenceOperation update(int p, int o, String s) {
-        return SequenceOperation.update(1, p, o, s, null); //Replica , position , content , VH
+        return SequenceOperation.update( p, o, s); //Replica , position , content , VH
     }
     
     @Test

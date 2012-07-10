@@ -26,13 +26,13 @@ public class CalculStats {
         
         
         while(en.hasMoreElements()){
-            SequenceOperation so = (SequenceOperation)en.nextElement();
+            SequenceOperation so = (SequenceOperation)en.nextElement().getOperation();
             if (so.getType().equals(OpType.ins)){  
                     ins.add((double)so.getContentAsString().length());
                 }else if(so.getType().equals(OpType.del)){
-                     del.add((double)so.getNumberOf());
+                     del.add((double)so.getLenghOfADel());
                 }else if(so.getType().equals(OpType.update)){
-                    up.add((double)(so.getContentAsString().length()-so.getNumberOf()));
+                    up.add((double)(so.getContentAsString().length()-so.getLenghOfADel()));
                 }
         }
         

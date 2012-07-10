@@ -36,10 +36,10 @@ public class WootHMergeTest {
 
     // helpers
     SequenceOperation insert(int p, String s) {
-        return SequenceOperation.insert(1, p, s, null);
+        return SequenceOperation.insert( p, s);
     }
     SequenceOperation delete(int p, int o) {
-         return SequenceOperation.delete(1, p, o, null);
+         return SequenceOperation.delete( p, o);
     }
      
     /**

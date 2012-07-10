@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  *
+ * @param <T> 
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
 public class FCNode<T> implements OrderedNode<T> {
@@ -20,6 +21,13 @@ public class FCNode<T> implements OrderedNode<T> {
     private FCLabel<FCPosition> priorite;
     private FCLabel<T> contain;
 
+    /**
+     * 
+     * @param father
+     * @param contain
+     * @param position
+     * @param id
+     */
     public FCNode(FCNode<T> father, T contain, FCPosition position, FCIdentifier id) {
         this.father = new FCLabel(id, father);
         this.childrens = new ArrayList<FCNode<T>>();
@@ -28,6 +36,11 @@ public class FCNode<T> implements OrderedNode<T> {
         this.id = id;
     }
 
+    /**
+     * 
+     * @param path
+     * @return
+     */
     public FCNode<T> getNodeFromPath(List<Integer> path) {
         FCNode<T> ret = this;
         for (Integer i : path) {
@@ -36,6 +49,10 @@ public class FCNode<T> implements OrderedNode<T> {
         return ret;
     }
 
+    /**
+     * 
+     * @return
+     */
     public FCIdentifier getId() {
         return id;
     }
@@ -69,6 +86,10 @@ public class FCNode<T> implements OrderedNode<T> {
     public T getValue() {
         return contain.getLabel();
     }
+    /**
+     * 
+     * @param node
+     */
     public void addChildren(FCNode node){
         int i=0;
         int min=0;
@@ -88,28 +109,57 @@ public class FCNode<T> implements OrderedNode<T> {
         }
         childrens.add(min, node);
     }
+    /**
+     * 
+     * @param node
+     * @return
+     */
     public int nodePositionCompareTo(FCNode node){
         return this.getPosition().compareTo(this.getId(),node.getId(),node.getPosition());
     }
+    /**
+     * 
+     * @param node
+     */
     public void delChildren(FCNode node){
         childrens.remove(node);
     }
 
+    /**
+     * 
+     * @return
+     */
     public FCNode<T> getFather() {
         return father.getLabel();
     }
+    /**
+     * 
+     * @return
+     */
     public FCPosition getPosition(){
         return this.priorite.getLabel();
     }
 
+    /**
+     * 
+     * @return
+     */
     public FCLabel<T> getLContain() {
         return contain;
     }
 
+    /**
+     * 
+     * @return
+     */
     public FCLabel<FCNode<T>> getLFather() {
         return father;
     }
 
+    /**
+     * 
+     * @return
+     */
     public FCLabel<FCPosition> getLPriorite() {
         return priorite;
     }

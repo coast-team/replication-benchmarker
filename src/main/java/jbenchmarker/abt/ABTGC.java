@@ -35,7 +35,7 @@ public class ABTGC {
 	}
 	
 	public void collect(ABTOperation op){
-		this.allVC.put(op.sid, op.vc);
+		this.allVC.put(op.getReplica(), op.vc);
 		
 		this.cntdown--;
 		if(this.cntdown == 0) {

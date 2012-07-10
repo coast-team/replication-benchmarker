@@ -196,7 +196,7 @@ public class OrderedTreeTest {
         //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
         //for(int p=0;p<10000;p++){
             
-            CausalDispatcherSetsAndTreesTest.testRun(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null)), 200, 500, otreeop);
+            CausalDispatcherSetsAndTreesTest.testRun(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null)), 500, 500, otreeop);
         //}
     }
      @Test

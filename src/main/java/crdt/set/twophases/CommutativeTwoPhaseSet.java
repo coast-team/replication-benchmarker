@@ -11,6 +11,7 @@ import crdt.set.CRDTSet;
 import crdt.set.CommutativeSetMessage.OpType;
 import java.util.HashSet;
 import java.util.Set;
+import jbenchmarker.core.LocalOperation;
 
 /**
  *
@@ -81,5 +82,5 @@ public class CommutativeTwoPhaseSet<T> extends CRDTSet<T>{
         return new CommutativeTwoPhaseSet<T>();
     }
 
-   
+     
 }
