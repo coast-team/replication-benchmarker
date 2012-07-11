@@ -36,7 +36,7 @@ public class OrderedTreeOperation<T> implements LocalOperation {
         List<Integer> nPath = path;
         int nPos=this.position;
         for (Integer pNext : this.path) {
-            if (node.childrenNumber() < pNext) {
+            if (node.childrenNumber() <= pNext) {
                 nPath = this.path.subList(0, i);
                 break;
             }

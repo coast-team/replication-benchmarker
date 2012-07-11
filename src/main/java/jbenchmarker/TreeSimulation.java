@@ -124,8 +124,8 @@ public class TreeSimulation {
         int j = 0;
 
         System.err.println("Arguments :");
-        String clas = factstr.get(Integer.parseInt(args[j++]));
-        System.err.println("- Factory number : " + args[j] + " \n\t" + clas);
+        String clas = factstr.get(Integer.parseInt(args[j]));
+        System.err.println("- Factory number : " + args[j++] + " \n\t" + clas);
 
         System.err.println("- Number of execu : " + args[j++]);
         System.err.println("- duration : " + args[j++]);
