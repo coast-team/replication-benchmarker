@@ -82,7 +82,7 @@ public class TreeSimulation {
           for (int i=0; i<set.length;i++){
               for (OrderedNode node:nodes){
                 fact.add(createTree(node, set[i], pol));
-                factstr.add("WordTree "+node.getClass().getName()+", "+setstr[i]+", "+pol.getClass().getName());
+                factstr.add("WordTree "+node.getClass().getName()+","+setstr[i]+","+pol.getClass().getName());
               }
               
           }
@@ -96,16 +96,11 @@ public class TreeSimulation {
     static int base = 100;
     static int baseSerializ = 10;
     static public void main(String[] args) throws Exception {
-        
-        
-        
-        
-        
-        
+
         generateFactory();
         
         
-        if (args.length < 12) {
+        if (args.length < 11) {
             System.err.println("Arguments :");
             System.err.println("- Factory number ");
             for (int p=0;p<factstr.size();p++){
@@ -123,15 +118,16 @@ public class TreeSimulation {
             System.err.println("- replicas : ");
             System.err.println("- thresold : ");
             System.err.println("- scale for serealization : ");
-            System.err.println("- name File : ");
+            //System.err.println("- name File : ");
             System.exit(1);
         }
         
         
         int j=0;
-        
-         System.err.println("Arguments :");
-            System.err.println("- Factory number : "+ args[j]+" \n\t"+factstr.get(Integer.parseInt(args[j++])));
+            
+            System.err.println("Arguments :");
+            String clas = factstr.get(Integer.parseInt(args[j++]));
+            System.err.println("- Factory number : "+ args[j]+" \n\t"+clas);
           
             System.err.println("- Number of execu : "+args[j++]);
             System.err.println("- duration : "+args[j++]);
@@ -145,7 +141,7 @@ public class TreeSimulation {
             System.err.println("- replicas : "+args[j++]);
             System.err.println("- thresold : "+args[j++]);
             System.err.println("- scale for serealization : "+args[j++]);
-            System.err.println("- name File : "+args[j++]);
+            //System.err.println("- name File : "+args[j++]);
         j=0;
         Factory<CRDT> rf = (Factory<CRDT>) fact.get(Integer.parseInt(args[j++]));
        
@@ -166,8 +162,12 @@ public class TreeSimulation {
         int replicas = Integer.valueOf(args[j++]);
         int thresold = Integer.valueOf(args[j++]);
         int scaleMemory = Integer.valueOf(args[j++]);
-        String nameUsr = args[j++];
-        
+        //String nameUsr = args[j++];
+        /*******create file result*****/
+        String[] res = clas.split("\\,");
+        String[] typeTree = res[0].split("\\.");
+        String[] typePlicy = res[2].split("\\.");
+        String nameUsr = typeTree[typeTree.length-1]+"."+res[1]+"."+typePlicy[typePlicy.length-1];
         
         long ltime[][] = null, rtime[][] = null, mem[][] = null;
         int minSizeGen = 0, minSizeInteg = 0, minSizeMem = 0, nbrReplica = 0;
