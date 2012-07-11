@@ -69,7 +69,7 @@ public class OrderedTreeTest {
         return l;
     }
 
-    PositionIdentifierTree createTree(OrderedNode root, Factory<CRDTSet> sf, Factory<WordConnectionPolicy> wcp) {
+    public static PositionIdentifierTree createTree(OrderedNode root, Factory<CRDTSet> sf, Factory<WordConnectionPolicy> wcp) {
         WordTree wt = new WordTree(sf.create(), wcp);
         return new PositionIdentifierTree((PositionnedNode)root.createNode(null), wt);       
     }
@@ -169,7 +169,7 @@ public class OrderedTreeTest {
         new WordIncrementalCompact(), 
         new WordIncrementalSkipOpti()};
     
-    private OperationProfile otreeop = new OrderedTreeOperationProfile(0.6, 0.7) {
+    public static OperationProfile otreeop = new OrderedTreeOperationProfile(0.6, 0.7) {
 
         @Override
         public Object nextElement() {
@@ -202,85 +202,91 @@ public class OrderedTreeTest {
     @Test
     public void testRunsNaiveLogootSkip() throws PreconditionException, IncorrectTraceException, IOException {
         CausalDispatcherSetsAndTreesTest.testRunX(createTree(new LogootTreeNode(null, 0, 
-                    32, new BoundaryStrategy(100)), new NaiveSet(), new WordIncrementalSkip()), 1000, 100, 5, otreeop);
+                    32, new BoundaryStrategy(100)), new NaiveSet(), new WordIncrementalSkip()), 2000, 100, 5, otreeop);
     }
     
     @Test
     public void testRunsNaiveLogootSkipOpti() throws PreconditionException, IncorrectTraceException, IOException {
         CausalDispatcherSetsAndTreesTest.testRunX(createTree(new LogootTreeNode(null, 0, 
-                    32, new BoundaryStrategy(100)), new NaiveSet(), new WordIncrementalSkipOpti()), 1000, 100, 5, otreeop);
+                    32, new BoundaryStrategy(100)), new NaiveSet(), new WordIncrementalSkipOpti()), 2000, 100, 5, otreeop);
+    }
+    
+    @Test
+    public void testRunsNaiveLogootSkipUnique() throws PreconditionException, IncorrectTraceException, IOException {
+        CausalDispatcherSetsAndTreesTest.testRunX(createTree(new LogootTreeNode(null, 0, 
+                    32, new BoundaryStrategy(100)), new NaiveSet(), new WordIncrementalSkipUnique()), 2000, 100, 5, otreeop);
     }
     
     @Test
     public void testRunsNaiveLogootReappear() throws PreconditionException, IncorrectTraceException, IOException {
         CausalDispatcherSetsAndTreesTest.testRunX(createTree(new LogootTreeNode(null, 0, 
-                    32, new BoundaryStrategy(100)), new NaiveSet(), new WordIncrementalReappear()), 1000, 100, 5, otreeop);
+                    32, new BoundaryStrategy(100)), new NaiveSet(), new WordIncrementalReappear()), 2000, 100, 5, otreeop);
     }
     
-    @Test
-    public void testRunsNaiveLogootRoot() throws PreconditionException, IncorrectTraceException, IOException {
-        PositionIdentifierTree tree = createTree(new LogootTreeNode(null, 0, 32, 
-                new BoundaryStrategy(10)), new NaiveSet(), new WordIncrementalRoot());
-        for (int i = 0; i < 100; ++i) { 
-            testRoot(tree);
-        }
-        CausalDispatcherSetsAndTreesTest.testRunX(tree, 1000, 100, 5, otreeop);        
-    }
-    
-    @Test
-    public void testRunsNaiveLogootCompact() throws PreconditionException, IncorrectTraceException, IOException {
-        CausalDispatcherSetsAndTreesTest.testRunX(createTree(new LogootTreeNode(null, 0, 
-                    32, new BoundaryStrategy(100)), new NaiveSet(), new WordIncrementalCompact()), 1000, 100, 5, otreeop);
-    }
-    
-    @Test
-    public void testRunsNaiveWootHashSkip() throws PreconditionException, IncorrectTraceException, IOException {
-        CausalDispatcherSetsAndTreesTest.testRunX(createTree(new WootHashTreeNode(null, 0), 
-                new NaiveSet(), new WordIncrementalSkip()), 1000, 100, 5, otreeop);
-    }
-    
-    @Test
-    public void testRunsNaiveWootHashSkipOpti() throws PreconditionException, IncorrectTraceException, IOException {
-        CausalDispatcherSetsAndTreesTest.testRunX(createTree(new WootHashTreeNode(null, 0), 
-                new NaiveSet(), new WordIncrementalSkipOpti()), 1000, 100, 5, otreeop);
-    }
-    
-    @Test
-    public void testRunsNaiveWootHashReappear() throws PreconditionException, IncorrectTraceException, IOException {
-        CausalDispatcherSetsAndTreesTest.testRunX(createTree(new WootHashTreeNode(null, 0), 
-                new NaiveSet(), new WordIncrementalReappear()), 1000, 100, 5, otreeop);
-    }
-    
-    @Test
-    public void testRunsNaiveWootHashRoot() throws PreconditionException, IncorrectTraceException, IOException {
-        PositionIdentifierTree tree = createTree(new WootHashTreeNode(null, 0), new CommutativeLwwSet(), new WordIncrementalRoot());
-        for (int i = 0; i < 100; ++i) { 
-            testRoot(tree);
-        }
-        CausalDispatcherSetsAndTreesTest.testRunX(tree, 1000, 100, 5, otreeop);        
-    }
-    
-    @Test
-    public void testRunsNaiveWootHashCompact() throws PreconditionException, IncorrectTraceException, IOException {
-        CausalDispatcherSetsAndTreesTest.testRunX(createTree(new WootHashTreeNode(null, 0), 
-                new NaiveSet(), new WordIncrementalCompact()), 1000, 100, 5, otreeop);
-    }
+//    @Test
+//    public void testRunsNaiveLogootRoot() throws PreconditionException, IncorrectTraceException, IOException {
+//        PositionIdentifierTree tree = createTree(new LogootTreeNode(null, 0, 32, 
+//                new BoundaryStrategy(10)), new NaiveSet(), new WordIncrementalRoot());
+//        for (int i = 0; i < 100; ++i) { 
+//            testRoot(tree);
+//        }
+//        CausalDispatcherSetsAndTreesTest.testRunX(tree, 2000, 100, 5, otreeop);        
+//    }
+//    
+//    @Test
+//    public void testRunsNaiveLogootCompact() throws PreconditionException, IncorrectTraceException, IOException {
+//        CausalDispatcherSetsAndTreesTest.testRunX(createTree(new LogootTreeNode(null, 0, 
+//                    32, new BoundaryStrategy(100)), new NaiveSet(), new WordIncrementalCompact()), 2000, 100, 5, otreeop);
+//    }
+//    
+//    @Test
+//    public void testRunsNaiveWootHashSkip() throws PreconditionException, IncorrectTraceException, IOException {
+//        CausalDispatcherSetsAndTreesTest.testRunX(createTree(new WootHashTreeNode(null, 0), 
+//                new NaiveSet(), new WordIncrementalSkip()), 2000, 100, 5, otreeop);
+//    }
+//    
+//    @Test
+//    public void testRunsNaiveWootHashSkipOpti() throws PreconditionException, IncorrectTraceException, IOException {
+//        CausalDispatcherSetsAndTreesTest.testRunX(createTree(new WootHashTreeNode(null, 0), 
+//                new NaiveSet(), new WordIncrementalSkipOpti()), 2000, 100, 5, otreeop);
+//    }
+//    
+//    @Test
+//    public void testRunsNaiveWootHashReappear() throws PreconditionException, IncorrectTraceException, IOException {
+//        CausalDispatcherSetsAndTreesTest.testRunX(createTree(new WootHashTreeNode(null, 0), 
+//                new NaiveSet(), new WordIncrementalReappear()), 2000, 100, 5, otreeop);
+//    }
+//    
+//    @Test
+//    public void testRunsNaiveWootHashRoot() throws PreconditionException, IncorrectTraceException, IOException {
+//        PositionIdentifierTree tree = createTree(new WootHashTreeNode(null, 0), new CommutativeLwwSet(), new WordIncrementalRoot());
+//        for (int i = 0; i < 100; ++i) { 
+//            testRoot(tree);
+//        }
+//        CausalDispatcherSetsAndTreesTest.testRunX(tree, 2000, 100, 5, otreeop);        
+//    }
+//    
+//    @Test
+//    public void testRunsNaiveWootHashCompact() throws PreconditionException, IncorrectTraceException, IOException {
+//        CausalDispatcherSetsAndTreesTest.testRunX(createTree(new WootHashTreeNode(null, 0), 
+//                new NaiveSet(), new WordIncrementalCompact()), 2000, 100, 5, otreeop);
+//    }
 
     
     @Test
     public void testRunsOTTree() throws PreconditionException, IncorrectTraceException, IOException {
         //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
-        //for(int p=0;p<10000;p++){
+        //for(int p=0;p<20000;p++){
             
-            CausalDispatcherSetsAndTreesTest.testRunX(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null)), 1000, 100, 5, otreeop);
+            CausalDispatcherSetsAndTreesTest.testRunX(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null)), 2000, 100, 5, otreeop);
         //}
     }
      @Test
     public void testRunsFCTree() throws PreconditionException, IncorrectTraceException, IOException {
         //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
-        //for(int p=0;p<10000;p++){
+        //for(int p=0;p<20000;p++){
             
-            CausalDispatcherSetsAndTreesTest.testRunX(new FCTree(), 1000, 100, 5, otreeop);
+            CausalDispatcherSetsAndTreesTest.testRunX(new FCTree(), 2000, 100, 5, otreeop);
         //}
     }
 }

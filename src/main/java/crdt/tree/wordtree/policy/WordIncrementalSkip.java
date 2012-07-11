@@ -90,9 +90,7 @@ public class WordIncrementalSkip<T> implements WordPolicy<T> {
     protected void reattach(Node<T> node, Word<T> word) {
         Iterator<List<T>> it = orphans.iterator();
         while (it.hasNext()) {
-//            Entry<List<T>, Node<T>> e = it.next();
             List<T> orphanWord = it.next();// e.getKey();
-//            Node<T> orphanNode = e.getValue();
             if (orphanWord.subList(0, orphanWord.size() - 1).equals(word)) {
                 tree.move(node, w2n.get(orphanWord));
                 it.remove();
