@@ -18,9 +18,9 @@
  */
 package crdt.simulator.random;
 
-import crdt.simulator.*;
 import collect.VectorClock;
 import crdt.CRDT;
+import crdt.simulator.TraceOperation;
 import crdt.tree.orderedtree.OrderedTreeOperation;
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -31,29 +31,50 @@ import jbenchmarker.core.Operation;
 /**
  *
  * @author urso
+ * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class RandomOperation extends TraceOperation implements Serializable,LocalOperation {
+public class RandomOperation extends TraceOperation implements Serializable {
 
     transient final private OperationProfile opp;
     private LocalOperation op = null;
+
+    
+
+    class RadomOp implements LocalOperation, Serializable {
+
+        //private LocalOperation op = null;
+        public RadomOp() {
+            //this.opp = opp;
+        }
+
+        @Override
+        public LocalOperation adaptTo(CRDT replica) {
+            if (op == null) {
+                op = opp.nextOperation(replica);
+                return op;
+            } else {
+                return op.adaptTo(replica);
+            }
+
+        }
+
+        @Override
+        public Operation clone() {
+            try {
+                return (RadomOp) super.clone();
+            } catch (Exception ex) {
+                Logger.getLogger(OrderedTreeOperation.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return null;
+        }
+    }
 
     public RandomOperation(OperationProfile opp, int replica, VectorClock VC) {
         super(replica, VC);
         this.opp = opp;
         //this.op=opp.nextOperation(replica, getVectorClock());
     }
-
-    @Override
-    public LocalOperation adaptTo(CRDT replica) {
-        if (op == null) {
-            op = opp.nextOperation(replica);
-            return op;
-        }else{
-            return op.adaptTo(replica);
-        }
-        
-    }
-
+    
     @Override
     public RandomOperation clone() {
         try {
@@ -66,14 +87,11 @@ public class RandomOperation extends TraceOperation implements Serializable,Loca
 
     @Override
     public String toString() {
-        return "RandomOperation{op=" + op + ", VC="+this.getVectorClock()+" ,N°Rep="+this.getReplica()+'}';
+        return "RandomOperation{op=" + op + ", VC=" + this.getVectorClock() + " ,N°Rep=" + this.getReplica() + '}';
     }
 
     @Override
     public LocalOperation getOperation() {
-        return this;
+        return new RadomOp();
     }
-
-   
-    
 }

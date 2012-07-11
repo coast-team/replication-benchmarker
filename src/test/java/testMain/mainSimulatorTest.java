@@ -3,17 +3,9 @@
  * and open the template in the editor.
  */
 package testMain;
-import crdt.CRDT;
-import crdt.simulator.CausalSimulator;
-import crdt.simulator.Trace;
 import jbenchmarker.Main;
-import jbenchmarker.MainSimulation;
-import jbenchmarker.TraceSimul2XML;
-import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.factories.WootFactories.WootHFactory;
 import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 /**
  *
  * @author score
@@ -30,5 +22,10 @@ public class mainSimulatorTest {
         String[] args = new String[]{logoot, trace, "5", "2", "10"};
         Main mn = new Main();
         mn.main(args);
+    }
+    
+    @Test
+    public void playAndReplay() {
+        
     }
 }
