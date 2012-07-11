@@ -29,6 +29,7 @@ import jbenchmarker.logoot.BoundaryStrategy;
 import jbenchmarker.ot.ottree.OTTree;
 import jbenchmarker.ot.ottree.OTTreeTranformation;
 import jbenchmarker.ot.soct2.SOCT2;
+import jbenchmarker.ot.soct2.SOCT2GarbageCollector;
 import jbenchmarker.ot.soct2.SOCT2Log;
 
 /**
@@ -81,13 +82,18 @@ public class TreeSimulation {
                     fact.add(createTree(node, set[i], pol));
                     factstr.add("WordTree " + node.getClass().getName() + "," + setstr[i] + "," + pol.getClass().getName());
                 }
-
             }
         }
-        fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null)));
+        fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), 
+                new SOCT2GarbageCollector(4))));
         factstr.add("OTTree");
         fact.add(new FCTree());
         factstr.add("FCTree");
+        
+        //withoutGarbage
+         fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), 
+                null)));
+        factstr.add("OTTreeWithoutGarbage");
 
     }
     static int base = 100;
@@ -117,7 +123,7 @@ public class TreeSimulation {
             System.err.println("- replicas : ");
             System.err.println("- thresold : ");
             System.err.println("- scale for serealization : ");
-            //System.err.println("- name File : ");
+            //System.err.println("- name File of trace : ");
             System.exit(1);
         }
 
@@ -169,18 +175,26 @@ public class TreeSimulation {
         /**
          * *****create file result****
          */
-        String[] res = clas.split("\\,");
-        String[] typeTree = res[0].split("\\.");
-        String[] typePlicy = res[2].split("\\.");
+        String fileRes;
         String nameUsr;
+        if (clas.equals("OTTree") || clas.equals("FCTree")) 
+            nameUsr = clas;
+        else
+        {
+            String[] res = clas.split("\\,");
+            String[] typeTree = res[0].split("\\.");
+            String[] typePlicy = res[2].split("\\.");
+            nameUsr = typeTree[typeTree.length - 1] + "." + res[1] + "." + typePlicy[typePlicy.length - 1];
+            
+        }
+        fileRes = nameUsr;
+        
         if (j < args.length) {
             nameUsr = args[j++];
-        } else {
-            nameUsr = typeTree[typeTree.length - 1] + "." + res[1] + "." + typePlicy[typePlicy.length - 1];
-        }
+        } 
+        
         File fileUsr = new File(nameUsr);
         
-
         long ltime[][] = null, rtime[][] = null, mem[][] = null;
         int minSizeGen = 0, minSizeInteg = 0, minSizeMem = 0, nbrReplica = 0;
         int cop = 0, uop = 0, mop = 0;
@@ -199,7 +213,6 @@ public class TreeSimulation {
                 System.out.println( "-Trace From File : " + nameUsr);
                 trace = new TraceFromFile(fileUsr);
                 cd.setLogging(null);
-                
             } else {
                 System.out.println( "-Trace to File  " + nameUsr);
                 trace = new RandomTrace(duration, RandomTrace.FLAT,
@@ -207,9 +220,7 @@ public class TreeSimulation {
                 cd.setLogging(nameUsr);
             }
             System.out.println("perIns" + perIns + ", perChild" + perChild + " probability " + probability + "delay " + delay + "sdv+" + sdv + "+, replicas" + replicas);
-            
-            
-            
+
             //file result
             /*
              * ObjectOutputStream enc=new ObjectOutputStream(new
@@ -222,7 +233,7 @@ public class TreeSimulation {
              * calculate time execution boolean : calculate document with
              * overhead
              */
-            cd.runWithMemory(trace, scaleMemory, true, true);
+            cd.runWithMemory(trace, 0, true, true);
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
@@ -270,11 +281,11 @@ public class TreeSimulation {
             computeAverage(rtime, thresold, minSizeInteg);
         }
 
-        String file = writeToFile(ltime, nameUsr, "usr", minSizeGen);
+        String file = writeToFile(ltime, fileRes, "usr", minSizeGen);
         treatFile(file, "usr", base);
-        String file2 = writeToFile(rtime, nameUsr, "gen", minSizeInteg);
+        String file2 = writeToFile(rtime, fileRes, "gen", minSizeInteg);
         treatFile(file2, "gen", base);
-        String file3 = writeToFile(mem, nameUsr, "mem", minSizeMem);
+        String file3 = writeToFile(mem, fileRes, "mem", minSizeMem);
         treatFile(file3, "mem", baseSerializ);
     }
 
@@ -304,8 +315,7 @@ public class TreeSimulation {
         double Tmoyen = 0L;
         int cmpt = 0;
         String Line;
-        String[] fData = File.split("\\.");
-        String fileName = fData[0] + ".data";
+        String fileName = File.replaceAll("res", "data");
         PrintWriter ecrivain = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
         InputStream ips1 = new FileInputStream(File);
         InputStreamReader ipsr1 = new InputStreamReader(ips1);

@@ -27,26 +27,28 @@ public class Del<T> extends FCOperation {
 
     @Override
     public void apply(FCTree tree) {
-        FCNode node=tree.getNodeById(this.getId());
-        if (node!=null){
-            applyOnNode(node,tree);
+        FCNode node = tree.getNodeById(this.getId());
+        if (node != null) {
+            applyOnNode(node, tree);
         }
     }
 
     public void applyOnNode(FCNode<T> nodeToKill, FCTree tree) {
         tree.getMap().remove(nodeToKill.getId());
-        FCNode father=nodeToKill.getFather();
-        father.delChildren(nodeToKill);
+
+        FCNode father = nodeToKill.getFather();
+        if (father != null) {
+            father.delChildren(nodeToKill);
+        }
     }
 
     @Override
     public FCIdentifier[] DependOf() {
-        return  new FCIdentifier[]{this.getId()};
+        return new FCIdentifier[]{this.getId()};
     }
 
     @Override
     public String toString() {
-        return "Del{" +this.getId()+ '}';
+        return "Del{" + this.getId() + '}';
     }
-    
 }
