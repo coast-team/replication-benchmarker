@@ -5,13 +5,14 @@
 package collect;
 
 import crdt.tree.TreeOperation;
+import java.io.Serializable;
 import java.util.*;
 
 /**
  *
  * @author score
  */
-public class HashTree<T> extends Observable implements Tree<T> {
+public class HashTree<T> extends Observable implements Tree<T>, Serializable {
 
     private NodeImpl<T> root;
 

@@ -13,6 +13,7 @@ import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.set.CRDTSet;
 import crdt.tree.CRDTTree;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -21,7 +22,7 @@ import java.util.*;
  * 
  * 
  */
-public class WordTree<T> extends CRDTTree<T> {
+public class WordTree<T> extends CRDTTree<T>{
     CRDTSet words;
     WordPolicy<T> wcp;
     

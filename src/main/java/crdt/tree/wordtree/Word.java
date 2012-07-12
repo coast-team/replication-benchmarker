@@ -4,6 +4,7 @@
  */
 package crdt.tree.wordtree;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,7 +16,7 @@ import java.util.ListIterator;
  * Immutable list to represent words 
  * @author urso
  */
-public class Word<T> implements List<T>  {
+public class Word<T> implements List<T>, Serializable  {
     
     private final List<T> bak;
     private final int hash;

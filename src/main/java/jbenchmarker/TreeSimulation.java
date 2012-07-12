@@ -44,7 +44,8 @@ public class TreeSimulation {
     }
     static Factory policy[] = {new WordSkip(), new WordReappear(), new WordRoot(), new WordCompact(),
         new WordIncrementalSkip(), new WordIncrementalReappear(),
-        new WordIncrementalRoot(), new WordIncrementalCompact(), new WordIncrementalSkipOpti()};
+        new WordIncrementalRoot(), new WordIncrementalCompact(), new WordIncrementalSkipOpti(),
+    new WordIncrementalSkipUnique()};
     static Factory set[] = {/*
          * new CommutativeCounterSet(), new ConvergentCounterSet(), new
          * CommutativeLwwSet(), new ConvergentLwwSet(), new CommutativeOrSet(),
@@ -177,7 +178,7 @@ public class TreeSimulation {
          */
         String fileRes;
         String nameUsr;
-        if (clas.equals("OTTree") || clas.equals("FCTree")) 
+        if (clas.equals("OTTree") || clas.equals("FCTree") || clas.equals("OTTreeWithoutGarbage")) 
             nameUsr = clas;
         else
         {
@@ -233,7 +234,7 @@ public class TreeSimulation {
              * calculate time execution boolean : calculate document with
              * overhead
              */
-            cd.runWithMemory(trace, 0, true, true);
+            cd.runWithMemory(trace, scaleMemory, true, true);
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
@@ -252,7 +253,7 @@ public class TreeSimulation {
                 minSizeGen = l.size();
             }
             toArrayLong(ltime[ex], l, minSizeGen);
-
+            
             List<Long> m = cd.getMemUsed();
             if (m.size() < minSizeMem) {
                 minSizeMem = m.size();
@@ -270,21 +271,26 @@ public class TreeSimulation {
             cd = null;
             trace = null;
             System.gc();
+            
+            System.out.println("-----ltime : "+ltime[ex].length);
+            System.out.println("-----rtime : "+rtime[ex].length);
         }
         sum = sum / nbrReplica;
         sum = sum / nbExec;
         System.out.println("Best execution time in :" + (sum / Math.pow(10, 9)) + " second");
-
+        
+        
+        
         if (nbExec > 1) {
             computeAverage(ltime, thresold, minSizeGen);
             computeAverage(mem, thresold, minSizeMem);
             computeAverage(rtime, thresold, minSizeInteg);
         }
 
-        String file = writeToFile(ltime, fileRes, "usr", minSizeGen);
-        treatFile(file, "usr", base);
-        String file2 = writeToFile(rtime, fileRes, "gen", minSizeInteg);
-        treatFile(file2, "gen", base);
+        String file = writeToFile(ltime, fileRes, "gen", minSizeGen);
+        treatFile(file, "gen", base);
+        String file2 = writeToFile(rtime, fileRes, "usr", minSizeInteg);
+        treatFile(file2, "usr", base);
         String file3 = writeToFile(mem, fileRes, "mem", minSizeMem);
         treatFile(file3, "mem", baseSerializ);
     }
@@ -315,7 +321,7 @@ public class TreeSimulation {
         double Tmoyen = 0L;
         int cmpt = 0;
         String Line;
-        String fileName = File.replaceAll("res", "data");
+        String fileName = File.replaceAll(".res", ".data");
         PrintWriter ecrivain = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
         InputStream ips1 = new FileInputStream(File);
         InputStreamReader ipsr1 = new InputStreamReader(ips1);

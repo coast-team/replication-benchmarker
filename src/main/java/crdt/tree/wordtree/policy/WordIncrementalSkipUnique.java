@@ -7,14 +7,16 @@ package crdt.tree.wordtree.policy;
 import collect.Node;
 import collect.UnorderedNode;
 import crdt.tree.wordtree.Word;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+
 
 /**
  *
  * @author urso
  */
-public class WordIncrementalSkipUnique<T> extends WordIncrementalSkip<T> {
+public class WordIncrementalSkipUnique<T> extends WordIncrementalSkip<T> implements Serializable {
 
     // no need since element are unique
     @Override

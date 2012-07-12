@@ -7,6 +7,7 @@ package crdt.tree.wordtree.policy;
 import collect.Node;
 import crdt.tree.wordtree.Word;
 import crdt.tree.wordtree.WordPolicy;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Observable;
 
@@ -14,7 +15,7 @@ import java.util.Observable;
  * WordSkip the orphan nodes.
  * @author urso
  */
-public class WordIncrementalRoot<T> extends WordIncrementalMany<T> {    
+public class WordIncrementalRoot<T> extends WordIncrementalMany<T> implements Serializable {    
             
     @Override
     public WordIncrementalRoot<T> create() {

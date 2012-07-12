@@ -4,13 +4,14 @@
  */
 package jbenchmarker.ot.ottree;
 
+import java.io.Serializable;
 import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 
 /**
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class OTTreeTranformation implements SOCT2TranformationInterface<OTTreeRemoteOperation> {
+public class OTTreeTranformation implements SOCT2TranformationInterface<OTTreeRemoteOperation>, Serializable {
     /*
      * p1.size >= p2.size Check if the shortest path is in common path If two
      * operation are insertion

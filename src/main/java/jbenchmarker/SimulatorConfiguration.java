@@ -32,7 +32,6 @@ public class SimulatorConfiguration implements Serializable {
         this.outLog = outLog;
     }
     
-    
     public int getNbexec() {
         return nbexec;
     }

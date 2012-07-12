@@ -11,6 +11,7 @@ import collect.UnorderedNode;
 import crdt.set.SetOperation;
 import crdt.tree.wordtree.Word;
 import crdt.tree.wordtree.WordPolicy;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -24,7 +25,9 @@ import java.util.Set;
  * WordSkip the orphan nodes.
  * @author urso
  */
-public class WordIncrementalReappear<T> extends WordPolicy<T> {
+
+public class WordIncrementalReappear<T> extends WordPolicy<T> implements Serializable{
+
     private HashTree<T> tree = new HashTree<T>();
     private Set<Node<T>> ghosts = new HashSet<Node<T>>();
     

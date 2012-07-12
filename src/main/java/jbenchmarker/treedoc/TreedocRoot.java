@@ -82,8 +82,8 @@ public class TreedocRoot<T> extends TreedocNode<T> {
 	}
 
 	public void printStats() {
-		System.out.println("Nodes in the tree: " + getNodesNumber());
-		System.out.println("Non-empty nodes in the tree: " + getContentSize());
+		//System.out.println("Nodes in the tree: " + getNodesNumber());
+		//System.out.println("Non-empty nodes in the tree: " + getContentSize());
 	}
 
 	@Override

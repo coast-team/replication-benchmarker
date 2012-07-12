@@ -28,6 +28,7 @@ import static jbenchmarker.sim.CausalDispatcherTest.assertConsistency;
 import static jbenchmarker.sim.CausalDispatcherTest.assertGoodViewLength;
 import jbenchmarker.trace.TraceGenerator;
 import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -35,7 +36,7 @@ import org.junit.Test;
  * @author urso
  */
 public class IntegrationLogoot {
-//    @Ignore
+    @Ignore
     @Test
     public void testLogootExempleRun() throws Exception {
         System.out.println("Integration test with logoot");
@@ -49,7 +50,7 @@ public class IntegrationLogoot {
         assertEquals(r, cd.getReplicas().get(4).lookup());
     }
     
-//    @Ignore
+    @Ignore
     @Test
     public void testLogootG1Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
@@ -58,7 +59,7 @@ public class IntegrationLogoot {
         assertConsistency(cd, trace);
     }
     
-    //@Ignore
+    @Ignore
     @Test
     public void testLogootG2Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
@@ -67,7 +68,7 @@ public class IntegrationLogoot {
         assertConsistency(cd, trace);
     }
     
-    //@Ignore
+    @Ignore
     @Test
     public void testLogootG3Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
@@ -76,7 +77,7 @@ public class IntegrationLogoot {
         assertConsistency(cd, trace);
     }
     
-    //@Ignore
+    @Ignore
     @Test
     public void testLogootSerieRun() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);

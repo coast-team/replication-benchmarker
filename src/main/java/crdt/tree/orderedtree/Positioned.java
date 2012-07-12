@@ -4,12 +4,14 @@
  */
 package crdt.tree.orderedtree;
 
+import java.io.Serializable;
+
 /**
  *
  * @author urso
  */ 
 
-public class Positioned<T> {
+public class Positioned<T> implements Serializable {
     final private PositionIdentifier pi;
     final private T elem;
 

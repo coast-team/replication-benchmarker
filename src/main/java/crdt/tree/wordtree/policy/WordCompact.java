@@ -8,6 +8,7 @@ import collect.Node;
 import collect.UnorderedNode;
 import crdt.tree.wordtree.Word;
 import crdt.tree.wordtree.WordConnectionPolicy;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * Skip the orphan nodes.
  * @author urso
  */
-public class WordCompact<T> extends WordConnectionPolicy<T> {
+public class WordCompact<T> extends WordConnectionPolicy<T> implements Serializable{
     @Override 
     protected void treatOrphan(List<T> orphan) {
         LinkedList<T> word = new LinkedList<T>(orphan);

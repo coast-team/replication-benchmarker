@@ -85,7 +85,7 @@ public class MainSimulation {
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.runWithMemory(trace, scaleMemory, true, true);
+            cd.runWithMemory(trace, 0, false, false);
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
@@ -131,10 +131,10 @@ public class MainSimulation {
             computeAverage(rtime, thresold, minSizeInteg);
         }
         
-        String file = writeToFile(ltime, nameUsr, "usr", minSizeGen);
-        treatFile(file, "usr", base);
-        String file2 = writeToFile(rtime, nameUsr, "gen", minSizeInteg);
-        treatFile(file2, "gen", base);
+        String file = writeToFile(ltime, nameUsr, "gen", minSizeGen);
+        treatFile(file, "gen", base);
+        String file2 = writeToFile(rtime, nameUsr, "usr", minSizeInteg);
+        treatFile(file2, "usr", base);
         String file3 = writeToFile(mem,nameUsr, "mem", minSizeMem);
         treatFile(file3, "mem", baseSerializ);
     }

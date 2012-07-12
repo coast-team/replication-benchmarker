@@ -5,6 +5,7 @@
 package crdt.tree.orderedtree;
 
 import collect.OrderedNode;
+import java.io.Serializable;
 import java.util.List;
 import jbenchmarker.logoot.LogootDocument;
 import jbenchmarker.logoot.LogootIdentifier;
@@ -19,7 +20,7 @@ public class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> impleme
     private final T value;
     private final Clock clock;
     
-    static private class Clock {
+    static private class Clock implements Serializable{
         int value = 0; 
     }
     

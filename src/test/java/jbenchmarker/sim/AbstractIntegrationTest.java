@@ -46,17 +46,18 @@ public abstract class AbstractIntegrationTest {
 
 	protected abstract ReplicaFactory createFactory();
 
-	protected void assertConsistentViews(CausalSimulator cd) {
-		String referenceView = null;
-		for (final CRDT replica : cd.getReplicas().values()) {
-			final String view = ((MergeAlgorithm) replica).lookup();
-			if (referenceView == null)
-				referenceView = view;
-			else
-				assertEquals(referenceView, view);
-		}
-		assertNotNull(referenceView);
-	}
+    protected void assertConsistentViews(CausalSimulator cd) {
+        String referenceView = null;
+        for (final CRDT replica : cd.getReplicas().values()) {
+            final String view = ((MergeAlgorithm) replica).lookup();
+            if (referenceView == null) {
+                referenceView = view;
+            } else {
+                assertEquals(referenceView, view);
+            }
+        }
+        assertNotNull(referenceView);
+    }
         
 	@Test
 	public void testExempleRun() throws Exception {

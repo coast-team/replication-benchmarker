@@ -125,10 +125,12 @@ public class CausalSimulator extends Simulator {
         genHistory = new HashMap<Integer, List<CRDTMessage>>();
         while (it.hasMoreElements()) {
             tour++;
-
-//System.out.println(tour); 
             
-            final TraceOperation opt = it.nextElement();                      
+            if(tour%1000==0)
+                System.out.println(tour);           
+            
+            final TraceOperation opt = it.nextElement();    
+
             final int r = opt.getReplica();             
             CRDT localReplica = this.getReplicas().get(r);
             
@@ -138,7 +140,7 @@ public class CausalSimulator extends Simulator {
                 genHistory.put(r, new ArrayList<CRDTMessage>());
                 history.put(r, new ArrayList<TraceOperation>());
             } 
-
+            
 //System.out.println(opt);            
 //System.out.println("--- BEFORE ---");   
 //System.out.println(localReplica.lookup());
@@ -177,6 +179,7 @@ public class CausalSimulator extends Simulator {
             tmp = System.nanoTime();
             
             final CRDTMessage m = localReplica.applyLocal(op);
+            
             long after = System.nanoTime(); 
             localSum += (after - tmp);
             if (detail) {
@@ -197,7 +200,7 @@ public class CausalSimulator extends Simulator {
         // Final : applyRemote all pending remote CRDTMessage (not the best complexity)
         for (CRDT r : replicas.values()) {
             int n = r.getReplicaNumber();
-//System.out.println("final : " + n); 
+
             concurrentOps.clear();
             VectorClock vc = clocks.get(n);
             for (Entry<Integer, Integer> e : globalClock.entrySet()) {

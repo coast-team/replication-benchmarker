@@ -148,7 +148,6 @@ public class MainCRDT {
             while (nbReplic <= maxReplic) {
                 System.out.println(name + " with :" + nbReplic + " replica");
 
-
                 int i = 0;
                 nbR++;
                 while (i < nbExec) {

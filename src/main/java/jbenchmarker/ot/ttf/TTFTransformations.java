@@ -49,7 +49,6 @@ public class TTFTransformations implements SOCT2TranformationInterface<TTFOperat
             }
         }
         return op1;
-
     }
 
     @Override
