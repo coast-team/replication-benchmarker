@@ -25,7 +25,7 @@ import java.util.Set;
  * WordSkip the orphan nodes.
  * @author urso
  */
-public class WordIncrementalSkip<T> implements WordPolicy<T> {
+public class WordIncrementalSkip<T> extends WordPolicy<T> {
     private Set<List<T>> orphans = new HashSet();
     private HashTree<T> tree = new HashTree<T>();
     private Map<List<T>, Node<T>> w2n = new HashMap<List<T>, Node<T>>();

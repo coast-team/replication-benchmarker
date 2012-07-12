@@ -20,7 +20,7 @@ import java.util.Set;
  * WordSkip the orphan nodes.
  * @author urso
  */
-abstract public class WordIncrementalMany<T> implements WordPolicy<T> {
+abstract public class WordIncrementalMany<T> extends WordPolicy<T> {
     protected CounterTree<T> tree = new CounterTree<T>();
     protected Map<List<T>, Node<T>> w2n = new HashMap<List<T>, Node<T>>();
     

@@ -25,7 +25,7 @@ import java.util.Set;
  * 
  * @author Stephane
  */
-public class MyWordIncremetanlTrapear<T>  implements WordPolicy<T> , Factory<WordPolicy<T>>, Observer {
+public class MyWordIncremetanlTrapear<T>  extends WordPolicy<T> implements Factory<WordPolicy<T>>, Observer {
 
     HashMap<List<T>, NodeContainer> map; /* Fait la liaison entre une liste de mot et un containeur de noeud*/
     HashTree tree; /* arbre du lookup */

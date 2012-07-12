@@ -24,7 +24,7 @@ import java.util.Set;
  * WordSkip the orphan nodes.
  * @author urso
  */
-public class WordIncrementalReappear<T> implements WordPolicy<T> {
+public class WordIncrementalReappear<T> extends WordPolicy<T> {
     private HashTree<T> tree = new HashTree<T>();
     private Set<Node<T>> ghosts = new HashSet<Node<T>>();
     

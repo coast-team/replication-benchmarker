@@ -5,7 +5,10 @@
 package crdt.tree.wordtree.policy;
 
 import collect.Node;
+import collect.UnorderedNode;
 import crdt.tree.wordtree.Word;
+import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -17,6 +20,12 @@ public class WordIncrementalSkipUnique<T> extends WordIncrementalSkip<T> {
     @Override
     protected void reattach(Node<T> node, Word<T> word) {
         
+    }
+
+    // need only to remove subtree root
+    @Override
+    public Collection<List<T>> toBeRemoved(UnorderedNode<T> subtree) {
+        return delMapping(subtree);
     }
 
     @Override

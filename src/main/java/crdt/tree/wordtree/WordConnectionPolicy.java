@@ -12,7 +12,7 @@ import java.util.*;
  *
  * @author urso
  */
-public abstract class WordConnectionPolicy<T> implements WordPolicy<T> {
+public abstract class WordConnectionPolicy<T> extends WordPolicy<T> {
     private boolean fresh;
     protected HashTree<T> tree;
     protected HashBiMapSet<UnorderedNode<T>, List<T>> nodeToWord;

@@ -19,7 +19,7 @@ import java.util.*;
  * WordSkip the orphan nodes.
  * @author urso
  */
-public class WordIncrementalSkipOpti<T> implements WordPolicy<T> {
+public class WordIncrementalSkipOpti<T> extends WordPolicy<T> {
     private HashTree<T> tree = new HashTree<T>();
     private Map<List<T>, Map<T, Node<T>>> orphans = new HashMap<List<T>, Map<T, Node<T>>>();
     

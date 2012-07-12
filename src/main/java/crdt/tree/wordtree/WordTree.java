@@ -53,17 +53,10 @@ public class WordTree<T> extends CRDTTree<T> {
             throw new PreconditionException("Removing root");
         if (!wcp.lookup().contains(subtree)) 
             throw new PreconditionException("Removing node " + subtree + " not in the tree");
-        
-        Iterator<? extends Node<T>> subtreeIt = wcp.lookup().getBFSIterator(subtree);
-        List<List<T>> toBeRemoved = new LinkedList<List<T>>();
+
         CRDTMessage msg = null;
 
-        while (subtreeIt.hasNext()) {
-            UnorderedNode<T> n = (UnorderedNode<T>) subtreeIt.next();
-            Collection<List<T>> w = wcp.delMapping(n);
-            toBeRemoved.addAll(0, w);
-        }
-        for (List<T> w : toBeRemoved) {
+        for (List<T> w : wcp.toBeRemoved(subtree)) {
             CRDTMessage del = words.remove(w);
             msg = msg == null ? del : msg.concat(del);
         }
