@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2011 INRIA / LORIA / SCORE Team
+ * Copyright (C) 2012 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.logoot;
+
 import jbenchmarker.factories.LogootFactory;
 import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 import java.util.List;
-
-
-
 import org.junit.Test;
 import static org.junit.Assert.*;
 

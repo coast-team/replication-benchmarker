@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2011 UNL / INRIA
+ * Copyright (C) 2012 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */ 
+ */
 package citi.treedoc;
 
 import java.util.*;

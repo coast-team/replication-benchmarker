@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2011 INRIA / LORIA / SCORE Team
+ * Copyright (C) 2012 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  */
 package jbenchmarker.rga;
 
-
 import jbenchmarker.core.SequenceMessage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,9 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import jbenchmarker.trace.TraceGenerator;
 import jbenchmarker.core.SequenceOperation;
-
-
-
 import org.junit.Test;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
