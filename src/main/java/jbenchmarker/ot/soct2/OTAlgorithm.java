@@ -53,7 +53,7 @@ public interface OTAlgorithm<O extends Operation> extends Factory<OTAlgorithm<O>
      * @param soct2message Is a message which contains the operation and vector clock
      * @return operation to performe on document
      */
-    Operation integrateRemote(OTMessage soct2message);
+    O integrateRemote(OTMessage soct2message);
 
     /**
      * Check if the operation is ready by its vector clock

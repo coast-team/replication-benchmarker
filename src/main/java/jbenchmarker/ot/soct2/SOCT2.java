@@ -133,7 +133,7 @@ public class SOCT2 <O extends Operation> implements OTAlgorithm<O>, Serializable
      * @return operation to performe on document
      */
     @Override
-    public Operation integrateRemote(OTMessage soct2message) {
+    public O integrateRemote(OTMessage soct2message) {
 
         if (this.readyFor(soct2message.getSiteId(), soct2message.getClock())) {
             if (gc != null) {
@@ -144,7 +144,7 @@ public class SOCT2 <O extends Operation> implements OTAlgorithm<O>, Serializable
                 this.gc.garbage(this); //Garbage collector
             }
             this.siteVC.inc(soct2message.getSiteId());
-            return op;
+            return (O)op;
         } else {
             throw new RuntimeException("it seems causal reception is broken in " + this.replicaNumber + " v: " + siteVC + " vs " + soct2message.getClock() + " from " + soct2message.getSiteId());
         }
