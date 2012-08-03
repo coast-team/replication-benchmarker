@@ -47,6 +47,8 @@ import jbenchmarker.logoot.BoundaryStrategy;
 import jbenchmarker.logoot.LogootStrategy;
 import jbenchmarker.ot.ottree.OTTree;
 import jbenchmarker.ot.ottree.OTTreeTranformation;
+import jbenchmarker.ot.ottree.TreeOPT;
+import jbenchmarker.ot.ottree.TreeOPTTTFTranformation;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2Log;
 import static org.junit.Assert.assertEquals;
@@ -301,6 +303,14 @@ public class OrderedTreeTest {
         //for(int p=0;p<20000;p++){
             
             CausalDispatcherSetsAndTreesTest.testRunX(new FCTree(), 2000, 100, 5, otreeop);
+        //}
+    }
+      @Test
+    public void testRunsTreeOPT() throws PreconditionException, IncorrectTraceException, IOException {
+        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
+        //for(int p=0;p<20000;p++){
+            
+            CausalDispatcherSetsAndTreesTest.testRunX(new TreeOPT(new SOCT2(0, new SOCT2Log(new TreeOPTTTFTranformation()), null)), 2000, 100, 5, otreeop);
         //}
     }
 }
