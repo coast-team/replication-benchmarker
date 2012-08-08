@@ -42,6 +42,7 @@ import java.util.List;
 import jbenchmarker.logoot.BoundaryStrategy;
 import jbenchmarker.ot.ottree.OTTree;
 import jbenchmarker.ot.ottree.OTTreeTranformation;
+import jbenchmarker.ot.ottree.TreeOPT;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2GarbageCollector;
 import jbenchmarker.ot.soct2.SOCT2Log;
@@ -105,10 +106,14 @@ public class TreeSimulation {
         fact.add(new FCTree());
         factstr.add("FCTree");
         
+        
         //withoutGarbage
          fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), 
                 null)));
         factstr.add("OTTreeWithoutGarbage");
+         fact.add(new TreeOPT(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), 
+                null)));
+        factstr.add("TreeOPTWithoutGarbage");
 
     }
     static int base = 100;
