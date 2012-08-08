@@ -21,6 +21,7 @@ package jbenchmarker.ot.ottree;
 import collect.OrderedNode;
 import crdt.*;
 import crdt.tree.orderedtree.CRDTOrderedTree;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.ot.soct2.OTAlgorithm;
@@ -31,7 +32,7 @@ import jbenchmarker.ot.soct2.OTMessage;
  * @param <T> label of tree
  * @author Stephane Martin
  */
-public class TreeOPT<T> extends CRDTOrderedTree<T> {
+public class TreeOPT<T> extends CRDTOrderedTree<T> implements Serializable {
 
     TreeOPTTTFNode root;
 

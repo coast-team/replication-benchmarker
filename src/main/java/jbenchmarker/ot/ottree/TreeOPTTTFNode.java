@@ -19,6 +19,7 @@
 package jbenchmarker.ot.ottree;
 
 import collect.OrderedNode;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +32,7 @@ import jbenchmarker.ot.soct2.SOCT2;
  * @param <T> 
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class TreeOPTTTFNode<T> implements OrderedNode<T> {
+public class TreeOPTTTFNode<T> implements OrderedNode<T>, Serializable {
 
     int visibleChildren = 0;
     boolean visible;

@@ -43,6 +43,7 @@ import jbenchmarker.logoot.BoundaryStrategy;
 import jbenchmarker.ot.ottree.OTTree;
 import jbenchmarker.ot.ottree.OTTreeTranformation;
 import jbenchmarker.ot.ottree.TreeOPT;
+import jbenchmarker.ot.ottree.TreeOPTTTFTranformation;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2GarbageCollector;
 import jbenchmarker.ot.soct2.SOCT2Log;
@@ -111,7 +112,7 @@ public class TreeSimulation {
          fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), 
                 null)));
         factstr.add("OTTreeWithoutGarbage");
-         fact.add(new TreeOPT(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), 
+         fact.add(new TreeOPT(new SOCT2(0, new SOCT2Log(new TreeOPTTTFTranformation()), 
                 null)));
         factstr.add("TreeOPTWithoutGarbage");
 
@@ -197,7 +198,7 @@ public class TreeSimulation {
          */
         String fileRes;
         String nameUsr;
-        if (clas.equals("OTTree") || clas.equals("FCTree") || clas.equals("OTTreeWithoutGarbage")) 
+        if (clas.equals("OTTree") || clas.equals("FCTree") || clas.equals("OTTreeWithoutGarbage") || clas.equals("TreeOPTWithoutGarbage")) 
             nameUsr = clas;
         else
         {

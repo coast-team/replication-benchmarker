@@ -18,13 +18,14 @@
  */
 package jbenchmarker.ot.ottree;
 
+import java.io.Serializable;
 import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 
 /**
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class TreeOPTTTFTranformation implements SOCT2TranformationInterface<TreeOPTTTFNodeOperation> {
+public class TreeOPTTTFTranformation implements SOCT2TranformationInterface<TreeOPTTTFNodeOperation>, Serializable {
 
     private void tTF(TreeOPTTTFNodeOperation op1, TreeOPTTTFNodeOperation op2, int operator) {
 
