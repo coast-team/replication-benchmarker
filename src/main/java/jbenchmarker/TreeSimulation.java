@@ -47,6 +47,7 @@ import jbenchmarker.ot.ottree.TreeOPTTTFTranformation;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2GarbageCollector;
 import jbenchmarker.ot.soct2.SOCT2Log;
+import jbenchmarker.ot.soct2.SOCT2LogTTFOpt;
 
 /**
  *
@@ -115,10 +116,17 @@ public class TreeSimulation {
          fact.add(new TreeOPT(new SOCT2(0, new SOCT2Log(new TreeOPTTTFTranformation()), 
                 null)));
         factstr.add("TreeOPTWithoutGarbage");
+          fact.add(new OTTree(new SOCT2(0, new SOCT2LogTTFOpt(new OTTreeTranformation()), 
+                null)));
+        factstr.add("OTTreeWithoutGarbageO");
+         fact.add(new TreeOPT(new SOCT2(0, new SOCT2LogTTFOpt(new TreeOPTTTFTranformation()), 
+                null)));
+        factstr.add("TreeOPTWithoutGarbageO");
+        
 
     }
     static int base = 100;
-    static int baseSerializ = 10;
+    static int baseSerializ = 1;
 
     static public void main(String[] args) throws Exception {
 
@@ -198,7 +206,13 @@ public class TreeSimulation {
          */
         String fileRes;
         String nameUsr;
-        if (clas.equals("OTTree") || clas.equals("FCTree") || clas.equals("OTTreeWithoutGarbage") || clas.equals("TreeOPTWithoutGarbage")) 
+        if (clas.equals("OTTree") 
+                || clas.equals("FCTree") 
+                || clas.equals("OTTreeWithoutGarbage") 
+                || clas.equals("TreeOPTWithoutGarbage")
+                || clas.equals("OTTreeWithoutGarbageO") 
+                || clas.equals("TreeOPTWithoutGarbageO")
+                ) 
             nameUsr = clas;
         else
         {
@@ -232,7 +246,7 @@ public class TreeSimulation {
             Trace trace;
             if (fileUsr.exists()) {
                 System.out.println( "-Trace From File : " + nameUsr);
-                trace = new TraceFromFile(fileUsr);
+                trace = new TraceFromFile(fileUsr,true);
                 cd.setLogging(null);
             } else {
                 System.out.println( "-Trace to File  " + nameUsr);
@@ -255,6 +269,7 @@ public class TreeSimulation {
              * overhead
              */
             cd.runWithMemory(trace, scaleMemory, true, true);
+            System.out.println("End of simulation");
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
@@ -291,7 +306,7 @@ public class TreeSimulation {
             cd = null;
             trace = null;
             System.gc();
-            
+            Thread.sleep(1000);
             System.out.println("-----ltime : "+ltime[ex].length);
             System.out.println("-----rtime : "+rtime[ex].length);
         }
@@ -337,7 +352,7 @@ public class TreeSimulation {
         return nameFile;
     }
 
-    static void treatFile(String File, String result, int baz) throws IOException {
+    static public void treatFile(String File, String result, int baz) throws IOException {
         double Tmoyen = 0L;
         int cmpt = 0;
         String Line;

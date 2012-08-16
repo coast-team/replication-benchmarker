@@ -51,6 +51,7 @@ import jbenchmarker.ot.ottree.TreeOPT;
 import jbenchmarker.ot.ottree.TreeOPTTTFTranformation;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2Log;
+import jbenchmarker.ot.soct2.SOCT2LogTTFOpt;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -311,6 +312,22 @@ public class OrderedTreeTest {
         //for(int p=0;p<20000;p++){
             
             CausalDispatcherSetsAndTreesTest.testRunX(new TreeOPT(new SOCT2(0, new SOCT2Log(new TreeOPTTTFTranformation()), null)), 2000, 100, 5, otreeop);
+        //}
+    }
+         @Test
+    public void testRunsTreeOPT2() throws PreconditionException, IncorrectTraceException, IOException {
+        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
+        //for(int p=0;p<20000;p++){
+            
+            CausalDispatcherSetsAndTreesTest.testRunX(new TreeOPT(new SOCT2(0, new SOCT2LogTTFOpt(new TreeOPTTTFTranformation()), null)), 2000, 100, 5, otreeop);
+        //}
+    }
+          @Test
+    public void testRunsOTTree2() throws PreconditionException, IncorrectTraceException, IOException {
+        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
+        //for(int p=0;p<20000;p++){
+            
+            CausalDispatcherSetsAndTreesTest.testRunX(new OTTree(new SOCT2(0, new SOCT2LogTTFOpt(new OTTreeTranformation()), null)), 2000, 100, 5, otreeop);
         //}
     }
 }

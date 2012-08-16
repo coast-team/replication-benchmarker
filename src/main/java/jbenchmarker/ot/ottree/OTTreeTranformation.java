@@ -20,12 +20,13 @@ package jbenchmarker.ot.ottree;
 
 import java.io.Serializable;
 import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
+import jbenchmarker.ot.soct2.SOCT2TranformationInterfaceOpt;
 
 /**
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class OTTreeTranformation implements SOCT2TranformationInterface<OTTreeRemoteOperation>, Serializable {
+public class OTTreeTranformation implements SOCT2TranformationInterfaceOpt<OTTreeRemoteOperation>, Serializable {
     /*
      * p1.size >= p2.size Check if the shortest path is in common path If two
      * operation are insertion
@@ -126,5 +127,10 @@ public class OTTreeTranformation implements SOCT2TranformationInterface<OTTreeRe
          *
          * return op1;
          */
+    }
+
+    @Override
+    public boolean isLogInterest(OTTreeRemoteOperation o) {
+        return (o.getType().equals(OTTreeRemoteOperation.OpType.ins));
     }
 }

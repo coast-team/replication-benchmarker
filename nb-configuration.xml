@@ -9,9 +9,9 @@ Without this configuration present, some functionality in the IDE may be limited
     <config-data xmlns="http://www.netbeans.org/ns/maven-config-data/1">
         <configurations>
             <configuration id="TraceViewer" profiles=""/>
+            <configuration id="TreeSimFrom" profiles=""/>
             <configuration id="run ABT G1 " profiles=""/>
             <configuration id="treesim" profiles=""/>
-            <configuration id="TreeSimFrom" profiles=""/>
         </configurations>
     </config-data>
 </project-shared-configuration>

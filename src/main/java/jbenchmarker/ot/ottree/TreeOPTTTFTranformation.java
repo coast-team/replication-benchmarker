@@ -20,12 +20,13 @@ package jbenchmarker.ot.ottree;
 
 import java.io.Serializable;
 import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
+import jbenchmarker.ot.soct2.SOCT2TranformationInterfaceOpt;
 
 /**
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class TreeOPTTTFTranformation implements SOCT2TranformationInterface<TreeOPTTTFNodeOperation>, Serializable {
+public class TreeOPTTTFTranformation implements SOCT2TranformationInterfaceOpt <TreeOPTTTFNodeOperation>, Serializable {
 
     private void tTF(TreeOPTTTFNodeOperation op1, TreeOPTTTFNodeOperation op2, int operator) {
 
@@ -62,5 +63,10 @@ public class TreeOPTTTFTranformation implements SOCT2TranformationInterface<Tree
     public TreeOPTTTFNodeOperation transposeBackward(TreeOPTTTFNodeOperation op1, TreeOPTTTFNodeOperation op2) {
         tTF(op1, op2, -1);
         return op1;
+    }
+
+    @Override
+    public boolean isLogInterest(TreeOPTTTFNodeOperation o) {
+        return  o.type.equals(TreeOPTTTFNodeOperation.OpType.ins);
     }
 }

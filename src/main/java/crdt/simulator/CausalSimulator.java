@@ -126,8 +126,8 @@ public class CausalSimulator extends Simulator {
         while (it.hasMoreElements()) {
             tour++;
             
-            if(tour%1000==0)
-                System.out.println(tour);           
+            /*if(tour%1000==0)
+                System.out.println(tour);           */
             
             final TraceOperation opt = it.nextElement();    
 
@@ -314,9 +314,9 @@ public class CausalSimulator extends Simulator {
             tour = 0;
             
             //debug
-            if (memUsed.size() % 100 == 0) {
+            /*if (memUsed.size() % 100 == 0) {
                 System.out.println("Serialized :" + memUsed.size() + " x");
-            }
+            }*/
         }
     }
 

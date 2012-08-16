@@ -24,12 +24,14 @@ import crdt.tree.fctree.FCTree;
 import org.junit.Test;
 import static crdt.tree.orderedtree.OrderedNodeMock.tree;
 import java.util.Arrays;
+import jbenchmarker.ot.ottree.OTTree;
 import jbenchmarker.ot.ottree.OTTreeTranformation;
 import jbenchmarker.ot.ottree.TreeOPT;
 import jbenchmarker.ot.ottree.TreeOPTTTFTranformation;
 import jbenchmarker.ot.soct2.OTAlgorithm;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2Log;
+import jbenchmarker.ot.soct2.SOCT2LogTTFOpt;
 import junit.framework.Assert;
 
 /**
@@ -72,6 +74,17 @@ public class BasicOrderedTreeTest {
     @Test
     public void insertionTest()throws Exception {
        sequentialTest(new FCTree());
+    }
+    @Test
+    public void TreeOPTTest()throws Exception {
        sequentialTest(new TreeOPT(new SOCT2(0, new SOCT2Log(new TreeOPTTTFTranformation()), null)));
+    }
+     @Test
+    public void TreeOPTOTest()throws Exception {
+       sequentialTest(new TreeOPT(new SOCT2(0, new SOCT2LogTTFOpt(new TreeOPTTTFTranformation()), null)));
+    }
+    @Test
+    public void OTTREEeOTest()throws Exception {
+       sequentialTest(new OTTree(new SOCT2(0, new SOCT2LogTTFOpt(new OTTreeTranformation()), null)));
     }
 }
