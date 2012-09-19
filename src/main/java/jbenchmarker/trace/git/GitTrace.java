@@ -1,20 +1,20 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2012
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.trace.git;
 
@@ -53,35 +53,38 @@ import org.ektorp.impl.StdCouchDbInstance;
  * @author urso
  */
 public class GitTrace implements Trace {
+
     private CommitCRUD commitCRUD;
-    private PatchCRUD patchCRUD;  
+    private PatchCRUD patchCRUD;
     private List<Commit> initCommit;
     private final DiffAlgorithm diffAlgorithm;
-        
+
     /**
-     * Creates a git extractor using a git directory a couch db URL and a file path 
+     * Creates a git extractor using a git directory a couch db URL and a file
+     * path
+     *
      * @param gitdir directory that contains ".git"
-     * @param couchURL URL of couch BD 
-     * @param path a path in the gir repository 
+     * @param couchURL URL of couch BD
+     * @param path a path in the gir repository
      * @param clean if true recreates db
      * @return a new git extractor
      * @throws IOException if git directory not accessible
      */
     public static GitTrace create(String gitdir, String couchURL, String path, boolean cleanDB) throws IOException {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
-        Repository repo = builder.setGitDir(new File(gitdir + "/.git")).readEnvironment() 
+        Repository repo = builder.setGitDir(new File(gitdir + "/.git")).readEnvironment()
                 .findGitDir().build();
 
         HttpClient httpClient = new StdHttpClient.Builder().url(couchURL).build();
         CouchDbInstance dbInstance = new StdCouchDbInstance(httpClient);
-        String prefix = clearName(gitdir, path), 
+        String prefix = clearName(gitdir, path),
                 co = prefix + "_commit", pa = prefix + "_patch";
-        CouchDbConnector dbcc = new StdCouchDbConnector(co, dbInstance); 
+        CouchDbConnector dbcc = new StdCouchDbConnector(co, dbInstance);
         CouchDbConnector dbcp = new StdCouchDbConnector(pa, dbInstance);
         CommitCRUD commitCRUD;
-        PatchCRUD patchCRUD;    
+        PatchCRUD patchCRUD;
 
-        if (cleanDB || !dbInstance.checkIfDbExists(new DbPath(co)) 
+        if (cleanDB || !dbInstance.checkIfDbExists(new DbPath(co))
                 || !dbInstance.checkIfDbExists(new DbPath(pa))) {
             clearDB(dbInstance, co);
             clearDB(dbInstance, pa);
@@ -91,11 +94,11 @@ public class GitTrace implements Trace {
             ge.parseRepository();
         } else {
             commitCRUD = new CommitCRUD(dbcc);
-            patchCRUD = new PatchCRUD(dbcp);    
-        }        
+            patchCRUD = new PatchCRUD(dbcp);
+        }
         return new GitTrace(commitCRUD, patchCRUD);
     }
-        
+
     // TODO : Working view
     public GitTrace(CommitCRUD dbc, PatchCRUD dbp) {
         commitCRUD = dbc;
@@ -110,79 +113,75 @@ public class GitTrace implements Trace {
         diffAlgorithm = GitExtraction.defaultDiffAlgorithm;
     }
 
-    
     public GitTrace(CouchDbConnector db) {
         this(new CommitCRUD(db), new PatchCRUD(db));
     }
-    
+
     List<Edition> diff(byte[] aRaw, byte[] bRaw) throws IOException {
         final RawText a = new RawText(aRaw);
         final RawText b = new RawText(bRaw);
         final EditList editList = diffAlgorithm.diff(RawTextComparator.DEFAULT, a, b);
         return GitExtraction.edits(editList, a, b);
     }
-        
+
     class Walker implements Enumeration<TraceOperation> {
 
-        class MergeCorrection extends TraceOperation implements LocalOperation {
+        class MergeCorrection extends TraceOperation {
 
             Patch patch;
             LocalOperation first;
-            
-            MergeCorrection(int replica, VectorClock VC, Commit merge) {
-                super(replica, new VectorClock(VC));  
-                getVectorClock().inc(replica);   
-                patch = patchCRUD.get(merge.patchId());
-            }          
 
-            /** 
-             * Introduce to the trace on-the-fly correction operations to obtain the merge result.
+            MergeCorrection(int replica, VectorClock VC, Commit merge) {
+                super(replica, new VectorClock(VC));
+                getVectorClock().inc(replica);
+                patch = patchCRUD.get(merge.patchId());
+            }
+
+            /**
+             * Introduce to the trace on-the-fly correction operations to obtain
+             * the merge result.
+             *
              * @param replica the replica that will originate the correction
              * @return the first edit of the correction operation
              */
-            
             @Override
             public LocalOperation getOperation(/*CRDT replica*/) {
-                /**/
-                  throw new UnsupportedOperationException("Not supported yet.");           
+                return new LocalOperation() {
+                    @Override
+                    public LocalOperation adaptTo(CRDT replica) {
+
+                        if (first == null) {
+                            try {
+                                List<Edition> l = diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
+                                if (l.isEmpty()) {
+                                    currentVC.inc(replica.getReplicaNumber());
+                                    first = SequenceOperation.noop(/*replica.getReplicaNumber(), getVectorClock()*/);
+                                } else {
+                                    editions.addAll(l);
+                                    first = nextElement().getOperation().adaptTo(replica);
+                                }
+                            } catch (IOException ex) {
+                                Logger.getLogger(GitTrace.class.getName()).log(Level.SEVERE, "During merge correction computation", ex);
+                            }
+                        }
+                        return first;
+                    }
+
+                    @Override
+                    public Operation clone() {
+                        throw new UnsupportedOperationException("Not Yet fucked clone on trace");
+                        //return first==null?(LocalOperation)super.clone():first;
+                    }
+                };
             }
-           
+
             @Override
             public String toString() {
                 return "MergeCorrection{" + "first=" + first + '}';
             }
 
-            @Override
-            public LocalOperation adaptTo(CRDT replica) {
-                if (first == null) {
-                    try {
-                        List<Edition> l = diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
-                        if (l.isEmpty()) {
-                            currentVC.inc(replica.getReplicaNumber());           
-                            first = SequenceOperation.noop(/*replica.getReplicaNumber(), getVectorClock()*/);
-                        } else {
-                            editions.addAll(l);
-                            first = nextElement().getOperation().adaptTo(replica);
-                        }
-                    } catch (IOException ex) {
-                        Logger.getLogger(GitTrace.class.getName()).log(Level.SEVERE, "During merge correction computation", ex);
-                    }
-                }            
-                return first;
-            }
-
-            @Override
-            public MergeCorrection clone() {
-                //return new MergeCorrection(replica, VC,  merge) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-          
-
-            
+           
         }
-        
-        
         private LinkedList<Commit> pendingCommit;
         private LinkedList<Commit> startingCommit;
         private LinkedList<String> children;
@@ -194,7 +193,7 @@ public class GitTrace implements Trace {
         private HashMap<String, VectorClock> startVC = new HashMap<String, VectorClock>();
         private HashSet<String> mergeCommit = new HashSet<String>();
         private boolean init = true;
-        
+
         public Walker() {
             startingCommit = new LinkedList<Commit>(initCommit);
             pendingCommit = new LinkedList<Commit>(initCommit);
@@ -202,9 +201,9 @@ public class GitTrace implements Trace {
 
         @Override
         public boolean hasMoreElements() {
-            return (editions != null && !editions.isEmpty()) 
-                    || (files != null && !files.isEmpty()) 
-                    || (children != null && !children.isEmpty()) 
+            return (editions != null && !editions.isEmpty())
+                    || (files != null && !files.isEmpty())
+                    || (children != null && !children.isEmpty())
                     || (!pendingCommit.isEmpty());
         }
 
@@ -231,7 +230,7 @@ public class GitTrace implements Trace {
                         commit = startingCommit.pollFirst();
                         Patch p = patchCRUD.get(commit.patchId());
                         files = new LinkedList<FileEdition>(p.getEdits());
-                        currentVC = new VectorClock(); 
+                        currentVC = new VectorClock();
                     } else {
                         init = false;
                         commit = null;
@@ -261,12 +260,14 @@ public class GitTrace implements Trace {
                         } else {
                             commit = candidate;
                             pureChildren(commit.getChildren());
-                            currentVC = startVC.get(commit.getId());                           
+                            currentVC = startVC.get(commit.getId());
                             if (mergeCommit.contains(commit.getId())) {
                                 return new MergeCorrection(commit.getReplica(), currentVC, commit);
                             }
-                        }                   
-                    } else throw new NoSuchElementException("No more operation");
+                        }
+                    } else {
+                        throw new NoSuchElementException("No more operation");
+                    }
                 }
             }
 //System.out.println(commit);
@@ -283,9 +284,9 @@ public class GitTrace implements Trace {
         }
 
         /**
-         * Add to children only id which are not merge.
-         * Add unknown child to pending. Identify merge commit.
-         */ 
+         * Add to children only id which are not merge. Add unknown child to
+         * pending. Identify merge commit.
+         */
         private void pureChildren(List<String> childrenId) {
             children = new LinkedList<String>(childrenId);
             Iterator<String> it = children.iterator();
@@ -305,21 +306,21 @@ public class GitTrace implements Trace {
             }
         }
     }
-    
+
     @Override
     public Enumeration<TraceOperation> enumeration() {
         return new Walker();
     }
-        
+
     public static void clearDB(CouchDbInstance dbInstance, String path) {
         if (dbInstance.checkIfDbExists(new DbPath(path))) {
             dbInstance.deleteDatabase(path);
         }
     }
-    
+
     public static String clearName(String gitdir, String path) {
-        String []d = gitdir.split("/");
-        gitdir = d[d.length-1];
+        String[] d = gitdir.split("/");
+        gitdir = d[d.length - 1];
         path = path.replaceAll("[^a-zA-Z0-9]", "");
         return gitdir + "_" + path;
     }
