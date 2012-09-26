@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import jbenchmarker.trace.TraceGenerator;
 
 
 /**
@@ -43,7 +44,7 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    static int baseSerializ = 10, base = 100;
+    static int baseSerializ = 1, base = 100;
 
     public static void main(String[] args) throws Exception {
 
@@ -67,10 +68,10 @@ public class Main {
         for (int ex = 0; ex < nbExec; ex++) {
             System.out.println("execution ::: " + ex);
             
-           // Trace trace = TraceGenerator.traceFromXML(args[1], 1);
-            Trace trace = new TraceFromFile(args[1]);
-     //   GitTrace trace = GitTrace.create("/Users/urso/Rech/github/git", "http://localhost:5984", "Makefile", false);
-//        GitTrace trace = GitTrace.create("/Users/urso/Rech/github/linux", "http://localhost:5984", "MAINTAINERS", false);
+           Trace trace = TraceGenerator.traceFromXML(args[1], 1);
+            //Trace trace = new TraceFromFile(args[1]);
+            //GitTrace trace = GitTrace.create("/Users/urso/Rech/github/git", "http://localhost:5984", "Makefile", false);
+            //GitTrace trace = GitTrace.create("/Users/urso/Rech/github/linux", "http://localhost:5984", "MAINTAINERS", false);
 
             CausalSimulator cd = new CausalSimulator(rf);
             /*
@@ -79,7 +80,11 @@ public class Main {
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.runWithMemory(trace, Integer.valueOf(args[4]), true, true);//0 sans serialisation
+            boolean calculTimeEx = false;
+            if(ex == 0)
+                cd.runWithMemory(trace, Integer.valueOf(args[4]), calculTimeEx, true);//0 sans serialisation
+            else
+                cd.runWithMemory(trace, 0, true, true);//0 sans serialisation
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
@@ -89,11 +94,15 @@ public class Main {
                 rtime = new long[nb][cop];
                 mem = new long[nb][mop];
             }
+            
+            if (calculTimeEx) {
+                toArrayLong(ltime[ex], cd.replicaGenerationTimes());
+                toArrayLong(rtime[ex], cd.splittedGenTime());
+            }
+            if(ex==0)
+                toArrayLong(mem[ex], cd.getMemUsed());
 
-            toArrayLong(ltime[ex], cd.replicaGenerationTimes());
-            toArrayLong(mem[ex], cd.getMemUsed());
-
-            toArrayLong(rtime[ex], cd.splittedGenTime());
+            
             for (int i = 0; i < cop - 1; i++) {
                 rtime[ex][i] /= nbReplica - 1;
             }
@@ -111,6 +120,7 @@ public class Main {
         System.out.println();
 
         long ft = System.currentTimeMillis();
+        
         // Name of result file is "[package.]Name[Factory]-trace[.xml].res"
         int i = args[1].lastIndexOf('/'), j = args[1].lastIndexOf('.'),
                 k = args[0].lastIndexOf('.'), l = args[0].lastIndexOf("Factory");
@@ -123,6 +133,8 @@ public class Main {
             i = args[1].lastIndexOf('\\');
         }
         String n = args[0].substring(k + 1, l);
+        
+        
         String[] c;
         if (n.contains("$")) {
             c = n.split("\\$");
@@ -133,9 +145,7 @@ public class Main {
             n = n + "" + tab[tab.length - 1];
         }
         
-        //String fileName = n + "-" + args[1].substring(i + 1, j);
-       
-        
+        String fileName = n + "-" + args[1].substring(i + 1, j);        
         System.out.println("---------------------------------------------\nTotal time : "
                 + (ft - st) / 1000.0 + " s");
         System.out.println("---------------------------------------------\n");
@@ -144,14 +154,11 @@ public class Main {
         if (nbExec > 1) {
             computeAverage(ltime, thresold);
             computeAverage(rtime, thresold);
-            computeAverage(mem, thresold);
         }
-        
-        
-
-        String file1 = writeToFile(ltime, args[1], "gen");
-        String file2 = writeToFile(rtime, args[1], "usr");
-        String file3 = writeToFile(mem, args[1], "mem");
+        //computeAverage(mem, thresold);
+        String file1 = writeToFile(ltime, fileName, "gen");
+        String file2 = writeToFile(rtime, fileName, "usr");
+        String file3 = writeToFile(mem, fileName, "mem");
         
         treatFile(file1, base, "gen");
         treatFile(file2, base, "usr");
@@ -170,11 +177,16 @@ public class Main {
      * Write all array in a file
      */
     private static String writeToFile(long[][] data, String fileName, String type) throws IOException {
+
         String nameFile = fileName + '-' + type + ".res";
         BufferedWriter out = new BufferedWriter(new FileWriter(nameFile));
+
         for (int op = 0; op < data[0].length; ++op) {
-            for (int ex = 0; ex < data.length; ++ex) {
-                out.append(data[ex][op] + "\t");
+            if(type.equals("mem"))
+                 out.append(data[0][op] + "\t");
+            else
+                for (int ex = 0; ex < data.length; ++ex) {
+                 out.append(data[ex][op] + "\t");
             }
             out.append("\n");
         }
@@ -206,8 +218,7 @@ public class Main {
         int Tmoyen = 0;
         int cmpt = 0;
         String Line;
-        String[] fData = File.split("\\.");
-        String fileName = fData[0] + ".data";
+        String fileName = File.replaceAll(".res", ".data");
         PrintWriter ecrivain = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
         InputStream ips1 = new FileInputStream(File);
         InputStreamReader ipsr1 = new InputStreamReader(ips1);
@@ -246,10 +257,5 @@ public class Main {
         String tab[] = ligne.split("\t");
         float t = Float.parseFloat(tab[(tab.length) - 1]);
         return ((int) t);
-    }
-    
-    static void gnuploatFile(String n)
-    {
-        
     }
 }

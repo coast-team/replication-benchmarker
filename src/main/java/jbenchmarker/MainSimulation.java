@@ -42,7 +42,7 @@ import java.util.List;
 public class MainSimulation {
 
     static int base = 100;
-    static int baseSerializ = 10;
+    static int baseSerializ = 1;
     static public void main(String[] args) throws Exception {
 
         if (args.length < 14) {
@@ -89,6 +89,7 @@ public class MainSimulation {
         Long sum = 0L;
         for (int ex = 0; ex < nbExec; ex++) {
             System.out.println("execution : "+ ex);
+            
             Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
                     new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
             CausalSimulator cd = new CausalSimulator(rf);
@@ -99,7 +100,7 @@ public class MainSimulation {
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.runWithMemory(trace, 0, false, false);
+            cd.runWithMemory(trace, 100, true, true);
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();

@@ -18,6 +18,7 @@
  */
 package jbenchmarker.treedoc;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,7 +34,7 @@ import jbenchmarker.treedoc.TreedocIdentifier.Recorder;
  * 
  * @author mzawirski
  */
-class TreedocNode<T> {
+class TreedocNode<T> implements Serializable{
 	// TODO: export as a setting
 	static final boolean USE_DISAMBIGUATORS_TRICK = true;
 

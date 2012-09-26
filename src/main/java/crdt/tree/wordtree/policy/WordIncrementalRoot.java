@@ -59,18 +59,24 @@ public class WordIncrementalRoot<T> extends WordIncrementalMany<T> implements Se
     protected Node<T> destPoint(Node<T> node) {
         return tree.getRoot();
     }
-    
+
     @Override
-    protected void move(Node<T> orig, Node<T> dest, List<T> word) {     
+    protected void move(Node<T> orig, Node<T> dest, List<T> word) {
+
         for (Node<T> c : orig.getChildrenCopy()) {
             List<T> p = new Word<T>(word, c.getValue());
+
             if (tree.getAttached(c).contains(p)) {
                 tree.remove(c, p);
                 Node<T> n = tree.add(dest, c.getValue(), p);
+
                 move(c, n, p);
-                if (w2n.put(p, n) != c)
+                
+                if (w2n.put(p, n) != c) {
                     throw new IllegalStateException();
+                }
+
             }
         }
-    }        
+    }    
 }

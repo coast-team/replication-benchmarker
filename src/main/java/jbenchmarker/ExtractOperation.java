@@ -20,6 +20,7 @@ package jbenchmarker;
 
 import java.io.*;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -40,8 +41,8 @@ public class ExtractOperation {
           }
           int inc = Integer.parseInt(args[1]);
           int dec = Integer.parseInt(args[2]);
-          List TabInc = new LinkedList();
-          LinkedList TabDec = new LinkedList();
+          Vector<Integer> TabInc = new Vector();
+          Vector<Integer> TabDec = new Vector();
           Vector<Double> average = averageInTable(args[0]);
 
           //rechercher les éléments
@@ -64,6 +65,8 @@ public class ExtractOperation {
               TabDec.add(ligneMoins);
           }
           
+          //table begin by 0 and file by 1
+          
           System.out.println("Max value at line : "+TabInc);
           System.out.println("Min Value at line : "+TabDec);
           
@@ -80,9 +83,10 @@ public class ExtractOperation {
         try {
             Line = br1.readLine();
             while (Line != null) {
-                Line = br1.readLine();
                 String tab[] = Line.split("\t");
                 avg.add(Double.parseDouble(tab[(tab.length) - 1]));
+                Line = br1.readLine();
+                
             }
             br1.close();
         } catch (Exception e) {

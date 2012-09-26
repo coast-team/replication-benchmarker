@@ -18,9 +18,11 @@
  */
 package jbenchmarker.treedoc;
 
+import java.io.Serializable;
+
 /**
  * @author mzawirski
  */
-public interface UniqueTagGenerator {
+public interface UniqueTagGenerator extends Serializable{
 	UniqueTag nextTag(int replicaId);
 }

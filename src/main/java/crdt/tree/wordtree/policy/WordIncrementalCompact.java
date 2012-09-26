@@ -68,7 +68,8 @@ public class WordIncrementalCompact<T> extends WordIncrementalMany<T> implements
     }
     
     @Override
-    protected void move(Node<T> orig, Node<T> dest, List<T> word) {     
+    protected void move(Node<T> orig, Node<T> dest, List<T> word) {  
+
         for (Node<T> c : orig.getChildrenCopy()) {
             Iterator<List<T>> it = tree.getAttached(c).iterator();
             while (it.hasNext()) {

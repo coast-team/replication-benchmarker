@@ -149,7 +149,7 @@ public class CausalSimulator extends Simulator {
 //causalCheck(opt, clocks);
             
             VectorClock vc = clocks.get(r);
-            
+            //System.out.println(tour);
             if (!vc.readyFor(r, opt.getVectorClock())) {
                 // applyRemote concurrent operations
                 Iterator<Integer> i = opt.getVectorClock().keySet().iterator();
@@ -301,7 +301,7 @@ public class CausalSimulator extends Simulator {
         stream.flush();
         stream.close();
         byteOutput.flush();
-        byteOutput.close();        
+        byteOutput.close();    
     }
     
     public void ifSerializ() throws IOException {
@@ -314,9 +314,9 @@ public class CausalSimulator extends Simulator {
             tour = 0;
             
             //debug
-            /*if (memUsed.size() % 100 == 0) {
-                System.out.println("Serialized :" + memUsed.size() + " x");
-            }*/
+            if (memUsed.size() % 10 == 0) {
+                System.out.println("Serialized :" + memUsed.size()*100 + "x");
+            }
         }
     }
 

@@ -18,13 +18,15 @@
  */
 package jbenchmarker.treedoc;
 
+import java.io.Serializable;
+
 /**
  * Unique tag of an operation, implemented as timestamp pair: replica identifier
  * and counter.
  * 
  * @author mzawirski
  */
-public class UniqueTag implements Comparable<UniqueTag> {
+public class UniqueTag implements Comparable<UniqueTag>, Serializable {
 	public final static UniqueTag MIN = new UniqueTag(Integer.MIN_VALUE,
 			Integer.MIN_VALUE);
 	public final static UniqueTag MAX = new UniqueTag(Integer.MAX_VALUE,
