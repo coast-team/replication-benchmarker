@@ -48,13 +48,14 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        if (args.length < 3 || args.length > 5) {
+        if (args.length < 3 || args.length > 6) {
             System.err.println("Arguments : Factory Trace [nb_exec [thresold]]");
             System.err.println("- Factory : a jbenchmaker.core.ReplicaFactory implementation ");
-            System.err.println("- Trace : a xml file of a trace ");
+            System.err.println("- Trace : a file of a trace ");
             System.err.println("- nb_exec : the number of execution (default 1)");
             System.err.println("- thresold : the proportional thresold for not counting a result in times the average (default 2.0)");
             System.err.println("- number of serialization");
+            System.err.println("- Save traces ? (0 don't save, else save)");
             System.exit(1);
         }
         Long sum = 0L;
@@ -68,23 +69,25 @@ public class Main {
         for (int ex = 0; ex < nbExec; ex++) {
             System.out.println("execution ::: " + ex);
             
-           Trace trace = TraceGenerator.traceFromXML(args[1], 1);
-            //Trace trace = new TraceFromFile(args[1]);
-            //GitTrace trace = GitTrace.create("/Users/urso/Rech/github/git", "http://localhost:5984", "Makefile", false);
-            //GitTrace trace = GitTrace.create("/Users/urso/Rech/github/linux", "http://localhost:5984", "MAINTAINERS", false);
+           //Trace trace = TraceGenerator.traceFromXML(args[1], 1);
+            Trace trace = new TraceFromFile(args[1]);
 
             CausalSimulator cd = new CausalSimulator(rf);
             /*
              * trace : trace xml
-             * args[4] : scalle for serialization
              * boolean : calculate time execution
+             * save traces ?
+             * args[4] : scale for serialization
              * boolean : calculate document with overhead
              */
-            boolean calculTimeEx = false;
+            boolean calculTimeEx = true;
+            int saveTrace = Integer.valueOf(args[5]);
+            
             if(ex == 0)
-                cd.runWithMemory(trace, Integer.valueOf(args[4]), calculTimeEx, true);//0 sans serialisation
+                cd.run(trace, calculTimeEx, saveTrace, Integer.valueOf(args[4]), true);//0 sans serialisation
             else
-                cd.runWithMemory(trace, 0, true, true);//0 sans serialisation
+                cd.run(trace, calculTimeEx, saveTrace, 0, true);//0 sans serialisation
+            
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
@@ -124,7 +127,7 @@ public class Main {
         // Name of result file is "[package.]Name[Factory]-trace[.xml].res"
         int i = args[1].lastIndexOf('/'), j = args[1].lastIndexOf('.'),
                 k = args[0].lastIndexOf('.'), l = args[0].lastIndexOf("Factory");
-
+        
         if (l == -1) {
             l = args[0].lastIndexOf("Factories");
         }
@@ -132,6 +135,7 @@ public class Main {
         if (i == -1) {
             i = args[1].lastIndexOf('\\');
         }
+        
         String n = args[0].substring(k + 1, l);
         
         
@@ -144,8 +148,9 @@ public class Main {
             String tab[] = args[0].split("\\$");
             n = n + "" + tab[tab.length - 1];
         }
-        
+        if(j<0) j=0;
         String fileName = n + "-" + args[1].substring(i + 1, j);        
+        System.out.println("args[1]="+args[1]+", i : "+i+", j = "+j+", k = "+k+", l="+l+", n="+n);
         System.out.println("---------------------------------------------\nTotal time : "
                 + (ft - st) / 1000.0 + " s");
         System.out.println("---------------------------------------------\n");
@@ -155,6 +160,7 @@ public class Main {
             computeAverage(ltime, thresold);
             computeAverage(rtime, thresold);
         }
+        
         //computeAverage(mem, thresold);
         String file1 = writeToFile(ltime, fileName, "gen");
         String file2 = writeToFile(rtime, fileName, "usr");
@@ -196,6 +202,7 @@ public class Main {
 
     public static void computeAverage(long[][] data, double thresold) {
         int nbExpe = data.length - 1;
+        
         for (int op = 0; op < data[0].length; ++op) {
             long sum = 0;
             for (int ex = 0; ex < nbExpe; ++ex) {

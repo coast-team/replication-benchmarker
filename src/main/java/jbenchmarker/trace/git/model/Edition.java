@@ -21,6 +21,7 @@
  */
 package jbenchmarker.trace.git.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jgit.diff.Edit;
@@ -31,7 +32,7 @@ import org.eclipse.jgit.diff.RawText;
  *
  * @author urso
  */
-public class Edition {
+public class Edition implements Serializable{
     protected int beginA, endA, beginB, endB;
     protected List<String> ca;
     protected List<String> cb;

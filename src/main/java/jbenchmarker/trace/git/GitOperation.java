@@ -62,7 +62,7 @@ public class GitOperation extends TraceOperation {
 
     @Override
     public String toString() {
-        return "GitOperation{" + "sop=" + sop + '}';
+        return "GitOperation{super="+super.toString() + "sop=" + sop + '}';
     }
 
    

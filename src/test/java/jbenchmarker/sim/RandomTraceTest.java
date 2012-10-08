@@ -62,6 +62,6 @@ public class RandomTraceTest {
         System.out.println("causality");
         RandomTrace instance = new RandomTrace(240, RandomTrace.FLAT, new StandardSeqOpProfile(0.5, 0.5, 10, 1.0), 0.2, 10, 3.0, 13);
         CausalSimulator cd = new CausalSimulator(new CausalCheckerFactory());
-        cd.run(instance, false);
+        cd.run(instance, false, 0, 0, false);
     }    
 }

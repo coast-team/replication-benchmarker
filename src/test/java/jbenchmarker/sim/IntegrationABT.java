@@ -43,7 +43,7 @@ public class IntegrationABT {
        
        CausalSimulator cd = new CausalSimulator(new ABTFactory());
 
-       cd.run(trace, false);
+       cd.run(trace, false, 0, 0, false);
        String r = "Salut Monsieurjour MehdiFin";
        assertEquals(r, cd.getReplicas().get(0).lookup());
        assertEquals(r, cd.getReplicas().get(2).lookup());
@@ -56,7 +56,7 @@ public class IntegrationABT {
        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
        CausalSimulator cd = new CausalSimulator(new ABTFactory());
 
-       cd.run(trace, false);
+       cd.run(trace, false, 0, 0, false);
        String r = (String) cd.getReplicas().get(0).lookup();
        for (CRDT m : cd.getReplicas().values()) {
     	   //System.out.println(m.getReplicaNumber()+"  "+m.lookup());
@@ -70,7 +70,7 @@ public class IntegrationABT {
        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1,16);
        CausalSimulator cd = new CausalSimulator(new ABTFactory());
 
-       cd.run(trace, false);
+       cd.run(trace, false, 0, 0, false);
        String r = (String) cd.getReplicas().get(0).lookup();
        for (CRDT m : cd.getReplicas().values()) {
            assertEquals(r, m.lookup());
@@ -82,7 +82,7 @@ public class IntegrationABT {
        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
        CausalSimulator cd = new CausalSimulator(new ABTFactory());
 
-       cd.run(trace, false);
+       cd.run(trace, false, 0, 0, false);
        String r = (String) cd.getReplicas().get(0).lookup();
        for (CRDT m : cd.getReplicas().values()) {
            assertEquals(r, m.lookup());
@@ -94,7 +94,7 @@ public class IntegrationABT {
        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
        CausalSimulator cd = new CausalSimulator(new ABTFactory());
 
-       cd.run(trace, false);
+       cd.run(trace, false, 0, 0, false);
        String r = (String) cd.getReplicas().get(0).lookup();
        for (CRDT m : cd.getReplicas().values()) {
            assertEquals(r, m.lookup());
@@ -107,7 +107,7 @@ public class IntegrationABT {
         Trace trace = new RandomTrace(200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
         CausalSimulator cd = new CausalSimulator(new ABTFactory());
 
-        cd.run(trace, false);
+        cd.run(trace, false, 0, 0, false);
         String r = (String) cd.getReplicas().get(0).lookup();
         for (CRDT m : cd.getReplicas().values()) {
             assertEquals(r, m.lookup());

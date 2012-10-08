@@ -38,6 +38,7 @@ public class TraceViewer extends JFrame {
     public TraceViewer(String file) {
         windows++;
         text = new JTextArea(5, 20);
+        
         this.setTitle("TraceViwer " + (file == null ? "" : " [" + file + "]"));
         //text.setWrapStyleWord(true);
         this.setBounds(0, 0, 500, 500);
@@ -73,7 +74,7 @@ public class TraceViewer extends JFrame {
                 while (true) {
                     Object obj = objs.readObject();
                     str.append(obj.toString());
-                    str.append("\n");
+                    str.append("\n----------------------------------------------\n");
                 }
             } catch (EOFException ex) {//Normal...
             }

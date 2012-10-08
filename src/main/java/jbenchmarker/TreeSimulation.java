@@ -268,7 +268,8 @@ public class TreeSimulation {
              * calculate time execution boolean : calculate document with
              * overhead
              */
-            cd.runWithMemory(trace, scaleMemory, true, true);
+            int storeFile = 0; //make it with arguments
+            cd.run(trace, true, storeFile, scaleMemory, true);
             System.out.println("End of simulation");
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();

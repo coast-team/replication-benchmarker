@@ -18,6 +18,7 @@
  */
 package jbenchmarker.trace.git.model;
 
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +35,7 @@ import org.ektorp.support.TypeDiscriminator;
  * @author urso
  */
 @JsonIgnoreProperties({"id", "revision"})
-public class Commit {
+public class Commit implements Serializable{
     @JsonProperty("_id")
     private String id;
     @JsonProperty("_rev")

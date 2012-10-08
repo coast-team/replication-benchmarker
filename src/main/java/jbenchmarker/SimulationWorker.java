@@ -102,7 +102,8 @@ public class SimulationWorker {
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.runWithMemory(trace, config.getScaleMemory(), config.isTimeExecution(), config.isOverHead());
+            int storeFile = 0; 
+            cd.run(trace, config.isTimeExecution(), storeFile, config.getScaleMemory(), config.isOverHead());
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();

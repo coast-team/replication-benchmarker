@@ -24,6 +24,7 @@ import crdt.simulator.Trace;
 import crdt.simulator.TraceOperation;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,7 +53,7 @@ import org.ektorp.impl.StdCouchDbInstance;
  *
  * @author urso
  */
-public class GitTrace implements Trace {
+public class GitTrace implements Trace{
 
     private CommitCRUD commitCRUD;
     private PatchCRUD patchCRUD;
@@ -124,17 +125,21 @@ public class GitTrace implements Trace {
         return GitExtraction.edits(editList, a, b);
     }
 
-    class Walker implements Enumeration<TraceOperation> {
+    
 
-        class MergeCorrection extends TraceOperation {
+    static class MergeCorrection extends TraceOperation implements Serializable {
 
-            Patch patch;
+            transient Patch patch;
+            transient Walker walker;
+            transient GitTrace gitTrace;
             LocalOperation first;
 
-            MergeCorrection(int replica, VectorClock VC, Commit merge) {
+            MergeCorrection(int replica, VectorClock VC, Patch merge, Walker walker,GitTrace gitTrace) {
                 super(replica, new VectorClock(VC));
                 getVectorClock().inc(replica);
-                patch = patchCRUD.get(merge.patchId());
+                this.patch = merge;
+                this.walker=walker;
+                this.gitTrace=gitTrace;
             }
 
             /**
@@ -152,13 +157,13 @@ public class GitTrace implements Trace {
 
                         if (first == null) {
                             try {
-                                List<Edition> l = diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
+                                List<Edition> l = gitTrace.diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
                                 if (l.isEmpty()) {
-                                    currentVC.inc(replica.getReplicaNumber());
+                                    walker.currentVC.inc(replica.getReplicaNumber());
                                     first = SequenceOperation.noop(/*replica.getReplicaNumber(), getVectorClock()*/);
                                 } else {
-                                    editions.addAll(l);
-                                    first = nextElement().getOperation().adaptTo(replica);
+                                    walker.editions.addAll(l);
+                                    first = walker.nextElement().getOperation().adaptTo(replica);
                                 }
                             } catch (IOException ex) {
                                 Logger.getLogger(GitTrace.class.getName()).log(Level.SEVERE, "During merge correction computation", ex);
@@ -177,11 +182,11 @@ public class GitTrace implements Trace {
 
             @Override
             public String toString() {
-                return "MergeCorrection{" + "first=" + first + '}';
+                return "MergeCorrection{super="+super.toString() + "first=" + first + '}';
             }
 
-           
         }
+     class Walker implements Enumeration<TraceOperation> {
         private LinkedList<Commit> pendingCommit;
         private LinkedList<Commit> startingCommit;
         private LinkedList<String> children;
@@ -262,7 +267,7 @@ public class GitTrace implements Trace {
                             pureChildren(commit.getChildren());
                             currentVC = startVC.get(commit.getId());
                             if (mergeCommit.contains(commit.getId())) {
-                                return new MergeCorrection(commit.getReplica(), currentVC, commit);
+                                return new MergeCorrection(commit.getReplica(), currentVC, patchCRUD.get(commit.patchId()),this,GitTrace.this);
                             }
                         }
                     } else {

@@ -77,7 +77,7 @@ public class IntegrationLogootSplit {
             Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
             CausalSimulator cd = new CausalSimulator(new LogootSFactory());
 
-            cd.run(trace, false);
+            cd.run(trace, false, 0, 0, false);
         }    
     }
     

@@ -18,6 +18,7 @@
  */
 package jbenchmarker.trace.git.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import org.eclipse.jgit.lib.PersonIdent;
 
@@ -25,7 +26,7 @@ import org.eclipse.jgit.lib.PersonIdent;
  * Bean corresponding to PersonIdent of JGit
  * @author urso
  */
-public class Person {
+public class Person implements Serializable {
     private String name;
     private String email;
     private String timeZone;

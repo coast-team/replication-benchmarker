@@ -38,21 +38,26 @@ public class App {
     public static void main(String[] args) throws IOException, GitAPIException, IncorrectTraceException, PreconditionException {
         
 //        GitExtraction.parseRepository(("/Users/urso/Rech/github/linux", "http://localhost:5984", "kernel/sched.c", true);
-//
 
-        GitTrace trace = GitTrace.create("/Users/urso/Use/github/git",
-                "http://localhost:5984", "Makefile", true);
-        CausalSimulator cd = new CausalSimulator(new LogootFactory());
-        cd.run(trace, false);
-        
-        
-        
-        
+        GitTrace trace = GitTrace.create("/home/score/Bureau/git/git",
+                "http://localhost:5984", "Makefile", false);
+        CausalSimulator cd = new CausalSimulator(new LogootFactory());        
+
+        if (args.length < 1 ) {
+            System.err.println("Arguments : ");
+            System.err.println("- Save traces ? (0 don't save, else save)");
+            System.exit(1);
+        }
+
+        cd.run(trace, false, Integer.parseInt(args[0]), 0, false);
+
+
+
 //        GitTrace couchTrace = GitTrace.create("/Users/urso/Rech/github/linux", "http://localhost:5984", "MAINTAINERS", false);
 //        GitTrace couchTrace = GitTrace.create("/Users/urso/Rech/github/linux", "http://localhost:5984", "kernel/sched.c", false);
         
-
-        System.out.println(cd.replicas.get(1).lookup());
+        //System.out.println(cd.replicas.get(1).lookup());
+        System.out.println(cd.replicas.keySet().size());
     }
 }
 // git : 967 authors, 30000 commits: Total time: 5:46:52.821s 

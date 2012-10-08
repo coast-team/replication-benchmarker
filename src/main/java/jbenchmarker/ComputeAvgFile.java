@@ -47,7 +47,7 @@ public class ComputeAvgFile{
         }
         int arg = Integer.parseInt(args[0]);
         int nbFilebloc = 10, nbFileIns = 7, ins = 80, Replica = 10,
-                operation = 25000, nbFileReplic = 1, nbFileOp = 4;
+                operation = 20000, nbFileReplic = 1, nbFileOp = 3;
         long tabUsr[] = null, tabGen[] = null,tabMem[]  = null;
         String[] algo = new String[]{"TTFWithoutGC"};
         //String[] algo = new String[]{"Logoot","RGA", "Treedoc", "WootH", "WootO", "TTFWithoutGC"};

@@ -21,6 +21,7 @@
  */
 package jbenchmarker.trace.git.model;
 
+import java.io.Serializable;
 import java.util.List;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.patch.FileHeader;
@@ -31,7 +32,7 @@ import org.eclipse.jgit.patch.FileHeader.PatchType;
  * @author urso
  */
 
-public class FileEdition {
+public class FileEdition implements Serializable{
     protected Entry entry;
     protected String path;
     protected List<Edition> listDiff;

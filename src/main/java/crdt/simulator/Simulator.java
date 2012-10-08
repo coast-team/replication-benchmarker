@@ -83,7 +83,8 @@ public abstract class Simulator {
     /*
      * Runs a trace of operations. Iterate trough trace and construct replica with documents while needed.
      */
-    public abstract void run(Trace trace, boolean detail) throws Exception;    
+    public abstract void run(Trace trace, boolean detail, int saveTrace,
+    int nbrTrace, boolean o) throws Exception;    
     
     /**
      * Instanciate a new replica with classes given at construction. 

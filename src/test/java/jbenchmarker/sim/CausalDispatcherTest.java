@@ -45,7 +45,7 @@ import static jbenchmarker.trace.TraceGeneratorTest.op;
 public class CausalDispatcherTest {
 
     static public void assertConsistency(Simulator sim, Trace trace) throws Exception {
-        sim.run(trace, false);
+        sim.run(trace, false, 0, 0, false);
         Object referenceView = null;
 	for (final CRDT replica : sim.getReplicas().values()) {
             final Object view = replica.lookup();
@@ -202,7 +202,7 @@ public class CausalDispatcherTest {
         List<TraceOperation> o1 = new ArrayList<TraceOperation>();
         o1.add(new TraceMock(op1));  
 
-        cd.run(trace, false);
+        cd.run(trace, false, 0, 0, false);
         assertEquals(cd.getHistory().get(2), lop);
         assertEquals(o1,cd.getHistory().get(2));        
         cd.reset();
@@ -211,7 +211,7 @@ public class CausalDispatcherTest {
         List<TraceOperation> o2 = new ArrayList<TraceOperation>();
         o2.add(new TraceMock(op2));
         
-        cd.run(trace, false);
+        cd.run(trace, false, 0, 0, false);
         assertEquals(cd.getHistory().get(2), lop.subList(0, 1));
         assertEquals(cd.getHistory().get(1), lop.subList(1, 2));
         assertEquals(o1, cd.getHistory().get(2));        
@@ -222,7 +222,7 @@ public class CausalDispatcherTest {
         lop.add(op3);
         o2.add(new TraceMock(op3));
         
-        cd.run(trace, false);
+        cd.run(trace, false, 0, 0, false);
         assertEquals(cd.getHistory().get(2), lop.subList(0, 1));
         assertEquals(cd.getHistory().get(1), lop.subList(1, 3));
         assertEquals(o1, cd.getHistory().get(2));        
@@ -234,7 +234,7 @@ public class CausalDispatcherTest {
         List<TraceOperation> o3 = new ArrayList<TraceOperation>();
         o3.add(new TraceMock(op4));
         
-        cd.run(trace, false);
+        cd.run(trace, false, 0, 0, false);
         assertEquals(cd.getHistory().get(2), lop.subList(0, 1));
         assertEquals(cd.getHistory().get(1), lop.subList(1, 3));
         assertEquals(cd.getHistory().get(3), lop.subList(3, 4));        

@@ -18,6 +18,7 @@
  */
 package jbenchmarker.trace.git.model;
 
+import java.io.Serializable;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 
@@ -25,7 +26,7 @@ import org.eclipse.jgit.diff.DiffEntry.ChangeType;
  * Bean corresponding to JGit DiffEntry
  * @author urso
  */
-public class Entry {
+public class Entry implements Serializable{
     private ChangeType type;
     private String newPath;
     private String oldPath;

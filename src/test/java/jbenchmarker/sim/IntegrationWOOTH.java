@@ -46,7 +46,7 @@ public class IntegrationWOOTH {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
         CausalSimulator cd = new CausalSimulator(new WootHFactory());
 
-        cd.run(trace, false);
+        cd.run(trace, false, 0, 0, false);
         String r = "Salut Monsieurjour MehdiFin";
 
         assertEquals(r, cd.getReplicas().get(0).lookup());
@@ -128,7 +128,7 @@ public class IntegrationWOOTH {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);
         CausalSimulator cdSim = new CausalSimulator(new WootHFactory());
         cdSim.setLogging("trace.log");
-        cdSim.run(trace, false);
+        cdSim.run(trace, false, 0, 0, false);
          
         TraceSimul2XML mn = new TraceSimul2XML();
         String[] args = new String[]{"trace.log", "trace.xml"};
@@ -136,7 +136,7 @@ public class IntegrationWOOTH {
         
         Trace real = TraceGenerator.traceFromXML("trace.xml", 1);
         CausalSimulator cdReal = new CausalSimulator(new WootHFactory());
-        cdReal.run(real, false);
+        cdReal.run(real, false, 0, 0, false);
         
 //        String s = (String) cdSim.getReplicas().get(0).lookup();
 //        String r = (String) cdReal.getReplicas().get(0).lookup();

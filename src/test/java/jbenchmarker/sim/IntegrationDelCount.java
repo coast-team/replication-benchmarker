@@ -74,7 +74,7 @@ public class IntegrationDelCount {
         for (int i = 0; i < nb; i++) {
             cd.reset();
             trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.2, 10, 3.0, 13);
-            cd.run(trace, false);
+            cd.run(trace, false, 0, 0, false);
         }
         System.out.println((LogootCounter.count / nb) / cd.getReplicas().keySet().size());
         LogootCounter.count = 0;
@@ -82,7 +82,7 @@ public class IntegrationDelCount {
         for (int i = 0; i < nb; i++) {
             cd.reset();
             trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.05, 40, 3.0, 13);
-            cd.run(trace, false);
+            cd.run(trace, false, 0, 0, false);
         }
         System.out.println((LogootCounter.count / nb) / cd.getReplicas().keySet().size());
         LogootCounter.count = 0;        
@@ -90,7 +90,7 @@ public class IntegrationDelCount {
         for (int i = 0; i < nb; i++) {
             cd.reset();
             trace = new RandomTrace(4000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.05, 10, 3.0, 13);
-            cd.run(trace, false);
+            cd.run(trace, false, 0, 0, false);
         }
         System.out.println((LogootCounter.count / nb) / cd.getReplicas().keySet().size());
         LogootCounter.count = 0;    
@@ -98,7 +98,7 @@ public class IntegrationDelCount {
         for (int i = 0; i < nb; i++) {
             cd.reset();
             trace = new RandomTrace(1000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.05, 10, 3.0, 13);
-            cd.run(trace, false);
+            cd.run(trace, false, 0, 0, false);
         }
         System.out.println((LogootCounter.count / nb) / cd.getReplicas().keySet().size());
         LogootCounter.count = 0;   

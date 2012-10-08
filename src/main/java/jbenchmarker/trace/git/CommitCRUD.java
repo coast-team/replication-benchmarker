@@ -18,6 +18,7 @@
  */
 package jbenchmarker.trace.git;
 
+import java.io.Serializable;
 import java.util.List;
 import jbenchmarker.trace.git.model.Commit;
 import org.ektorp.CouchDbConnector;
@@ -29,7 +30,7 @@ import org.ektorp.support.View;
  *
  * @author urso
  */
-public class CommitCRUD extends CouchDbRepositorySupport<Commit> {
+public class CommitCRUD extends CouchDbRepositorySupport<Commit> implements Serializable {
 
     public CommitCRUD(CouchDbConnector db) {
         super(Commit.class, db);

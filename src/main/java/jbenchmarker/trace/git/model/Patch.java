@@ -21,6 +21,7 @@
  */
 package jbenchmarker.trace.git.model;
 
+import java.io.Serializable;
 import jbenchmarker.trace.git.model.FileEdition;
 import jbenchmarker.trace.git.model.Commit;
 import java.util.LinkedList;
@@ -40,7 +41,7 @@ import org.ektorp.support.TypeDiscriminator;
  */
 
 @JsonIgnoreProperties({"id", "revision"})
-public class Patch {
+public class Patch implements Serializable{
     public static final String content = "CONTENT";
     
     protected List<FileEdition> edits;
