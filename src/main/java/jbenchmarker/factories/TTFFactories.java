@@ -30,15 +30,25 @@ import jbenchmarker.ot.ttf.TTFTransformations;
  *
  * @author oster
  */
-public class TTFFactories {
+ public class TTFFactories {
 
     static int nbrReplic = 4;
-
+    static TTFTransformations ttf = new TTFTransformations();
+    
     static public class WithoutGC extends ReplicaFactory {
 
         @Override
         public MergeAlgorithm create(int siteId) {
             return new TTFMergeAlgorithm(new TTFDocument(), siteId);
+        }
+    }
+
+   static public class WithGCBasic extends ReplicaFactory {
+
+        @Override
+        public MergeAlgorithm create(int siteId) {
+            return new TTFMergeAlgorithm(new TTFDocument(), 0,
+                    new SOCT2(new SOCT2Log(ttf), new SOCT2GarbageCollector(nbrReplic)));
         }
     }
 
@@ -61,10 +71,9 @@ public class TTFFactories {
                     new SOCT2GarbageCollector(nbrReplic)));
         }
     }
-    /***********************/
-    static TTFTransformations ttf = new TTFTransformations();
 
-    public static class WithoutGCLL extends ReplicaFactory {
+
+    static public class WithoutGCLL extends ReplicaFactory {
 
         @Override
         public MergeAlgorithm create(int siteId) {
@@ -72,18 +81,18 @@ public class TTFFactories {
                     new SOCT2(new SOCT2LogOptimizedLast(ttf), null));
         }
     }
-    
-    public static class WithBasic_PGC extends ReplicaFactory {
+
+    static public class WithBasic_PGC extends ReplicaFactory {
 
         @Override
         public MergeAlgorithm create(int siteId) {
             return new TTFMergeAlgorithm(new TTFDocument(), 0,
                     new SOCT2(new SOCT2Log(ttf),
-                            new PreemptiveGarbageCollector(20)));
+                    new PreemptiveGarbageCollector(20)));
         }
     }
-    
-    public static class WithLL_PGC extends ReplicaFactory {
+
+    static public class WithLL_PGC extends ReplicaFactory {
 
         @Override
         public MergeAlgorithm create(int siteId) {
@@ -92,20 +101,18 @@ public class TTFFactories {
                     new PreemptiveGarbageCollector(20)));
         }
     }
-    
-    
-    
-    public static class WithBasic_PGC_2 extends ReplicaFactory {
+
+    static public class WithBasic_PGC_2 extends ReplicaFactory {
 
         @Override
         public MergeAlgorithm create(int siteId) {
             return new TTFMergeAlgorithm(new TTFDocument(), 0,
                     new SOCT2(new SOCT2Log(ttf),
-                            new PreemptiveGarbageCollector(50)));
+                    new PreemptiveGarbageCollector(50)));
         }
     }
-    
-    public static class WithLL_PGC_2 extends ReplicaFactory {
+
+    static public class WithLL_PGC_2 extends ReplicaFactory {
 
         @Override
         public MergeAlgorithm create(int siteId) {
@@ -114,18 +121,18 @@ public class TTFFactories {
                     new PreemptiveGarbageCollector(50)));
         }
     }
-    
-     public static class WithBasic_PGC_3 extends ReplicaFactory {
+
+    static public class WithBasic_PGC_3 extends ReplicaFactory {
 
         @Override
         public MergeAlgorithm create(int siteId) {
             return new TTFMergeAlgorithm(new TTFDocument(), 0,
                     new SOCT2(new SOCT2Log(ttf),
-                            new PreemptiveGarbageCollector(100)));
+                    new PreemptiveGarbageCollector(100)));
         }
     }
-    
-    public static class WithLL_PGC_3 extends ReplicaFactory {
+
+    static public class WithLL_PGC_3 extends ReplicaFactory {
 
         @Override
         public MergeAlgorithm create(int siteId) {
@@ -134,254 +141,4 @@ public class TTFFactories {
                     new PreemptiveGarbageCollector(100)));
         }
     }
-//    
-//    
-//    
-//
-//    public static class WithoutGCLP extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedPlace(ttf), null));
-//        }
-//    }
-//
-//    public static class WithoutGCLLP extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedPlaceAndLast(ttf), null));
-//        }
-//    }
-//
-    public static class WithGCBasic extends ReplicaFactory {
-
-        @Override
-        public MergeAlgorithm create(int siteId) {
-            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-                    new SOCT2(new SOCT2Log(ttf), new SOCT2GarbageCollector(nbrReplic)));
-        }
-    }
-//
-//    public static class WithLL_GC extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedLast(ttf), new SOCT2GarbageCollector(nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLP_GC extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedPlace(ttf), new SOCT2GarbageCollector(nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLLP_GC extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedPlaceAndLast(ttf), new SOCT2GarbageCollector(nbrReplic)));
-//        }
-//    }
-//
-//    
-//
-//    
-//
-//    public static class WithLP_PGC extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedPlace(ttf),
-//                    new PreemptiveGarbageCollector(nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLLP_PGC extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedPlaceAndLast(ttf),
-//                    new PreemptiveGarbageCollector(nbrReplic)));
-//        }
-//    }
-//    //*************************************************************
-//
-//    static public class WithoutGC_2 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), siteId);
-//        }
-//    }
-//
-//    public static class WithoutGCLL_2 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            System.out.println(siteId);
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedLast(ttf), null));
-//        }
-//    }
-//
-//    public static class WithGCBasic_2 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2Log(ttf), new SOCT2GarbageCollector(50, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLL_GC_2 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedLast(ttf), new SOCT2GarbageCollector(50, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLP_GC_2 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedPlace(ttf), new SOCT2GarbageCollector(50, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLLP_GC_2 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedPlaceAndLast(ttf), new SOCT2GarbageCollector(50, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLL_PGC_2 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedLast(ttf),
-//                    new PreemptiveGarbageCollector(50, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithBasic_PGC_2 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2Log(ttf), new PreemptiveGarbageCollector(50, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLP_PGC_2 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedPlace(ttf),
-//                    new PreemptiveGarbageCollector(50, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLLP_PGC_2 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedPlaceAndLast(ttf),
-//                    new PreemptiveGarbageCollector(50, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithGCBasic_3 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2Log(ttf), new SOCT2GarbageCollector(100, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLL_GC_3 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedLast(ttf), new SOCT2GarbageCollector(100, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLP_GC_3 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedPlace(ttf), new SOCT2GarbageCollector(100, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLLP_GC_3 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedPlaceAndLast(ttf), new SOCT2GarbageCollector(100, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLL_PGC_3 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedLast(ttf),
-//                    new PreemptiveGarbageCollector(100, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithBasic_PGC_3 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2Log(ttf), new PreemptiveGarbageCollector(100, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLP_PGC_3 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedPlace(ttf),
-//                    new PreemptiveGarbageCollector(100, nbrReplic)));
-//        }
-//    }
-//
-//    public static class WithLLP_PGC_3 extends ReplicaFactory {
-//
-//        @Override
-//        public MergeAlgorithm create(int siteId) {
-//            return new TTFMergeAlgorithm(new TTFDocument(), 0,
-//                    new SOCT2(new SOCT2LogOptimizedPlaceAndLast(ttf),
-//                    new PreemptiveGarbageCollector(100, nbrReplic)));
-//        }
-//    }
 }

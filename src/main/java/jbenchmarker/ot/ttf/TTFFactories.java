@@ -48,7 +48,7 @@ public class TTFFactories {
         }
     }
     
-    static public class WithGC10 extends ReplicaFactory {
+   static public class WithGC10 extends ReplicaFactory {
         @Override
         public MergeAlgorithm create(int siteId) {
             return new TTFMergeAlgorithm(new TTFDocument(), siteId, 

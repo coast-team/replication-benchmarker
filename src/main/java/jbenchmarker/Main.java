@@ -74,7 +74,7 @@ public class Main {
 
             CausalSimulator cd = new CausalSimulator(rf);
             /*
-             * trace : trace xml
+             * trace : trace
              * boolean : calculate time execution
              * save traces ?
              * args[4] : scale for serialization
@@ -138,7 +138,7 @@ public class Main {
         
         String n = args[0].substring(k + 1, l);
         
-        
+        System.out.println("args[1]="+args[1]+", i : "+i+", j = "+j+", k = "+k+", l="+l+", n="+n);
         String[] c;
         if (n.contains("$")) {
             c = n.split("\\$");
@@ -150,7 +150,7 @@ public class Main {
         }
         if(j<0) j=0;
         String fileName = n + "-" + args[1].substring(i + 1, j);        
-        System.out.println("args[1]="+args[1]+", i : "+i+", j = "+j+", k = "+k+", l="+l+", n="+n);
+        
         System.out.println("---------------------------------------------\nTotal time : "
                 + (ft - st) / 1000.0 + " s");
         System.out.println("---------------------------------------------\n");

@@ -74,50 +74,96 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
         return otAlgo.getSiteVC();
     }
 
-   
     /*
      * This integrate local modifications and generate message to another
      * replicas
      */
+    
+    public List<SequenceMessage> localDel(SequenceOperation opt) throws IncorrectTraceException 
+    {
+        return localDelete(opt);
+    }
+    
+    public List<SequenceMessage> localIns(SequenceOperation opt) throws IncorrectTraceException 
+    {
+        return localInsert(opt);
+    }
+    
     @Override
-    public List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         TTFDocument doc = (TTFDocument) this.getDoc();
         List<SequenceMessage> generatedOperations = new ArrayList<SequenceMessage>();
 
         int mpos = doc.viewToModel(opt.getPosition());
-        switch (opt.getType()) {
-            case del:
-                int visibleIndex = 0;
-                for (int i = 0; i < opt.getLenghOfADel(); i++) {
-                    // TODO: could be improved with an iterator on only visible characters
-                    while (!doc.getChar(mpos + visibleIndex).isVisible()) {
-                        visibleIndex++;
-                    }
-                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, getReplicaNumber());
-                    generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
-                    doc.apply(op);
-                }
-                break;
-            case ins:
-                for (int i = 0; i < opt.getContent().size(); i++) {
-                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.ins,
-                            mpos + i,
-                            opt.getContent().get(i),
-                            getReplicaNumber());
-                    generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
-                    doc.apply(op);
-                }
-                break;
-            case unsupported:
-                UnsupportedOperation op = UnsupportedOperation.create(opt);
-                //this.siteVC.inc(this.getReplicaNumber());
-                generatedOperations.add(op);
-                break;
-            case update:
-                break;
+        int visibleIndex = 0;
+        for (int i = 0; i < opt.getLenghOfADel(); i++) {
+            // TODO: could be improved with an iterator on only visible characters
+            while (!doc.getChar(mpos + visibleIndex).isVisible()) {
+                visibleIndex++;
+            }
+            TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, getReplicaNumber());
+            generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
+            doc.apply(op);
         }
         return generatedOperations;
     }
+
+    @Override
+    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+        TTFDocument doc = (TTFDocument) this.getDoc();
+        List<SequenceMessage> generatedOperations = new ArrayList<SequenceMessage>();
+
+        int mpos = doc.viewToModel(opt.getPosition());
+        for (int i = 0; i < opt.getContent().size(); i++) {
+            TTFOperation op = new TTFOperation(SequenceOperation.OpType.ins,
+                    mpos + i,
+                    opt.getContent().get(i),
+                    getReplicaNumber());
+            generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
+            doc.apply(op);
+        }
+        return generatedOperations;
+    }
+
+//    @Override
+//    public List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
+//        TTFDocument doc = (TTFDocument) this.getDoc();
+//        List<SequenceMessage> generatedOperations = new ArrayList<SequenceMessage>();
+//
+//        int mpos = doc.viewToModel(opt.getPosition());
+//        switch (opt.getType()) {
+//            case del:
+//                int visibleIndex = 0;
+//                for (int i = 0; i < opt.getLenghOfADel(); i++) {
+//                    // TODO: could be improved with an iterator on only visible characters
+//                    while (!doc.getChar(mpos + visibleIndex).isVisible()) {
+//                        visibleIndex++;
+//                    }
+//                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, getReplicaNumber());
+//                    generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
+//                    doc.apply(op);
+//                }
+//                break;
+//            case ins:
+//                for (int i = 0; i < opt.getContent().size(); i++) {
+//                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.ins,
+//                            mpos + i,
+//                            opt.getContent().get(i),
+//                            getReplicaNumber());
+//                    generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
+//                    doc.apply(op);
+//                }
+//                break;
+//            case unsupported:
+//                UnsupportedOperation op = UnsupportedOperation.create(opt);
+//                //this.siteVC.inc(this.getReplicaNumber());
+//                generatedOperations.add(op);
+//                break;
+//            case update:
+//                break;
+//        }
+//        return generatedOperations;
+//    }
 
     /**
      * Make a new mergeAlgorithm with 0 as site id.
