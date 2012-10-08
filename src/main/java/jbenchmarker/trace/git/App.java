@@ -40,9 +40,9 @@ public class App {
 //        GitExtraction.parseRepository(("/Users/urso/Rech/github/linux", "http://localhost:5984", "kernel/sched.c", true);
 //
 
-        GitTrace trace = GitTrace.create("/Users/urso/Rech/github/git",
-                "http://localhost:5984", "Makefile", false);
-        CausalSimulator cd = new CausalSimulator(new RGAFactory());
+        GitTrace trace = GitTrace.create("/Users/urso/Use/github/git",
+                "http://localhost:5984", "Makefile", true);
+        CausalSimulator cd = new CausalSimulator(new LogootFactory());
         cd.run(trace, false);
         
         
