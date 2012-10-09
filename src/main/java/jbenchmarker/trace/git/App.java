@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import jbenchmarker.factories.LogootFactory;
 import jbenchmarker.factories.RGAFactory;
 import jbenchmarker.factories.TreedocFactory;
@@ -46,7 +48,7 @@ public class App {
         if (args.length < 1 ) {
             System.err.println("Arguments : ");
             System.err.println("- git directory ");
-            System.err.println("- file [optional] (default : all files)");
+            System.err.println("- file [optional] path or number (default : all files)");
             System.err.println("- --save [optional] save trace");
             System.err.println("- --clean [optional] clean DB");
             System.exit(1);
@@ -54,22 +56,31 @@ public class App {
         String gitdir = args[0];
         
         List<String> paths = new LinkedList<String>();
-        if (args.length > 1 && !args[1].startsWith("--")) {
+        if (args.length > 1 && !args[1].startsWith("--") && !args[1].matches("[0-9]*")) {
             paths.add(args[1]);
         } else {
             extractFiles(new File(gitdir), gitdir, paths);
         }
-       
+        int end = paths.size();
+        if (args.length > 1 && args[1].matches("[0-9]*")) {
+            end = Integer.parseInt(args[1]);
+        }
+        
         boolean save = Arrays.asList(args).contains("--save");
         boolean clean = Arrays.asList(args).contains("--clean");
         
+        System.out.println("*** Total number of files : " + paths.size());
+        int i = 0;
         for (String path : paths) {
-            System.out.println("----- " + path);
+            System.out.println("----- " + path + " (" + ++i + '/' + end + ')');
             GitTrace trace = GitTrace.create(gitdir,
                     "http://localhost:5984", path, clean);
             CausalSimulator cd = new CausalSimulator(new LogootFactory());        
             cd.run(trace, false, save, 0, false);
-            System.out.println(cd.replicas.keySet().size());
+            System.out.println("Nb replica : " + cd.replicas.keySet().size());
+            if (i == end) { 
+                break;
+            }           
         }      
 //
 //
