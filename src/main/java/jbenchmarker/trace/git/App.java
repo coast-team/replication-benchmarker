@@ -71,16 +71,13 @@ public class App {
         
         System.out.println("*** Total number of files : " + paths.size());
         int i = 0;
-        for (String path : paths) {
+        for (String path : paths.subList(0, end)) {
             System.out.println("----- " + path + " (" + ++i + '/' + end + ')');
             GitTrace trace = GitTrace.create(gitdir,
                     "http://localhost:5984", path, clean);
             CausalSimulator cd = new CausalSimulator(new LogootFactory());        
             cd.run(trace, false, save, 0, false);
             System.out.println("Nb replica : " + cd.replicas.keySet().size());
-            if (i == end) { 
-                break;
-            }           
         }      
 //
 //
