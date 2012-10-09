@@ -144,7 +144,8 @@ public class TTFSOCT2Test {
         assertEquals("[<0,8>]", vcToString(opg.getClock()));
         assertEquals("", merger.lookup());
     }
-
+    
+    //tutu
     @Test
     public void testGenerateLocalDeleteString() throws IncorrectTraceException {
         int siteId = 0;
