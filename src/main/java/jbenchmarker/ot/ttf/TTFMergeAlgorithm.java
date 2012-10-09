@@ -78,17 +78,6 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
      * This integrate local modifications and generate message to another
      * replicas
      */
-    
-    public List<SequenceMessage> localDel(SequenceOperation opt) throws IncorrectTraceException 
-    {
-        return localDelete(opt);
-    }
-    
-    public List<SequenceMessage> localIns(SequenceOperation opt) throws IncorrectTraceException 
-    {
-        return localInsert(opt);
-    }
-    
     @Override
     protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         TTFDocument doc = (TTFDocument) this.getDoc();

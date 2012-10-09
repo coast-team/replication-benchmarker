@@ -48,7 +48,7 @@ public class TTFSOCT2Test {
         int siteId = 0;
         TTFMergeAlgorithm merger = new TTFMergeAlgorithm(new TTFDocument(), siteId);
 
-        List<SequenceMessage> ops = merger.localIns(insert( 0, "b"));
+        List<SequenceMessage> ops = merger.localInsert(insert( 0, "b"));
         assertEquals(1, ops.size());
         OTMessage<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.ins, opg.getOperation().getType());
@@ -58,7 +58,7 @@ public class TTFSOCT2Test {
         assertEquals("b", merger.lookup());
 
 
-        ops = merger.localIns(insert( 0, "a"));
+        ops = merger.localInsert(insert( 0, "a"));
         assertEquals(1, ops.size());
         opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals('a', opg.getOperation().getChar());
@@ -66,7 +66,7 @@ public class TTFSOCT2Test {
         assertEquals("[<0,2>]", vcToString(opg.getClock()));
         assertEquals("ab", merger.lookup());
 
-        ops = merger.localIns(insert( 2, "c"));
+        ops = merger.localInsert(insert( 2, "c"));
         assertEquals(1, ops.size());
         opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals('c', opg.getOperation().getChar());
@@ -80,7 +80,7 @@ public class TTFSOCT2Test {
         int siteId = 0;
         TTFMergeAlgorithm merger = new TTFMergeAlgorithm(new TTFDocument(), siteId);
 
-        List<SequenceMessage> ops = merger.localIns(insert( 0, "abc"));
+        List<SequenceMessage> ops = merger.localInsert(insert( 0, "abc"));
         assertEquals(3, ops.size());
 
         OTMessage<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
@@ -106,7 +106,7 @@ public class TTFSOCT2Test {
     public void testGenerateLocalDeleteCharByChar() throws IncorrectTraceException {
         int siteId = 0;
         TTFMergeAlgorithm merger = new TTFMergeAlgorithm(new TTFDocument(), siteId);
-        merger.localIns(insert( 0, "abcd"));
+        merger.localInsert(insert( 0, "abcd"));
 
         // remove 'a'
         List<SequenceMessage> ops = merger.localDelete(delete( 0, 1));
@@ -118,7 +118,7 @@ public class TTFSOCT2Test {
         assertEquals("bcd", merger.lookup());
 
         // remove 'd'
-        ops = merger.localDel(delete( 2, 1));
+        ops = merger.localDelete(delete( 2, 1));
         assertEquals(1, ops.size());
         opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
@@ -127,7 +127,7 @@ public class TTFSOCT2Test {
         assertEquals("bc", merger.lookup());
 
         // remove 'c'
-        ops = merger.localDel(delete( 1, 1));
+        ops = merger.localDelete(delete( 1, 1));
         assertEquals(1, ops.size());
         opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
@@ -136,7 +136,7 @@ public class TTFSOCT2Test {
         assertEquals("b", merger.lookup());
 
         // remove 'b'
-        ops = merger.localDel(delete( 0, 1));
+        ops = merger.localDelete(delete( 0, 1));
         assertEquals(1, ops.size());
         opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
@@ -149,10 +149,10 @@ public class TTFSOCT2Test {
     public void testGenerateLocalDeleteString() throws IncorrectTraceException {
         int siteId = 0;
         TTFMergeAlgorithm merger = new TTFMergeAlgorithm(new TTFDocument(), siteId);
-        merger.localIns(insert( 0, "abcd"));
+        merger.localInsert(insert( 0, "abcd"));
 
         // remove "abcd"
-        List<SequenceMessage> ops = merger.localDel(delete( 0, 4));
+        List<SequenceMessage> ops = merger.localDelete(delete( 0, 4));
 
         assertEquals(4, ops.size());
         OTMessage<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
@@ -182,13 +182,13 @@ public class TTFSOCT2Test {
     public void testGenerateLocalDeleteStringWhichContainsDeletedChars() throws IncorrectTraceException {
         int siteId = 0;
         TTFMergeAlgorithm merger = new TTFMergeAlgorithm(new TTFDocument(), siteId);
-        merger.localIns(insert( 0, "abcdefg"));
+        merger.localInsert(insert( 0, "abcdefg"));
 
-        merger.localDel(delete( 2, 2));
+        merger.localDelete(delete( 2, 2));
         assertEquals("abefg", merger.lookup());
 
         // remove "bef"
-        List<SequenceMessage> ops = merger.localDel(delete( 1, 3));
+        List<SequenceMessage> ops = merger.localDelete(delete( 1, 3));
 
         assertEquals(3, ops.size());
         OTMessage<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
@@ -212,10 +212,10 @@ public class TTFSOCT2Test {
         TTFMergeAlgorithm merger = new TTFMergeAlgorithm(new TTFDocument(), siteId);
         assertEquals(vc(0), merger.getClock());
 
-        OTMessage op1 = ((TTFSequenceMessage) merger.localIns(insert( 0, "a")).get(0)).getSoct2Message();
+        OTMessage op1 = ((TTFSequenceMessage) merger.localInsert(insert( 0, "a")).get(0)).getSoct2Message();
         assertEquals(vc(1), merger.getClock());
 
-        OTMessage op2 = ((TTFSequenceMessage) merger.localIns(insert( 1, "b")).get(0)).getSoct2Message();
+        OTMessage op2 = ((TTFSequenceMessage) merger.localInsert(insert( 1, "b")).get(0)).getSoct2Message();
         assertEquals(vc(2), merger.getClock());
 
         assertEquals(vc(1), op1.getClock());
@@ -225,7 +225,7 @@ public class TTFSOCT2Test {
     @Test
     public void testTP2PuzzleAtSite0() throws IncorrectTraceException {
         TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
-        site0.localIns(insert( 0, "abc"));
+        site0.localInsert(insert( 0, "abc"));
 
         //site0.generateLocal(insert(0, 1, "x"));
         TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(1, "x"),0, vc(4, 0, 0));
@@ -243,7 +243,7 @@ public class TTFSOCT2Test {
     @Test
     public void testTP2PuzzleAtSite0bis() throws IncorrectTraceException {
         TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
-        site0.localIns(insert(0, "abc"));
+        site0.localInsert(insert(0, "abc"));
 
         TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert( 1, "x"),0, vc(4, 0, 0));
         TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert( 2, "y"),1, vc(3, 1, 0));
@@ -260,7 +260,7 @@ public class TTFSOCT2Test {
     @Test
     public void testTP2PuzzleAtSite1() throws IncorrectTraceException {
         TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
-        List<SequenceMessage> ops = site0.localIns(insert( 0, "abc"));
+        List<SequenceMessage> ops = site0.localInsert(insert( 0, "abc"));
 
         TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(1, "x"),0, vc(4, 0, 0));
         TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(2, "y"),1, vc(3, 1, 0));
@@ -281,7 +281,7 @@ public class TTFSOCT2Test {
     @Test
     public void testTP2PuzzleAtSite1bis() throws IncorrectTraceException {
         TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
-        List<SequenceMessage> ops = site0.localIns(insert( 0, "abc"));
+        List<SequenceMessage> ops = site0.localInsert(insert( 0, "abc"));
 
         TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(1, "x"),0, vc(4, 0, 0));
         TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(2, "y"),1, vc(3, 1, 0));
@@ -302,7 +302,7 @@ public class TTFSOCT2Test {
     @Test
     public void testTP2PuzzleAtSite2() throws IncorrectTraceException {
         TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
-        List<SequenceMessage> ops = site0.localIns(insert( 0, "abc"));
+        List<SequenceMessage> ops = site0.localInsert(insert( 0, "abc"));
 
         TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert( 1, "x"),0, vc(4, 0, 0));
         TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert( 2, "y"),1, vc(3, 1, 0));
@@ -323,7 +323,7 @@ public class TTFSOCT2Test {
     @Test
     public void testTP2PuzzleAtSite2bis() throws IncorrectTraceException {
         TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
-        List<SequenceMessage> ops = site0.localIns(insert( 0, "abc"));
+        List<SequenceMessage> ops = site0.localInsert(insert( 0, "abc"));
 
         TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert( 1, "x"),0, vc(4, 0, 0));
         TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert( 2, "y"),1, vc(3, 1, 0));
@@ -347,17 +347,17 @@ public class TTFSOCT2Test {
         TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
         TTFMergeAlgorithm site3 = new TTFMergeAlgorithm(new TTFDocument(), 3);
 
-        List<SequenceMessage> ops0 = duplicate(site1.localIns(insert( 0, "abc")));
+        List<SequenceMessage> ops0 = duplicate(site1.localInsert(insert( 0, "abc")));
         assertEquals("abc", site1.lookup());
         integrateSeqAtSite(ops0, site2);
         assertEquals("abc", site2.lookup());
         integrateSeqAtSite(ops0, site3);
         assertEquals("abc", site3.lookup());
-        List<SequenceMessage> ops1 = duplicate(site1.localIns(insert( 1, "x")));
+        List<SequenceMessage> ops1 = duplicate(site1.localInsert(insert( 1, "x")));
         assertEquals("axbc", site1.lookup());
-        List<SequenceMessage> ops2 = duplicate(site2.localIns(insert( 2, "y")));
+        List<SequenceMessage> ops2 = duplicate(site2.localInsert(insert( 2, "y")));
         assertEquals("abyc", site2.lookup());
-        List<SequenceMessage> ops3 = duplicate(site3.localDel(delete( 1, 1)));
+        List<SequenceMessage> ops3 = duplicate(site3.localDelete(delete( 1, 1)));
         assertEquals("ac", site3.lookup());
 
         integrateSeqAtSite(ops2, site1);
@@ -381,21 +381,21 @@ public class TTFSOCT2Test {
         TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
         TTFMergeAlgorithm site4 = new TTFMergeAlgorithm(new TTFDocument(), 4);
 
-        List<SequenceMessage> ops0 = duplicate(site0.localIns(insert( 0, "ABC")));
+        List<SequenceMessage> ops0 = duplicate(site0.localInsert(insert( 0, "ABC")));
         assertEquals("ABC", site0.lookup());
 
         integrateSeqAtSite(ops0, site2);
         assertEquals("ABC", site2.lookup());
 
-        List<SequenceMessage> ops2 = duplicate(site2.localIns(insert( 2, "vw")));
+        List<SequenceMessage> ops2 = duplicate(site2.localInsert(insert( 2, "vw")));
         assertEquals("ABvwC", site2.lookup());
-        List<SequenceMessage> ops2b = duplicate(site2.localIns(insert( 4, "xyz")));
+        List<SequenceMessage> ops2b = duplicate(site2.localInsert(insert( 4, "xyz")));
         assertEquals("ABvwxyzC", site2.lookup());
 
         integrateSeqAtSite(ops0, site4);
         assertEquals("ABC", site4.lookup());
 
-        List<SequenceMessage> ops4 = duplicate(site4.localDel(delete( 1, 2)));
+        List<SequenceMessage> ops4 = duplicate(site4.localDelete(delete( 1, 2)));
         assertEquals("A", site4.lookup());
 
         integrateSeqAtSite(ops4, site2);
@@ -427,15 +427,15 @@ public class TTFSOCT2Test {
          * 21, 1297672411625, 1, 2, [<2,2><0,1>]) Del(14, 3, 1297672512653, 1,
          * 4, [<0,1><4,1>])
          */
-        List<SequenceMessage> ops0 = duplicate(site0.localIns(insert(0, "Salut Monsieur  \nFin"))); // [<0,1>]        
+        List<SequenceMessage> ops0 = duplicate(site0.localInsert(insert(0, "Salut Monsieur  \nFin"))); // [<0,1>]        
 
         integrateSeqAtSite(ops0, site2);
-        List<SequenceMessage> ops2 = site2.localIns(insert( 14, "Bonjour")); // [<2,1><0,1>]        
-        List<SequenceMessage> ops2b = site2.localIns(insert( 21, " Mehdi")); // [<2,2><0,1>]
+        List<SequenceMessage> ops2 = site2.localInsert(insert( 14, "Bonjour")); // [<2,1><0,1>]        
+        List<SequenceMessage> ops2b = site2.localInsert(insert( 21, " Mehdi")); // [<2,2><0,1>]
         assertEquals("Salut MonsieurBonjour Mehdi  \nFin", site2.lookup());
 
         integrateSeqAtSite(ops0, site4);
-        List<SequenceMessage> ops4 = duplicate(site4.localDel(delete( 14, 3))); // [<0,1><4,1>]
+        List<SequenceMessage> ops4 = duplicate(site4.localDelete(delete( 14, 3))); // [<0,1><4,1>]
 
         integrateSeqAtSite(ops4, site2);
         assertEquals("Salut MonsieurBonjour MehdiFin", site2.lookup());
@@ -460,20 +460,20 @@ public class TTFSOCT2Test {
 //        List<SequenceMessage> ops2 = duplicate(site2.generateLocal(insert(2, 0, "ed", vc(0,0,1,0))));
         VectorClock vc2 = new VectorClock();
         vc2.inc(2);
-        List<SequenceMessage> ops2 = duplicate(site2.localIns(insert( 0, "ed")));
+        List<SequenceMessage> ops2 = duplicate(site2.localInsert(insert( 0, "ed")));
 
         assertEquals("ed", site2.lookup());
 //        List<SequenceMessage> ops3 = duplicate(site3.generateLocal(insert(3, 0, "h")));
 //        List<SequenceMessage> ops3 = duplicate(site3.generateLocal(insert(3, 0, "h", vc(0,0,0,1))));
         VectorClock vc3 = new VectorClock();
         vc3.inc(3);
-        List<SequenceMessage> ops3 = duplicate(site3.localIns(insert( 0, "h")));
+        List<SequenceMessage> ops3 = duplicate(site3.localInsert(insert( 0, "h")));
         assertEquals("h", site3.lookup());
 //        List<SequenceMessage> ops1 = duplicate(site1.generateLocal(insert(1, 0, "q")));
 //        List<SequenceMessage> ops1 = duplicate(site1.generateLocal(insert(1, 0, "q", vc(0,1,0,0))));
         VectorClock vc1 = new VectorClock();
         vc1.inc(1);
-        List<SequenceMessage> ops1 = duplicate(site1.localIns(insert( 0, "q")));
+        List<SequenceMessage> ops1 = duplicate(site1.localInsert(insert( 0, "q")));
         assertEquals("q", site1.lookup());
 
         integrateSeqAtSite(ops2, site1);
@@ -497,14 +497,14 @@ public class TTFSOCT2Test {
         TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(new TTFDocument(), 1);
         TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
 
-        List<SequenceMessage> ops0 = duplicate(site1.localIns(insert(0, "ABC")));
+        List<SequenceMessage> ops0 = duplicate(site1.localInsert(insert(0, "ABC")));
         integrateSeqAtSite(ops0, site2);
 
-        List<SequenceMessage> ops1 = duplicate(site1.localIns(insert( 2, "X")));
+        List<SequenceMessage> ops1 = duplicate(site1.localInsert(insert( 2, "X")));
         assertEquals("ABXC", site1.lookup());
 
-        List<SequenceMessage> ops2 = duplicate(site2.localIns(insert( 1, "12")));
-        List<SequenceMessage> ops2b = duplicate(site2.localIns(insert( 3, "34")));
+        List<SequenceMessage> ops2 = duplicate(site2.localInsert(insert( 1, "12")));
+        List<SequenceMessage> ops2b = duplicate(site2.localInsert(insert( 3, "34")));
         assertEquals("A1234BC", site2.lookup());
 
         integrateSeqAtSite(ops1, site2);
