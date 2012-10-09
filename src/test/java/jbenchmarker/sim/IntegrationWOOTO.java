@@ -43,7 +43,7 @@ public class IntegrationWOOTO {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
-        cd.run(trace, false, 0, 0, false);
+        cd.run(trace);
         String r = "Salut MonsierBonjou MehdirFin";
 
         assertEquals(r, cd.getReplicas().get(0).lookup());
@@ -57,7 +57,7 @@ public class IntegrationWOOTO {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
-        cd.run(trace, false, 0, 0, false);
+        cd.run(trace);
         String r = (String) cd.getReplicas().get(0).lookup();
         for (CRDT m : cd.getReplicas().values()) {
             assertEquals(r, m.lookup());
@@ -69,7 +69,7 @@ public class IntegrationWOOTO {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
-        cd.run(trace, false, 0, 0, false);
+        cd.run(trace);
         String r = (String) cd.getReplicas().get(0).lookup();
         for (CRDT m : cd.getReplicas().values()) {
             assertEquals(r, m.lookup());
@@ -81,7 +81,7 @@ public class IntegrationWOOTO {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
-        cd.run(trace, false, 0, 0, false);
+        cd.run(trace);
         String r = (String) cd.getReplicas().get(0).lookup();
         for (CRDT m : cd.getReplicas().values()) {
             assertEquals(r, m.lookup());
@@ -93,7 +93,7 @@ public class IntegrationWOOTO {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
-        cd.run(trace, false, 0, 0, false);
+        cd.run(trace);
         String r = (String) cd.getReplicas().get(0).lookup();
         for (CRDT m : cd.getReplicas().values()) {
             assertEquals(r, m.lookup());
@@ -105,7 +105,7 @@ public class IntegrationWOOTO {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
-        cd.run(trace, false, 0, 0, false);
+        cd.run(trace);
         String r = (String) cd.getReplicas().get(0).lookup();
         for (CRDT m : cd.getReplicas().values()) {
             assertEquals(r, m.lookup());
@@ -117,7 +117,7 @@ public class IntegrationWOOTO {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 1, 10, 3.0, 5);
         CausalSimulator cdSim = new CausalSimulator(new WootOFactory());
         cdSim.setLogging("trace.log");
-        cdSim.run(trace, false, 0, 0, false);
+        cdSim.run(trace);
          
         TraceSimul2XML mn = new TraceSimul2XML();
         String[] args = new String[]{"trace.log", "trace.xml"};
@@ -125,7 +125,7 @@ public class IntegrationWOOTO {
         
         Trace real = TraceGenerator.traceFromXML("trace.xml", 1);
         CausalSimulator cdReal = new CausalSimulator(new WootOFactory());
-        cdReal.run(real, false, 0, 0, false);
+        cdReal.run(real);
         
         //compare all replica
         for (CRDT crdtSim : cdSim.getReplicas().values()) {

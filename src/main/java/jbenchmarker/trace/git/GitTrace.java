@@ -198,24 +198,17 @@ public class GitTrace implements Trace{
         private HashMap<String, VectorClock> startVC = new HashMap<String, VectorClock>();
         private HashSet<String> mergeCommit = new HashSet<String>();
         private boolean init = true;
-
+        private TraceOperation next = null;
+        private boolean finish = false;
+        
         public Walker() {
             startingCommit = new LinkedList<Commit>(initCommit);
             pendingCommit = new LinkedList<Commit>(initCommit);
         }
 
-        @Override
-        public boolean hasMoreElements() {
-            return (editions != null && !editions.isEmpty())
-                    || (files != null && !files.isEmpty())
-                    || (children != null && !children.isEmpty())
-                    || (!pendingCommit.isEmpty());
-        }
-
-        @Override
-        public TraceOperation nextElement() {
+        private TraceOperation next() {
             TraceOperation op = null;
-            while (op == null) {
+            while (op == null && !finish) {
                 if (editions != null && !editions.isEmpty()) {
                     Edition e = editions.pollFirst();
                     currentVC.inc(commit.getReplica());
@@ -243,6 +236,7 @@ public class GitTrace implements Trace{
                 } else {
                     if (commit != null) {
                         // Remove itself from children (topological sort).
+//System.out.println(commit.getId());
                         for (int i = 0; i < commit.childrenCount(); ++i) {
                             Commit child = foundPending(commit.getChildren().get(i));
                             child.getParents().remove(commit.getId());
@@ -267,15 +261,42 @@ public class GitTrace implements Trace{
                             pureChildren(commit.getChildren());
                             currentVC = startVC.get(commit.getId());
                             if (mergeCommit.contains(commit.getId())) {
-                                return new MergeCorrection(commit.getReplica(), currentVC, patchCRUD.get(commit.patchId()),this,GitTrace.this);
+                                op = new MergeCorrection(commit.getReplica(), currentVC, patchCRUD.get(commit.patchId()),this,GitTrace.this);
                             }
                         }
                     } else {
-                        throw new NoSuchElementException("No more operation");
+                        finish = true;
                     }
                 }
             }
 //System.out.println(commit);
+            return op; 
+        }
+        
+        @Override
+        public boolean hasMoreElements() {
+            if (next == null) {
+                next = next();
+            } 
+            return !finish;
+//            return (editions != null && !editions.isEmpty())
+//                    || (files != null && !files.isEmpty())
+//                    || (children != null && !children.isEmpty())
+//                    || (!pendingCommit.isEmpty());
+        }
+
+        @Override
+        public TraceOperation nextElement() {
+            TraceOperation op;
+            if (next == null) {
+                op = next();
+            } else {
+                op = next;                
+            }
+            if (finish) {
+                throw new NoSuchElementException("No more operation");
+            }
+            next = null;
             return op;
         }
 

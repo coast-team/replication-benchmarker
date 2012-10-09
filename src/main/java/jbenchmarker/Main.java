@@ -81,7 +81,7 @@ public class Main {
              * boolean : calculate document with overhead
              */
             boolean calculTimeEx = true;
-            int saveTrace = Integer.valueOf(args[5]);
+            boolean saveTrace = Integer.valueOf(args[5])==1;
             
             if(ex == 0)
                 cd.run(trace, calculTimeEx, saveTrace, Integer.valueOf(args[4]), true);//0 sans serialisation

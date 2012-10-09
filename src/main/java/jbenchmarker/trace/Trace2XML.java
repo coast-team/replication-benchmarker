@@ -280,7 +280,7 @@ public class Trace2XML {
                 for (int d : docs) {
                     Trace trace = new TraceGenerator.XMLTrace(d, opl.getChildren().iterator());
                     CausalSimulator cd = new CausalSimulator(new CausalCheckerFactory());
-                    cd.run(trace, false, 0, 0, false);
+                    cd.run(trace, false, false, 0, false);
                 }
             }
             

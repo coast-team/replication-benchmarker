@@ -88,7 +88,7 @@ public class MainSimulaReplica {
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            int storeFile = 0; //make it with arguments
+            boolean storeFile = false; //make it with arguments
             cd.run(trace, false, storeFile, scaleMemory, false);
             long after = System.nanoTime();
             if (ltime == null) {

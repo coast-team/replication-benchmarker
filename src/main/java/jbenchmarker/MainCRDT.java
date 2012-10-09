@@ -99,7 +99,7 @@ public class MainCRDT {
         CausalSimulator cd = new CausalSimulator(factory);
         Trace tr = new RandomTrace(duration, RandomTrace.FLAT, opp, prob, delay, 3, rn);
 
-        cd.run(tr, false, 0, 0, false);
+        cd.run(tr, false, false, 0, false);
         //System.out.println(cd.getlTime());
 
         //result.add(cd.getlTime());

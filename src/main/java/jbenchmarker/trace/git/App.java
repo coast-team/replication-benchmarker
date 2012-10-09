@@ -21,12 +21,18 @@ package jbenchmarker.trace.git;
 import crdt.PreconditionException;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.IncorrectTraceException;
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import jbenchmarker.factories.LogootFactory;
 import jbenchmarker.factories.RGAFactory;
 import jbenchmarker.factories.TreedocFactory;
 import jbenchmarker.factories.WootFactories;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 
 /**
@@ -36,28 +42,52 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 public class App {
 
     public static void main(String[] args) throws IOException, GitAPIException, IncorrectTraceException, PreconditionException {
-        
-//        GitExtraction.parseRepository(("/Users/urso/Rech/github/linux", "http://localhost:5984", "kernel/sched.c", true);
-
-        GitTrace trace = GitTrace.create("/home/score/Bureau/git/git",
-                "http://localhost:5984", "Makefile", false);
-        CausalSimulator cd = new CausalSimulator(new LogootFactory());        
-
+        //        GitExtraction.parseRepository(("/Users/urso/Rech/github/linux", "http://localhost:5984", "kernel/sched.c", true);
         if (args.length < 1 ) {
             System.err.println("Arguments : ");
-            System.err.println("- Save traces ? (0 don't save, else save)");
+            System.err.println("- git directory ");
+            System.err.println("- file [optional] (default : all files)");
+            System.err.println("- --save [optional] save trace");
+            System.err.println("- --clean [optional] clean DB");
             System.exit(1);
         }
-
-        cd.run(trace, false, Integer.parseInt(args[0]), 0, false);
-
-
-
+        String gitdir = args[0];
+        
+        List<String> paths = new LinkedList<String>();
+        if (args.length > 1 && !args[1].startsWith("--")) {
+            paths.add(args[1]);
+        } else {
+            extractFiles(new File(gitdir), gitdir, paths);
+        }
+       
+        boolean save = Arrays.asList(args).contains("--save");
+        boolean clean = Arrays.asList(args).contains("--clean");
+        
+        for (String path : paths) {
+            System.out.println("----- " + path);
+            GitTrace trace = GitTrace.create(gitdir,
+                    "http://localhost:5984", path, clean);
+            CausalSimulator cd = new CausalSimulator(new LogootFactory());        
+            cd.run(trace, false, save, 0, false);
+            System.out.println(cd.replicas.keySet().size());
+        }      
+//
+//
 //        GitTrace couchTrace = GitTrace.create("/Users/urso/Rech/github/linux", "http://localhost:5984", "MAINTAINERS", false);
 //        GitTrace couchTrace = GitTrace.create("/Users/urso/Rech/github/linux", "http://localhost:5984", "kernel/sched.c", false);
         
         //System.out.println(cd.replicas.get(1).lookup());
-        System.out.println(cd.replicas.keySet().size());
+//        System.out.println(cd.replicas.keySet().size());
+    }
+
+    private static void extractFiles(File dir, String gitdir, List<String> paths) {
+        for (File f : dir.listFiles()) {
+            if (f.isFile() && !f.getName().startsWith(".git")) { 
+                paths.add(f.getAbsolutePath().substring(gitdir.length()+1));
+            } else if (f.isDirectory() && !".git".equals(f.getName())) {
+                extractFiles(f, gitdir, paths);
+            }
+        }
     }
 }
 // git : 967 authors, 30000 commits: Total time: 5:46:52.821s 

@@ -62,7 +62,7 @@ public class Profiling {
          for (int t = 0; t < times; ++t) {
             //System.out.println(t);
             CausalSimulator cd = new CausalSimulator(f);
-            cd.run(new RandomTrace(duration, RandomTrace.FLAT, otreeop, 0.4, 3, 2, nbreplica), false, 0, 0, false);
+            cd.run(new RandomTrace(duration, RandomTrace.FLAT, otreeop, 0.4, 3, 2, nbreplica), false, false, 0, false);
             System.out.println(t);
         }    
     }

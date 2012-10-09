@@ -268,7 +268,7 @@ public class TreeSimulation {
              * calculate time execution boolean : calculate document with
              * overhead
              */
-            int storeFile = 0; //make it with arguments
+            boolean storeFile = false;  //make it with arguments
             cd.run(trace, true, storeFile, scaleMemory, true);
             System.out.println("End of simulation");
             if (ltime == null) {

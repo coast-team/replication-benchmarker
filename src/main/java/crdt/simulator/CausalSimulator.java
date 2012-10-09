@@ -107,10 +107,10 @@ public class CausalSimulator extends Simulator {
 
     private HashMap<TraceOperation, Integer> orderTrace;
     private boolean detail;
+      
     
     @Override
-    public void run(Trace trace, boolean detail, int saveTrace,
-    int nbrTrace, boolean o) throws IncorrectTraceException, PreconditionException, IOException {
+    public void run(Trace trace, boolean detail, boolean saveTrace, int nbrTrace, boolean o) throws IncorrectTraceException, PreconditionException, IOException {
         this.detail = detail;
         this.nbrTrace = nbrTrace;
         overhead = o;
@@ -122,7 +122,7 @@ public class CausalSimulator extends Simulator {
         orderTrace = new HashMap();        
         int numTrace = 0;
 
-        if (saveTrace != 0){
+        if (saveTrace){
             writer = new ObjectOutputStream(new FileOutputStream("trace"));
         }
         
@@ -163,7 +163,7 @@ public class CausalSimulator extends Simulator {
             LocalOperation op = opt.getOperation();
             op = op.adaptTo(localReplica);
 
-            if (saveTrace != 0) {
+            if (saveTrace) {
                 storeOp(opt);
             }
 

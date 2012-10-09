@@ -43,7 +43,7 @@ public class IntegrationSOCT2 {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
         CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGC());
 
-        cd.run(trace, false, 0, 0, false);
+        cd.run(trace);
         String r = "Salut Monsieurjour MehdiFin";
         assertEquals(r, cd.getReplicas().get(0).lookup());
         assertEquals(r, cd.getReplicas().get(2).lookup());
@@ -57,7 +57,7 @@ public class IntegrationSOCT2 {
         CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGC());
 
         long startTime = System.currentTimeMillis();
-        cd.run(trace, false, 0, 0, false);
+        cd.run(trace);
         long endTime = System.currentTimeMillis();
          
         Logger.getLogger(getClass().getCanonicalName()).info("computation time: "+(endTime-startTime)+" ms");
@@ -77,7 +77,7 @@ public class IntegrationSOCT2 {
         //CausalSimulator cd = new CausalSimulator(new CausalCheckerFactory());
 
         long startTime = System.currentTimeMillis();
-        cd.run(trace, false, 0, 0, false);  
+        cd.run(trace) ; 
         long endTime = System.currentTimeMillis();
          
         Logger.getLogger(getClass().getCanonicalName()).info("computation time: "+(endTime-startTime)+" ms");
@@ -99,7 +99,7 @@ public class IntegrationSOCT2 {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
         CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGC());
 
-        cd.run(trace, false, 0, 0, false);
+        cd.run(trace);
         String r = (String) cd.getReplicas().get(0).lookup();
         for (CRDT m : cd.getReplicas().values()) {
             assertEquals(r, m.lookup());
@@ -112,7 +112,7 @@ public class IntegrationSOCT2 {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);
         CausalSimulator cdSim = new CausalSimulator(new TTFFactories.WithoutGC());
         cdSim.setLogging("trace.log");
-        cdSim.run(trace, false, 0, 0, false);
+        cdSim.run(trace);
          
         TraceSimul2XML mn = new TraceSimul2XML();
         String[] args = new String[]{"trace.log", "trace.xml"};
@@ -120,7 +120,7 @@ public class IntegrationSOCT2 {
         
         Trace real = TraceGenerator.traceFromXML("trace.xml", 1);
         CausalSimulator cdReal = new CausalSimulator(new TTFFactories.WithoutGC());
-        cdReal.run(real, true, 0, 0, false);
+        cdReal.run(real);
         
         //compare all replica
         for (CRDT crdtSim : cdSim.getReplicas().values()) {
