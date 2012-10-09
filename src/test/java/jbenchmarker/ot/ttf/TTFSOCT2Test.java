@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.ot;
+package jbenchmarker.ot.ttf;
 
 import collect.VectorClock;
 import crdt.CRDTMessage;
@@ -109,7 +109,7 @@ public class TTFSOCT2Test {
         merger.localIns(insert( 0, "abcd"));
 
         // remove 'a'
-        List<SequenceMessage> ops = merger.localDel(delete( 0, 1));
+        List<SequenceMessage> ops = merger.localDelete(delete( 0, 1));
         assertEquals(1, ops.size());
         OTMessage<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.del, opg.getOperation().getType());
