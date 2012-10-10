@@ -73,12 +73,15 @@ public class App {
         int i = 0;
         for (String path : paths.subList(0, end)) {
             System.out.println("----- " + path + " (" + ++i + '/' + end + ')');
-            GitTrace trace = GitTrace.create(gitdir,
-                    "http://localhost:5984", path, clean);
+            GitTrace trace = GitTrace.create(gitdir, "http://localhost:5984", path, clean);
             CausalSimulator cd = new CausalSimulator(new LogootFactory());        
             cd.run(trace, false, save, 0, false);
             System.out.println("Nb replica : " + cd.replicas.keySet().size());
+            System.out.println("NB EDITS : " + GitTrace.editNb);
+            System.out.println("EDITS SIZE : " + GitTrace.editSize);
         }      
+        System.out.println("*** TOTAL NB EDITS : " + GitTrace.editNb);
+        System.out.println("*** TOTAL EDITS SIZE : " + GitTrace.editSize);
 //
 //
 //        GitTrace couchTrace = GitTrace.create("/Users/urso/Rech/github/linux", "http://localhost:5984", "MAINTAINERS", false);

@@ -54,7 +54,10 @@ import org.ektorp.impl.StdCouchDbInstance;
  * @author urso
  */
 public class GitTrace implements Trace{
-
+    static int editNb = 0;
+    static int editSize = 0;
+    
+    
     private CommitCRUD commitCRUD;
     private PatchCRUD patchCRUD;
     private List<Commit> initCommit;
@@ -158,6 +161,10 @@ public class GitTrace implements Trace{
                         if (first == null) {
                             try {
                                 List<Edition> l = gitTrace.diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
+                                editNb += l.size();
+                                for (Edition ed : l) {
+                                    editSize += ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB();
+                                }                                
                                 if (l.isEmpty()) {
                                     walker.currentVC.inc(replica.getReplicaNumber());
                                     first = SequenceOperation.noop(/*replica.getReplicaNumber(), getVectorClock()*/);
