@@ -40,6 +40,7 @@ import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
@@ -222,7 +223,9 @@ public class GitTrace implements Trace{
                     op = new GitOperation(commit.getReplica(), currentVC, fileEdit, e);
                 } else if (files != null && !files.isEmpty()) {
                     fileEdit = files.pollFirst();
-                    editions = new LinkedList<Edition>(fileEdit.getListDiff());
+                    if (fileEdit.getType() == FileHeader.PatchType.UNIFIED) {
+                        editions = new LinkedList<Edition>(fileEdit.getListDiff());
+                    }
                 } else if (children != null && !children.isEmpty()) {
                     Patch p = patchCRUD.get(children.pollFirst() + commit.getId());
                     files = new LinkedList<FileEdition>(p.getEdits());
