@@ -227,7 +227,7 @@ public class GitExtraction {
             if (commit.getParentCount() == 0) {
                 // Final case : patch without parent
                 List<FileEdition> edits = new LinkedList<FileEdition>(); 
-                TreeWalk walk = walker(commit, paths.get(co.getId()));
+                TreeWalk walk = walker(commit, path); // paths.get(co.getId()));
                 while (walk.next()) { 
                     ObjectId id = walk.getObjectId(0);
                     edits.add(new FileEdition(walk.getPathString(), 
@@ -240,7 +240,7 @@ public class GitExtraction {
                     // Merge case -> store state
                     List<String> mpaths = new LinkedList<String>();
                     List<byte[]> mraws = new LinkedList<byte[]>();
-                    TreeWalk twalk = walker(commit, paths.get(co.getId()));
+                    TreeWalk twalk = walker(commit, path); // paths.get(co.getId()));
                     while (twalk.next()) {
                         ObjectId id = twalk.getObjectId(0);
                         mpaths.add(twalk.getPathString());
@@ -257,7 +257,7 @@ public class GitExtraction {
                     String parentId = ObjectId.toString(parent);
                     children.put(parentId, co.getId());
                     List<FileEdition> edits = new LinkedList<FileEdition>();
-                    TreeWalk walk = walker(commit, parent, paths.get(co.getId()));
+                    TreeWalk walk = walker(commit, parent, path); // paths.get(co.getId()));
                     
                     // compute diff
                     for (DiffEntry entry : DiffEntry.scan(walk)) {
