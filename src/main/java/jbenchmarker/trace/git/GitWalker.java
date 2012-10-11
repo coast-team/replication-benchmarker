@@ -239,6 +239,9 @@ public class GitWalker {
             if (twm instanceof ResolveMerger) {
                 //System.out.println("hahaha");
                 try {
+                    if (true) {
+                        throw new Exception("test");
+                    }
                     ResolveMerger rm = (ResolveMerger) twm;
                     rm.setWorkingTreeIterator(new FileTreeIterator(repo));
                     rm.merge(revCom.getParents());
@@ -310,6 +313,10 @@ public class GitWalker {
 
                     } else {
                         d2 = map.get(tw.getPathString());
+                        if (d2==null){
+                            continue;
+                        }
+                        
                     }
                     //System.out.println("get: " + tw.getPathString());
                     if (d2 == null) {
@@ -317,9 +324,6 @@ public class GitWalker {
                     }
 
                     EditList editList = diffAlgorithm.diff(RawTextComparator.DEFAULT, d1, d2);
-
-
-
 
                     BlockLine editCount = result.get(tw.getPathString());
                     if (editCount == null) {
@@ -332,10 +336,10 @@ public class GitWalker {
                         editCount.addLine(ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB());
                     }
                     editCount.addBlock(editList.size());
-                    if (tw.getPathString().equals("alloc.c")){
-                        System.out.println(""+d1.);
-                        System.out.println(tw.getPathString()+editCount);
-                    }
+                   /* if (tw.getPathString().equals("alloc.c")) {
+                        showDiff(d1, d2);
+                        System.out.println(tw.getPathString() + editCount);
+                    }*/
                     // System.out.println("get: " + tw.getPathString());
 
 
@@ -349,6 +353,28 @@ public class GitWalker {
 
     public AnyObjectId getFromCommit() {
         return fromCommit;
+    }
+
+    public static void printRawText(RawText rt) {
+        for (int i = 0; i < rt.size(); i++) {
+            System.out.println(rt.getString(i));
+        }
+
+    }
+
+    public static void showDiff(RawText rt1, RawText rt2) {
+        if (rt1.size() == 0 || rt2.size() == 0) {
+            System.out.println("Achtung !");
+            System.out.println("rt1:" + rt1.size());
+            System.out.println("rt2:" + rt2.size());
+        }
+        for (int i = 0; i < Math.min(rt2.size(), rt1.size()); i++) {
+            System.out.println("-----------");
+            System.out.println(rt1.getString(i));
+            System.out.println("VS");
+            System.out.println(rt2.getString(i));
+            System.out.println("+++++++++++");
+        }
     }
 
     static class BlockLine {
