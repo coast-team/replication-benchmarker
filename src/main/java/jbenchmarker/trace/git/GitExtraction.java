@@ -180,7 +180,6 @@ public class GitExtraction {
         if (ent.getOldMode() != GITLINK && ent.getNewMode() != GITLINK && !merge) {
             byte[] aRaw = open(OLD, ent);
             byte[] bRaw = open(NEW, ent);
-
             if (aRaw == BINARY || bRaw == BINARY //
                     || RawText.isBinary(aRaw) || RawText.isBinary(bRaw)) {
                 type = PatchType.BINARY;

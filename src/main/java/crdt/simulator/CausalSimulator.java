@@ -23,10 +23,8 @@ import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.*;
@@ -34,8 +32,6 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jbenchmarker.core.LocalOperation;
-import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.trace.git.GitOperation;
 
 /**
  *
@@ -159,7 +155,7 @@ public class CausalSimulator extends Simulator {
                     }
                 }
                 play(localReplica, vc, concurrentOps);
-            }
+            }            
             LocalOperation op = opt.getOperation();
             op = op.adaptTo(localReplica);
 

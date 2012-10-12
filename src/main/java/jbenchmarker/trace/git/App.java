@@ -32,9 +32,11 @@ import jbenchmarker.factories.LogootFactory;
 import jbenchmarker.factories.RGAFactory;
 import jbenchmarker.factories.TreedocFactory;
 import jbenchmarker.factories.WootFactories;
+import jbenchmarker.factories.WootFactories.WootHFactory;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.ektorp.DbAccessException;
 
 
 /**
@@ -68,17 +70,23 @@ public class App {
         
         boolean save = Arrays.asList(args).contains("--save");
         boolean clean = Arrays.asList(args).contains("--clean");
-        
         System.out.println("*** Total number of files : " + paths.size());
         int i = 0;
-        for (String path : paths.subList(0, end)) {
-            System.out.println("----- " + path + " (" + ++i + '/' + end + ')');
-            GitTrace trace = GitTrace.create(gitdir, "http://localhost:5984", path, clean);
-            CausalSimulator cd = new CausalSimulator(new LogootFactory());        
-            cd.run(trace, false, save, 0, false);
-            System.out.println("Nb replica : " + cd.replicas.keySet().size());
-            System.out.println("NB EDITS : " + GitTrace.editNb);
-            System.out.println("EDITS SIZE : " + GitTrace.editSize);
+        for (String path : paths.subList(i, end)) {
+            for (int retry = 0; retry < 3; ++ retry) { // Overcome sporadic CouchDB Timeouts
+                try {
+                    System.out.println("----- " + path + " (" + ++i + '/' + end + ')');
+                    GitTrace trace = GitTrace.create(gitdir, "http://localhost:5984", path, clean);
+                    CausalSimulator cd = new CausalSimulator(new LogootFactory());        
+                    cd.run(trace, false, save, 0, false);
+                    System.out.println("Nb replica : " + cd.replicas.keySet().size());
+                    System.out.println("NB EDITS : " + GitTrace.editNb);
+                    System.out.println("EDITS SIZE : " + GitTrace.editSize);
+                    break;
+                } catch(DbAccessException e) {
+                    if (retry == 2) throw e;
+                }
+            }
         }      
         System.out.println("*** TOTAL NB EDITS : " + GitTrace.editNb);
         System.out.println("*** TOTAL EDITS SIZE : " + GitTrace.editSize);
@@ -93,7 +101,7 @@ public class App {
 
     private static void extractFiles(File dir, String gitdir, List<String> paths) {
         for (File f : dir.listFiles()) {
-            if (f.isFile() && !f.getName().startsWith(".git")) { 
+            if (f.isFile()) { // && !f.getName().startsWith(".git")) { 
                 paths.add(f.getAbsolutePath().substring(gitdir.length()+1));
             } else if (f.isDirectory() && !".git".equals(f.getName())) {
                 extractFiles(f, gitdir, paths);

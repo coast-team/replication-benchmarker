@@ -161,9 +161,12 @@ public class GitTrace implements Trace{
 
                         if (first == null) {
                             try {
+//System.out.println("----- REPLICA -----\n" + replica.lookup());                                
+//System.out.println("----- PATCH -----\n" + new String(patch.getRaws().get(0)));                                
                                 List<Edition> l = gitTrace.diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
                                 editNb += l.size();
                                 for (Edition ed : l) {
+//System.out.println("--- DIFF ---\n" + ed);                                                                    
                                     editSize += ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB();
                                 }                                
                                 if (l.isEmpty()) {
@@ -197,21 +200,20 @@ public class GitTrace implements Trace{
      class Walker implements Enumeration<TraceOperation> {
         private LinkedList<Commit> pendingCommit;
         private LinkedList<Commit> startingCommit;
-        private LinkedList<String> children;
         private LinkedList<FileEdition> files;
         private LinkedList<Edition> editions;
         private FileEdition fileEdit;
         private Commit commit;
         private VectorClock currentVC;
         private HashMap<String, VectorClock> startVC = new HashMap<String, VectorClock>();
-        private HashSet<String> mergeCommit = new HashSet<String>();
+        private HashSet<String> treated = new HashSet<String>();
         private boolean init = true;
         private TraceOperation next = null;
         private boolean finish = false;
         
         public Walker() {
             startingCommit = new LinkedList<Commit>(initCommit);
-            pendingCommit = new LinkedList<Commit>(initCommit);
+            pendingCommit = new LinkedList<Commit>();
         }
 
         private TraceOperation next() {
@@ -226,12 +228,22 @@ public class GitTrace implements Trace{
                     if (fileEdit.getType() == FileHeader.PatchType.UNIFIED) {
                         editions = new LinkedList<Edition>(fileEdit.getListDiff());
                     }
-                } else if (children != null && !children.isEmpty()) {
-                    Patch p = patchCRUD.get(children.pollFirst() + commit.getId());
-                    files = new LinkedList<FileEdition>(p.getEdits());
-                } else if (init) {
-                    if (commit != null) {
-                        startVC.put(commit.getId(), currentVC);
+                } else {
+                    if (commit != null) { // not first one
+                        treated.add(commit.getId());
+                        for (String cid : commit.getChildren()) {
+                            if (!found(pendingCommit, cid)) {
+                                Commit child = commitCRUD.get(cid);
+                                pendingCommit.add(child);
+                            }
+                            // Update starting VC of future commits
+                            VectorClock vc = startVC.get(cid);
+                            if (vc == null) {
+                                startVC.put(cid, new VectorClock(currentVC));
+                            } else {
+                                vc.upTo(currentVC);
+                            }
+                        }
                     }
                     if (!startingCommit.isEmpty()) {
                         // Treat content of commit without parent
@@ -239,40 +251,20 @@ public class GitTrace implements Trace{
                         Patch p = patchCRUD.get(commit.patchId());
                         files = new LinkedList<FileEdition>(p.getEdits());
                         currentVC = new VectorClock();
-                    } else {
-                        init = false;
-                        commit = null;
-                    }
-                } else {
-                    if (commit != null) {
-                        // Remove itself from children (topological sort).
-//System.out.println(commit.getId());
-                        for (int i = 0; i < commit.childrenCount(); ++i) {
-                            Commit child = foundPending(commit.getChildren().get(i));
-                            child.getParents().remove(commit.getId());
-
-                            // Update starting VC of future commits
-                            VectorClock vc = startVC.get(child.getId());
-                            if (vc == null) {
-                                startVC.put(child.getId(), currentVC);
-                            } else {
-                                vc.upTo(currentVC);
-                            }
-                        }
-                        commit = null;
-                    }
-                    if (pendingCommit.size() > 0) {
+                    } else if (pendingCommit.size() > 0) {
                         // Causality insurance 
                         Commit candidate = pendingCommit.removeFirst();
-                        if (candidate.parentCount() > 0) {
+                        while (!treated.containsAll(candidate.getParents())) {
                             pendingCommit.addLast(candidate);
+                            candidate = pendingCommit.removeFirst();
+                        } 
+                        commit = candidate;
+                        currentVC = startVC.get(commit.getId());
+                        if (commit.parentCount() > 1) {
+                           op = new MergeCorrection(commit.getReplica(), currentVC, patchCRUD.get(commit.patchId()),this,GitTrace.this);
                         } else {
-                            commit = candidate;
-                            pureChildren(commit.getChildren());
-                            currentVC = startVC.get(commit.getId());
-                            if (mergeCommit.contains(commit.getId())) {
-                                op = new MergeCorrection(commit.getReplica(), currentVC, patchCRUD.get(commit.patchId()),this,GitTrace.this);
-                            }
+                           Patch p = patchCRUD.get(commit.parentPatchId(0));
+                           files = new LinkedList<FileEdition>(p.getEdits());
                         }
                     } else {
                         finish = true;
@@ -289,10 +281,6 @@ public class GitTrace implements Trace{
                 next = next();
             } 
             return !finish;
-//            return (editions != null && !editions.isEmpty())
-//                    || (files != null && !files.isEmpty())
-//                    || (children != null && !children.isEmpty())
-//                    || (!pendingCommit.isEmpty());
         }
 
         @Override
@@ -310,36 +298,13 @@ public class GitTrace implements Trace{
             return op;
         }
 
-        private Commit foundPending(String childId) {
+        private boolean found(LinkedList<Commit> pendingCommit, String cid) {
             for (Commit c : pendingCommit) {
-                if (c.getId().equals(childId)) {
-                    return c;
+                if (c.getId().equals(cid)) {
+                    return true;
                 }
             }
-            return null;
-        }
-
-        /**
-         * Add to children only id which are not merge. Add unknown child to
-         * pending. Identify merge commit.
-         */
-        private void pureChildren(List<String> childrenId) {
-            children = new LinkedList<String>(childrenId);
-            Iterator<String> it = children.iterator();
-            while (it.hasNext()) {
-                String cid = it.next();
-                Commit child = foundPending(cid);
-                if (child == null) {
-                    child = commitCRUD.get(cid);
-                    if (child.parentCount() > 1) {
-                        mergeCommit.add(cid);
-                    }
-                    pendingCommit.addLast(child);
-                }
-                if (mergeCommit.contains(cid)) {
-                    it.remove();
-                }
-            }
+            return false;
         }
     }
 

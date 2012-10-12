@@ -76,11 +76,11 @@ public class GitWalker {
 
     public static void main(String... arg) throws Exception {
 
-        if (arg.length < 1) {
+        if (arg.length < 2) {
             System.out.println("GitTalker <git Repository> [lastcommit] [outputfile]");
         }
         String fromCommit;
-        if (arg.length < 1) {
+        if (arg.length < 2) {
             fromCommit = "master";
         } else {
             fromCommit = arg[1];
