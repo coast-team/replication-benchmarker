@@ -145,8 +145,8 @@ public class GitTrace implements Trace{
             if (merge) {
                 mergeSize += ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB();
             }
-            insertSize += ed.getEndA() - ed.getBeginA();
-            deleteSize += ed.getEndB() - ed.getBeginB();
+            insertSize += ed.getEndB() - ed.getBeginB();
+            deleteSize += ed.getEndA() - ed.getBeginA();
             if (ed.getType() == Type.REPLACE) {
                 ++nbUpdBlock;
             } else if (ed.getType() == Type.INSERT) {
