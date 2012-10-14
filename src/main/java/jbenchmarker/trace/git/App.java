@@ -71,32 +71,27 @@ public class App {
         boolean save = Arrays.asList(args).contains("--save");
         boolean clean = Arrays.asList(args).contains("--clean");
         System.out.println("*** Total number of files : " + paths.size());
+        System.out.println("Path;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
         int i = 0;
         for (String path : paths.subList(i, end)) {
-            for (int retry = 0; retry < 3; ++ retry) { // Overcome sporadic CouchDB Timeouts
+            for (int retry = 0; retry < 10; ++ retry) { // Overcome sporadic CouchDB Timeouts
                 try {
-                    System.out.println("----- " + path + " (" + ++i + '/' + end + ')');
                     GitTrace trace = GitTrace.create(gitdir, "http://localhost:5984", path, clean);
                     CausalSimulator cd = new CausalSimulator(new LogootFactory());        
                     cd.run(trace, false, save, 0, false);
-                    System.out.println("Nb replica : " + cd.replicas.keySet().size());
-                    System.out.println("NB EDITS : " + GitTrace.editNb);
-                    System.out.println("EDITS SIZE : " + GitTrace.editSize);
+                    System.out.println(path + ';' + ++i + ';' + cd.replicas.keySet().size() + ';' 
+                            + trace.nbMerge + ';' + trace.nbBlockMerge + ';' + trace.mergeSize + ';' 
+                            + trace.nbCommit + ';'
+                            + trace.nbInsBlock + ';' + trace.nbDelBlock + ';' + trace.nbUpdBlock + ';'
+                            + trace.insertSize + ';' + trace.deleteSize );
                     break;
                 } catch(DbAccessException e) {
-                    if (retry == 2) throw e;
+                    if (retry == 9) {
+                        throw e;
+                    }
                 }
             }
         }      
-        System.out.println("*** TOTAL NB EDITS : " + GitTrace.editNb);
-        System.out.println("*** TOTAL EDITS SIZE : " + GitTrace.editSize);
-//
-//
-//        GitTrace couchTrace = GitTrace.create("/Users/urso/Rech/github/linux", "http://localhost:5984", "MAINTAINERS", false);
-//        GitTrace couchTrace = GitTrace.create("/Users/urso/Rech/github/linux", "http://localhost:5984", "kernel/sched.c", false);
-        
-        //System.out.println(cd.replicas.get(1).lookup());
-//        System.out.println(cd.replicas.keySet().size());
     }
 
     private static void extractFiles(File dir, String gitdir, List<String> paths) {

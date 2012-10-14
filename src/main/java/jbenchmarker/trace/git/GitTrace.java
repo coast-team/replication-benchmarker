@@ -49,15 +49,23 @@ import org.ektorp.http.HttpClient;
 import org.ektorp.http.StdHttpClient;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.impl.StdCouchDbInstance;
+import org.eclipse.jgit.diff.Edit.Type;
 
 /**
  *
  * @author urso
  */
 public class GitTrace implements Trace{
-    static int editNb = 0;
-    static int editSize = 0;
-    
+    /* Statistics */
+    int nbBlockMerge = 0;
+    int mergeSize = 0;
+    int nbMerge = 0;
+    int nbCommit = 0;
+    int nbInsBlock = 0;
+    int nbDelBlock = 0;
+    int nbUpdBlock = 0;
+    int insertSize = 0;
+    int deleteSize = 0;
     
     private CommitCRUD commitCRUD;
     private PatchCRUD patchCRUD;
@@ -129,6 +137,26 @@ public class GitTrace implements Trace{
         return GitExtraction.edits(editList, a, b);
     }
 
+    private void stat(List<Edition> l, boolean merge) {
+        if (merge) {
+            nbBlockMerge += l.size();
+        }
+        for (Edition ed : l) {
+            if (merge) {
+                mergeSize += ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB();
+            }
+            insertSize += ed.getEndA() - ed.getBeginA();
+            deleteSize += ed.getEndB() - ed.getBeginB();
+            if (ed.getType() == Type.REPLACE) {
+                ++nbUpdBlock;
+            } else if (ed.getType() == Type.INSERT) {
+                ++nbInsBlock;
+            } else {
+                ++nbDelBlock;
+            }
+        }
+    }
+
     
 
     static class MergeCorrection extends TraceOperation implements Serializable {
@@ -164,10 +192,10 @@ public class GitTrace implements Trace{
 //System.out.println("----- REPLICA -----\n" + replica.lookup());                                
 //System.out.println("----- PATCH -----\n" + new String(patch.getRaws().get(0)));                                
                                 List<Edition> l = gitTrace.diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
-                                editNb += l.size();
+                                gitTrace.stat(l, true);
                                 for (Edition ed : l) {
 //System.out.println("--- DIFF ---\n" + ed);                                                                    
-                                    editSize += ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB();
+                                    
                                 }                                
                                 if (l.isEmpty()) {
                                     walker.currentVC.inc(replica.getReplicaNumber());
@@ -228,8 +256,10 @@ public class GitTrace implements Trace{
                     if (fileEdit.getType() == FileHeader.PatchType.UNIFIED) {
                         editions = new LinkedList<Edition>(fileEdit.getListDiff());
                     }
+                    stat(editions, false);
                 } else {
                     if (commit != null) { // not first one
+                        ++nbCommit;
                         treated.add(commit.getId());
                         for (String cid : commit.getChildren()) {
                             if (!found(pendingCommit, cid)) {
@@ -261,10 +291,11 @@ public class GitTrace implements Trace{
                         commit = candidate;
                         currentVC = startVC.get(commit.getId());
                         if (commit.parentCount() > 1) {
-                           op = new MergeCorrection(commit.getReplica(), currentVC, patchCRUD.get(commit.patchId()),this,GitTrace.this);
+                            ++nbMerge;
+                            op = new MergeCorrection(commit.getReplica(), currentVC, patchCRUD.get(commit.patchId()),this,GitTrace.this);
                         } else {
-                           Patch p = patchCRUD.get(commit.parentPatchId(0));
-                           files = new LinkedList<FileEdition>(p.getEdits());
+                            Patch p = patchCRUD.get(commit.parentPatchId(0));
+                            files = new LinkedList<FileEdition>(p.getEdits());
                         }
                     } else {
                         finish = true;
