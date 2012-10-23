@@ -19,6 +19,7 @@
  */
 package jbenchmarker.trace.git;
 
+import com.sun.istack.internal.logging.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import org.eclipse.jgit.diff.ContentSource;
 import org.eclipse.jgit.diff.DiffAlgorithm;
 import org.eclipse.jgit.lib.ObjectLoader;
@@ -53,7 +54,6 @@ import org.eclipse.jgit.merge.MergeResult;
 import org.eclipse.jgit.merge.ResolveMerger;
 import org.eclipse.jgit.merge.StrategyResolve;
 import org.eclipse.jgit.merge.ThreeWayMerger;
-import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.storage.pack.PackConfig;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
@@ -73,33 +73,40 @@ public class GitWalker {
     DiffAlgorithm diffAlgorithm;
     String gitDir;
     AnyObjectId fromCommit;
+    boolean countCreatedFile = false;
+    boolean useOnlyGitCommand = true;
+    static Logger logger = Logger.getLogger(GitWalker.class);
 
     public static void main(String... arg) throws Exception {
-
+        int idx;
         if (arg.length < 2) {
-            System.out.println("GitTalker <git Repository> [lastcommit] [outputfile]");
+            System.out.println("GitTalker <git Repository> [-l lastcommit] [-o outputfile]");
+            System.exit(1);
         }
         String fromCommit;
-        if (arg.length < 2) {
-            fromCommit = "master";
+        List<String> argList = Arrays.asList(arg);
+        if ((idx = argList.indexOf("-o")) > -1 && idx + 1 < arg.length) {
+            fromCommit = arg[idx + 1];
         } else {
-            fromCommit = arg[1];
+            fromCommit = "origin/master";
+
         }
         PrintStream p;
-        if (arg.length < 2) {
-            p = System.out;
-        } else {
-            File fout = new File(arg[2]);
+        if ((idx = argList.indexOf("-o")) > -1 && idx + 1 < arg.length) {
+            File fout = new File(arg[idx + 1]);
             p = new PrintStream(fout);
+        } else {
+            p = System.out;
+
         }
         GitWalker gw = new GitWalker(arg[0], fromCommit);
-
+        logger.setLevel(Level.SEVERE);
         HashMap<String, BlockLine> res = gw.measure();
         res = gw.filter(res, gw.getFromCommit());
         System.out.println("Number of Files :" + res.size());
-
+        p.println("File name;number of merge;number of block;number of line");
         for (Entry<String, BlockLine> line : res.entrySet()) {
-            p.println(line.getKey() + ";" + line.getValue().getBlock() + ";" + line.getValue().getLine());
+            p.println(line.getKey() + ";" + line.getValue().getCount() + ";" + line.getValue().getBlock() + ";" + line.getValue().getLine());
         }
     }
 
@@ -133,87 +140,48 @@ public class GitWalker {
         return resultFiltred;
     }
 
+    // initialize the walker from the commit id of constructor.
     RevWalk initRevWalker() throws MissingObjectException, IncorrectObjectTypeException, IOException {
         RevWalk revWalk = new RevWalk(repo);
         revWalk.markStart(revWalk.parseCommit(fromCommit));
         return revWalk;
     }
 
-    void ls() throws Exception {
-
-        RevWalk revWalk = initRevWalker();
-        for (RevCommit revCom : revWalk) {
-            TreeWalk tw = new TreeWalk(repo);
-            tw.addTree(revCom.getTree());
-            tw.setFilter(TreeFilter.ANY_DIFF);
-            tw.setRecursive(true);
-
-            while (tw.next()) {
-                System.out.println("name:" + tw.getPathString());
-                //tw.setFilter(AndTreeFilter.create(PathFilter.create(path), TreeFilter.ANY_DIFF));
-                System.out.println("dept:" + tw.getDepth());
-                if (!tw.isSubtree()) {
-                    tw.getObjectId(0);
-                    ObjectReader objr = tw.getObjectReader();
-
-                    for (int i = 1; i < tw.getTreeCount(); i++) {
-                        System.out.println("other :");
-                        ObjectLoader ldr = source.open(tw.getPathString(), tw.getObjectId(i));
-                        System.out.println(">" + new String(ldr.getBytes()) + "<");
-
-                    }
-
-                    ObjectLoader ldr = source.open(tw.getPathString(), tw.getObjectId(0));
-                    //Merger merger=new Merger(repo);
-
-
-                    System.out.println(">" + new String(ldr.getBytes()) + "<");
-                }
-                tw.getObjectReader();
-            }
-
-            tw.release();
-            /* while (walk.next()) { 
-             ObjectId id = walk.getObjectId(0);*/
-            /*edits.add(new FileEdition(walk.getPathString(), 
-             diff(new byte[0], open(walk.getPathString(), id))));*/
-            /*     System.out.println(id);
-             }*/
-
-            /* for (RevCommit revComP : revCom.getParents()) {
-             System.out.println("from:" + revComP.getFullMessage());
-             //   RevTree rt = revComP.getTree();
-
-             }*/
-            System.out.println("------");
-
-            //RevWalk revWalkMerger = new RevWalk(repo);
-            //  mr.getNewHead();
-            //RevCommit revComMerge = null;//revWalk.lookupCommit(mr.getNewHead());
-            //tw.addTree(revComMerge.getTree());
-            //  revWalkMerger.markStart(revWalk.parseCommit(mr.getNewHead()));
-
-        }
-    }
-
-    void printStream(InputStream s, PrintStream p) throws IOException {
+    //Print all element in stream in p
+    public static void printStream(InputStream s, PrintStream p) throws IOException {
         int c;
         while ((c = s.read()) > -1) {
             p.print((char) c);
         }
     }
 
-    void lauchAndWait(String arg) throws IOException, InterruptedException {
-        // System.err.println(arg);
-        Process p = Runtime.getRuntime().exec(arg, new String[0], new File(gitDir));
+    //Convert all element in stream in String
+    public static String stream2Str(InputStream s) throws IOException {
+        StringBuilder str = new StringBuilder();
+        int c;
+        while ((c = s.read()) > -1) {
+            str.append((char) c);
+        }
+        return str.toString();
+
+    }
+
+    //Launch a command and wait the terminaison. 
+    // If the return number of command is not 0 then display all stream in warning logger
+    public static void launchAndWait(String command, String currentDirectory) throws IOException, InterruptedException {
+        logger.info("command line : " + command);
+        Process p = Runtime.getRuntime().exec(command, new String[0], new File(currentDirectory));
         p.waitFor();
         if (p.exitValue() != 0) {
-            System.err.println("Error : " + arg);
-            printStream(p.getErrorStream(), System.err);
-            printStream(p.getInputStream(), System.err);
-            System.err.flush();
+            logger.warning("command existed with error code : " + p.exitValue());
+            logger.warning("error : " + stream2Str(p.getErrorStream()));
+            logger.warning("output : " + stream2Str(p.getInputStream()));
         }
 
+    }
+
+    public void launchAndWait(String command) throws IOException, InterruptedException {
+        launchAndWait(command, gitDir);
     }
 
     public HashMap<String, BlockLine> measure() throws Exception {
@@ -225,36 +193,38 @@ public class GitWalker {
         HashMap<String, RawText> map = new HashMap();
         HashMap<String, BlockLine> result = new HashMap();
 
+
         RevWalk revWalk = initRevWalker();
 
+        //For all commit
         for (RevCommit revCom : revWalk) {
-            System.out.println("[" + (++current) + "]");
+            logger.info("Commit passed " + (++current));
+
+            // if recom is not issue on merge go to the next
             if (revCom.getParentCount() < 2) {
                 continue;
             }
-
+            logger.info("working on :" + revCom.getId().name());
             file = false;
             StrategyResolve sr = new StrategyResolve();
             ThreeWayMerger twm = sr.newMerger(repo, true);
             if (twm instanceof ResolveMerger) {
-                //System.out.println("hahaha");
                 try {
-                    if (true) {
-                        throw new Exception("test");
+                    if (useOnlyGitCommand) {
+                        throw new Exception("Use Only git command");
                     }
                     ResolveMerger rm = (ResolveMerger) twm;
                     rm.setWorkingTreeIterator(new FileTreeIterator(repo));
                     rm.merge(revCom.getParents());
 
                     for (Entry<String, MergeResult<? extends Sequence>> line : rm.getMergeResults().entrySet()) {
-                        //System.out.println("+++++++++++++");
                         MergeResult<? extends Sequence> mergeRes = line.getValue();
                         MergeFormatter mf = new MergeFormatter();
                         ByteArrayOutputStream buff = new ByteArrayOutputStream();
                         mf.formatMerge(buff, (MergeResult<RawText>) mergeRes, names, revCom.getEncoding().displayName());
 
                         map.put(line.getKey(), new RawText(buff.toByteArray()));
-                        System.out.println("add: " + line.getKey());
+                        this.logger.info("add: " + line.getKey());
                     }
 
                     //continue;
@@ -262,89 +232,109 @@ public class GitWalker {
                     file = true;
 
                     RevCommit[] parents = revCom.getParents();
-                    //lauchAndWait("git clean -f ");
-                    //lauchAndWait("git checkout " + parents[0].getName());
-                    lauchAndWait("git reset --hard " + parents[0].getName());
+                    launchAndWait("git reset --hard " + parents[0].getName());
                     StringBuilder ids = new StringBuilder();
                     for (int i = 1; parents.length > i; i++) {
                         ids.append(parents[i].getName());
                         ids.append(" ");
                     }
-                    /* for (RevCommit revComP : revCom.getParents()) {
-                     System.out.println("Oops:" + revComP.getId().name());
-                     }*/
-                    lauchAndWait("git merge --no-commit " + ids.toString());
-
-                    System.out.println("--------------------------");
-
+                    launchAndWait("git merge --no-commit " + ids.toString());
                 }
-                //return;
             } else {
-                System.out.println("fuck");
-                System.exit(0);
+                logger.severe("The merger is not resolveMerger");
+                System.exit(-21);
             }
 
             TreeWalk tw = new TreeWalk(repo);
+            //add rev com in tree
             tw.addTree(revCom.getTree());
+            //add fathers rev in tree.
+            for (RevCommit revComP : revCom.getParents()) {
+                tw.addTree(revComP.getTree());
+            }
+
+            //filter only different files
             tw.setFilter(TreeFilter.ANY_DIFF);
+
             tw.setRecursive(true);
             while (tw.next()) {
+                //if the object is not an folder.
                 if (!tw.isSubtree()) {
-                    tw.getPathString();
-                    ObjectLoader ldr = source.open(tw.getPathString(), tw.getObjectId(0));
-                    ldr.getType();
-                    RawText d1 = null;
-                    try {
-                        d1 = new RawText(ldr.getBytes(PackConfig.DEFAULT_BIG_FILE_THRESHOLD));
-                    } catch (LargeObjectException.ExceedsLimit overLimit) {
-                        continue;
-                    } catch (LargeObjectException.ExceedsByteArrayLimit overLimit) {
-                        continue;
-                    }
-                    RawText d2;
-                    if (file) {
+
+                    RawText stateAfterMerge = null;//State after merger
+                    if (file) { // if git used
                         File f = new File(gitDir + "/" + tw.getPathString());
-                        if (f.exists()) {
-                            d2 = new RawText(f);
-                        } else {
-                            d2 = null;
-                            System.err.println("Warning file " + f + " doesn't exist");
+                        if (f.exists()) { // if file is existing after merge
+                            stateAfterMerge = new RawText(f);
+                        } else { //else the file is created by commit
+                            stateAfterMerge = null;
+                            logger.warning("" + f + " doesn't exist");
+
+                            // doesn't count new files
+                            if (!countCreatedFile) {
+                                continue;
+                            }
                         }
 
                     } else {
-                        d2 = map.get(tw.getPathString());
-                        if (d2==null){
+                        stateAfterMerge = map.get(tw.getPathString());
+                        if (stateAfterMerge == null && !countCreatedFile) {
                             continue;
                         }
-                        
+
                     }
-                    //System.out.println("get: " + tw.getPathString());
-                    if (d2 == null) {
-                        d2 = new RawText(new byte[0]);
+                    if (stateAfterMerge == null) {
+                        stateAfterMerge = new RawText(new byte[0]);
                     }
 
-                    EditList editList = diffAlgorithm.diff(RawTextComparator.DEFAULT, d1, d2);
+
+
+                    RawText stateAfterCommit = null;
+                    //Path of commit
+                    try {
+                        ObjectLoader ldr = source.open(tw.getPathString(), tw.getObjectId(0));
+                        ldr.getType();
+
+                        stateAfterCommit = new RawText(ldr.getBytes(PackConfig.DEFAULT_BIG_FILE_THRESHOLD));
+                    } catch (LargeObjectException.ExceedsLimit overLimit) {// File is overlimits => binary
+                        continue;
+                    } catch (LargeObjectException.ExceedsByteArrayLimit overLimit) {// File is overlimits => binary
+                        continue;
+                    } catch (Exception ex) { // if another exception like inexitant considere 0 file.
+                        stateAfterCommit = new RawText(new byte[0]);
+                    }
+
+
+                    EditList editList = diffAlgorithm.diff(RawTextComparator.DEFAULT, stateAfterMerge, stateAfterCommit);
+
 
                     BlockLine editCount = result.get(tw.getPathString());
-                    if (editCount == null) {
+                    if (editCount == null) {// if it's first time for this file We create an entry.
                         editCount = new BlockLine();
                         result.put(tw.getPathString(), editCount);
                     }
 
+                    editCount.increment();
 
-                    for (Edit ed : editList) {
+                    for (Edit ed : editList) {// Count line replace is two time counted
                         editCount.addLine(ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB());
                     }
+                    //Count the block size
                     editCount.addBlock(editList.size());
-                   /* if (tw.getPathString().equals("alloc.c")) {
-                        showDiff(d1, d2);
-                        System.out.println(tw.getPathString() + editCount);
-                    }*/
-                    // System.out.println("get: " + tw.getPathString());
+//                    FOR debug
+//                    if (tw.getPathString().equals("git-gui/lib/branch.tcl")) {
+//                        logger.info("Parent count :" + revCom.getParentCount());
+//                        logger.info("" + (stateAfterCommit == null ? "d1null" : "") + (stateAfterMerge == null ? "d2null" : ""));
+//                        logger.info(tw.getPathString() + editCount);
+//                        logger.info("");
+//
+//                    }
+//                    // System.out.println("get: " + tw.getPathString());
 
 
                 }
             }
+            //cleaning for the next pass.
             map.clear();
             tw.release();
         }
@@ -379,11 +369,16 @@ public class GitWalker {
 
     static class BlockLine {
 
-        int block = 0;
-        int line = 0;
+        private int block = 0;
+        private int line = 0;
+        private int count = 0;
         boolean binary = false;
 
         public BlockLine() {
+        }
+
+        public void increment() {
+            count++;
         }
 
         public int getBlock() {
@@ -412,7 +407,11 @@ public class GitWalker {
 
         @Override
         public String toString() {
-            return "{" + "blocks:" + block + ", lines:" + line + '}';
+            return "BlockLine{" + "block=" + block + ", line=" + line + ", count=" + count + ", binary=" + binary + '}';
+        }
+
+        public int getCount() {
+            return count;
         }
 
         public void setBinary(boolean binary) {
