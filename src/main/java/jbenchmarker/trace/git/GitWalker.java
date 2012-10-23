@@ -123,10 +123,11 @@ public class GitWalker {
         // this.pairSource = new ContentSource.Pair(source, source);
     }
 
-    HashMap<String, BlockLine> filter(HashMap<String, BlockLine> result, AnyObjectId obj) throws IOException {
+    // Filter the restult to eliminate files which not in commit
+    HashMap<String, BlockLine> filter(HashMap<String, BlockLine> result, AnyObjectId commit) throws IOException {
         HashMap<String, BlockLine> resultFiltred = new HashMap();
         RevWalk revWalk = new RevWalk(repo);
-        RevCommit revCom = revWalk.parseCommit(obj);
+        RevCommit revCom = revWalk.parseCommit(commit);
         TreeWalk tw = new TreeWalk(repo);
         tw.addTree(revCom.getTree());
         tw.setFilter(TreeFilter.ALL);
