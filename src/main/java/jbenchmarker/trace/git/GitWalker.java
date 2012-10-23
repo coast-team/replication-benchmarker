@@ -19,7 +19,6 @@
  */
 package jbenchmarker.trace.git;
 
-import com.sun.istack.internal.logging.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -30,16 +29,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.diff.ContentSource;
 import org.eclipse.jgit.diff.DiffAlgorithm;
-import org.eclipse.jgit.lib.ObjectLoader;
-import org.eclipse.jgit.lib.ObjectReader;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.eclipse.jgit.treewalk.TreeWalk;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawText;
@@ -49,13 +43,20 @@ import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.LargeObjectException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.AnyObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
+import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.merge.MergeFormatter;
 import org.eclipse.jgit.merge.MergeResult;
 import org.eclipse.jgit.merge.ResolveMerger;
 import org.eclipse.jgit.merge.StrategyResolve;
 import org.eclipse.jgit.merge.ThreeWayMerger;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.storage.pack.PackConfig;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
+import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 
 /**
@@ -65,7 +66,6 @@ import org.eclipse.jgit.treewalk.filter.TreeFilter;
 public class GitWalker {
 
     private final ContentSource source;
-    // private final ContentSource.Pair pairSource;
     private final ObjectReader reader;
     FileRepositoryBuilder builder;
     Repository repo;
@@ -75,21 +75,29 @@ public class GitWalker {
     AnyObjectId fromCommit;
     boolean countCreatedFile = false;
     boolean useOnlyGitCommand = true;
-    static Logger logger = Logger.getLogger(GitWalker.class);
+    static boolean progressBar = false;
+    static Logger logger = Logger.getLogger(GitWalker.class.getCanonicalName());
 
+    /**
+     *
+     * @param arg
+     * @throws Exception
+     */
     public static void main(String... arg) throws Exception {
         int idx;
         if (arg.length < 2) {
-            System.out.println("GitTalker <git Repository> [-l lastcommit] [-o outputfile]");
+            System.out.println("GitTalker <git Repository> [-l lastcommit] [-o outputfile] [-p]");
+            System.out.println("-l the last commit");
+            System.out.println("-o output csv file");
+            System.out.println("-p display a progress bar");
             System.exit(1);
         }
         String fromCommit;
         List<String> argList = Arrays.asList(arg);
-        if ((idx = argList.indexOf("-o")) > -1 && idx + 1 < arg.length) {
+        if ((idx = argList.indexOf("-l")) > -1 && idx + 1 < arg.length) {
             fromCommit = arg[idx + 1];
         } else {
             fromCommit = "origin/master";
-
         }
         PrintStream p;
         if ((idx = argList.indexOf("-o")) > -1 && idx + 1 < arg.length) {
@@ -97,19 +105,29 @@ public class GitWalker {
             p = new PrintStream(fout);
         } else {
             p = System.out;
-
+        }
+        if (argList.contains("-p")) {
+            progressBar = true;
         }
         GitWalker gw = new GitWalker(arg[0], fromCommit);
         logger.setLevel(Level.SEVERE);
         HashMap<String, BlockLine> res = gw.measure();
+        //Filtre to obtain only file in last commit 
         res = gw.filter(res, gw.getFromCommit());
-        System.out.println("Number of Files :" + res.size());
+        System.out.println("\n\nNumber of Files :" + res.size());
+        //Write the result
         p.println("File name;number of merge;number of block;number of line");
         for (Entry<String, BlockLine> line : res.entrySet()) {
             p.println(line.getKey() + ";" + line.getValue().getCount() + ";" + line.getValue().getBlock() + ";" + line.getValue().getLine());
         }
     }
 
+    /**
+     *
+     * @param gitDir
+     * @param fromCommit
+     * @throws IOException
+     */
     public GitWalker(String gitDir, String fromCommit) throws IOException {
         builder = new FileRepositoryBuilder();
         repo = builder.setGitDir(new File(gitDir + "/.git")).readEnvironment()
@@ -120,6 +138,8 @@ public class GitWalker {
         this.source = ContentSource.create(reader);
         this.diffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
         this.fromCommit = repo.resolve(fromCommit);
+        LogCommand l = git.log();
+
         // this.pairSource = new ContentSource.Pair(source, source);
     }
 
@@ -148,7 +168,12 @@ public class GitWalker {
         return revWalk;
     }
 
-    //Print all element in stream in p
+    /**
+     * Print all element in stream in p
+     * @param s Stream
+     * @param p Printer
+     * @throws IOException
+     */
     public static void printStream(InputStream s, PrintStream p) throws IOException {
         int c;
         while ((c = s.read()) > -1) {
@@ -156,7 +181,13 @@ public class GitWalker {
         }
     }
 
-    //Convert all element in stream in String
+    
+    /**
+     * Convert all element in stream in String
+     * @param s Stream
+     * @return the result String
+     * @throws IOException
+     */
     public static String stream2Str(InputStream s) throws IOException {
         StringBuilder str = new StringBuilder();
         int c;
@@ -167,41 +198,81 @@ public class GitWalker {
 
     }
 
-    //Launch a command and wait the terminaison. 
-    // If the return number of command is not 0 then display all stream in warning logger
+    
+    /**
+     * Launch a command and wait the terminaison. 
+     * If the return number of command is not 0 then display all stream in warning logger.
+     * 
+     * @param command the command to be launch
+     * @param currentDirectory Current working directory for the command
+     * @throws IOException 
+     * @throws InterruptedException
+     */
     public static void launchAndWait(String command, String currentDirectory) throws IOException, InterruptedException {
-        logger.info("command line : " + command);
+        logger.log(Level.INFO, "command line : {0}", command);
         Process p = Runtime.getRuntime().exec(command, new String[0], new File(currentDirectory));
         p.waitFor();
         if (p.exitValue() != 0) {
-            logger.warning("command existed with error code : " + p.exitValue());
-            logger.warning("error : " + stream2Str(p.getErrorStream()));
-            logger.warning("output : " + stream2Str(p.getInputStream()));
+            logger.log(Level.WARNING, "command existed with error code : {0}", p.exitValue());
+            logger.log(Level.WARNING, "error : {0}", stream2Str(p.getErrorStream()));
+            logger.log(Level.WARNING, "output : {0}", stream2Str(p.getInputStream()));
         }
 
     }
 
+    /**
+     * Launch a command and wait the terminaison. 
+     * If the return number of command is not 0 then display all stream in warning logger.
+     * The current directory is git dir.
+     * @param command
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public void launchAndWait(String command) throws IOException, InterruptedException {
         launchAndWait(command, gitDir);
     }
 
+    /**
+     * Mesure the patch between a merge of concurent states and next commit
+     * @return map associate filename and stat
+     * @throws Exception
+     */
     public HashMap<String, BlockLine> measure() throws Exception {
-        int nbCommit;
+        int nbCommit = -1;
+        double nextPas=0;
         int current = 0;
+        
         boolean file;
 
         List<String> names = Arrays.asList("a", "b", "c", "d", "b", "c", "d", "b", "c", "d", "b", "c", "d", "b", "c", "d", "b", "c", "d", "b", "c", "d");
         HashMap<String, RawText> map = new HashMap();
         HashMap<String, BlockLine> result = new HashMap();
 
+        if (progressBar) {
+            nbCommit = 0;
+            RevWalk revWalk = initRevWalker();
+            for (RevCommit revCom : revWalk) {
+                nbCommit++;
+            }
+        }
 
         RevWalk revWalk = initRevWalker();
+        //revWalk.setTreeFilter(TreeFilter.ANY_DIFF);
+
+
 
         //For all commit
         for (RevCommit revCom : revWalk) {
             logger.info("Commit passed " + (++current));
 
-            // if recom is not issue on merge go to the next
+            if(nbCommit>-1){
+                if (current>=nextPas){
+                    nextPas+=(nbCommit)/100.0;
+                    System.out.print(".");
+                    System.out.flush();
+                }
+            }
+            // if revCom is not issue on merge go to the next commit
             if (revCom.getParentCount() < 2) {
                 continue;
             }
@@ -225,7 +296,7 @@ public class GitWalker {
                         mf.formatMerge(buff, (MergeResult<RawText>) mergeRes, names, revCom.getEncoding().displayName());
 
                         map.put(line.getKey(), new RawText(buff.toByteArray()));
-                        this.logger.info("add: " + line.getKey());
+                        logger.info("add: " + line.getKey());
                     }
 
                     //continue;
@@ -251,7 +322,7 @@ public class GitWalker {
             tw.addTree(revCom.getTree());
             //add fathers rev in tree.
             for (RevCommit revComP : revCom.getParents()) {
-                tw.addTree(revComP.getTree());
+             tw.addTree(revComP.getTree());
             }
 
             //filter only different files
@@ -290,7 +361,7 @@ public class GitWalker {
 
 
 
-                    RawText stateAfterCommit = null;
+                    RawText stateAfterCommit;
                     //Path of commit
                     try {
                         ObjectLoader ldr = source.open(tw.getPathString(), tw.getObjectId(0));
@@ -322,17 +393,6 @@ public class GitWalker {
                     }
                     //Count the block size
                     editCount.addBlock(editList.size());
-//                    FOR debug
-//                    if (tw.getPathString().equals("git-gui/lib/branch.tcl")) {
-//                        logger.info("Parent count :" + revCom.getParentCount());
-//                        logger.info("" + (stateAfterCommit == null ? "d1null" : "") + (stateAfterMerge == null ? "d2null" : ""));
-//                        logger.info(tw.getPathString() + editCount);
-//                        logger.info("");
-//
-//                    }
-//                    // System.out.println("get: " + tw.getPathString());
-
-
                 }
             }
             //cleaning for the next pass.
@@ -342,10 +402,18 @@ public class GitWalker {
         return result;
     }
 
+    /**
+     *
+     * @return from commit parameter
+     */
     public AnyObjectId getFromCommit() {
         return fromCommit;
     }
 
+    /**
+     * display a row text
+     * @param rt
+     */
     public static void printRawText(RawText rt) {
         for (int i = 0; i < rt.size(); i++) {
             System.out.println(rt.getString(i));
@@ -353,6 +421,11 @@ public class GitWalker {
 
     }
 
+    /**
+     * show diff between two row text
+     * @param rt1 
+     * @param rt2
+     */
     public static void showDiff(RawText rt1, RawText rt2) {
         if (rt1.size() == 0 || rt2.size() == 0) {
             System.out.println("Achtung !");
@@ -368,55 +441,76 @@ public class GitWalker {
         }
     }
 
-    static class BlockLine {
+    /**
+     * Statistic Element 
+     */
+    public static class BlockLine {
 
         private int block = 0;
         private int line = 0;
         private int count = 0;
-        boolean binary = false;
 
+        /**
+         * empty constructor
+         */
         public BlockLine() {
         }
 
+        /**
+         * increment count initialized at 0 by constructor
+         */
         public void increment() {
             count++;
         }
 
+        /**
+         * get modified block count
+         * @return block count
+         */
         public int getBlock() {
             return block;
         }
 
-        public void setBlock(int block) {
-            this.block = block;
-        }
+        
 
+        /**
+         * get modified line count
+         * @return modified line count
+         */
         public int getLine() {
             return line;
         }
 
-        public void setLine(int line) {
-            this.line = line;
-        }
-
+        
+        /**
+         *  Increment modified line number
+         * @param line
+         */
         public void addLine(int line) {
             this.line += line;
         }
 
+        /**
+         * Increment modified block number
+         * @param block
+         */
         public void addBlock(int block) {
             this.block += block;
         }
 
         @Override
         public String toString() {
-            return "BlockLine{" + "block=" + block + ", line=" + line + ", count=" + count + ", binary=" + binary + '}';
+            return "BlockLine{" + "block=" + block + ", line=" + line + ", count=" + count + '}';
         }
 
+        /**
+         * get Count of object
+         * @return
+         */
         public int getCount() {
             return count;
         }
 
-        public void setBinary(boolean binary) {
-            this.binary = binary;
-        }
+      
     }
 }
