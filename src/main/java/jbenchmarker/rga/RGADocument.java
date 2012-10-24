@@ -42,6 +42,7 @@ public class RGADocument<T> implements Document {
         //purger= new RGAPurger(this);
     }
 
+    @Override
     public String view() {
         StringBuilder s = new StringBuilder();
         RGANode node = head.getNext();
@@ -56,16 +57,11 @@ public class RGADocument<T> implements Document {
 
     public void apply(Operation op) {
         RGAOperation rgaop = (RGAOperation) op;
-//		if(rgaop.getLoR() == RGAOperation.LOCAL){
-//			if(rgaop.getType() == SequenceOperation.OpType.del) LocalDelete(rgaop);
-//			else LocalInsert(rgaop);			
-//		} else {
         if (rgaop.getType() == SequenceOperation.OpType.del) {
             RemoteDelete(rgaop);
         } else {
             RemoteInsert(rgaop);
         }
-//		}
     }
 
     private void LocalInsert(RGAOperation op) {

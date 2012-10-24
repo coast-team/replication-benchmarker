@@ -75,7 +75,7 @@ public class RGAOperation<T> extends SequenceMessage {
 		this.intpos		= pos;
 		this.content 	= c;
 		this.lor = LOCAL;
-                this.type = OpType.ins;
+                this.type = type;
 	}
         
 	/*

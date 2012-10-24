@@ -106,10 +106,10 @@ public class CausalSimulator extends Simulator {
       
     
     @Override
-    public void run(Trace trace, boolean detail, boolean saveTrace, int nbrTrace, boolean o) throws IncorrectTraceException, PreconditionException, IOException {
+    public void run(Trace trace, boolean detail, boolean saveTrace, int nbrTrace, boolean overhead) throws IncorrectTraceException, PreconditionException, IOException {
         this.detail = detail;
         this.nbrTrace = nbrTrace;
-        overhead = o;
+        this.overhead = overhead;
         long tmp;
         final Map<Integer, VectorClock> clocks = new HashMap<Integer, VectorClock>();
         final VectorClock globalClock = new VectorClock();

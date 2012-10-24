@@ -18,12 +18,7 @@
  */
 package jbenchmarker.treedoc;
 
-import crdt.CRDT;
 import crdt.PreconditionException;
-import java.util.LinkedList;
-import java.util.List;
-import jbenchmarker.core.LocalOperation;
-import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.factories.TreedocFactory;
 import static org.junit.Assert.*;
@@ -32,9 +27,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Smoke tests for tree-based Treedoc implementation.
+ * Basic tests for tree-based Treedoc implementation.
  *
- * @author mzawirski
+ * @author urso
  */
 public class TreedocMergeTest {
 
@@ -57,7 +52,17 @@ public class TreedocMergeTest {
         int pos = 3, off = 4;       
         replica.applyLocal(SequenceOperation.insert(0, content));
         assertEquals(content, replica.lookup());
-        replica.localDelete(SequenceOperation.delete(pos, off));
+        replica.applyLocal(SequenceOperation.delete(pos, off));
         assertEquals(content.substring(0, pos) + content.substring(pos+off), replica.lookup());        
+    }
+    
+    @Test
+    public void testUpdate() throws PreconditionException {
+        String content = "abcdefghijk", upd = "xy";
+        int pos = 3, off = 5;       
+        replica.applyLocal(SequenceOperation.insert(0, content));
+        assertEquals(content, replica.lookup());
+        replica.applyLocal(SequenceOperation.update(pos, off, upd));
+        assertEquals(content.substring(0, pos) + upd + content.substring(pos+off), replica.lookup());        
     }
 }

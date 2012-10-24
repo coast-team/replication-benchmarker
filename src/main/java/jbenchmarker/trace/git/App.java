@@ -23,26 +23,11 @@ import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.IncorrectTraceException;
-import crdt.simulator.Trace;
-import crdt.simulator.TraceFromFile;
-import java.io.BufferedWriter;
 import java.io.*;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import jbenchmarker.factories.LogootFactory;
-import jbenchmarker.factories.RGAFactory;
-import jbenchmarker.factories.TreedocFactory;
-import jbenchmarker.factories.WootFactories;
-import jbenchmarker.factories.WootFactories.WootHFactory;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.ektorp.DbAccessException;
 
 /**
  * Hello world!
@@ -83,7 +68,9 @@ public class App {
         System.out.println("*** Total number of files : " + paths.size());
         //System.out.println("Path;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
         String file = getNameFile(args);
-        writeTofile(file, "Path;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size; Nbr Op; Local time; Remote Time; Memory");
+        if (save) {
+            writeTofile(file, "Path;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size; Nbr Op; Local time; Remote Time; Memory");
+        }
         
         int nbrExec = Integer.parseInt(args[args.length - 2]);
         Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[args.length - 1]).newInstance();
@@ -94,85 +81,76 @@ public class App {
         int i = 0;
         CouchConnector cc = new CouchConnector(dbURL);
         for (String path : paths.subList(i, end)) {
-            for (int retry = 0; retry < 10; ++retry) { // Overcome sporadic CouchDB Timeouts
-                try {
-                    long ltime[][] = null, mem[][] = null, rtime[][] = null;
-                    int cop = 0, uop = 0, nbReplica = 0, mop = 0;
-                    int minCop = 0, minUop = 0, minMop = 0;
-                    String stat = "";
-                    GitTrace trace = GitTrace.create(gitdir, cc, path, clean);
-                    for (int k = 0; k < nbrExec; k++) {
-                        CausalSimulator cd = new CausalSimulator(rf);
-                        cd.run(trace, calculTimeEx, true, 100, true);
-                        if (k == 0) {
-                            cop = cd.splittedGenTime().size();
-                            uop = cd.replicaGenerationTimes().size();
-                            mop = cd.getMemUsed().size();
-                            nbReplica = cd.replicas.keySet().size();
-                            ltime = new long[nb][uop];
-                            rtime = new long[nb][cop];
-                            mem = new long[nb][mop];
-                            minCop = cop;
-                            minUop = uop;
-                            minMop = mop;
-                            
-                            stat = path + ';' + ++i + ';' + cd.replicas.keySet().size()
-                                + ';' + trace.nbMerge + ';' + trace.nbBlockMerge + 
-                                ';' + trace.mergeSize
-                                + ';' + trace.nbCommit + ';'
-                                + trace.nbInsBlock + ';' + trace.nbDelBlock
-                                + ';' + trace.nbUpdBlock + ';'
-                                + trace.insertSize + ';' + trace.deleteSize;
-                        }
-                        if (nbReplica == 0) {
-                            break;
-                        }
+            long ltime[][] = null, mem[][] = null, rtime[][] = null;
+            int cop = 0, uop = 0, nbReplica = 0, mop = 0;
+            int minCop = 0, minUop = 0, minMop = 0;
+            String stat = "";
+            GitTrace trace = GitTrace.create(gitdir, cc, path, clean);
+            for (int k = 0; k < nbrExec; k++) {
+                CausalSimulator cd = new CausalSimulator(rf);
+                cd.run(trace, calculTimeEx, save, 100, save);
+                if (k == 0) {
+                    cop = cd.splittedGenTime().size();
+                    uop = cd.replicaGenerationTimes().size();
+                    mop = cd.getMemUsed().size();
+                    nbReplica = cd.replicas.keySet().size();
+                    ltime = new long[nb][uop];
+                    rtime = new long[nb][cop];
+                    mem = new long[nb][mop];
+                    minCop = cop;
+                    minUop = uop;
+                    minMop = mop;
 
-                        if (minCop > cd.splittedGenTime().size()) {
-                            minCop = cd.splittedGenTime().size();
-                        }
-                        if (minUop > cd.replicaGenerationTimes().size()) {
-                            minUop = cd.replicaGenerationTimes().size();
-                        }
-
-                        if (calculTimeEx) {
-                            toArrayLong(ltime[k], cd.replicaGenerationTimes(), minUop);
-                            toArrayLong(rtime[k], cd.splittedGenTime(), minCop);
-                        }
-                        if (k == 0) {
-                            toArrayLong(mem[k], cd.getMemUsed(), minMop);
-                        }
-
-                        for (int j = 0; j < minCop - 1; j++) {
-                            if(nbReplica > 1)
-                            rtime[k][j] /= nbReplica - 1;
-                        }
-
-                        cd = null;
-                        //trace = null;
-                    }
-                    System.out.println(path + "; i : " + i);
-
-                    double thresold = 2.0;
-
-                    if (nbrExec > 1) {
-                        computeAverage(ltime, thresold, minUop);
-                        computeAverage(rtime, thresold, minCop);
-                    }
-
-                    long avgGen = calculAvg(ltime, minUop, "gen");
-                    long avgUsr = calculAvg(rtime, minCop, "usr");
-                    long avgMem = calculAvg(mem, minMop, "mem");
-                    stat = stat+ ';' +minCop + ';' + avgGen/1000 + ';' + avgUsr/1000 + ';' +avgMem;
-                    writeTofile(file, stat);
-                  
+                    stat = path + ';' + ++i + ';' + cd.replicas.keySet().size()
+                            + ';' + trace.nbMerge + ';' + trace.nbBlockMerge
+                            + ';' + trace.mergeSize
+                            + ';' + trace.nbCommit + ';'
+                            + trace.nbInsBlock + ';' + trace.nbDelBlock
+                            + ';' + trace.nbUpdBlock + ';'
+                            + trace.insertSize + ';' + trace.deleteSize;
+                }
+                if (nbReplica == 0 || !save) {
                     break;
+                }
 
-                } catch (DbAccessException e) {
-                    if (retry == 9) {
-                        throw e;
+                if (minCop > cd.splittedGenTime().size()) {
+                    minCop = cd.splittedGenTime().size();
+                }
+                if (minUop > cd.replicaGenerationTimes().size()) {
+                    minUop = cd.replicaGenerationTimes().size();
+                }
+
+                if (calculTimeEx) {
+                    toArrayLong(ltime[k], cd.replicaGenerationTimes(), minUop);
+                    toArrayLong(rtime[k], cd.splittedGenTime(), minCop);
+                }
+                if (k == 0) {
+                    toArrayLong(mem[k], cd.getMemUsed(), minMop);
+                }
+
+                for (int j = 0; j < minCop - 1; j++) {
+                    if (nbReplica > 1) {
+                        rtime[k][j] /= nbReplica - 1;
                     }
                 }
+
+                cd = null;
+                //trace = null;
+            }
+            System.out.println(stat);
+
+            double thresold = 2.0;
+            if (save) {
+                if (nbrExec > 1) {
+                    computeAverage(ltime, thresold, minUop);
+                    computeAverage(rtime, thresold, minCop);
+                }
+
+                long avgGen = calculAvg(ltime, minUop, "gen");
+                long avgUsr = calculAvg(rtime, minCop, "usr");
+                long avgMem = calculAvg(mem, minMop, "mem");
+                stat = stat + ';' + minCop + ';' + avgGen / 1000 + ';' + avgUsr / 1000 + ';' + avgMem;
+                writeTofile(file, stat);
             }
         }
     }

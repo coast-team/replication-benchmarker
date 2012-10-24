@@ -18,13 +18,46 @@
  */
 package jbenchmarker.rga;
 
+import crdt.PreconditionException;
+import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.factories.RGAFactory;
+import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class RGAMergeTest {
 
-	@Test
-	public void test_generateLocal(){
-		
-	}
+    private static final int REPLICA_ID = 7;
+    private RGAMerge replica;
+
+    @Before
+    public void setUp() throws Exception {
+        replica = (RGAMerge) new RGAFactory().create(REPLICA_ID);
+    }
+    
+    @Test
+    public void testEmptyTree() {
+        assertEquals("", replica.lookup());
+    }
+
+    @Test
+    public void testDelete() throws PreconditionException {
+        String content = "abcdefghijk";
+        int pos = 3, off = 4;       
+        replica.applyLocal(SequenceOperation.insert(0, content));
+        assertEquals(content, replica.lookup());
+        replica.applyLocal(SequenceOperation.delete(pos, off));
+        assertEquals(content.substring(0, pos) + content.substring(pos+off), replica.lookup());        
+    }
+    
+    @Test
+    public void testUpdate() throws PreconditionException {
+        String content = "abcdefghijk", upd = "xy";
+        int pos = 3, off = 5;       
+        replica.applyLocal(SequenceOperation.insert(0, content));
+        assertEquals(content, replica.lookup());
+        replica.applyLocal(SequenceOperation.update(pos, off, upd));
+        assertEquals(content.substring(0, pos) + upd + content.substring(pos+off), replica.lookup());        
+    }
 
 }
