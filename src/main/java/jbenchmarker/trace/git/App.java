@@ -46,6 +46,7 @@ public class App {
             System.err.println("- file [optional] path or number (default : all files)");
             System.err.println("- --save [optional] save trace");
             System.err.println("- --clean [optional] clean DB");
+            System.err.println("- --stat [optional] compute execution time and memory");
             System.err.println("- Number of execution");
             System.err.println("- Factory");
             System.exit(1);
@@ -63,20 +64,26 @@ public class App {
 //            end = Integer.parseInt(args[1]);
 //        }
 
-        boolean save = Arrays.asList(args).contains("--save");
         boolean clean = Arrays.asList(args).contains("--clean");
+        boolean save = Arrays.asList(args).contains("--save");
+        boolean stat = Arrays.asList(args).contains("--stat");
+        
         System.out.println("*** Total number of files : " + paths.size());
         //System.out.println("Path;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
         String file = getNameFile(args);
-        if (save) {
+        if (stat) {
             writeTofile(file, "Path;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size; Nbr Op; Local time; Remote Time; Memory");
+        } else {
+            for (String s : args) {
+                System.out.print(s + " ");
+            }
+            System.out.println("\nPath;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
         }
         
         int nbrExec = Integer.parseInt(args[args.length - 2]);
         Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[args.length - 1]).newInstance();
 
         int nb = (nbrExec > 1) ? nbrExec + 1 : nbrExec;
-        boolean calculTimeEx = true;
         
         int i = 0;
         CouchConnector cc = new CouchConnector(dbURL);
@@ -84,24 +91,26 @@ public class App {
             long ltime[][] = null, mem[][] = null, rtime[][] = null;
             int cop = 0, uop = 0, nbReplica = 0, mop = 0;
             int minCop = 0, minUop = 0, minMop = 0;
-            String stat = "";
+            String statr = "";
             GitTrace trace = GitTrace.create(gitdir, cc, path, clean);
             for (int k = 0; k < nbrExec; k++) {
                 CausalSimulator cd = new CausalSimulator(rf);
-                cd.run(trace, calculTimeEx, save, 100, save);
+                cd.run(trace, stat, save, stat ? 100 : 0, stat);
                 if (k == 0) {
-                    cop = cd.splittedGenTime().size();
-                    uop = cd.replicaGenerationTimes().size();
-                    mop = cd.getMemUsed().size();
-                    nbReplica = cd.replicas.keySet().size();
-                    ltime = new long[nb][uop];
-                    rtime = new long[nb][cop];
-                    mem = new long[nb][mop];
-                    minCop = cop;
-                    minUop = uop;
-                    minMop = mop;
+                    if (stat) {
+                        cop = cd.splittedGenTime().size();
+                        uop = cd.replicaGenerationTimes().size();
+                        mop = cd.getMemUsed().size();
+                        nbReplica = cd.replicas.keySet().size();
+                        ltime = new long[nb][uop];
+                        rtime = new long[nb][cop];
+                        mem = new long[nb][mop];
+                        minCop = cop;
+                        minUop = uop;
+                        minMop = mop;
+                    }
 
-                    stat = path + ';' + ++i + ';' + cd.replicas.keySet().size()
+                    statr = path + ';' + ++i + ';' + cd.replicas.keySet().size()
                             + ';' + trace.nbMerge + ';' + trace.nbBlockMerge
                             + ';' + trace.mergeSize
                             + ';' + trace.nbCommit + ';'
@@ -109,18 +118,17 @@ public class App {
                             + ';' + trace.nbUpdBlock + ';'
                             + trace.insertSize + ';' + trace.deleteSize;
                 }
-                if (nbReplica == 0 || !save) {
+                if (nbReplica == 0 || !stat) {
                     break;
                 }
 
-                if (minCop > cd.splittedGenTime().size()) {
-                    minCop = cd.splittedGenTime().size();
-                }
-                if (minUop > cd.replicaGenerationTimes().size()) {
-                    minUop = cd.replicaGenerationTimes().size();
-                }
-
-                if (calculTimeEx) {
+                if (stat) {
+                    if (minCop > cd.splittedGenTime().size()) {
+                        minCop = cd.splittedGenTime().size();
+                    }
+                    if (minUop > cd.replicaGenerationTimes().size()) {
+                        minUop = cd.replicaGenerationTimes().size();
+                    }
                     toArrayLong(ltime[k], cd.replicaGenerationTimes(), minUop);
                     toArrayLong(rtime[k], cd.splittedGenTime(), minCop);
                 }
@@ -133,14 +141,11 @@ public class App {
                         rtime[k][j] /= nbReplica - 1;
                     }
                 }
-
-                cd = null;
-                //trace = null;
             }
-            System.out.println(stat);
+            System.out.println(statr);
 
-            double thresold = 2.0;
-            if (save) {
+            if (stat) {
+                double thresold = 2.0;
                 if (nbrExec > 1) {
                     computeAverage(ltime, thresold, minUop);
                     computeAverage(rtime, thresold, minCop);
@@ -149,8 +154,8 @@ public class App {
                 long avgGen = calculAvg(ltime, minUop, "gen");
                 long avgUsr = calculAvg(rtime, minCop, "usr");
                 long avgMem = calculAvg(mem, minMop, "mem");
-                stat = stat + ';' + minCop + ';' + avgGen / 1000 + ';' + avgUsr / 1000 + ';' + avgMem;
-                writeTofile(file, stat);
+                statr = statr + ';' + minCop + ';' + avgGen / 1000 + ';' + avgUsr / 1000 + ';' + avgMem;
+                writeTofile(file, statr);
             }
         }
     }

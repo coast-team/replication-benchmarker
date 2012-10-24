@@ -36,6 +36,7 @@ import jbenchmarker.trace.git.model.Edition;
 import jbenchmarker.trace.git.model.FileEdition;
 import jbenchmarker.trace.git.model.Patch;
 import org.eclipse.jgit.diff.DiffAlgorithm;
+import org.eclipse.jgit.diff.Edit.Type;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.diff.RawTextComparator;
@@ -45,11 +46,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.DbPath;
-import org.ektorp.http.HttpClient;
-import org.ektorp.http.StdHttpClient;
 import org.ektorp.impl.StdCouchDbConnector;
-import org.ektorp.impl.StdCouchDbInstance;
-import org.eclipse.jgit.diff.Edit.Type;
 
 /**
  *
