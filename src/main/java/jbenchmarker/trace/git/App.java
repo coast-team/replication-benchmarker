@@ -45,6 +45,8 @@ import org.ektorp.DbAccessException;
  */
 public class App {
 
+    private final static String dbURL = "http://localhost:5984";
+        
     public static void main(String[] args) throws IOException, GitAPIException, IncorrectTraceException, PreconditionException {
         //        GitExtraction.parseRepository(("/Users/urso/Rech/github/linux", "http://localhost:5984", "kernel/sched.c", true);
         if (args.length < 1 ) {
@@ -73,10 +75,11 @@ public class App {
         System.out.println("*** Total number of files : " + paths.size());
         System.out.println("Path;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
         int i = 0;
+        CouchConnector cc = new CouchConnector(dbURL);
         for (String path : paths.subList(i, end)) {
             for (int retry = 0; retry < 10; ++ retry) { // Overcome sporadic CouchDB Timeouts
                 try {
-                    GitTrace trace = GitTrace.create(gitdir, "http://localhost:5984", path, clean);
+                    GitTrace trace = GitTrace.create(gitdir, cc, path, clean);
                     CausalSimulator cd = new CausalSimulator(new LogootFactory());        
                     cd.run(trace, false, save, 0, false);
                     System.out.println(path + ';' + ++i + ';' + cd.replicas.keySet().size() + ';' 

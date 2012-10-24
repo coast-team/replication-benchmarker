@@ -70,8 +70,8 @@ public class GitTrace implements Trace{
     private CommitCRUD commitCRUD;
     private PatchCRUD patchCRUD;
     private List<Commit> initCommit;
-    private final DiffAlgorithm diffAlgorithm;
-
+    private static final DiffAlgorithm diffAlgorithm = GitExtraction.defaultDiffAlgorithm;;    
+    
     /**
      * Creates a git extractor using a git directory a couch db URL and a file
      * path
@@ -83,13 +83,12 @@ public class GitTrace implements Trace{
      * @return a new git extractor
      * @throws IOException if git directory not accessible
      */
-    public static GitTrace create(String gitdir, String couchURL, String path, boolean cleanDB) throws IOException {
+    public static GitTrace create(String gitdir, CouchConnector cc, String path, boolean cleanDB) throws IOException {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         Repository repo = builder.setGitDir(new File(gitdir + "/.git")).readEnvironment()
                 .findGitDir().build();
-
-        HttpClient httpClient = new StdHttpClient.Builder().url(couchURL).build();
-        CouchDbInstance dbInstance = new StdCouchDbInstance(httpClient);
+        CouchDbInstance dbInstance = cc.getDbInstance();
+        
         String prefix = clearName(gitdir, path),
                 co = prefix + "_commit", pa = prefix + "_patch";
         CouchDbConnector dbcc = new StdCouchDbConnector(co, dbInstance);
@@ -123,7 +122,6 @@ public class GitTrace implements Trace{
                 it.remove();
             }
         }
-        diffAlgorithm = GitExtraction.defaultDiffAlgorithm;
     }
 
     public GitTrace(CouchDbConnector db) {
