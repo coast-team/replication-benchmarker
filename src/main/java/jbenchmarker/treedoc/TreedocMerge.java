@@ -64,7 +64,7 @@ public class TreedocMerge extends MergeAlgorithm {
 		for (int i = opt.getPosition(); i < opt.getPosition()
 					+ opt.getLenghOfADel(); i++) {
 			final TreedocIdentifier deletedId = doc
-						.deleteAt(restrictedIndex(i, false));
+						.deleteAt(restrictedIndex(opt.getPosition(), false));
 			ops.add(new TreedocOperation(opt, deletedId));
 		}
                 return ops;
