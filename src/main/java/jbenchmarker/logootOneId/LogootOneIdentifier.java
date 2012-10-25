@@ -26,28 +26,17 @@ import java.util.*;
 public class LogootOneIdentifier implements Comparable<LogootOneIdentifier>, Serializable {
 
     final private BigDecimal digit;
-    final private int peerID;
-    final private int clock;
+
     
-    public LogootOneIdentifier(BigDecimal d, int pid, int c) {
+    public LogootOneIdentifier(BigDecimal d) {
         this.digit = d;
-        this.peerID = pid;
-        this.clock = c;
+
     }
 
     public BigDecimal getDigit() {
         return digit;
     }
 
-    public int getPeerID() {
-        if(peerID == -1)
-            return 1;
-        return peerID;
-    }
-
-    public int getClock() {
-        return clock;
-    }
     
     @Override
     public boolean equals(Object obj) {
@@ -61,102 +50,23 @@ public class LogootOneIdentifier implements Comparable<LogootOneIdentifier>, Ser
         if (!this.digit.equals(other.digit) ) {
             return false;
         }
-        if (this.peerID != other.peerID) {
-            return false;
-        }
-        if (this.clock != other.clock) {
-            return false;
-        }
+
         return true;
     }
 
     @Override
-    public int hashCode() {
-        int hash = 7;
-        //hash = 97 * hash + (int) (this.digit.pow(this.digit >>> 32));
-        hash = 97 * hash + this.peerID;
-        hash = 97 * hash + this.clock;
-        return hash;
-    }
-
-    @Override
     public String toString() {
-        return "<" + digit + ',' + peerID + ',' + clock + '>';
+        return "<" + digit + '>';
     }
     
     @Override
     public int compareTo(LogootOneIdentifier t) {
-        int precision = Math.max(this.digit.precision(), t.digit.precision());
-        BigDecimal p = this.digit.setScale(precision, RoundingMode.DOWN),
-                q = t.digit.setScale(precision, RoundingMode.DOWN);
-        if (p.unscaledValue().equals(q.unscaledValue())) {
-            return (this.peerID == t.peerID) ? this.clock - t.clock : this.peerID - t.peerID;
-        } else {
-            if(this.digit.equals(BigDecimal.valueOf(0))) //first id in table
-                return -1;
-             if(this.digit.equals(BigDecimal.valueOf(1))) //last id in table
-                return 1;
-            else {
-                p = new BigDecimal(this.digit + "" + this.getPeerID());
-                if(t.digit.equals(BigDecimal.ZERO))
-                    q = new BigDecimal("0." + t.getPeerID());
-                else
-                    q = new BigDecimal(t.digit + "" + t.getPeerID());
-                precision = Math.max(p.precision(), q.precision());
-                p = p.setScale(precision, RoundingMode.DOWN);
-                q = q.setScale(precision, RoundingMode.DOWN);
-                return p.unscaledValue().compareTo(q.unscaledValue());
-            }
-        }
-
-    }
-    
-
-//    @Override
-//    public int compareTo(LogootOneIdentifier t) {
-//        int precision = Math.max(this.digit.precision(), t.digit.precision());        
-//        BigDecimal p = this.digit.setScale(precision, RoundingMode.DOWN),
-//                q = t.digit.setScale(precision, RoundingMode.DOWN);
-//
-//        if (p.unscaledValue().equals(q.unscaledValue()) ) {
-//            return (this.peerID == t.peerID) ? this.clock - t.clock : this.peerID - t.peerID;
-//        } else {
-//            return p.unscaledValue().compareTo(q.unscaledValue());
-//        }
-//    }
-    
-    public int getIndexReplica(LogootOneIdentifier Q) {
-        double p, q;
-
-        if (this.peerID == 0) {
-            p = 0;
-        } else {
-            p = Math.log10((double) this.peerID);
-        }
-        if (Q.peerID == 0) {
-            q = 0;
-        } else {
-            q = Math.log10((double) Q.peerID);
-        }
-        return (int) Math.max(p, q) + 1;
-    }
-
-    
-    public BigDecimal degitWithReplica(int scale) {
-        int p = this.peerID;
-        if(this.peerID < 0) p= this.peerID*(-1);
-        return new BigDecimal(String.format("%s%0" + scale + "d", this.digit, p));
-//        BigDecimal b = new BigDecimal(this.digit + "" + this.peerID);
-//        if (scale == 1) {
-//            return b;
-//        } else {
-//            return new BigDecimal(String.format("%s%0" + scale + "d", b, 0));
-//        }
+        return this.digit.compareTo(t.digit);
     }
 
     @Override
     public LogootOneIdentifier clone() {
-        return new LogootOneIdentifier(digit, peerID, clock);
+        return new LogootOneIdentifier(digit);
     }
 
 }

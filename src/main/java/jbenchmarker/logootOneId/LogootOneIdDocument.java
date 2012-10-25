@@ -49,8 +49,8 @@ public class LogootOneIdDocument<T> implements Document, Factory<LogootOneIdDocu
         this.replicaNumber = r;
         myClock = 0;
         
-        LogootOneIdentifier Begin = new LogootOneIdentifier(BigDecimal.valueOf(0), -1, -1);
-        LogootOneIdentifier End = new LogootOneIdentifier(BigDecimal.valueOf(1), -1, -1);
+        LogootOneIdentifier Begin = new LogootOneIdentifier(BigDecimal.valueOf(0));
+        LogootOneIdentifier End = new LogootOneIdentifier(BigDecimal.valueOf(1));
 
         idTable.add(Begin);
         document.add(null);

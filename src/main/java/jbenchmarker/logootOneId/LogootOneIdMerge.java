@@ -34,8 +34,6 @@ import java.util.*;
  */
 public class LogootOneIdMerge<T> extends MergeAlgorithm {
 
-
-    // nbBit <= 64
     public LogootOneIdMerge(Document doc, int r) {
         super(doc, r);
     }
@@ -64,12 +62,13 @@ public class LogootOneIdMerge<T> extends MergeAlgorithm {
 
     @Override
     protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+        
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
         int N = opt.getContent().size(), position = opt.getPosition();
 
         List<T> content = opt.getContent();
         ArrayList<LogootOneIdentifier> patch = getDoc().generateIdentifiers(position, N);
-                
+              
         ArrayList<T> lc = new ArrayList<T>(patch.size());
         for (int cmpt = 0; cmpt < patch.size(); cmpt++) {
             T c = content.get(cmpt);
@@ -77,7 +76,9 @@ public class LogootOneIdMerge<T> extends MergeAlgorithm {
             lop.add(log);
             lc.add(c);
         }
+        
         getDoc().insert(position, patch, lc);
+        
         return lop;
     }
 

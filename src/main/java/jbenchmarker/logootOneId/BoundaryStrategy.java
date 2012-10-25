@@ -43,15 +43,14 @@ public class BoundaryStrategy extends LogootOneIdStrategy {
      */
     @Override
     ArrayList<LogootOneIdentifier> generateLineIdentifiers(LogootOneIdDocument replica, LogootOneIdentifier P, LogootOneIdentifier Q, int n) {
-        int indexReplic = P.getIndexReplica(Q);//retreive size of replica
+        int scale=1;
         //concat with replica
-        BigDecimal degitP = P.degitWithReplica(indexReplic);
-        if(degitP.compareTo(BigDecimal.valueOf(1))==0) degitP = BigDecimal.valueOf(0); // if first element
-        BigDecimal degitQ = Q.degitWithReplica(indexReplic);
+        
+        BigDecimal degitP = P.getDigit().setScale(scale, RoundingMode.DOWN);
+        BigDecimal degitQ = Q.getDigit().setScale(scale, RoundingMode.DOWN);
+        
         BigDecimal sub = degitQ.subtract(degitP);
-        
-        int maxLength = Math.max(degitP.scale(), degitQ.scale())+1;
-        
+                
         BigInteger d = sub.unscaledValue().subtract(BigInteger.valueOf(1));
         BigInteger interval;
         BigInteger N = BigInteger.valueOf(n);
@@ -60,22 +59,22 @@ public class BoundaryStrategy extends LogootOneIdStrategy {
         } else {
             BigInteger diff = d.equals(BigInteger.valueOf(-1)) ? BigInteger.ZERO : d;
             while (diff.compareTo(N) < 0) {
-                maxLength++;
-                degitP = degitP.setScale(maxLength , RoundingMode.DOWN);
-                degitQ = degitQ.setScale(maxLength , RoundingMode.DOWN);
+                scale++;
+                degitP = P.getDigit().setScale(scale, RoundingMode.DOWN);
+                degitQ = Q.getDigit().setScale(scale, RoundingMode.DOWN);
                 sub = degitQ.subtract(degitP);
                 diff = sub.unscaledValue().subtract(BigInteger.valueOf(1));
             }
             
             interval = diff.divide(N).min(boundBI);
         }
-
+        
         ArrayList<LogootOneIdentifier> patch = new ArrayList<LogootOneIdentifier>();
         BigDecimal forRandom = BigDecimal.valueOf(0);
-        BigDecimal intervalDec = new BigDecimal(interval).scaleByPowerOfTen(-maxLength);
-        degitP = degitP.setScale(maxLength);
+        BigDecimal intervalDec = new BigDecimal(interval).scaleByPowerOfTen(-scale);
+        degitP = P.getDigit().setScale(scale, RoundingMode.DOWN);
         for (int i = 0; i < n; i++) {
-            forRandom = nextBigDec(degitP, intervalDec, maxLength);
+            forRandom = nextBigDec(degitP, intervalDec, scale);
             P = constructIdentifier(forRandom, replica.getReplicaNumber(), replica.getClock());
             replica.incClock();
             patch.add(P);
