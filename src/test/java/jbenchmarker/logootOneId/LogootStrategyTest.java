@@ -34,8 +34,8 @@ public class LogootStrategyTest {
 
     @Test
     public void TestConstructSame() {
-        LogootOneIdentifier P = new LogootOneIdentifier(BigDecimal.valueOf(0.8), 4, 110);
-        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.9), 4, 110);
+        LogootOneIdentifier P = new LogootOneIdentifier(BigDecimal.valueOf(0.8));
+        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.9));
 
         LogootOneIdentifier R = constructIdentifier(BigDecimal.valueOf(0.84), 2, 50);
         assertTrue(P.compareTo(R) < 0);

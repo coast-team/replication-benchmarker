@@ -30,33 +30,12 @@ public class LogootIdentifierTest {
     @Test
     public void testDegit() {
         System.out.println("Test LogootIdentifier");
-        LogootOneIdentifier P = new LogootOneIdentifier(new BigDecimal("0.1"), 4, 50);
-        LogootOneIdentifier Q = new LogootOneIdentifier(new BigDecimal("0.110"), 2, 100);
-        
-        assertTrue(P.compareTo(Q)>0);
-        assertTrue(Q.compareTo(P)<0);
-        assertFalse(Q.equals(P));
-        assertFalse(P.equals(Q));
-    }
-    
-    @Test
-    public void testClock() {
-        LogootOneIdentifier P = new LogootOneIdentifier(BigDecimal.valueOf(0.111), 4, 60);
-        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.111), 4, 110);
+        LogootOneIdentifier P = new LogootOneIdentifier(new BigDecimal("0.1"));
+        LogootOneIdentifier Q = new LogootOneIdentifier(new BigDecimal("0.11"));
         
         assertTrue(P.compareTo(Q)<0);
         assertTrue(Q.compareTo(P)>0);
         assertFalse(Q.equals(P));
         assertFalse(P.equals(Q));
     }
-    
-    @Test
-    public void testReplica() {
-        LogootOneIdentifier P = new LogootOneIdentifier(BigDecimal.valueOf(0.111), 4, 60);
-        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.111), 5, 60);
-        assertTrue(P.compareTo(Q)<0);
-        assertTrue(Q.compareTo(P)>0);
-        assertFalse(Q.equals(P));
-        assertFalse(P.equals(Q));
-    }    
 }

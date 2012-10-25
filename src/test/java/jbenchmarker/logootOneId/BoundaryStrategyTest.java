@@ -41,8 +41,8 @@ public class BoundaryStrategyTest {
         LogootOneIdDocument LM = new LogootOneIdDocument(1, new BoundaryStrategy(100));
         BoundaryStrategy BS = new BoundaryStrategy(10);
 
-        LogootOneIdentifier P = new LogootOneIdentifier(BigDecimal.valueOf(0.1), 4, 60);
-        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.2), 4, 110);
+        LogootOneIdentifier P = new LogootOneIdentifier(BigDecimal.valueOf(0.1));
+        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.2));
 
         ArrayList<LogootOneIdentifier> patch = BS.generateLineIdentifiers(LM, P, Q, 100);
 
@@ -61,12 +61,11 @@ public class BoundaryStrategyTest {
         LogootOneIdDocument LM = new LogootOneIdDocument(1, new BoundaryStrategy(100));
         BoundaryStrategy BS = new BoundaryStrategy(50);
 
-        LogootOneIdentifier P = new LogootOneIdentifier(BigDecimal.valueOf(0.21), 4, 60);
-        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.2), 4, 70);
+        LogootOneIdentifier P = new LogootOneIdentifier(BigDecimal.valueOf(0.21));
+        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.22));
 
         ArrayList<LogootOneIdentifier> patch = BS.generateLineIdentifiers(LM, P, Q, 200);
         assertEquals(200, patch.size());
-
         for (int i = 1; i < patch.size(); i++) {
             assertTrue(patch.get(i).compareTo(P) > 0);
             assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
@@ -80,8 +79,8 @@ public class BoundaryStrategyTest {
         LogootOneIdDocument LM = new LogootOneIdDocument(1, new BoundaryStrategy(100));
         BoundaryStrategy BS = new BoundaryStrategy(50);
 
-        LogootOneIdentifier P = new LogootOneIdentifier(BigDecimal.valueOf(0.20012), 4, 60);
-        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.20013), 4, 70);
+        LogootOneIdentifier P = new LogootOneIdentifier(BigDecimal.valueOf(0.20012));
+        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.20013));
 
 
         ArrayList<LogootOneIdentifier> patch = BS.generateLineIdentifiers(LM, P, Q, 200);
@@ -100,8 +99,8 @@ public class BoundaryStrategyTest {
         LogootOneIdDocument LM = new LogootOneIdDocument(1, new BoundaryStrategy(100));
         BoundaryStrategy BS = new BoundaryStrategy(50);
 
-        LogootOneIdentifier P = new LogootOneIdentifier(BigDecimal.valueOf(0.2), 2, 60);
-        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.2), 4, 70);
+        LogootOneIdentifier P = new LogootOneIdentifier(BigDecimal.valueOf(0.21));
+        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.22));
 
 
         ArrayList<LogootOneIdentifier> patch = BS.generateLineIdentifiers(LM, P, Q, 200);
@@ -114,6 +113,49 @@ public class BoundaryStrategyTest {
             assertTrue(patch.get(i).compareTo(Q) < 0);
         }
     }
+    
+    //@Ignore
+    @Test
+    public void testgenerateLineIdentifiersCas5() {
+        LogootOneIdDocument LM = new LogootOneIdDocument(1, new BoundaryStrategy(100));
+        BoundaryStrategy BS = new BoundaryStrategy(50);
+
+        LogootOneIdentifier P = new LogootOneIdentifier(BigDecimal.valueOf(0.12));
+        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.14));
+
+
+        ArrayList<LogootOneIdentifier> patch = BS.generateLineIdentifiers(LM, P, Q, 200);
+
+        assertEquals(200, patch.size());
+
+        for (int i = 1; i < patch.size(); i++) {
+            assertTrue(patch.get(i).compareTo(P) > 0);
+            assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
+            assertTrue(patch.get(i).compareTo(Q) < 0);
+        }
+    }
+    
+    //@Ignore
+     @Test
+    public void testgenerateLineIdentifiersCas7() {
+        LogootOneIdDocument LM = new LogootOneIdDocument(1, new BoundaryStrategy(100));
+        BoundaryStrategy BS = new BoundaryStrategy(50);
+
+        LogootOneIdentifier P = new LogootOneIdentifier(BigDecimal.valueOf(0.12));
+        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.16));
+
+
+        ArrayList<LogootOneIdentifier> patch = BS.generateLineIdentifiers(LM, P, Q, 3);
+
+        assertEquals(3, patch.size());
+        for (int i = 1; i < patch.size(); i++) {
+            assertTrue(patch.get(i).compareTo(P) > 0);
+            assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
+            assertTrue(patch.get(i).compareTo(Q) < 0);
+        }
+    }
+    
+    
 //    
 //    //@Ignore
 //    @Test

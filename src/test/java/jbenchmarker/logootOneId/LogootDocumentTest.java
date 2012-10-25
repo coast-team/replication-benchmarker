@@ -45,11 +45,11 @@ public class LogootDocumentTest {
     public void testapply() {
         LogootOneIdDocument LM = new LogootOneIdDocument(1, new BoundaryStrategy(100));
 
-        LogootOneIdentifier P = new LogootOneIdentifier(new BigDecimal("0.20"), 4, 50);
-        LogootOneIdentifier A = new LogootOneIdentifier(BigDecimal.valueOf(0.19), 2, 100);
-        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.21), 1, 50);
-        LogootOneIdentifier B = new LogootOneIdentifier(BigDecimal.valueOf(0.23), 4, 50);
-        LogootOneIdentifier C = new LogootOneIdentifier(BigDecimal.valueOf(0.24), 4, 50);
+        LogootOneIdentifier P = new LogootOneIdentifier(new BigDecimal("0.20"));
+        LogootOneIdentifier A = new LogootOneIdentifier(BigDecimal.valueOf(0.19));
+        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.21));
+        LogootOneIdentifier B = new LogootOneIdentifier(BigDecimal.valueOf(0.23));
+        LogootOneIdentifier C = new LogootOneIdentifier(BigDecimal.valueOf(0.24));
 
         LM.apply(ins(P, 'e'));
         LM.apply(ins(Q, 'c'));
@@ -72,12 +72,12 @@ public class LogootDocumentTest {
     public void dicto() {
         LogootOneIdDocument LM = new LogootOneIdDocument(1, new BoundaryStrategy(100));
 
-        LogootOneIdentifier P = new LogootOneIdentifier(new BigDecimal("0.20"), 4, 50);
-        LogootOneIdentifier A = new LogootOneIdentifier(BigDecimal.valueOf(0.22), 2, 100);
-        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.21), 4, 50);
-        LogootOneIdentifier B = new LogootOneIdentifier(BigDecimal.valueOf(0.23), 4, 50);
-        LogootOneIdentifier C = new LogootOneIdentifier(BigDecimal.valueOf(0.24), 4, 50);
-        LogootOneIdentifier D = new LogootOneIdentifier(BigDecimal.valueOf(0.22), 2, 100);
+        LogootOneIdentifier P = new LogootOneIdentifier(new BigDecimal("0.20"));
+        LogootOneIdentifier A = new LogootOneIdentifier(BigDecimal.valueOf(0.22));
+        LogootOneIdentifier Q = new LogootOneIdentifier(BigDecimal.valueOf(0.21));
+        LogootOneIdentifier B = new LogootOneIdentifier(BigDecimal.valueOf(0.23));
+        LogootOneIdentifier C = new LogootOneIdentifier(BigDecimal.valueOf(0.24));
+        LogootOneIdentifier D = new LogootOneIdentifier(BigDecimal.valueOf(0.22));
 
 
         LM.apply(ins(P, 'e'));
