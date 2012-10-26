@@ -20,21 +20,29 @@ package jbenchmarker.logoot;
 
 import org.junit.Ignore;
 import java.util.ArrayList;
+import jbenchmarker.factories.LogootFactory;
+import jbenchmarker.factories.TreedocFactory;
+import jbenchmarker.treedoc.TreedocMerge;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
 
 /**
  *
  * @author mehdi
  */
 public class BoundaryStrategyTest {
+    LogootDocument LD;
     
+    @Before
+    public void setUp() throws Exception {
+        LD = LogootFactory.createDoc(1, 64, 50);
+    }
     //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas1() {
         System.out.println("Test Boundary Strategy...");
 
-        LogootDocument LD = new LogootDocument(1, 64, new BoundaryStrategy(1000000000));
         BoundaryStrategy BS = new BoundaryStrategy(50);
 
         LogootIdentifier P = new LogootIdentifier(2);
@@ -46,7 +54,7 @@ public class BoundaryStrategyTest {
         Q.addComponent(new Component(100, 4, 150));
         Q.addComponent(new Component(990, 5, 152));
 
-        ArrayList<LogootIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 100);
+        ArrayList<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 100);
 
         assertEquals(100, patch.size());
 
@@ -60,7 +68,6 @@ public class BoundaryStrategyTest {
     //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas2() {
-        LogootDocument LD = new LogootDocument(1, 64, new BoundaryStrategy(1000000000));
         BoundaryStrategy BS = new BoundaryStrategy(50);
 
         LogootIdentifier P = new LogootIdentifier(2);
@@ -73,7 +80,7 @@ public class BoundaryStrategyTest {
         Q.addComponent(new Component(30, 6, 60));
         Q.addComponent(new Component(40, 6, 60));
 
-        ArrayList<LogootIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
+        ArrayList<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
 
         assertEquals(200, patch.size());
 
@@ -87,7 +94,6 @@ public class BoundaryStrategyTest {
     //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas3() {
-        LogootDocument LD = new LogootDocument(1, 64, new BoundaryStrategy(1000000000));
         BoundaryStrategy BS = new BoundaryStrategy(50);
 
         LogootIdentifier P = new LogootIdentifier(2);
@@ -99,7 +105,7 @@ public class BoundaryStrategyTest {
         Q.addComponent(new Component(30, 4, 60));
         Q.addComponent(new Component(40, 4, 70));
 
-        ArrayList<LogootIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
+        ArrayList<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
 
         assertEquals(200, patch.size());
 
@@ -113,7 +119,6 @@ public class BoundaryStrategyTest {
     //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas4() {
-        LogootDocument LD = new LogootDocument(1, 64, new BoundaryStrategy(1000000000));
         BoundaryStrategy BS = new BoundaryStrategy(50);
 
         LogootIdentifier P = new LogootIdentifier(3);
@@ -129,7 +134,7 @@ public class BoundaryStrategyTest {
         Q.addComponent(new Component(31257, 6, 60));
         Q.addComponent(new Component(31256, 6, 60));
 
-        ArrayList<LogootIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
+        ArrayList<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
 
         assertEquals(200, patch.size());
 
@@ -143,7 +148,6 @@ public class BoundaryStrategyTest {
     //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas5() {
-        LogootDocument LD = new LogootDocument(1, 64, new BoundaryStrategy(1000000000));
         BoundaryStrategy BS = new BoundaryStrategy(50);
 
         LogootIdentifier P = new LogootIdentifier(3);
@@ -160,7 +164,7 @@ public class BoundaryStrategyTest {
         Q.addComponent(new Component(31256, 6, 60));
         Q.addComponent(new Component(31256, 7, 60));
 
-        ArrayList<LogootIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
+        ArrayList<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
 
         assertEquals(200, patch.size());
 
@@ -173,7 +177,6 @@ public class BoundaryStrategyTest {
     //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas6() {
-        LogootDocument LD = new LogootDocument(1, 64, new BoundaryStrategy(1000000000));
         BoundaryStrategy BS = new BoundaryStrategy(50);
 
         LogootIdentifier P = new LogootIdentifier(3);
@@ -190,7 +193,7 @@ public class BoundaryStrategyTest {
         Q.addComponent(new Component(31256, 6, 60));
         Q.addComponent(new Component(31256, 7, 60));
 
-        ArrayList<LogootIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
+        ArrayList<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
 
         assertEquals(200, patch.size());
 
@@ -203,7 +206,6 @@ public class BoundaryStrategyTest {
      //@Ignore
      @Test
     public void testgenerateLineIdentifiersCas7() {
-        LogootDocument LD = new LogootDocument(1, 64, new BoundaryStrategy(1000000000));
         BoundaryStrategy BS = new BoundaryStrategy(50);
 
         LogootIdentifier P = new LogootIdentifier(6);
@@ -222,7 +224,7 @@ public class BoundaryStrategyTest {
         Q.addComponent(new Component(0, 2, 10));
         Q.addComponent(new Component(15, 11, 100));
 
-        ArrayList<LogootIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 2);
+        ArrayList<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 2);
 
         assertEquals(2, patch.size());
         for (int i = 1; i < patch.size(); i++) {
@@ -230,6 +232,5 @@ public class BoundaryStrategyTest {
             assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
             assertFalse(patch.get(i).compareTo(Q) > 0);
         }
-    }
-    
+    }    
 }

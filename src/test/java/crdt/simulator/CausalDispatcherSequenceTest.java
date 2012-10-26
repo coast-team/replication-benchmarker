@@ -49,14 +49,15 @@ import org.junit.Test;
 public class CausalDispatcherSequenceTest {
 
     Factory s[] = { 
-        new LogootFactory(), 
-        new TreedocFactory(), 
+//        new LogootFactory(), 
+        new LogootListFactory(), 
+//        new TreedocFactory(), 
 //        new jbenchmarker.treedoc.list.TreedocFactory(),
 //        new WootFactory(), 
 //        new WootOFactory(), 
-        new WootHFactory(), 
+//        new WootHFactory(), 
 //        new ABTFactory(),
-        new TTFFactories.WithoutGC(), 
+//        new TTFFactories.WithoutGC(), 
 //        new TTFFactories.WithGC3(),
 //        new TTFFactories.WithLL_PGC(),
         
@@ -91,7 +92,7 @@ public class CausalDispatcherSequenceTest {
     @Test
     public void stress() throws PreconditionException, IncorrectTraceException, IOException {
 //        Factory f = new TTFFactories.WithGC3();
-        Factory f = new WootHFactory();
+        Factory f = new LogootListFactory();
         CausalDispatcherSetsAndTreesTest.testRunX(f, 200, 20, 5, uopp);           
     }
     

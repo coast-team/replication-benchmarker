@@ -23,28 +23,21 @@ import jbenchmarker.logoot.BoundaryStrategy;
 import jbenchmarker.logoot.Component;
 import jbenchmarker.logoot.LogootDocument;
 import jbenchmarker.logoot.LogootIdentifier;
+import jbenchmarker.logoot.LogootListPosition;
 import jbenchmarker.logoot.LogootMerge;
 
 /**
  *
  * @author urso
  */
-public class LogootFactory<T> extends ReplicaFactory {
+public class LogootListFactory<T> extends ReplicaFactory {
     @Override
     public LogootMerge<T> create(int r) {         
-        return new LogootMerge<T>(createDoc(r, 64, 1000000000), r);
+        return new LogootMerge<T>(createDoc(r, 1000000), r);
     }
     
-    static public LogootIdentifier begin() {
-        return new LogootIdentifier(new Component(0, -1, -1));
-    }
-    
-    static public LogootIdentifier end(int base) {
-        long max = (base == 64) ? Long.MAX_VALUE : (long) Math.pow(2, base) - 1;
-        return new  LogootIdentifier(new Component(max, -1, -1));
-    }
-    
-    static public LogootDocument createDoc(int r, int base, int bound) {
-        return new LogootDocument(r, base, new BoundaryStrategy(bound), begin(), end(base)); 
+    static public LogootDocument createDoc(int r, int bound) {
+        return new LogootDocument(r, 8, new BoundaryStrategy(bound), 
+                new LogootListPosition(Byte.MIN_VALUE), new LogootListPosition(Byte.MAX_VALUE)); 
     }
 }

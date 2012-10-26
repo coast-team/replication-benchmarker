@@ -68,7 +68,7 @@ public class LogootMerge<T> extends MergeAlgorithm {
         int N = opt.getContent().size(), position = opt.getPosition();
         
         List<T> content = opt.getContent();
-        ArrayList<LogootIdentifier> patch = getDoc().generateIdentifiers(position, N);
+        ArrayList<ListIdentifier> patch = getDoc().generateIdentifiers(position, N);
 
         ArrayList<T> lc = new ArrayList<T>(patch.size());
         for (int cmpt = 0; cmpt < patch.size(); cmpt++) {

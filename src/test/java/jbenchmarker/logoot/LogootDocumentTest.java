@@ -18,14 +18,21 @@
  */
 package jbenchmarker.logoot;
 import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.factories.LogootFactory;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
 /**
  *
  * @author mehdi
  */
 public class LogootDocumentTest {
-
+    LogootDocument LD;
+    
+    @Before
+    public void setUp() throws Exception {
+        LD = LogootFactory.createDoc(1, 7, 10);
+    }
     // helpers
     LogootOperation ins(LogootIdentifier n, char c) {
         return LogootOperation.insert(SequenceOperation.insert( 0, ""),
@@ -38,8 +45,6 @@ public class LogootDocumentTest {
 
     @Test
     public void testapply() {
-        LogootDocument LD = new LogootDocument(1, 7, new BoundaryStrategy(10));
-
         LogootIdentifier P = new LogootIdentifier(1);
         LogootIdentifier A = new LogootIdentifier(1);
         LogootIdentifier Q = new LogootIdentifier(1);
@@ -68,8 +73,6 @@ public class LogootDocumentTest {
 
     @Test
     public void dicto() {
-        LogootDocument LD = new LogootDocument(1, 7, new BoundaryStrategy(10));
-
         LogootIdentifier P = new LogootIdentifier(1);
         LogootIdentifier A = new LogootIdentifier(1);
         LogootIdentifier Q = new LogootIdentifier(1);

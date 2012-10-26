@@ -28,11 +28,11 @@ import jbenchmarker.core.SequenceOperation.OpType;
  */
 public class LogootOperation<T> extends SequenceMessage {
     
-    final private LogootIdentifier identif;
+    final private ListIdentifier identif;
     final private T content;
     final private MessageType type;
 
-    private LogootOperation(SequenceOperation o, MessageType type, LogootIdentifier identif, T content) {
+    private LogootOperation(SequenceOperation o, MessageType type, ListIdentifier identif, T content) {
         super(o);
         this.type = type;
         this.identif = identif;
@@ -43,7 +43,7 @@ public class LogootOperation<T> extends SequenceMessage {
         return this.type;
     }
 
-    public LogootIdentifier getIdentifiant() {
+    public ListIdentifier getIdentifiant() {
         return identif;
     }
     
@@ -51,11 +51,11 @@ public class LogootOperation<T> extends SequenceMessage {
         return content;
     }
 
-    static <T> LogootOperation insert(SequenceOperation o, LogootIdentifier idf, T cont) {
+    static <T> LogootOperation insert(SequenceOperation o, ListIdentifier idf, T cont) {
         return new LogootOperation(o, MessageType.ins, idf, cont);
     }
 
-    public static LogootOperation Delete(SequenceOperation o, LogootIdentifier idf) {
+    public static LogootOperation Delete(SequenceOperation o, ListIdentifier idf) {
         return new LogootOperation(o, MessageType.del, idf, null);
     }
 

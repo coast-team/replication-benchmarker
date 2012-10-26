@@ -22,12 +22,17 @@ import crdt.tree.orderedtree.PositionIdentifier;
 import java.io.Serializable;
 import java.util.*;
 
-public class LogootIdentifier implements Comparable<LogootIdentifier>, Serializable, PositionIdentifier {
+public class LogootIdentifier implements ListIdentifier<LogootIdentifier> {
 
     final private ArrayList<Component> id;
 
     public LogootIdentifier(int capacity) {
         id = new ArrayList<Component>(capacity);
+    }
+
+    public LogootIdentifier(Component component) {
+        this(1);
+        id.add(component);
     }
 
     public ArrayList<Component> getID() {
@@ -68,6 +73,7 @@ public class LogootIdentifier implements Comparable<LogootIdentifier>, Serializa
         return id.size();
     }
 
+    @Override
     public String toString() {
         String ligneIdentif = "";
         for (Component c : id) {
@@ -79,7 +85,8 @@ public class LogootIdentifier implements Comparable<LogootIdentifier>, Serializa
     /**
      * Returns O if j > index().
      **/
-    long getDigitAt(int index) {
+    @Override
+    public long getDigitAt(int index) {
         if (index >= this.length()) {
             return 0;
         } else {
@@ -102,6 +109,7 @@ public class LogootIdentifier implements Comparable<LogootIdentifier>, Serializa
         return l;
     }
 
+    @Override
     public int compareTo(LogootIdentifier t) {
         int m = Math.min(id.size(), t.id.size());
         for (int i = 0; i < m; i++) {
@@ -120,5 +128,19 @@ public class LogootIdentifier implements Comparable<LogootIdentifier>, Serializa
             o.id.add(c.clone());
         }
         return o;
+    }
+
+    @Override
+    public ArrayList<ListIdentifier> generateN(int n, ListIdentifier Q, int index, long interval, LogootDocument doc) {
+        ArrayList<ListIdentifier> patch = new ArrayList<ListIdentifier>();
+        List<Long> digits = this.digits(index);
+        LogootIdentifier P;
+        for (int i = 0; i < n; i++) {
+            LogootStrategy.plus(digits, LogootStrategy.nextLong(interval) + 1, doc.getBase(), doc.getMax());
+            P = LogootStrategy.constructIdentifier(digits, this, (LogootIdentifier) Q, doc.getReplicaNumber(), doc.getClock());
+            doc.incClock();
+            patch.add(P);
+        }
+        return patch;
     }
 }

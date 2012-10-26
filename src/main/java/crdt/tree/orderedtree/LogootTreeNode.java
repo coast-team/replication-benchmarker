@@ -21,6 +21,7 @@ package crdt.tree.orderedtree;
 import collect.OrderedNode;
 import java.io.Serializable;
 import java.util.List;
+import jbenchmarker.factories.LogootFactory;
 import jbenchmarker.logoot.LogootDocument;
 import jbenchmarker.logoot.LogootIdentifier;
 import jbenchmarker.logoot.LogootStrategy;
@@ -39,7 +40,7 @@ public class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> impleme
     }
     
     private LogootTreeNode(T value, int r, int nbBit, LogootStrategy strategy, Clock c) {
-        super(r, nbBit, strategy);
+        super(r, nbBit, strategy, LogootFactory.begin(), LogootFactory.end(nbBit));
         this.value = value;
         this.clock = c;
     }

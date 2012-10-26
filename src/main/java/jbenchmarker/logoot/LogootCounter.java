@@ -25,6 +25,7 @@ import jbenchmarker.core.*;
  * Not most efficient implementation.
  * @author urso
  */
+@Deprecated
 public class LogootCounter extends LogootDocument {
     public static class Factory extends ReplicaFactory {
         @Override public MergeAlgorithm create(int r) {
@@ -35,13 +36,13 @@ public class LogootCounter extends LogootDocument {
     public static int count = 0;
 
     public LogootCounter(int r, int nbBit, LogootStrategy strategy) {
-        super(r, nbBit, strategy);
+        super(r, nbBit, strategy, null, null);
     }
     
     @Override
     public void apply(Operation op) {
         LogootOperation lg = (LogootOperation) op;
-        LogootIdentifier idToSearch = lg.getIdentifiant();
+        ListIdentifier idToSearch = lg.getIdentifiant();
         int pos = dicho(idToSearch);
         //Insertion et Delete
         if ((lg.getType() == SequenceMessage.MessageType.ins) && !getId(pos).equals(idToSearch)) {

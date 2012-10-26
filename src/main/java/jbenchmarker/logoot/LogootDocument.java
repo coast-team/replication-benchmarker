@@ -39,14 +39,14 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
     protected int replicaNumber;
     protected final BigInteger base;
     
-    final protected RangeList<LogootIdentifier> idTable;
+    final protected RangeList<ListIdentifier> idTable;
     final protected RangeList<T> document;
     final protected LogootStrategy strategy;
 
-    public LogootDocument(int r, int nbBit, LogootStrategy strategy) {
+    public LogootDocument(int r, int nbBit, LogootStrategy strategy, ListIdentifier begin, ListIdentifier end) {
         super();
         document = new RangeList<T>();
-        idTable = new RangeList<LogootIdentifier>();
+        idTable = new RangeList<ListIdentifier>();
         this.strategy = strategy;
         this.replicaNumber = r;
 
@@ -60,13 +60,9 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         }
         base = BigInteger.valueOf(2).pow(nbBit);
         
-        LogootIdentifier Begin = new LogootIdentifier(1), End = new LogootIdentifier(1);
-        Begin.addComponent(new Component(0, -1, -1));
-        End.addComponent(new Component(max, -1, -1));
-
-        idTable.add(Begin);
+        idTable.add(begin);
         document.add(null);
-        idTable.add(End);
+        idTable.add(end);
         document.add(null);
     } 
     
@@ -83,7 +79,7 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         return s.toString();
     }
 
-    protected int dicho(LogootIdentifier idToSearch) {
+    protected int dicho(ListIdentifier idToSearch) {
         int startIndex = 1, endIndex = idTable.size() - 1, middleIndex;
         while (startIndex < endIndex) {
             middleIndex = startIndex + (endIndex - startIndex) / 2;
@@ -102,7 +98,7 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
     @Override
     public void apply(Operation op) {
         LogootOperation lg = (LogootOperation) op;
-        LogootIdentifier idToSearch = lg.getIdentifiant();
+        ListIdentifier idToSearch = lg.getIdentifiant();
         int pos = dicho(idToSearch);
         //Insertion et Delete
         if (lg.getType() == SequenceMessage.MessageType.ins) {
@@ -114,7 +110,7 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         }
     }
     
-    public void insert(int position, List<LogootIdentifier> patch, List<T> lc) {
+    public void insert(int position, List<ListIdentifier> patch, List<T> lc) {
         idTable.addAll(position + 1, patch);
         document.addAll(position + 1, lc);
     }
@@ -124,7 +120,7 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         document.removeRangeOffset(position + 1, offset);
     }
     
-    public LogootIdentifier getId(int pos) {
+    public ListIdentifier getId(int pos) {
         return idTable.get(pos);
     }
 
@@ -136,7 +132,7 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
     // TODO : duplicate strategy ?
     @Override
     public LogootDocument<T> create() {
-        return new LogootDocument<T>(replicaNumber, nbBit, strategy);
+        return new LogootDocument<T>(replicaNumber, nbBit, strategy, idTable.get(0), idTable.get(idTable.size()-1));
     }
     
     protected void incClock() {
@@ -167,12 +163,12 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         return replicaNumber;
     }
     
-    public LogootIdentifier getNewId(int p) {
+    public ListIdentifier getNewId(int p) {
         return strategy.generateLineIdentifiers(this, idTable.get(p),
                     idTable.get(p + 1), 1).get(0);
     }
         
-    ArrayList<LogootIdentifier> generateIdentifiers(int position, int N) {
+    ArrayList<ListIdentifier> generateIdentifiers(int position, int N) {
         return strategy.generateLineIdentifiers(this, idTable.get(position),
                     idTable.get(position + 1), N);
     }

@@ -22,17 +22,23 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
  * @author urso
  */
 public abstract class LogootStrategy implements Serializable {
+    private static Random ran = new Random();
+    static public long nextLong(long l) {
+        long x = ran.nextLong() % l;
+        if (x<0) x += l;
+        return x;
+    }    
     /**
      * Generate N identifier between P and Q;
      */
-    abstract ArrayList<LogootIdentifier> generateLineIdentifiers(LogootDocument replica, LogootIdentifier P, LogootIdentifier Q, int N);
-
+    abstract ArrayList<ListIdentifier> generateLineIdentifiers(LogootDocument replica, ListIdentifier P, ListIdentifier Q, int n);
 
 
     static LogootIdentifier constructIdentifier(List<Long> digits, LogootIdentifier P, LogootIdentifier Q, int peer, int clock) {
