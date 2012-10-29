@@ -19,10 +19,8 @@
 package jbenchmarker.factories;
 
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.logoot.BoundaryStrategy;
-import jbenchmarker.logoot.Component;
+import jbenchmarker.logoot.BoundaryListStrategy;
 import jbenchmarker.logoot.LogootDocument;
-import jbenchmarker.logoot.LogootIdentifier;
 import jbenchmarker.logoot.LogootListPosition;
 import jbenchmarker.logoot.LogootMerge;
 
@@ -37,7 +35,7 @@ public class LogootListFactory<T> extends ReplicaFactory {
     }
     
     static public LogootDocument createDoc(int r, int bound) {
-        return new LogootDocument(r, 8, new BoundaryStrategy(bound), 
+        return new LogootDocument(r, 8, new BoundaryListStrategy(bound), 
                 new LogootListPosition(Byte.MIN_VALUE), new LogootListPosition(Byte.MAX_VALUE)); 
     }
 }
