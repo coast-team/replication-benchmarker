@@ -38,7 +38,7 @@ public abstract class LogootStrategy implements Serializable {
     /**
      * Generate N identifier between P and Q;
      */
-    abstract ArrayList<ListIdentifier> generateLineIdentifiers(LogootDocument replica, ListIdentifier P, ListIdentifier Q, int n);
+    abstract List<ListIdentifier> generateLineIdentifiers(LogootDocument replica, ListIdentifier P, ListIdentifier Q, int n);
 
 
     static LogootIdentifier constructIdentifier(List<Long> digits, LogootIdentifier P, LogootIdentifier Q, int peer, int clock) {

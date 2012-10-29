@@ -18,13 +18,7 @@
  */
 package jbenchmarker.logoot;
 
-import crdt.tree.fctree.*;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.Arrays;
 
 /**
  *
@@ -32,52 +26,77 @@ import java.util.ListIterator;
  */
 public class LogootListPosition implements ListIdentifier<LogootListPosition> {
 
-    LinkedList<Byte> position;    
+    byte[] position;    
 
     /**
      * Make object from position.
      * @param position
      */
-    public LogootListPosition(List<Byte> position) {
-        this.position = new LinkedList<Byte>(position);
+    LogootListPosition(byte[] position) {
+        this.position = position;
     }
     
     public LogootListPosition(byte position) {
-        this.position = new LinkedList<Byte>();
-        this.position.add(position);
+        this.position = new byte[1];
+        this.position[0] = position;
     }
     
-    final void addIntTo4Byte(int value) {
-        position.add((byte) (value & 0xff));
-        position.add((byte) (value >> 8 & 0xff));
-        position.add((byte) (value >> 16 & 0xff));
-        position.add((byte) (value >>> 24));
+    /**
+     * Prepare ListPosition with given position size replica identifier and clock. 
+     */
+    public LogootListPosition(int size, int replicaId, int clock) {
+        byte nr = nbBytes(replicaId);
+        byte nc = nbBytes(clock);
+        int iSize = size + nr + nc;
+        this.position = new byte[iSize + 1];
+        putInt(size, replicaId);
+        putInt(size + nr, clock);
+        this.position[iSize] = (byte) ((nr << 4) + nc);
     }
-
-    final void addIntToByte(int value) {
-        position.add((byte) (value & 0xff));
-        if (value > 0xff) {
-            position.add((byte) (value >> 8 & 0xff));
-            if (value > 0xffff) {
-                position.add((byte) (value >> 16 & 0xff));
-                if (value > 0xffffff) {
-                    position.add((byte) (value >>> 24));
-                }
-            }
+    
+    /**
+     * Number of bytes to represent this int.
+     * TODO : More efficient ?
+     */
+    private static byte nbBytes(int value) {
+        byte l = 0;
+        while (value != 0) {
+            value >>>= 8;
+            ++l;
+        }
+        return l;
+    }
+    
+    /** 
+     * Puts an reserved l-length byte presentation of the int value at the given position.
+     **/
+    private void putInt(int pos, int value) {
+        for (int i = 0; value != 0; ++i) {
+            position[pos + i] = (byte) (value & 0xff);
+            value >>>= 8;                        
         }
     }
 
-    private LogootListPosition(List<Byte> digits, int replicaNumber, int clock) {
-        this(digits);
-        addIntTo4Byte(replicaNumber);
-        addIntTo4Byte(clock);
+    /**
+     * Return the element in the position i or Byte.MIN_VALUE
+     */
+    public byte getSafe(int i) {
+        return i < position.length ? position[i] : Byte.MIN_VALUE;
     }
+    
 
+    /**
+     * Sets the lement at the given position.
+     **/
+    void set(int pos, byte b) {
+        position[pos] = b;
+    }
+    
     /**
      * Return the position
      * @return
      */
-    public List<Byte> getPosition() {
+    public byte[] getPosition() {
         return position;
     }
 
@@ -90,7 +109,7 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
             return false;
         }
         final LogootListPosition other = (LogootListPosition) obj;
-        if (!this.position.equals(other.position)) {
+        if (!Arrays.equals(this.position, other.position)) {
             return false;
         }
         return true;
@@ -105,86 +124,41 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
 
     @Override
     public String toString() {
-        return "FCPosition{" + position + '}';
-    }
-
-    @Override
-    public long getDigitAt(int index) {
-        if (index >= position.size()) {
-            return 0;
-        } else {
-            return position.get(index);
+        StringBuilder s = new StringBuilder("FLPosition[");
+        for (byte b : position) {
+            s.append(b).append(',');            
         }
+        s.append(']');
+        return s.toString();
     }
 
-    @Override
-    public Object getComponentAt(int index) {
-        return position.get(index);
-    }
+
 
     @Override
     public int length() {
-        return position.size();
-    }
-
-    @Override
-    public ArrayList<ListIdentifier> generateN(int n, ListIdentifier Q, int index, long interval, LogootDocument doc) {
-        ArrayList<ListIdentifier> patch = new ArrayList<ListIdentifier>();
-        List<Byte> digits = positionFilledwithMin(index);
-        LogootListPosition P;
-        for (int i = 0; i < n; i++) {
-            digits = plus(digits, LogootStrategy.nextLong(interval) + 1);
-            P = new LogootListPosition(digits, doc.getReplicaNumber(), doc.getClock());
-            doc.incClock();
-            patch.add(P);
-        }
-        return patch;
+        return position.length;
     }
 
     @Override
     public ListIdentifier clone() {
-        return new LogootListPosition(position);
+        return new LogootListPosition(position.clone());
     }
 
     @Override
     public int compareTo(LogootListPosition o) {
-        Iterator<Byte> s1 = this.position.iterator();
-        Iterator<Byte> s2 = o.position.iterator();
-        while (s1.hasNext() && s2.hasNext()) {
-            int d = s1.next() - s2.next();
+        int i = 0;
+        while (i < this.position.length && i < o.position.length) {
+            int d = this.position[i] - o.position[i];
             if (d != 0) {
                 return d;
             }
+            ++i;
         }
-        if (s1.hasNext()) {
+        if (i < this.position.length) {
             return 1;
-        } else if (s2.hasNext()) {
+        } else if (i < o.position.length) {
             return -1;
         }
         return 0;
-    }
-
-    private List<Byte> plus(List<Byte> digits, long l) {
-        LinkedList<Byte> list = new LinkedList<Byte>(digits);
-        ListIterator<Byte> it = list.listIterator(list.size());      
-        while (l > 0) {
-            int val = (int) (it.previous() + l);
-            it.set((byte) (val & 0xff));
-            l = (l >> 8) + ((val + 128) >> 8);
-        }
-        return list;
-    }
-
-    private List<Byte> positionFilledwithMin(int index) {
-        if (index < position.size()) {
-            return position.subList(0, index + 1);
-        } else {
-            // TODO : more efficient
-            List<Byte> f = new LinkedList<Byte>(position);
-            for (int j = position.size(); j <= index; ++j) {
-                f.add(Byte.MIN_VALUE);
-            }
-            return f;
-        }
     }
 }

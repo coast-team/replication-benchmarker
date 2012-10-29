@@ -42,7 +42,8 @@ public class BoundaryStrategy extends LogootStrategy {
      * Generate N identifier between P and Q;
      */
     @Override
-    ArrayList<ListIdentifier> generateLineIdentifiers(LogootDocument replica, ListIdentifier P, ListIdentifier Q, int n) {
+    ArrayList<ListIdentifier> generateLineIdentifiers(LogootDocument doc, ListIdentifier lP, ListIdentifier lQ, int n) {
+        LogootIdentifier P = (LogootIdentifier) lP, Q = (LogootIdentifier) lQ;
         int index = 0, tMin = Math.min(P.length(), Q.length());
         
         while ((index < tMin && P.getComponentAt(index).equals(Q.getComponentAt(index))   
@@ -58,13 +59,20 @@ public class BoundaryStrategy extends LogootStrategy {
                     N = BigInteger.valueOf(n);
             while (diff.compareTo(N) < 0) {
                 index++;
-                diff = diff.multiply(replica.getBase()).
-                        add(BigInteger.valueOf(replica.getMax() - P.getDigitAt(index)).
+                diff = diff.multiply(doc.getBase()).
+                        add(BigInteger.valueOf(doc.getMax() - P.getDigitAt(index)).
                         add(BigInteger.valueOf(Q.getDigitAt(index))));
             }           
             interval = diff.divide(N).min(boundBI).longValue();
         }
           
-        return P.generateN(n, Q, index, interval, replica);
+        ArrayList<ListIdentifier> patch = new ArrayList<ListIdentifier>();
+        List<Long> digits = P.digits(index);
+        for (int i = 0; i < n; i++) {
+            LogootStrategy.plus(digits, LogootStrategy.nextLong(interval) + 1, doc.getBase(), doc.getMax());
+            patch.add(LogootStrategy.constructIdentifier(digits, P, Q, doc.getReplicaNumber(), doc.getClock()));
+            doc.incClock();
+        }
+        return patch;    
     }
 }

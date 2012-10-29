@@ -168,7 +168,7 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
                     idTable.get(p + 1), 1).get(0);
     }
         
-    ArrayList<ListIdentifier> generateIdentifiers(int position, int N) {
+    List<ListIdentifier> generateIdentifiers(int position, int N) {
         return strategy.generateLineIdentifiers(this, idTable.get(position),
                     idTable.get(position + 1), N);
     }

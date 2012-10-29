@@ -85,7 +85,6 @@ public class LogootIdentifier implements ListIdentifier<LogootIdentifier> {
     /**
      * Returns O if j > index().
      **/
-    @Override
     public long getDigitAt(int index) {
         if (index >= this.length()) {
             return 0;
@@ -128,19 +127,5 @@ public class LogootIdentifier implements ListIdentifier<LogootIdentifier> {
             o.id.add(c.clone());
         }
         return o;
-    }
-
-    @Override
-    public ArrayList<ListIdentifier> generateN(int n, ListIdentifier Q, int index, long interval, LogootDocument doc) {
-        ArrayList<ListIdentifier> patch = new ArrayList<ListIdentifier>();
-        List<Long> digits = this.digits(index);
-        LogootIdentifier P;
-        for (int i = 0; i < n; i++) {
-            LogootStrategy.plus(digits, LogootStrategy.nextLong(interval) + 1, doc.getBase(), doc.getMax());
-            P = LogootStrategy.constructIdentifier(digits, this, (LogootIdentifier) Q, doc.getReplicaNumber(), doc.getClock());
-            doc.incClock();
-            patch.add(P);
-        }
-        return patch;
     }
 }
