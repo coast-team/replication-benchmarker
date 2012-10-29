@@ -161,4 +161,19 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
         }
         return 0;
     }
+    
+//    public final int[] All_Int = {
+//      0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
+//      8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
+//    };
+//    
+//    
+//    public int nbByte(int n) {
+//        n |= n >> 1;
+//        n |= n >> 2;
+//        n |= n >> 4;
+//        n |= n >> 8;
+//        n |= n >> 16;
+//        return All_Int[((n * 0x07C4ACDD) >> 27) & 0x1f] / 8 + 1;
+//    }
 }
