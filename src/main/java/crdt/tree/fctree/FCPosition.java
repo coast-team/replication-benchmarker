@@ -40,6 +40,7 @@ public class FCPosition implements Serializable {
     public static LinkedList<Byte> conv(List<Byte> b, FCIdentifier id) {
         LinkedList<Byte> s1 = new LinkedList<Byte>();
         s1.addAll(b);
+        s1.add(Byte.MAX_VALUE);
         for (byte bb : id.toString().getBytes()) {
             s1.add(bb);
             //System.out.print("" + bb);

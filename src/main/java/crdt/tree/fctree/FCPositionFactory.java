@@ -43,7 +43,7 @@ public class FCPositionFactory implements Serializable{
         }
 
         if (n2 == null) {
-            s2 = new infinitString(Byte.MAX_VALUE);
+            s2 = new infinitString((byte)(Byte.MAX_VALUE-1));
         } else {
             s2 = FCPosition.conv(n2.getPosition().getPosition(), n2.getId()).iterator();
         }
