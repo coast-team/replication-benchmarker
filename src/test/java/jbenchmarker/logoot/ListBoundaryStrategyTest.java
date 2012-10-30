@@ -93,7 +93,7 @@ public class ListBoundaryStrategyTest {
             assertEquals(7, patch.get(i).length());
             assertTrue(patch.get(i).compareTo(P) > 0);
             assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
-            assertFalse(patch.get(i).compareTo(Q) > 0);
+            assertTrue(patch.get(i).compareTo(Q) < 0);
         }
     }
     
@@ -112,7 +112,7 @@ public class ListBoundaryStrategyTest {
             assertEquals(5, patch.get(i).length());
             assertTrue(patch.get(i).compareTo(P) > 0);
             assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
-            assertFalse(patch.get(i).compareTo(Q) > 0);
+            assertTrue(patch.get(i).compareTo(Q) < 0);
         }
     }
         
@@ -131,7 +131,98 @@ public class ListBoundaryStrategyTest {
             assertEquals(6, patch.get(i).length());
             assertTrue(patch.get(i).compareTo(P) > 0);
             assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
-            assertFalse(patch.get(i).compareTo(Q) > 0);
+            assertTrue(patch.get(i).compareTo(Q) < 0);
         }
+    }
+    
+    @Test
+    public void testgenerateLineIdentifiersCas6() {
+        System.out.println("Test Boundary Strategy...");
+
+        LogootStrategy BS = new BoundaryListStrategy(50);
+
+        LogootListPosition P = new LogootListPosition((byte) -54);
+        LogootListPosition Q = new LogootListPosition((byte) -53);
+
+        List<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 100);
+
+        assertEquals(100, patch.size());
+
+        for (int i = 1; i < patch.size(); i++) {
+            assertEquals(5, patch.get(i).length());
+            assertTrue(patch.get(i).compareTo(P) > 0);
+            assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
+            assertTrue(patch.get(i).compareTo(Q) < 0);
+        }
+    }
+    
+    @Test
+    public void testgenerateLineIdentifiersCas7() {
+        LogootStrategy BS = new BoundaryListStrategy(50);
+
+        LogootListPosition P = new LogootListPosition((byte) 42);
+        LogootListPosition Q = new LogootListPosition(new byte[] { 43, -13 });
+        
+        List<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 100);
+
+        assertEquals(100, patch.size());
+
+        for (int i = 1; i < patch.size(); i++) {
+            assertEquals(5, patch.get(i).length());
+            assertTrue(patch.get(i).compareTo(P) > 0);
+            assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
+            assertTrue(patch.get(i).compareTo(Q) < 0);
+        }
+    }
+    
+    @Test
+    public void testgenerateLineIdentifiersCas8() {
+        LogootStrategy BS = new BoundaryListStrategy(50);
+
+        LogootListPosition P = new LogootListPosition(new byte[] { 42, 12 });
+        LogootListPosition Q = new LogootListPosition(new byte[] { 43 });
+        
+        List<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 100);
+
+        assertEquals(100, patch.size());
+
+        for (int i = 1; i < patch.size(); i++) {
+            assertEquals(5, patch.get(i).length());
+            assertTrue(patch.get(i).compareTo(P) > 0);
+            assertTrue(patch.get(i).compareTo(patch.get(i - 1)) > 0);
+            assertTrue(patch.get(i).compareTo(Q) < 0);
+        }
+    }
+        
+    @Test
+    public void testgenerateLineIdentifiersCas9() {
+        LogootStrategy BS = new BoundaryListStrategy(500);
+
+        LogootListPosition P = new LogootListPosition(new byte[] { 42, 120 });
+        LogootListPosition Q = new LogootListPosition(new byte[] { 43, -8 });
+        
+        List<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 1);
+
+        assertEquals(1, patch.size());
+
+        assertEquals(5, patch.get(0).length());
+        assertTrue(patch.get(0).compareTo(P) > 0);
+        assertTrue(patch.get(0).compareTo(Q) < 0);
+    }
+    
+    @Test
+    public void testgenerateLineIdentifiersCas10() {
+        LogootStrategy BS = new BoundaryListStrategy(50);
+
+        LogootListPosition P = new LogootListPosition(new byte[] { 42, 127 });
+        LogootListPosition Q = new LogootListPosition(new byte[] { 43, -128 });
+        
+        List<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 1);
+
+        assertEquals(1, patch.size());
+
+        assertEquals(6, patch.get(0).length());
+        assertTrue(patch.get(0).compareTo(P) > 0);
+        assertTrue(patch.get(0).compareTo(Q) < 0);
     }
 }

@@ -39,14 +39,14 @@ public class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> impleme
         int value = 0; 
     }
     
-    private LogootTreeNode(T value, int r, int nbBit, LogootStrategy strategy, Clock c) {
-        super(r, nbBit, strategy, LogootFactory.begin(), LogootFactory.end(nbBit));
+    private LogootTreeNode(T value, int r, LogootStrategy strategy, Clock c) {
+        super(r, strategy, strategy.begin(), strategy.end());
         this.value = value;
         this.clock = c;
     }
     
-    public LogootTreeNode(T value, int r, int nbBit, LogootStrategy strategy) {
-        this(value, r, nbBit, strategy, new Clock());
+    public LogootTreeNode(T value, int r, LogootStrategy strategy) {
+        this(value, r, strategy, new Clock());
     }
     
     @Override
@@ -100,7 +100,7 @@ public class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> impleme
 
     @Override
     public LogootTreeNode<T> createNode(T elem) {
-        return new LogootTreeNode<T>(elem, replicaNumber, nbBit, strategy, clock);
+        return new LogootTreeNode<T>(elem, replicaNumber, strategy, clock);
     }
 
     @Override

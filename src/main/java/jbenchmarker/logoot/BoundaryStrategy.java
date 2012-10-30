@@ -29,15 +29,33 @@ import java.util.Random;
  */
 public class BoundaryStrategy extends LogootStrategy {
 
-
+    private long max;
+    private BigInteger base;
     private final long bound;
     private final BigInteger boundBI;
 
-    public BoundaryStrategy(long bound) {
+    public BoundaryStrategy(int nbBit, long bound) {
         this.bound = bound;
         this.boundBI = BigInteger.valueOf(bound);
+        if (nbBit == 64) {
+            this.max = Long.MAX_VALUE;
+        } else {
+            this.max = (long) Math.pow(2, nbBit-1) - 1;
+        }
+        base = BigInteger.valueOf(2).pow(nbBit);
     }    
         
+
+    @Override
+    public ListIdentifier begin() {
+        return new LogootIdentifier(new Component(0, -1, -1));
+    }
+
+    @Override
+    public ListIdentifier end() {
+        return new LogootIdentifier(new Component(max, -1, -1));
+    }
+    
     /**
      * Generate N identifier between P and Q;
      */
@@ -59,8 +77,8 @@ public class BoundaryStrategy extends LogootStrategy {
                     N = BigInteger.valueOf(n);
             while (diff.compareTo(N) < 0) {
                 index++;
-                diff = diff.multiply(doc.getBase()).
-                        add(BigInteger.valueOf(doc.getMax() - P.getDigitAt(index)).
+                diff = diff.multiply(base).
+                        add(BigInteger.valueOf(max - P.getDigitAt(index)).
                         add(BigInteger.valueOf(Q.getDigitAt(index))));
             }           
             interval = diff.divide(N).min(boundBI).longValue();
@@ -69,7 +87,7 @@ public class BoundaryStrategy extends LogootStrategy {
         ArrayList<ListIdentifier> patch = new ArrayList<ListIdentifier>();
         List<Long> digits = P.digits(index);
         for (int i = 0; i < n; i++) {
-            LogootStrategy.plus(digits, LogootStrategy.nextLong(interval) + 1, doc.getBase(), doc.getMax());
+            LogootStrategy.plus(digits, LogootStrategy.nextLong(interval) + 1, base, max);
             patch.add(LogootStrategy.constructIdentifier(digits, P, Q, doc.getReplicaNumber(), doc.getClock()));
             doc.incClock();
         }

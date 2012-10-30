@@ -24,6 +24,7 @@ import jbenchmarker.logoot.Component;
 import jbenchmarker.logoot.LogootDocument;
 import jbenchmarker.logoot.LogootIdentifier;
 import jbenchmarker.logoot.LogootMerge;
+import jbenchmarker.logoot.LogootStrategy;
 
 /**
  *
@@ -35,16 +36,8 @@ public class LogootFactory<T> extends ReplicaFactory {
         return new LogootMerge<T>(createDoc(r, 64, 1000000000), r);
     }
     
-    static public LogootIdentifier begin() {
-        return new LogootIdentifier(new Component(0, -1, -1));
-    }
-    
-    static public LogootIdentifier end(int base) {
-        long max = (base == 64) ? Long.MAX_VALUE : (long) Math.pow(2, base) - 1;
-        return new  LogootIdentifier(new Component(max, -1, -1));
-    }
-    
     static public LogootDocument createDoc(int r, int base, int bound) {
-        return new LogootDocument(r, base, new BoundaryStrategy(bound), begin(), end(base)); 
+        LogootStrategy s = new BoundaryStrategy(base, bound);
+        return new LogootDocument(r, s, s.begin(), s.end()); 
     }
 }

@@ -33,42 +33,26 @@ import jbenchmarker.core.SequenceOperation;
  * @author urso mehdi
  */
 public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
-    protected final int nbBit;
-    protected final long max; // MAX = 2^nbBit - 1
     private int myClock;
     protected int replicaNumber;
-    protected final BigInteger base;
     
     final protected RangeList<ListIdentifier> idTable;
     final protected RangeList<T> document;
     final protected LogootStrategy strategy;
 
-    public LogootDocument(int r, int nbBit, LogootStrategy strategy, ListIdentifier begin, ListIdentifier end) {
+    public LogootDocument(int r, LogootStrategy strategy, ListIdentifier begin, ListIdentifier end) {
         super();
         document = new RangeList<T>();
         idTable = new RangeList<ListIdentifier>();
         this.strategy = strategy;
         this.replicaNumber = r;
 
-        myClock = 0;
-        this.nbBit = nbBit;
-//        this.strategy = strategy;
-        if (nbBit == 64) {
-            this.max = Long.MAX_VALUE;
-        } else {
-            this.max = (long) Math.pow(2, nbBit) - 1;
-        }
-        base = BigInteger.valueOf(2).pow(nbBit);
-        
+        myClock = 0;        
         idTable.add(begin);
         document.add(null);
         idTable.add(end);
         document.add(null);
     } 
-    
-    public long getNbBit() {
-        return nbBit;
-    }
     
     @Override
     public String view() {
@@ -132,7 +116,7 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
     // TODO : duplicate strategy ?
     @Override
     public LogootDocument<T> create() {
-        return new LogootDocument<T>(replicaNumber, nbBit, strategy, idTable.get(0), idTable.get(idTable.size()-1));
+        return new LogootDocument<T>(replicaNumber, strategy, idTable.get(0), idTable.get(idTable.size()-1));
     }
     
     protected void incClock() {
@@ -145,14 +129,6 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
 
     void setClock(int c) {
         this.myClock = c;
-    }
-
-    long getMax() {
-        return this.max;
-    }
-
-    BigInteger getBase() {
-        return base;
     }
 
     public void setReplicaNumber(int replicaNumber) {

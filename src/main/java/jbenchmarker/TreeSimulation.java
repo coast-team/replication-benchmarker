@@ -88,7 +88,7 @@ public class TreeSimulation {
      *
      * };
      */
-    static OrderedNode nodes[] = {new LogootTreeNode(null, 0, 32, new BoundaryStrategy(100)), new WootHashTreeNode(null, 0)};
+    static OrderedNode nodes[] = {new LogootTreeNode(null, 0, new BoundaryStrategy(32, 100)), new WootHashTreeNode(null, 0)};
     static List<Factory<CRDT>> fact = new LinkedList();
     static List<String> factstr = new LinkedList<String>();
 

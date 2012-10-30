@@ -52,21 +52,18 @@ public class BoundaryListStrategy extends LogootStrategy {
         if (d >= n) {
             interval = Math.min(d/n, bound); 
         } else {
-            if (d == -1) {
-                d = 0;
-            }
             while (d < n) {
                 index++;
-                d = (d << 8) + QP.getSafe(index)- PP.getSafe(index);
+                d = (d << 8) + QP.getSafe(index) - PP.getSafe(index) + 255;
             }           
             interval = Math.min(d/n, bound);
         }
           
         ArrayList<ListIdentifier> patch = new ArrayList<ListIdentifier>();
-
+        LogootListPosition NP = PP;
         for (int i = 0; i < n; i++) {
-            PP = plus(index, PP, LogootStrategy.nextLong(interval) + 1, doc.getReplicaNumber(), doc.getClock());
-            patch.add(PP);
+            NP = plus(index, NP, LogootStrategy.nextLong(interval) + 1, doc.getReplicaNumber(), doc.getClock());
+            patch.add(NP);
             doc.incClock();
         }
         return patch;
@@ -77,7 +74,7 @@ public class BoundaryListStrategy extends LogootStrategy {
         while (l > 0) {
             long val = l + PP.getSafe(index);
             NP.set(index, (byte) (val & 0xff));
-            l = (l >> 8) + ((val + 128) >> 8);
+            l = (val + 128) >> 8;
             --index;
         }
         while (index >= 0) {
@@ -85,5 +82,15 @@ public class BoundaryListStrategy extends LogootStrategy {
             --index;
         }
         return NP;
+    }
+
+    @Override
+    public ListIdentifier begin() {
+        return new LogootListPosition(Byte.MIN_VALUE);
+    }
+
+    @Override
+    public ListIdentifier end() {
+        return new LogootListPosition(Byte.MAX_VALUE);
     }
 }

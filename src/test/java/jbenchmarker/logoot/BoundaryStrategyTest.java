@@ -43,7 +43,7 @@ public class BoundaryStrategyTest {
     public void testgenerateLineIdentifiersCas1() {
         System.out.println("Test Boundary Strategy...");
 
-        BoundaryStrategy BS = new BoundaryStrategy(50);
+        BoundaryStrategy BS = new BoundaryStrategy(64, 50);
 
         LogootIdentifier P = new LogootIdentifier(2);
         LogootIdentifier Q = new LogootIdentifier(2);
@@ -68,7 +68,7 @@ public class BoundaryStrategyTest {
     //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas2() {
-        BoundaryStrategy BS = new BoundaryStrategy(50);
+        BoundaryStrategy BS = new BoundaryStrategy(64, 50);
 
         LogootIdentifier P = new LogootIdentifier(2);
         LogootIdentifier Q = new LogootIdentifier(2);
@@ -94,7 +94,7 @@ public class BoundaryStrategyTest {
     //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas3() {
-        BoundaryStrategy BS = new BoundaryStrategy(50);
+        BoundaryStrategy BS = new BoundaryStrategy(64, 50);
 
         LogootIdentifier P = new LogootIdentifier(2);
         LogootIdentifier Q = new LogootIdentifier(2);
@@ -119,7 +119,7 @@ public class BoundaryStrategyTest {
     //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas4() {
-        BoundaryStrategy BS = new BoundaryStrategy(50);
+        BoundaryStrategy BS = new BoundaryStrategy(64, 50);
 
         LogootIdentifier P = new LogootIdentifier(3);
         LogootIdentifier Q = new LogootIdentifier(3);
@@ -148,7 +148,7 @@ public class BoundaryStrategyTest {
     //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas5() {
-        BoundaryStrategy BS = new BoundaryStrategy(50);
+        BoundaryStrategy BS = new BoundaryStrategy(64,50);
 
         LogootIdentifier P = new LogootIdentifier(3);
         LogootIdentifier Q = new LogootIdentifier(3);
@@ -177,7 +177,7 @@ public class BoundaryStrategyTest {
     //@Ignore
     @Test
     public void testgenerateLineIdentifiersCas6() {
-        BoundaryStrategy BS = new BoundaryStrategy(50);
+        BoundaryStrategy BS = new BoundaryStrategy(64,50);
 
         LogootIdentifier P = new LogootIdentifier(3);
         LogootIdentifier Q = new LogootIdentifier(3);
@@ -206,7 +206,7 @@ public class BoundaryStrategyTest {
      //@Ignore
      @Test
     public void testgenerateLineIdentifiersCas7() {
-        BoundaryStrategy BS = new BoundaryStrategy(50);
+        BoundaryStrategy BS = new BoundaryStrategy(64, 50);
 
         LogootIdentifier P = new LogootIdentifier(6);
         LogootIdentifier Q = new LogootIdentifier(6);

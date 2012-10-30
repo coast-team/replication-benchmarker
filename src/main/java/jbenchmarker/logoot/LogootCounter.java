@@ -29,14 +29,14 @@ import jbenchmarker.core.*;
 public class LogootCounter extends LogootDocument {
     public static class Factory extends ReplicaFactory {
         @Override public MergeAlgorithm create(int r) {
-                return new LogootMerge(new LogootCounter(r, 64, new BoundaryStrategy(1000000000)), 1);
+                return new LogootMerge(new LogootCounter(r, new BoundaryStrategy(64, 1000000000)), 1);
         }
     }
     
     public static int count = 0;
 
-    public LogootCounter(int r, int nbBit, LogootStrategy strategy) {
-        super(r, nbBit, strategy, null, null);
+    public LogootCounter(int r, LogootStrategy strategy) {
+        super(r, strategy, null, null);
     }
     
     @Override

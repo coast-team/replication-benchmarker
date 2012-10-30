@@ -58,7 +58,7 @@ public class Profiling {
                 duration = 1000,
                 nbreplica = 5;
    
-         Factory f = createTree(new LogootTreeNode(null, 0, 32, new BoundaryStrategy(100)), new NaiveSet(), new WordIncrementalSkipUnique());
+         Factory f = createTree(new LogootTreeNode(null, 0, new BoundaryStrategy(32, 100)), new NaiveSet(), new WordIncrementalSkipUnique());
          for (int t = 0; t < times; ++t) {
             //System.out.println(t);
             CausalSimulator cd = new CausalSimulator(f);

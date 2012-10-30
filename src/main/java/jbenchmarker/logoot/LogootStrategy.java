@@ -30,11 +30,23 @@ import java.util.Random;
  */
 public abstract class LogootStrategy implements Serializable {
     private static Random ran = new Random();
+    
     static public long nextLong(long l) {
         long x = ran.nextLong() % l;
         if (x<0) x += l;
         return x;
-    }    
+    }
+    
+    /**
+     * Begin indentifier.
+     */
+    public abstract ListIdentifier begin();
+    
+    /**
+     * End indentifier.
+     */
+    public abstract ListIdentifier end();
+    
     /**
      * Generate N identifier between P and Q;
      */

@@ -49,7 +49,7 @@ import org.junit.Test;
 public class CausalDispatcherSequenceTest {
 
     Factory s[] = { 
-//        new LogootFactory(), 
+        new LogootFactory(), 
         new LogootListFactory(), 
 //        new TreedocFactory(), 
 //        new jbenchmarker.treedoc.list.TreedocFactory(),
@@ -114,6 +114,6 @@ public class CausalDispatcherSequenceTest {
     
     @Test
     public void testLogootUpdate() throws IncorrectTraceException, PreconditionException, IOException {
-        CausalDispatcherSetsAndTreesTest.testRun((Factory) new LogootFactory<String>(), 1000, 20, StandardDiffProfile.SMALL);
+        CausalDispatcherSetsAndTreesTest.testRun((Factory) new LogootListFactory<String>(), 1000, 20, StandardDiffProfile.SMALL);
     }
 }

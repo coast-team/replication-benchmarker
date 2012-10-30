@@ -35,7 +35,7 @@ public class LogootListFactory<T> extends ReplicaFactory {
     }
     
     static public LogootDocument createDoc(int r, int bound) {
-        return new LogootDocument(r, 8, new BoundaryListStrategy(bound), 
+        return new LogootDocument(r, new BoundaryListStrategy(bound), 
                 new LogootListPosition(Byte.MIN_VALUE), new LogootListPosition(Byte.MAX_VALUE)); 
     }
 }
