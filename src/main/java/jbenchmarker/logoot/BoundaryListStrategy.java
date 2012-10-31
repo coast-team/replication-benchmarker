@@ -51,7 +51,7 @@ public class BoundaryListStrategy extends LogootStrategy {
      */
     @Override
     List<ListIdentifier> generateLineIdentifiers(LogootDocument doc, ListIdentifier P, ListIdentifier Q, int n) {
-        assert P.compareTo(Q) < 0;
+//        assert P.compareTo(Q) < 0;
         
         LogootListPosition PP = (LogootListPosition) P;
         LogootListPosition QP = (LogootListPosition) Q;
