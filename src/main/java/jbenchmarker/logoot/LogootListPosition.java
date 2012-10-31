@@ -77,6 +77,7 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
     /**
      * Number of element to represent this int. TODO : More efficient ?
      */
+
     private static byte nbElem(int base, int value) {
         byte l = 0;
         while (value != 0) {
@@ -85,6 +86,7 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
         }
         return l;
     }
+
 
     /**
      * Puts an reserved l-length element presentation of the int value at the
@@ -160,7 +162,7 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
     public int compareTo(LogootListPosition o) {
         int i = 0;
         while (i < this.position.length() && i < o.position.length()) {
-            int d = Integer.compare(this.position.get(i), o.position.get(i));
+            int d = this.position.get(i) - o.position.get(i);
             if (d != 0) {
                 return d;
             }
@@ -174,13 +176,12 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
         return 0;
     }
     
-//    public final int[] All_Int = {
+//    private static int[] All_Int = {
 //      0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
 //      8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
 //    };
 //    
-//    
-//    public int nbByte(int n) {
+//    private static int nbBytes(int n) {
 //        n |= n >> 1;
 //        n |= n >> 2;
 //        n |= n >> 4;
