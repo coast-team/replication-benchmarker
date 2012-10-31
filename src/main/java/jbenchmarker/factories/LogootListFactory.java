@@ -28,14 +28,30 @@ import jbenchmarker.logoot.LogootMerge;
  *
  * @author urso
  */
-public class LogootListFactory<T> extends ReplicaFactory {
-    @Override
-    public LogootMerge<T> create(int r) {         
-        return new LogootMerge<T>(createDoc(r, 1000000), r);
+public class LogootListFactory {
+    static public LogootDocument createDoc(int r, int base) {
+        BoundaryListStrategy b = new BoundaryListStrategy(base);
+        return new LogootDocument(r, b);
     }
     
-    static public LogootDocument createDoc(int r, int bound) {
-        return new LogootDocument(r, new BoundaryListStrategy(bound), 
-                new LogootListPosition(Byte.MIN_VALUE), new LogootListPosition(Byte.MAX_VALUE)); 
+    public static class ByteList<T> extends ReplicaFactory {
+        @Override
+        public LogootMerge<T> create(int r) {         
+            return new LogootMerge<T>(createDoc(r, 8), r);
+        }
+    }
+
+    public static class ShortList<T> extends ReplicaFactory {
+        @Override
+        public LogootMerge<T> create(int r) {         
+            return new LogootMerge<T>(createDoc(r, 16), r);
+        }
+    }
+    
+    public static class IntList<T> extends ReplicaFactory {
+        @Override
+        public LogootMerge<T> create(int r) {         
+            return new LogootMerge<T>(createDoc(r, 32), r);
+        }
     }
 }

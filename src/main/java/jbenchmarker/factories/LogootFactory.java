@@ -38,6 +38,6 @@ public class LogootFactory<T> extends ReplicaFactory {
     
     static public LogootDocument createDoc(int r, int base, int bound) {
         LogootStrategy s = new BoundaryStrategy(base, bound);
-        return new LogootDocument(r, s, s.begin(), s.end()); 
+        return new LogootDocument(r, s); 
     }
 }

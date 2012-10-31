@@ -40,7 +40,7 @@ public class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> impleme
     }
     
     private LogootTreeNode(T value, int r, LogootStrategy strategy, Clock c) {
-        super(r, strategy, strategy.begin(), strategy.end());
+        super(r, strategy);
         this.value = value;
         this.clock = c;
     }

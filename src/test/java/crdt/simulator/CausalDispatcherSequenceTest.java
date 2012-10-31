@@ -49,9 +49,11 @@ import org.junit.Test;
 public class CausalDispatcherSequenceTest {
 
     Factory s[] = { 
-        new LogootFactory(), 
-        new LogootListFactory(), 
-//        new TreedocFactory(), 
+//        new LogootFactory(), 
+//        new LogootListFactory.ByteList(), 
+//        new LogootListFactory.ShortList(), 
+        new LogootListFactory.IntList(), 
+                //        new TreedocFactory(), 
 //        new jbenchmarker.treedoc.list.TreedocFactory(),
 //        new WootFactory(), 
 //        new WootOFactory(), 
@@ -92,7 +94,7 @@ public class CausalDispatcherSequenceTest {
     @Test
     public void stress() throws PreconditionException, IncorrectTraceException, IOException {
 //        Factory f = new TTFFactories.WithGC3();
-        Factory f = new LogootListFactory();
+        Factory f = new LogootListFactory.IntList();
         CausalDispatcherSetsAndTreesTest.testRunX(f, 200, 20, 5, uopp);           
     }
     
@@ -114,6 +116,6 @@ public class CausalDispatcherSequenceTest {
     
     @Test
     public void testLogootUpdate() throws IncorrectTraceException, PreconditionException, IOException {
-        CausalDispatcherSetsAndTreesTest.testRun((Factory) new LogootListFactory<String>(), 1000, 20, StandardDiffProfile.SMALL);
+        CausalDispatcherSetsAndTreesTest.testRun((Factory) new LogootListFactory.ShortList<String>(), 1000, 20, StandardDiffProfile.SMALL);
     }
 }

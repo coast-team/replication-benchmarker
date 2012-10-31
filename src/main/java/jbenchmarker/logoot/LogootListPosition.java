@@ -1,20 +1,20 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2012
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.logoot;
 
@@ -26,78 +26,92 @@ import java.util.Arrays;
  */
 public class LogootListPosition implements ListIdentifier<LogootListPosition> {
 
-    byte[] position;    
+    private final Content position;
+
+    private Content createContent(int base, int size) {
+        if (base == 8) {
+            return new ByteContent(size);
+        } else if (base == 16) {
+            return new ShortContent(size);
+        } else if (base == 32) {
+            return new IntContent(size);
+        } else {
+            throw new IllegalArgumentException("Illegal base.");
+        }
+    }
+
+    LogootListPosition(Content position) {
+        this.position = position;
+    }
 
     /**
      * Make object from position.
+     *
      * @param position
      */
-    LogootListPosition(byte[] position) {
-        this.position = position;
+    public LogootListPosition(int base, int pos) {
+        this.position = createContent(base, 1);
+        this.position.set(0, pos);
     }
-    
-    public LogootListPosition(byte position) {
-        this.position = new byte[1];
-        this.position[0] = position;
-    }
-    
+
     /**
-     * Prepare ListPosition with given position size replica identifier and clock. 
+     * Prepare ListPosition with given position size replica identifier and
+     * clock.
      */
-    public LogootListPosition(int size, int replicaId, int clock) {
-        byte nr = nbBytes(replicaId);
-        byte nc = nbBytes(clock);
-        int iSize = size + nr + nc;
-        this.position = new byte[iSize + 1];
-        putInt(size, replicaId);
-        putInt(size + nr, clock);
-        this.position[iSize] = (byte) ((nr << 4) + nc);
+    public LogootListPosition(int base, int size, int replicaId, int clock) {
+        if (base < 32) {
+            int nr = nbElem(base, replicaId);
+            int nc = nbElem(base, clock);
+            int iSize = size + nr + nc;
+            this.position = createContent(base, iSize + 1);
+            putInt(size, replicaId);
+            putInt(size + nr, clock);
+            this.position.set(iSize, ((nr << 4) + nc));
+        } else { // int
+            this.position = createContent(base, size + 2);
+            this.position.set(size, replicaId);
+            this.position.set(size + 1, clock);
+        }   
     }
-    
+
     /**
-     * Number of bytes to represent this int.
-     * TODO : More efficient ?
+     * Number of element to represent this int. TODO : More efficient ?
      */
-    private static byte nbBytes(int value) {
+    private static byte nbElem(int base, int value) {
         byte l = 0;
         while (value != 0) {
-            value >>>= 8;
+            value >>>= base;
             ++l;
         }
         return l;
     }
-    
-    /** 
-     * Puts an reserved l-length byte presentation of the int value at the given position.
-     **/
+
+    /**
+     * Puts an reserved l-length element presentation of the int value at the
+     * given position.
+     *
+     */
     private void putInt(int pos, int value) {
+        int mask = (int) (Math.pow(2, position.base()) - 1);
         for (int i = 0; value != 0; ++i) {
-            position[pos + i] = (byte) (value & 0xff);
-            value >>>= 8;                        
+            position.set(pos + i, value & mask);
+            value >>>= position.base();
         }
     }
 
     /**
      * Return the element in the position i or Byte.MIN_VALUE
      */
-    public byte getSafe(int i) {
-        return i < position.length ? position[i] : Byte.MIN_VALUE;
+    public int getSafe(int i) {
+        return i < position.length() ? position.get(i) : position.min();
     }
-    
 
     /**
      * Sets the lement at the given position.
-     **/
-    void set(int pos, byte b) {
-        position[pos] = b;
-    }
-    
-    /**
-     * Return the position
-     * @return
+     *
      */
-    public byte[] getPosition() {
-        return position;
+    void set(int pos, int b) {
+        position.set(pos, b);
     }
 
     @Override
@@ -109,7 +123,7 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
             return false;
         }
         final LogootListPosition other = (LogootListPosition) obj;
-        if (!Arrays.equals(this.position, other.position)) {
+        if (!this.position.equals(other.position)) {
             return false;
         }
         return true;
@@ -125,18 +139,16 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder("FLPosition[");
-        for (byte b : position) {
-            s.append(b).append(',');            
+        for (int i = 0; i < position.length() - 1; ++i) {
+            s.append(position.get(i)).append(',');
         }
-        s.append(']');
+        s.append(position.get(position.length() - 1)).append(']');
         return s.toString();
     }
 
-
-
     @Override
     public int length() {
-        return position.length;
+        return position.length();
     }
 
     @Override
@@ -147,16 +159,16 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
     @Override
     public int compareTo(LogootListPosition o) {
         int i = 0;
-        while (i < this.position.length && i < o.position.length) {
-            int d = this.position[i] - o.position[i];
+        while (i < this.position.length() && i < o.position.length()) {
+            int d = Integer.compare(this.position.get(i), o.position.get(i));
             if (d != 0) {
                 return d;
             }
             ++i;
         }
-        if (i < this.position.length) {
+        if (i < this.position.length()) {
             return 1;
-        } else if (i < o.position.length) {
+        } else if (i < o.position.length()) {
             return -1;
         }
         return 0;
@@ -176,4 +188,219 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
 //        n |= n >> 16;
 //        return All_Int[((n * 0x07C4ACDD) >> 27) & 0x1f] / 8 + 1;
 //    }
+}
+
+
+interface Content extends Cloneable {
+
+    int get(int i);
+
+    void set(int i, int v);
+
+    Content clone();
+
+    int length();
+
+    public int min();
+
+    public int base();
+}
+
+
+
+class ByteContent implements Content {
+
+    final private byte[] position;
+    
+    ByteContent(int size) {
+        position = new byte[size];
+    }
+
+    @Override
+    public int get(int i) {
+        return position[i];
+    }
+
+    @Override
+    public void set(int i, int v) {
+        position[i] = (byte) v;
+    }
+    
+    ByteContent(byte [] pos) {
+        position = pos;
+    }
+    
+    @Override
+    public Content clone() {
+        return new ByteContent(position.clone());
+    }
+
+    @Override
+    public int length() {
+        return position.length;
+    }
+
+    @Override
+    public int min() {
+        return Byte.MIN_VALUE;
+    }
+
+    @Override
+    public int base() {
+        return 8;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + Arrays.hashCode(this.position);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ByteContent other = (ByteContent) obj;
+        if (!Arrays.equals(this.position, other.position)) {
+            return false;
+        }
+        return true;
+    }
+}
+
+
+
+class ShortContent implements Content {
+
+    final private short[] position;
+
+    ShortContent(int size) {
+        position = new short[size];
+    }
+
+    @Override
+    public int get(int i) {
+        return position[i];
+    }
+
+    @Override
+    public void set(int i, int v) {
+        position[i] = (short) v;
+    }
+
+    ShortContent(short [] pos) {
+        position = pos;
+    }
+    
+    @Override
+    public Content clone() {
+        return new ShortContent(position.clone());
+    }
+
+    @Override
+    public int length() {
+        return position.length;
+    }
+
+    @Override
+    public int min() {
+        return Short.MIN_VALUE;
+    }
+
+    @Override
+    public int base() {
+        return 16;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 61 * hash + Arrays.hashCode(this.position);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ShortContent other = (ShortContent) obj;
+        if (!Arrays.equals(this.position, other.position)) {
+            return false;
+        }
+        return true;
+    }
+}
+
+class IntContent implements Content {
+
+    final private int[] position;
+
+    IntContent(int size) {
+        position = new int[size];
+    }
+
+    @Override
+    public int get(int i) {
+        return position[i];
+    }
+
+    @Override
+    public void set(int i, int v) {
+        position[i] = (int) v;
+    }
+
+    IntContent(int [] pos) {
+        position = pos;
+    }
+    
+    @Override
+    public Content clone() {
+        return new IntContent(position.clone());
+    }
+
+    @Override
+    public int length() {
+        return position.length;
+    }
+
+    @Override
+    public int min() {
+        return Integer.MIN_VALUE;
+    }
+
+    @Override
+    public int base() {
+        return 32;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 43 * hash + Arrays.hashCode(this.position);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final IntContent other = (IntContent) obj;
+        if (!Arrays.equals(this.position, other.position)) {
+            return false;
+        }
+        return true;
+    }
 }

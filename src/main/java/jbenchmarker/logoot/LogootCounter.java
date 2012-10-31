@@ -36,7 +36,7 @@ public class LogootCounter extends LogootDocument {
     public static int count = 0;
 
     public LogootCounter(int r, LogootStrategy strategy) {
-        super(r, strategy, null, null);
+        super(r, strategy);
     }
     
     @Override

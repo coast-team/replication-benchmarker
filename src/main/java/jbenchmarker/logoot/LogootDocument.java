@@ -40,7 +40,7 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
     final protected RangeList<T> document;
     final protected LogootStrategy strategy;
 
-    public LogootDocument(int r, LogootStrategy strategy, ListIdentifier begin, ListIdentifier end) {
+    public LogootDocument(int r, LogootStrategy strategy) {
         super();
         document = new RangeList<T>();
         idTable = new RangeList<ListIdentifier>();
@@ -48,9 +48,9 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         this.replicaNumber = r;
 
         myClock = 0;        
-        idTable.add(begin);
+        idTable.add(strategy.begin());
         document.add(null);
-        idTable.add(end);
+        idTable.add(strategy.end());
         document.add(null);
     } 
     
@@ -116,7 +116,7 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
     // TODO : duplicate strategy ?
     @Override
     public LogootDocument<T> create() {
-        return new LogootDocument<T>(replicaNumber, strategy, idTable.get(0), idTable.get(idTable.size()-1));
+        return new LogootDocument<T>(replicaNumber, strategy);
     }
     
     protected void incClock() {

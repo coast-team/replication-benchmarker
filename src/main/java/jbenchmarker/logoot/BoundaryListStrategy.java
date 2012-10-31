@@ -29,9 +29,21 @@ public class BoundaryListStrategy extends LogootStrategy {
 
 
     private final long bound;
+    private final int base;
+    private final long plus;
+    private final long mask;
 
-    public BoundaryListStrategy(long bound) {
-        this.bound = bound;
+    /**
+     * Boundary strategy for logoot list. base can be 8, 16, 32. Boundary = 2^base/2;
+     */
+    public BoundaryListStrategy(int base) {
+        if (base != 8 && base != 16 && base != 32) {
+            throw new IllegalArgumentException("Illegal base.");
+        }
+        this.base = base;
+        this.mask = (long) Math.pow(2, base) - 1;
+        this.plus = (long) Math.pow(2, base - 1);
+        this.bound = (long) Math.pow(2, base / 2);
     }    
         
     /**
@@ -48,13 +60,13 @@ public class BoundaryListStrategy extends LogootStrategy {
         while (PP.getSafe(index) == QP.getSafe(index)) {
             ++index;
         }        
-        long interval, d = QP.getSafe(index)- PP.getSafe(index) - 1;
+        long interval, d = (long) QP.getSafe(index) - (long) PP.getSafe(index) - 1;
         if (d >= n) {
             interval = Math.min(d/n, bound); 
         } else {
             while (d < n) {
-                index++;
-                d = (d << 8) + QP.getSafe(index) - PP.getSafe(index) + 255;
+                ++index;
+                d = (d << base) + (long) QP.getSafe(index) - (long) PP.getSafe(index) + mask;
             }           
             interval = Math.min(d/n, bound);
         }
@@ -70,11 +82,11 @@ public class BoundaryListStrategy extends LogootStrategy {
     }
     
     private LogootListPosition plus(int index, LogootListPosition PP, long l, int replicaNumber, int clock) {
-        LogootListPosition NP = new LogootListPosition(index + 1, replicaNumber, clock); 
+        LogootListPosition NP = new LogootListPosition(base, index + 1, replicaNumber, clock); 
         while (l > 0) {
             long val = l + PP.getSafe(index);
-            NP.set(index, (byte) (val & 0xff));
-            l = (val + 128) >> 8;
+            NP.set(index, (int) (val & mask));
+            l = (val + plus) >> base;
             --index;
         }
         while (index >= 0) {
@@ -86,11 +98,11 @@ public class BoundaryListStrategy extends LogootStrategy {
 
     @Override
     public ListIdentifier begin() {
-        return new LogootListPosition(Byte.MIN_VALUE);
+        return new LogootListPosition(base, (int) (-plus));
     }
 
     @Override
     public ListIdentifier end() {
-        return new LogootListPosition(Byte.MAX_VALUE);
+        return new LogootListPosition(base, (int) (plus - 1));
     }
 }
