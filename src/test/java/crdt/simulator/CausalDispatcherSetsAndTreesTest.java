@@ -88,7 +88,7 @@ public class CausalDispatcherSetsAndTreesTest {
         for (int t = 0; t < times; ++t) {
             //System.out.println(t);
             CausalSimulator cd = new CausalSimulator(factory);
-            cd.run(new RandomTrace(duration, RandomTrace.FLAT, opp, 0.4, 3, 2, nbreplica), false, false, 0, false);
+            cd.run(new RandomTrace(duration, RandomTrace.FLAT, opp, 0.4, 3, 2, nbreplica),  false, 0, false);
             //System.out.println(cd.getlTime());
 
             //result.add(cd.getlTime());

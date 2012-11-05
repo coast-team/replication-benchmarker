@@ -95,7 +95,8 @@ public class App {
             GitTrace trace = GitTrace.create(gitdir, cc, path, clean);
             for (int k = 0; k < nbrExec; k++) {
                 CausalSimulator cd = new CausalSimulator(rf);
-                cd.run(trace, stat, save, stat ? 100 : 0, stat);
+                
+                cd.run(trace, stat,  stat ? 100 : 0, stat);
                 if (k == 0) {
                     if (stat) {
                         cop = cd.splittedGenTime().size();

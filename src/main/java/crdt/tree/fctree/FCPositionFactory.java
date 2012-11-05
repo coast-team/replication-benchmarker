@@ -1,40 +1,43 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2012
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package crdt.tree.fctree;
 
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Random;
 
 /**
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class FCPositionFactory implements Serializable{
+public class FCPositionFactory implements Serializable {
 
+    public static final boolean alea = false;
+    
     FCPosition createBetween(FCNode n1, FCNode n2) {
         Iterator<Byte> s1;
         Iterator<Byte> s2;
         /*
          * if(n1==null && n2==null){ return new FCPosition(new ArrayList(new
          * Byte[]{(byte)(Math.random()*(Byte.MAX_VALUE+Byte.MIN_VALUE)+Byte.MIN_VALUE)}));
-        }
+         }
          */
         if (n1 == null) {
             s1 = new infinitString(Byte.MIN_VALUE);
@@ -43,7 +46,7 @@ public class FCPositionFactory implements Serializable{
         }
 
         if (n2 == null) {
-            s2 = new infinitString((byte)(Byte.MAX_VALUE-1));
+            s2 = new infinitString((byte) (Byte.MAX_VALUE));
         } else {
             s2 = FCPosition.conv(n2.getPosition().getPosition(), n2.getId()).iterator();
         }
@@ -57,7 +60,12 @@ public class FCPositionFactory implements Serializable{
             if (b1 == b2) {
                 sb.addLast(b1);
             } else if (b2 - b1 > 2) {
-                sb.addLast(new Byte((byte) ((b1 + b2) / 2)));
+                if (alea) {
+                    Random rnd=new Random();
+                    sb.addLast(new Byte((byte) (rnd.nextInt(b2 - b1))));
+                } else {
+                    sb.addLast(new Byte((byte) ((b1 + b2) / 2)));
+                }
                 break;
             }
         }

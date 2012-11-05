@@ -29,10 +29,11 @@ import crdt.simulator.Trace;
 import crdt.simulator.TraceFromFile;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
-import jbenchmarker.trace.TraceGenerator;
 
 
 /**
@@ -81,12 +82,11 @@ public class Main {
              * boolean : calculate document with overhead
              */
             boolean calculTimeEx = true;
-            boolean saveTrace = Integer.valueOf(args[5])==1;
-            
+            cd.setWriter( Integer.valueOf(args[5])==1?new ObjectOutputStream(new FileOutputStream("trace")):null);
             if(ex == 0)
-                cd.run(trace, calculTimeEx, saveTrace, Integer.valueOf(args[4]), true);//0 sans serialisation
+                cd.run(trace, calculTimeEx,  Integer.valueOf(args[4]), true);//0 sans serialisation
             else
-                cd.run(trace, calculTimeEx, saveTrace, 0, true);//0 sans serialisation
+                cd.run(trace, calculTimeEx,  0, true);//0 sans serialisation
             
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();

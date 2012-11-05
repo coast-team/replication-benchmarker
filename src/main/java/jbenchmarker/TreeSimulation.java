@@ -247,12 +247,12 @@ public class TreeSimulation {
             if (fileUsr.exists()) {
                 System.out.println( "-Trace From File : " + nameUsr);
                 trace = new TraceFromFile(fileUsr,true);
-                cd.setLogging(null);
+                cd.setWriter(null);
             } else {
                 System.out.println( "-Trace to File  " + nameUsr);
                 trace = new RandomTrace(duration, RandomTrace.FLAT,
                         new StandardOrderedTreeOpProfile(perIns, perChild), probability, delay, sdv, replicas);
-                cd.setLogging(nameUsr);
+                cd.setWriter(new ObjectOutputStream(new FileOutputStream(nameUsr)));
             }
             System.out.println("perIns" + perIns + ", perChild" + perChild + " probability " + probability + "delay " + delay + "sdv+" + sdv + "+, replicas" + replicas);
 
@@ -268,8 +268,8 @@ public class TreeSimulation {
              * calculate time execution boolean : calculate document with
              * overhead
              */
-            boolean storeFile = false;  //make it with arguments
-            cd.run(trace, true, storeFile, scaleMemory, true);
+            
+            cd.run(trace, true,  scaleMemory, true);
             System.out.println("End of simulation");
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();

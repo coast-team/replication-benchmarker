@@ -101,8 +101,8 @@ public class MainSimulation {
              * boolean : calculate document with overhead
              */
             
-            boolean storeFile = false; //make it with arguments
-            cd.run(trace, true, storeFile, 100, true);
+            
+            cd.run(trace, true,  100, true);
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();

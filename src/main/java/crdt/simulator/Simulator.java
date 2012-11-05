@@ -20,11 +20,8 @@ package crdt.simulator;
 
 import crdt.CRDT;
 import crdt.Factory;
-import crdt.PreconditionException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -83,14 +80,13 @@ public abstract class Simulator {
     }
 
     public void run(Trace trace) throws Exception {
-        run(trace, false, false, 0, false);
+        run(trace, false, 0, false);
     }  
     
     /*
      * Runs a trace of operations. Iterate trough trace and construct replica with documents while needed.
      */
-    public abstract void run(Trace trace, boolean detail, boolean saveTrace,
-    int nbrTrace, boolean o) throws Exception;    
+    public abstract void run(Trace trace, boolean detail,int nbrTrace, boolean o) throws Exception;    
     
     /**
      * Instanciate a new replica with classes given at construction. 
