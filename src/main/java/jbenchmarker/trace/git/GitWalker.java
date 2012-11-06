@@ -86,7 +86,7 @@ public class GitWalker {
      */
     public static void main(String... arg) throws Exception {
         int idx;
-        if (arg.length < 2) {
+        if (arg.length < 1) {
             System.out.println("GitTalker <git Repository> [-l lastcommit] [-o outputfile] [-f fileName] [-p]");
             System.out.println("-l the last commit");
             System.out.println("-o output csv file");
