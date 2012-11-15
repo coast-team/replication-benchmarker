@@ -110,5 +110,4 @@ public class LogootSAlgorithm extends MergeAlgorithm{
     public CRDT<String> create() {
         return new LogootSAlgorithm(new LogootSDocument(100), 1);
     }
-    
 }

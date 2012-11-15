@@ -81,4 +81,9 @@ public class WootIdentifier implements Comparable<WootIdentifier>, Serializable,
         hash = 13 * hash + this.clock;
         return hash;
     }
+
+    @Override
+    public String toString() {
+        return "[" + replica + ',' + clock + ']';
+    }
 }

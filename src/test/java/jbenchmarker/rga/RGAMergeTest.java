@@ -41,6 +41,16 @@ public class RGAMergeTest {
     }
 
     @Test
+    public void testInsert() throws PreconditionException {
+        String content = "abcdejk", c2 = "fghi";
+        int pos = 3;      
+        replica.applyLocal(SequenceOperation.insert(0, content));
+        assertEquals(content, replica.lookup());
+        replica.applyLocal(SequenceOperation.insert(pos, c2));
+        assertEquals(content.substring(0, pos) + c2 + content.substring(pos), replica.lookup());        
+    }
+    
+    @Test
     public void testDelete() throws PreconditionException {
         String content = "abcdefghijk";
         int pos = 3, off = 4;       

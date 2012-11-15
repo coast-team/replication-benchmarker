@@ -33,6 +33,7 @@ import crdt.simulator.TraceOperation;
  * Check that operation are received in causal order.
  * @author urso
  */
+@Deprecated
 public class CausalCheckerFactory extends ReplicaFactory {
 //   @Override
     class CausalCheckerFactoryMessage extends SequenceMessage{
@@ -94,6 +95,16 @@ public class CausalCheckerFactory extends ReplicaFactory {
         @Override
         public CRDT<String> create() {
             throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+            return null;
+        }
+
+        @Override
+        protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+            return null;
         }
     }
     

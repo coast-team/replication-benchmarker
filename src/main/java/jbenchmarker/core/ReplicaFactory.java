@@ -25,7 +25,6 @@ import crdt.Factory;
  * DEPRECATED : A MergeAlgorithm is itself a factory.
  * @author urso
  */
-@Deprecated
 public abstract class ReplicaFactory implements Factory<MergeAlgorithm>{
    abstract public MergeAlgorithm create(int r);
 

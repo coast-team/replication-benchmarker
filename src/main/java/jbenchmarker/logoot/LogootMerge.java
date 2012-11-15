@@ -81,6 +81,7 @@ public class LogootMerge<T> extends MergeAlgorithm {
         return lop;
     }
 
+    // For tests
     @Override
     protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
         return super.localUpdate(opt);

@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import citi.treedoc.TreedocId;
+import crdt.PreconditionException;
 
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
@@ -32,9 +33,10 @@ import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceOperation;
 
 /**
- * 
+ * @deprecated do not support update
  * @author mzawirski
  */
+@Deprecated 
 public class TreedocMerge<T> extends MergeAlgorithm {
 
 	public TreedocMerge(final TreedocDocument doc, int r) {
@@ -46,7 +48,6 @@ public class TreedocMerge<T> extends MergeAlgorithm {
 		getDoc().apply(op);
 	}
 
-	@Override
 	protected List<SequenceMessage> generateLocal(SequenceOperation opt)
 			throws IncorrectTraceException {
 		final TreedocDocument<T> treedoc = (TreedocDocument) getDoc();
@@ -97,5 +98,20 @@ public class TreedocMerge<T> extends MergeAlgorithm {
     @Override
     public CRDT<String> create() {
         return new TreedocMerge(new TreedocDocument(), 0);
+    }
+        
+    @Override
+    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+        return generateLocal(opt);
+    }
+
+    @Override
+    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+        return generateLocal(opt);
+    }
+
+    @Override
+    protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
+        throw new IncorrectTraceException("Do not support Update");
     }
 }

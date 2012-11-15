@@ -111,15 +111,18 @@ public class App {
                         minMop = mop;
                     }
 
-                    statr = path + ';' + ++i + ';' + cd.replicas.keySet().size()
+
+                }
+                                    statr = path + ';' + ++i + ';' + cd.replicas.keySet().size()
                             + ';' + trace.nbMerge + ';' + trace.nbBlockMerge
                             + ';' + trace.mergeSize
                             + ';' + trace.nbCommit + ';'
                             + trace.nbInsBlock + ';' + trace.nbDelBlock
                             + ';' + trace.nbUpdBlock + ';'
                             + trace.insertSize + ';' + trace.deleteSize;
-                }
-                if (nbReplica == 0 || !stat) {
+                    System.out.println(statr);
+                    
+                if (nbReplica == 0) {
                     break;
                 }
 
@@ -132,7 +135,7 @@ public class App {
                     }
                     toArrayLong(ltime[k], cd.replicaGenerationTimes(), minUop);
                     toArrayLong(rtime[k], cd.splittedGenTime(), minCop);
-                }
+                
                 if (k == 0) {
                     toArrayLong(mem[k], cd.getMemUsed(), minMop);
                 }
@@ -142,8 +145,9 @@ public class App {
                         rtime[k][j] /= nbReplica - 1;
                     }
                 }
+                }
+
             }
-            System.out.println(statr);
 
             if (stat) {
                 double thresold = 2.0;

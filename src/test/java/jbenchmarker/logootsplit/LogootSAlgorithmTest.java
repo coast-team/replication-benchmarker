@@ -1,44 +1,36 @@
-/**
- * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2012
- * LORIA / Inria / SCORE Team
- *
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program. If not, see <http://www.gnu.org/licenses/>.
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
  */
-package jbenchmarker.treedoc;
+package jbenchmarker.logootsplit;
 
 import crdt.PreconditionException;
+import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.factories.TreedocFactory;
-import static org.junit.Assert.*;
-
-import org.junit.Before;
+import jbenchmarker.factories.LogootSFactory;
 import org.junit.Test;
+import static org.junit.Assert.*;
+import org.junit.Before;
 
 /**
- * Basic tests for tree-based Treedoc implementation.
  *
  * @author urso
  */
-public class TreedocMergeTest {
+public class LogootSAlgorithmTest {
+    
+    public LogootSAlgorithmTest() {
+    }
 
-    private static final int REPLICA_ID = 7;
-    private TreedocMerge replica;
+    private MergeAlgorithm replica;
 
     @Before
     public void setUp() throws Exception {
-        replica = (TreedocMerge) new TreedocFactory().create(REPLICA_ID);
+        replica = (MergeAlgorithm) new LogootSFactory().create();
+    }
+
+    @Test
+    public void testEmpty() {
+        assertEquals("", replica.lookup());
     }
 
     @Test
@@ -50,12 +42,7 @@ public class TreedocMergeTest {
         replica.applyLocal(SequenceOperation.insert(pos, c2));
         assertEquals(content.substring(0, pos) + c2 + content.substring(pos), replica.lookup());        
     }
-    
-    @Test
-    public void testEmptyTree() {
-        assertEquals("", replica.lookup());
-    }
-
+        
     @Test
     public void testDelete() throws PreconditionException {
         String content = "abcdefghijk";

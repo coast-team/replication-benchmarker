@@ -17,16 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.logootOneId;
+import crdt.PreconditionException;
 import org.junit.Ignore;
 import jbenchmarker.factories.LogootOneIdFactory;
 import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 import java.util.List;
+import jbenchmarker.core.MergeAlgorithm;
+import jbenchmarker.factories.LogootFactory;
+import jbenchmarker.factories.LogootSFactory;
 
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
 
 /**
  *
@@ -34,7 +39,48 @@ import static org.junit.Assert.*;
  */
 public class LogootMergeTest 
 {
-      
+          private MergeAlgorithm replica;
+
+    @Before
+    public void setUp() throws Exception {
+        replica = (MergeAlgorithm) new LogootFactory().create();
+    }
+
+    @Test
+    public void testEmpty() {
+        assertEquals("", replica.lookup());
+    }
+
+    @Test
+    public void testInsert() throws PreconditionException {
+        String content = "abcdejk", c2 = "fghi";
+        int pos = 3;      
+        replica.applyLocal(SequenceOperation.insert(0, content));
+        assertEquals(content, replica.lookup());
+        replica.applyLocal(SequenceOperation.insert(pos, c2));
+        assertEquals(content.substring(0, pos) + c2 + content.substring(pos), replica.lookup());        
+    }
+        
+    @Test
+    public void testDelete() throws PreconditionException {
+        String content = "abcdefghijk";
+        int pos = 3, off = 4;       
+        replica.applyLocal(SequenceOperation.insert(0, content));
+        assertEquals(content, replica.lookup());
+        replica.applyLocal(SequenceOperation.delete(pos, off));
+        assertEquals(content.substring(0, pos) + content.substring(pos+off), replica.lookup());        
+    }
+    
+    @Test
+    public void testUpdate() throws PreconditionException {
+        String content = "abcdefghijk", upd = "xy";
+        int pos = 3, off = 5;       
+        replica.applyLocal(SequenceOperation.insert(0, content));
+        assertEquals(content, replica.lookup());
+        replica.applyLocal(SequenceOperation.update(pos, off, upd));
+        assertEquals(content.substring(0, pos) + upd + content.substring(pos+off), replica.lookup());        
+    }
+
          // helpers
     SequenceOperation insert(int p, String s) {
         return  SequenceOperation.insert( p, s); //Replica , position , content , VH

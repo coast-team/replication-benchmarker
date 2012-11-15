@@ -49,28 +49,28 @@ public class WootMergeTest {
         System.out.println("generateLocal");
         WootMerge instance = new WootMerge(new WootOriginalDocument(), 1);
         
-        List<SequenceMessage> r = instance.generateLocal(insert(0,"a"));
+        List<SequenceMessage> r = instance.localInsert(SequenceOperation.insert(0,"a"));
         assertEquals(1, r.size());
         assertEquals('a', ((WootOperation) r.get(0)).getContent());
         assertEquals("a", instance.lookup());        
 
-        r = instance.generateLocal(insert(0,"bc"));
+        r = instance.localInsert(SequenceOperation.insert(0,"bc"));
         assertEquals(2, r.size());
         assertEquals("bca", instance.lookup());         
 
-        r = instance.generateLocal(delete(0,1));
+        r = instance.localInsert(SequenceOperation.delete(0,1));
         assertEquals(1, r.size());
         assertEquals("ca", instance.lookup()); 
 
-        r = instance.generateLocal(insert(1,"efg"));
+        r = instance.localInsert(SequenceOperation.insert(1,"efg"));
         assertEquals(3, r.size());
         assertEquals("cefga", instance.lookup()); 
 
-        r = instance.generateLocal(delete(1,2));
+        r = instance.localInsert(SequenceOperation.delete(1,2));
         assertEquals(2, r.size());
         assertEquals("cga", instance.lookup()); 
 
-        r = instance.generateLocal(delete(1,2));
+        r = instance.localInsert(SequenceOperation.delete(1,2));
         assertEquals(2, r.size());
         assertEquals("c", instance.lookup()); 
     }
@@ -82,7 +82,7 @@ public class WootMergeTest {
     public void testGenerateInsIncorrect() throws IncorrectTraceException {
         WootMerge instance = new WootMerge(new WootOriginalDocument(), 1);
         
-        instance.generateLocal(insert(10,"a"));
+        instance.localInsert(SequenceOperation.insert(10,"a"));
         fail("Out of bound insert not detected.");    
     }
     
@@ -93,7 +93,7 @@ public class WootMergeTest {
     public void testGenerateDelIncorrect() throws IncorrectTraceException {
         WootMerge instance = new WootMerge(new WootOriginalDocument(), 1);
         
-        instance.generateLocal(delete(0,1));
+        instance.localInsert(SequenceOperation.delete(0,1));
         fail("Out of bound delete not detected.");    
     }
     
@@ -101,7 +101,7 @@ public class WootMergeTest {
     @Test
     public void accent() throws IncorrectTraceException {
         WootMerge instance = new WootMerge(new WootOriginalDocument(), 1);
-        List<SequenceMessage> r = instance.generateLocal(insert(0,"à"));
+        List<SequenceMessage> r = instance.localInsert(SequenceOperation.insert(0,"à"));
         assertEquals(1, r.size());
     }
    

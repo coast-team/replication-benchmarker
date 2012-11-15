@@ -50,12 +50,25 @@ public class WootMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
+    public CRDT<String> create() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    private CRDT<String> testP() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    CRDT<String> testPP() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    @Override
+    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public CRDT<String> create() {
+    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -177,9 +177,6 @@ public class WootHashDocument<T> implements Document {
             WootHashNode e = ip.getNext().getNext();
             int dMin = ip.getNext().getDegree();
             while (e != in) {
-                if (e == null) {
-                    System.out.println("bug");
-                }
                 if (e.getDegree() < dMin) {
                     dMin = e.getDegree();
                 }

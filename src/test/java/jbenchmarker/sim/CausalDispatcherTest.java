@@ -25,6 +25,7 @@ import crdt.simulator.CausalSimulator;
 import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.OperationBasedOneMessage;
+import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.TraceOperation;
 import java.util.Enumeration;
 import jbenchmarker.core.ReplicaFactory;
@@ -145,8 +146,7 @@ public class CausalDispatcherTest {
                 protected void integrateRemote(SequenceMessage op) {
                     this.getDoc().apply(op);
                 }
-
-                @Override
+                
                 protected List<SequenceMessage> generateLocal(SequenceOperation opt) {
                     List<SequenceMessage> l = new ArrayList<SequenceMessage>();
                     SequenceMock op = new SequenceMock(opt);
@@ -158,6 +158,16 @@ public class CausalDispatcherTest {
                 @Override
                 public CRDT<String> create() {
                     throw new UnsupportedOperationException("Not supported yet.");
+                }
+
+                @Override
+                protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+                   return generateLocal(opt);
+                }
+
+                @Override
+                protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+                   return generateLocal(opt);
                 }
             };
         }

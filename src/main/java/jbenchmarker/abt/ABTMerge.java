@@ -31,9 +31,10 @@ import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceOperation;
 
 /**
-*
+* Not safe ABT implementation
 * @author Roh
 */
+@Deprecated
 public class ABTMerge extends MergeAlgorithm {
 	
 	protected 	VectorClock siteVC;
@@ -63,7 +64,6 @@ public class ABTMerge extends MergeAlgorithm {
 		//this.abtgc.collect(abtop);
 	}
 
-	@Override
 	protected List<SequenceMessage> generateLocal(SequenceOperation opt)
 			throws IncorrectTraceException {
 		// TODO Auto-generated method stub
@@ -109,6 +109,16 @@ public class ABTMerge extends MergeAlgorithm {
     @Override
     public CRDT<String> create() {
         return new ABTMerge(new ABTDocument(), -1);
+    }
+
+    @Override
+    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+        return generateLocal(opt);
+    }
+
+    @Override
+    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+        return generateLocal(opt);
     }
 	
 }

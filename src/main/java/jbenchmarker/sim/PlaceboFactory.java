@@ -70,7 +70,6 @@ public class PlaceboFactory extends ReplicaFactory {
             this.getDoc().apply(op);
         }
 
-        @Override
         protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
             int nbop = (opt.getType() == SequenceOperation.OpType.del) ? opt.getLenghOfADel() : opt.getContent().size();
             List<SequenceMessage> l = new java.util.ArrayList<SequenceMessage>(nbop);
@@ -83,6 +82,16 @@ public class PlaceboFactory extends ReplicaFactory {
         @Override
         public CRDT<String> create() {
             return new PlaceboMerge();
+        }
+
+        @Override
+        protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+            return generateLocal(opt);
+        }
+
+        @Override
+        protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+            return generateLocal(opt);
         }
     }
 
