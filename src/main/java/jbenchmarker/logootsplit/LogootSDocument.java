@@ -71,7 +71,7 @@ public class LogootSDocument implements Document{
     public void setReplicaNumber(int i){
         replicaNumber = i;
     }
-
+    
 
     private Position getPositionFromCarret(int start) {
         int i = 0;
@@ -152,7 +152,7 @@ public class LogootSDocument implements Document{
         }
         return insert ? min : -1;
     }
-    
+   
     public String get(int index){
         return view.get(index);
     }

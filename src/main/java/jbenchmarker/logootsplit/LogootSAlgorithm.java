@@ -53,6 +53,37 @@ public class LogootSAlgorithm extends MergeAlgorithm{
     }
 
     @Override
+    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+        List<SequenceMessage> list=new ArrayList<SequenceMessage>();
+        list= ((LogootSDocument)this.getDoc()).generateInsertion(opt);
+        for(int i=0;i<list.size();i++){
+            this.getDoc().apply(list.get(i));
+        }
+        return list;
+    }
+
+    @Override
+    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+        List<SequenceMessage> list=new ArrayList<SequenceMessage>();
+        list= ((LogootSDocument)this.getDoc()).generateDeletion(opt);
+        for(int i=0;i<list.size();i++){
+            this.getDoc().apply(list.get(i));
+        }
+        return list;
+    }
+    
+    @Override
+    protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
+        List<SequenceMessage> list=new ArrayList<SequenceMessage>();
+        list= ((LogootSDocument)this.getDoc()).generateInsertion(opt);
+        list.addAll(((LogootSDocument)this.getDoc()).generateInsertion(opt));
+        for(int i=0;i<list.size();i++){
+            this.getDoc().apply(list.get(i));
+        }
+        return list;
+    }     
+    
+    /*@Override
     protected List<SequenceMessage> generateLocal(SequenceOperation opt) {
         List<SequenceMessage> list=new ArrayList<SequenceMessage>();
         if(opt.getType()==SequenceOperation.OpType.ins){
@@ -63,15 +94,17 @@ public class LogootSAlgorithm extends MergeAlgorithm{
                 list =((LogootSDocument)this.getDoc()).generateDeletion(opt);
             }
             else{
-                list =((LogootSDocument)this.getDoc()).generateDeletion(opt);
-                list.addAll(((LogootSDocument)this.getDoc()).generateInsertion(opt));
+                if(opt.getType()==SequenceOperation.OpType.update){
+                    list =((LogootSDocument)this.getDoc()).generateDeletion(opt);
+                    list.addAll(((LogootSDocument)this.getDoc()).generateInsertion(opt));
+                }
             }
         }    
         for(int i=0;i<list.size();i++){
             this.getDoc().apply(list.get(i));
         }
         return list;
-    }
+    }*/
 
     @Override
     public CRDT<String> create() {

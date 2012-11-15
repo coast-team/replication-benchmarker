@@ -28,7 +28,7 @@ public class LogootSFactory implements Factory<CRDT>{
 
     @Override
     public CRDT create() {
-        return new LogootSAlgorithm(new LogootSDocument(1000), 1);
+        return new LogootSAlgorithm(new LogootSDocument(Integer.MAX_VALUE), 1);
     }
     
 }

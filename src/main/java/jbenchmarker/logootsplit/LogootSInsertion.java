@@ -63,11 +63,14 @@ public class LogootSInsertion extends SequenceMessage implements LogootSOperatio
             }
             
         } else {
-            lId = new LogootSIdentifier(lower.getIdAt(i), lower.getIdAt(i).getOffset() + doc.get(doc.IndexOf(lower, false)).length() - 1);
-            
-            int distance = gId.getPosition() - lId.getPosition();
+            int distance = gId.getPosition() - lower.getIdAt(i).getPosition();
             if (distance < 2) {
-                idList.add(lId);
+                if(i==lower.size()-1){
+                    idList.add(new LogootSIdentifier(lower.getIdAt(i), lower.getIdAt(i).getOffset() + doc.get(doc.IndexOf(lower, false)).length() - 1));
+                }
+                else{
+                    idList.add(new LogootSIdentifier(lower.getIdAt(i)));
+                }
                 i++;
                 while(i<lower.size() && lower.getIdAt(i).getPosition()==doc.max()-1){
                     idList.add(new LogootSIdentifier(lower.getIdAt(i)));
@@ -82,7 +85,7 @@ public class LogootSInsertion extends SequenceMessage implements LogootSOperatio
                     
                 }
             } else {
-                idList.add(new LogootSIdentifier((int) (lId.getPosition() + 1 + (distance-1) * Math.random()), siteId));
+                idList.add(new LogootSIdentifier((int) (lower.getIdAt(i).getPosition() + 1 + (distance-1) * Math.random()), siteId));
             }            
         }
         this.element = new LogootSElement(idList, doc.clockIncrement());
