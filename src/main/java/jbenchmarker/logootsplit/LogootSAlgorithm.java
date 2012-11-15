@@ -75,7 +75,7 @@ public class LogootSAlgorithm extends MergeAlgorithm{
     @Override
     protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
         List<SequenceMessage> list=new ArrayList<SequenceMessage>();
-        list= ((LogootSDocument)this.getDoc()).generateInsertion(opt);
+        list= ((LogootSDocument)this.getDoc()).generateDeletion(opt);
         list.addAll(((LogootSDocument)this.getDoc()).generateInsertion(opt));
         for(int i=0;i<list.size();i++){
             this.getDoc().apply(list.get(i));
