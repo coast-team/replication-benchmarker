@@ -41,7 +41,7 @@ public class IntegrationSOCT2 {
     public void testSOCT2ExempleRun() throws Exception {
         System.out.println("Integration test with WootH");
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
-        CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGC());
+        CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGCFactory());
 
         cd.run(trace);
         String r = "Salut Monsieurjour MehdiFin";
@@ -54,7 +54,7 @@ public class IntegrationSOCT2 {
     @Test
     public void testSOCT2RunG1() throws Exception {
         Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
-        CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGC());
+        CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGCFactory());
 
         long startTime = System.currentTimeMillis();
         cd.run(trace);
@@ -73,7 +73,7 @@ public class IntegrationSOCT2 {
         Trace trace = TraceGenerator.traceFromJson("/home/damien/etherpad-lite/var/dirtyCS.db","test");
         //Trace trace = TraceGenerator.traceFromJson("../../traces/json/dirtyCS.db");
         //Trace trace = TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald3.db","notes001");//pb avec notes001, notes002 corrompu a cause d'un pb lors du test des etudiants
-        CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGC());
+        CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGCFactory());
         //CausalSimulator cd = new CausalSimulator(new CausalCheckerFactory());
 
         long startTime = System.currentTimeMillis();
@@ -97,7 +97,7 @@ public class IntegrationSOCT2 {
     @Test
     public void testSOCT2Random() throws Exception {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
-        CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGC());
+        CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGCFactory());
 
         cd.run(trace);
         String r = (String) cd.getReplicas().get(0).lookup();
@@ -110,7 +110,7 @@ public class IntegrationSOCT2 {
     @Test
     public void testSOCT2SimulXML() throws Exception {
         Trace trace = new RandomTrace(2000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 5);
-        CausalSimulator cdSim = new CausalSimulator(new TTFFactories.WithoutGC());
+        CausalSimulator cdSim = new CausalSimulator(new TTFFactories.WithoutGCFactory());
         cdSim.setLogging("trace.log");
         cdSim.run(trace);
          
@@ -119,7 +119,7 @@ public class IntegrationSOCT2 {
         mn.main(args);
         
         Trace real = TraceGenerator.traceFromXML("trace.xml", 1);
-        CausalSimulator cdReal = new CausalSimulator(new TTFFactories.WithoutGC());
+        CausalSimulator cdReal = new CausalSimulator(new TTFFactories.WithoutGCFactory());
         cdReal.run(real);
         
         //compare all replica
