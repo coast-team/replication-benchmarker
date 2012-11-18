@@ -79,7 +79,9 @@ public abstract class Experience<T> {
                 avg += data[data.length - 1][ex];
             }
         }
-        return avg/l;
+        if(l > 0 )
+            avg = avg/l;
+        return avg;
     }
     
         public void writeToFile(long[][] data, String fileName, String type) throws IOException {
