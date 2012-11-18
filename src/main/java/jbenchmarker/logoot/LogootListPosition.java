@@ -18,6 +18,7 @@
  */
 package jbenchmarker.logoot;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -209,7 +210,7 @@ interface Content extends Cloneable {
 
 
 
-class ByteContent implements Content {
+class ByteContent implements Content, Serializable{
 
     final private byte[] position;
     
@@ -276,7 +277,7 @@ class ByteContent implements Content {
 
 
 
-class ShortContent implements Content {
+class ShortContent implements Content, Serializable {
 
     final private short[] position;
 
@@ -341,7 +342,7 @@ class ShortContent implements Content {
     }
 }
 
-class IntContent implements Content {
+class IntContent implements Content, Serializable {
 
     final private int[] position;
 

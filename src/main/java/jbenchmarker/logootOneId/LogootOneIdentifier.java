@@ -63,6 +63,14 @@ public class LogootOneIdentifier implements Comparable<LogootOneIdentifier>, Ser
     public int compareTo(LogootOneIdentifier t) {
         return this.digit.compareTo(t.digit);
     }
+    
+        @Override
+    public int hashCode() {
+        int hash = 7;
+        // TODO
+        return hash;
+    }
+
 
     @Override
     public LogootOneIdentifier clone() {

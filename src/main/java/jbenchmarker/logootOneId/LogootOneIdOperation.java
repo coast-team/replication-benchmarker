@@ -63,7 +63,7 @@ public class LogootOneIdOperation<T> extends SequenceMessage
 
     @Override
     public SequenceMessage clone() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new LogootOneIdOperation(this.getOriginalOp(), type, this.identif.clone(), this.content);
     }
 
 }

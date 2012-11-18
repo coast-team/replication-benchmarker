@@ -35,7 +35,7 @@ import jbenchmarker.ot.ttf.TTFTransformations;
     static int nbrReplic = 4;
     static TTFTransformations ttf = new TTFTransformations();
     
-    static public class WithoutGC extends ReplicaFactory {
+    static public class WithoutGCFactory extends ReplicaFactory {
 
         @Override
         public MergeAlgorithm create(int siteId) {

@@ -54,15 +54,15 @@ import org.ektorp.impl.StdCouchDbConnector;
  */
 public class GitTrace implements Trace{
     /* Statistics */
-    int nbBlockMerge = 0;
-    int mergeSize = 0;
-    int nbMerge = 0;
-    int nbCommit = 0;
-    int nbInsBlock = 0;
-    int nbDelBlock = 0;
-    int nbUpdBlock = 0;
-    int insertSize = 0;
-    int deleteSize = 0;
+    public int nbBlockMerge = 0;
+    public int mergeSize = 0;
+    public int nbMerge = 0;
+    public int nbCommit = 0;
+    public int nbInsBlock = 0;
+    public int nbDelBlock = 0;
+    public int nbUpdBlock = 0;
+    public int insertSize = 0;
+    public int deleteSize = 0;
     
     private CommitCRUD commitCRUD;
     private PatchCRUD patchCRUD;
@@ -188,10 +188,10 @@ public class GitTrace implements Trace{
 //System.out.println("----- PATCH -----\n" + new String(patch.getRaws().get(0)));                                
                                 List<Edition> l = gitTrace.diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
                                 gitTrace.stat(l, true);
-                                for (Edition ed : l) {
+                                //for (Edition ed : l) {
 //System.out.println("--- DIFF ---\n" + ed);                                                                    
                                     
-                                }                                
+                                //}                                
                                 if (l.isEmpty()) {
                                     walker.currentVC.inc(replica.getReplicaNumber());
                                     first = SequenceOperation.noop(/*replica.getReplicaNumber(), getVectorClock()*/);

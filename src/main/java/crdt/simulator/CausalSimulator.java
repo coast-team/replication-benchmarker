@@ -24,6 +24,7 @@ import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -131,8 +132,6 @@ public class CausalSimulator extends Simulator {
         orderTrace = new HashMap();
         int numTrace = 0;
 
-        
-
         setOp = new HashSet();
         history = new HashMap<Integer, List<TraceOperation>>();
         genHistory = new HashMap<Integer, List<CRDTMessage>>();
@@ -235,6 +234,7 @@ public class CausalSimulator extends Simulator {
     }
 
     void play(CRDT r, VectorClock vc, List<TraceOperation> concurrentOps) throws IOException, IncorrectTraceException {
+        
         for (TraceOperation t : concurrentOps) {
             int e = t.getReplica();
             CRDTMessage op = genHistory.get(e).get(t.getVectorClock().get(e) - 1);
@@ -338,5 +338,10 @@ public class CausalSimulator extends Simulator {
         } catch (IOException ex) {
             Logger.getLogger(CausalSimulator.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public boolean fileExist(String name) {
+        File f = new File(name);
+        return f.exists();
     }
 }

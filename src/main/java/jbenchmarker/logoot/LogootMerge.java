@@ -77,6 +77,7 @@ public class LogootMerge<T> extends MergeAlgorithm {
             lop.add(log);
             lc.add(c);
         }
+        
         getDoc().insert(position, patch, lc);
         return lop;
     }

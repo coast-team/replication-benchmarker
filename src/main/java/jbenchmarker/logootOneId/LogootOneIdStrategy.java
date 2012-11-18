@@ -37,8 +37,13 @@ public abstract class LogootOneIdStrategy implements Serializable{
 
     static LogootOneIdentifier constructIdentifier(BigDecimal digits, int peer, int clock) {
         if(peer == -1) peer = -peer; //Test
-        int  pos = (int) Math.log10(peer)+1;
-        BigDecimal newId = new BigDecimal(digits+""+pos+""+peer+""+clock);
+        int posRep = 1, posClock = 1;
+         if(peer!=0) 
+            posRep = (int) Math.log10(peer)+1;
+        if(clock!=0) 
+        posClock = (int) Math.log10(clock)+1;
+        
+        BigDecimal newId = new BigDecimal(digits+""+peer+""+clock+"0"+posRep+"0"+posClock);
         LogootOneIdentifier R = new LogootOneIdentifier(newId);
         return R;
     }
