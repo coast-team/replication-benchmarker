@@ -21,6 +21,9 @@ package jbenchmarker.logoot;
 import java.io.Serializable;
 import java.util.Arrays;
 
+
+
+
 /**
  *
  * @author urso Stephane Martin <stephane.martin@loria.fr>
@@ -47,8 +50,6 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
 
     /**
      * Make object from position.
-     *
-     * @param position
      */
     public LogootListPosition(int base, int pos) {
         this.position = createContent(base, 1);
@@ -78,7 +79,6 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
     /**
      * Number of element to represent this int. TODO : More efficient ?
      */
-
     private static byte nbElem(int base, int value) {
         byte l = 0;
         while (value != 0) {
@@ -92,16 +92,25 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
     /**
      * Puts an reserved l-length element presentation of the int value at the
      * given position.
-     *
      */
     private void putInt(int pos, int value) {
-        int mask = (int) (Math.pow(2, position.base()) - 1);
         for (int i = 0; value != 0; ++i) {
-            position.set(pos + i, value & mask);
+            position.set(pos + i, value & position.mask());
             value >>>= position.base();
         }
     }
-
+    
+    /**
+     * Retrieves the int encodes with length element finishing after position pos.
+     */
+    private int getInt(int pos, int length) {
+        int value = 0;
+        for (int i = 1; i <= length; ++i) {
+            value = (value << position.base()) + (position.get(pos - i) & position.mask());
+        }
+        return value;
+    }
+    
     /**
      * Return the element in the position i or Byte.MIN_VALUE
      */
@@ -176,21 +185,29 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
         }
         return 0;
     }
-    
-//    private static int[] All_Int = {
-//      0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
-//      8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
-//    };
-//    
-//    private static int nbBytes(int n) {
-//        n |= n >> 1;
-//        n |= n >> 2;
-//        n |= n >> 4;
-//        n |= n >> 8;
-//        n |= n >> 16;
-//        return All_Int[((n * 0x07C4ACDD) >> 27) & 0x1f] / 8 + 1;
-//    }
+
+    @Override
+    public int replica() {
+        if (position.base() < 32) {
+            int size = position.get(position.length() - 1);
+            return getInt(position.length() - 1 - size & 0x0F, size >> 4);
+        } else { // int
+            return position.get(position.length() - 2);
+        }   
+    }
+
+    @Override
+    public int clock() {        
+        if (position.base() < 32) {
+            int size = position.get(position.length() - 1);
+            return getInt(position.length() - 1, size & 0x0F);
+        } else { // int
+            return position.get(position.length() - 1);
+        }  
+    }
 }
+
+
 
 
 interface Content extends Cloneable {
@@ -203,10 +220,13 @@ interface Content extends Cloneable {
 
     int length();
 
-    public int min();
+    int min();
 
-    public int base();
+    int base();
+
+    public int mask();
 }
+
 
 
 
@@ -273,7 +293,13 @@ class ByteContent implements Content, Serializable{
         }
         return true;
     }
+
+    @Override
+    public int mask() {
+        return 0xFF;
+    }
 }
+
 
 
 
@@ -340,7 +366,13 @@ class ShortContent implements Content, Serializable {
         }
         return true;
     }
+
+    @Override
+    public int mask() {
+        return 0xFFFF;
+    }
 }
+
 
 class IntContent implements Content, Serializable {
 
@@ -404,5 +436,10 @@ class IntContent implements Content, Serializable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int mask() {
+        return 0xFFFFFFFF;
     }
 }

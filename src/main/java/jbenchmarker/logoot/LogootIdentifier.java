@@ -128,4 +128,14 @@ public class LogootIdentifier implements ListIdentifier<LogootIdentifier> {
         }
         return o;
     }
+
+    @Override
+    public int replica() {
+        return id.get(id.size() - 1).getPeerID();
+    }
+
+    @Override
+    public int clock() {
+        return id.get(id.size() - 1).getClock();
+    }
 }
