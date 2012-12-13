@@ -15,6 +15,9 @@ import jbenchmarker.core.SequenceMessage;
  */
 public class NonCausalLogoot<T> extends LogootDocument<T> {
 
+    /**
+     * Already seen objects.
+     */
     VectorWithHoles seen;
     
     public NonCausalLogoot(int r, LogootStrategy strategy) {
@@ -22,6 +25,9 @@ public class NonCausalLogoot<T> extends LogootDocument<T> {
         seen = new HashVectorWithHoles();
     }
 
+    /**
+     * Apply insert only if object is not already seen (i.e. previously deleted).
+     */
     @Override
     public void apply(Operation op) {
         LogootOperation lg = (LogootOperation) op;
