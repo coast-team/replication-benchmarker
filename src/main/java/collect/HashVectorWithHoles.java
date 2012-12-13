@@ -7,12 +7,11 @@ package collect;
 import java.util.*;
 
 /**
- *
+ * Implementation of vector with holes using an hash map to a tree set of holes. 
  * @author urso
  */
 public class HashVectorWithHoles implements VectorWithHoles {
-    Map<Integer, Atom> map = new HashMap<Integer, Atom>(); 
-    
+    Map<Integer, Atom> map = new HashMap<Integer, Atom>();     
     
     @Override
     public boolean contains(int key, int clock) {
@@ -31,42 +30,27 @@ public class HashVectorWithHoles implements VectorWithHoles {
     }
 
     static class Atom {
-        int start, end;
+        int end;
         TreeSet<Integer> holes;
 
         public Atom() {
-            this.start = -1;
             this.end = -1;
             holes = new TreeSet<Integer>(); 
         }
         
         void add(int clock) {
-            if (clock == end + 1) {
-                end++;
-            } else if (clock > end + 1) {
-                holes.addAll(interval(end + 1, clock - 1));
+            if (clock > end) {
+                for (int n = end + 1; n < clock; ++n) {
+                    holes.add(n);
+                }
                 end = clock;
             } else {
-               holes.remove(clock);
-               if (holes.isEmpty()) {
-                   start = end;
-               } else {
-                   start = holes.first() - 1;
-               }
+               holes.remove(clock);           
             }
         }
         
         boolean belongs(int clock) {
-            return (clock <= start) || (clock == end) || ((clock < end) && !holes.contains(clock));
+            return (clock == end) || ((clock < end) && !holes.contains(clock));
         }
-
-        private static Collection<? extends Integer> interval(int i, int j) {
-            Collection<Integer> s = new ArrayList<Integer>(j-i+1);
-            for (int n = i; n <= j; ++n) {
-                s.add(n);
-            }
-            return s;
-        }
-    }
-    
+    }    
 }
