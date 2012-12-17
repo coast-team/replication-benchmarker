@@ -197,7 +197,7 @@ public class LogootSDocument<T> implements Document{
         
         if(start==0){//end !=s.length too
             //String ns=s.substring(end);
-            List<T> ns=s.subList(end,s.size());
+            List<T> ns=new ArrayList<T>(s.subList(end,s.size()));
             LogootSElement nel=new LogootSElement(el, end);
             view.remove(index);
             elements.remove(index);
@@ -208,14 +208,14 @@ public class LogootSDocument<T> implements Document{
         else{//start!=0
             if(end==s.size()){
                 //String ns=s.substring(0, start);
-                List<T> ns=s.subList(0, start);
+                List<T> ns=new ArrayList<T>(s.subList(0, start));
                 view.set(index,ns);  
             }
             else{
                 //String ns1=s.substring(0, start);
                 //String ns2=s.substring(end);
-                List<T> ns1=s.subList(0, start);
-                List<T> ns2=s.subList(end, s.size());
+                List<T> ns1=new ArrayList<T>(s.subList(0, start));
+                List<T> ns2=new ArrayList<T>(s.subList(end, s.size()));
                 LogootSElement nel=new LogootSElement(el,end);
                 int nindex=IndexOf(nel, true);
                 view.set(index, ns1);

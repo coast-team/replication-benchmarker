@@ -18,6 +18,7 @@
  */
 package jbenchmarker.logootsplit;
 
+import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
@@ -58,7 +59,7 @@ public class LogootSSplit extends SequenceMessage implements LogootSOperation{
                         //String s=doc.get(list.get(index));
                         List s=doc.get(list.get(index));
                         //String ns=s.substring(p-o);
-                        List ns=s.subList(p-o, s.size());
+                        List ns=new ArrayList(s.subList(p-o, s.size()));
                         LogootSElement el2=new LogootSElement(el, p-o);
                         doc.delete(list.get(index), p-o, s.size());
                         doc.add(el2, ns);    
