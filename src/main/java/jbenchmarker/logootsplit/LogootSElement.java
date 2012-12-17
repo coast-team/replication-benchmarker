@@ -90,7 +90,7 @@ public class LogootSElement implements Comparable<LogootSElement>,Serializable {
         id.setOffset(0);
         return el;
     }
-
+    
     @Override
     public String toString() {
         String s = "";

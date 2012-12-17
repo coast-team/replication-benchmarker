@@ -22,17 +22,17 @@ package jbenchmarker.logootsplit;
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
+import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.core.Operation;
 
 
 
-public class LogootSDocument implements Document{
+public class LogootSDocument<T> implements Document{
     
     private List<LogootSElement> elements;
-    private List<String> view;
-    
+    private List<List<T>> view;
+   
     private int clock;
     private int maxId;
     private int replicaNumber;
@@ -40,7 +40,7 @@ public class LogootSDocument implements Document{
     public LogootSDocument(int max){
         this.maxId=max;
         elements=new ArrayList<LogootSElement>();
-        view=new ArrayList<String>();
+        view=new ArrayList<List<T>>();
         clock=0;
         
         LogootSIdentifier lowest=new LogootSIdentifier(0, 0);
@@ -56,8 +56,12 @@ public class LogootSDocument implements Document{
         elements.add(new LogootSElement(ll, 0));
         elements.add(new LogootSElement(gl, 0));
         
-        view.add(" ");
-        view.add(" ");
+        List l1=new ArrayList<T>();
+        l1.add(null);
+        List l2=new ArrayList<T>();
+        l2.add(null);
+        view.add(l1);
+        view.add(l2);
     }
     
     public int clockIncrement() {
@@ -76,8 +80,8 @@ public class LogootSDocument implements Document{
     private Position getPositionFromCarret(int start) {
         int i = 0;
         int index = 1;
-        while (i +view.get(index).length() <= start) {
-            i = i + view.get(index).length();
+        while (i +view.get(index).size() <= start) {
+            i = i + view.get(index).size();
             index++;
         }
         return new Position(index, start - i);
@@ -87,14 +91,14 @@ public class LogootSDocument implements Document{
         Position[] res = new Position[2];
         int i = 0;
         int index = 1;
-        while (i + view.get(index).length() <= start) {
-            i = i + view.get(index).length();
+        while (i + view.get(index).size() <= start) {
+            i = i + view.get(index).size();
             index++;
         }
         res[0] = new Position(index, start - i);
 
-        while (i + view.get(index).length() < end) {
-            i = i + view.get(index).length();
+        while (i + view.get(index).size() < end) {
+            i = i + view.get(index).size();
             index++;
         }
         res[1] = new Position(index, end - i);
@@ -108,10 +112,10 @@ public class LogootSDocument implements Document{
         Position position = getPositionFromCarret(start);
         List<SequenceMessage> list = new ArrayList<SequenceMessage>();
         if (position.offset == 0) {
-            list.add(new LogootSInsertion(so,elements.get(position.index - 1), elements.get(position.index), so.getContentAsString(), this, replicaNumber));
+            list.add(new LogootSInsertion(so,elements.get(position.index - 1), elements.get(position.index), so.getContent(), this, replicaNumber));
         } else {
             list.add(new LogootSSplit(so,elements.get(position.index), position.offset));
-            list.add(new LogootSInsertion(so,elements.get(position.index), position.offset, so.getContentAsString(), this,replicaNumber));
+            list.add(new LogootSInsertion(so,elements.get(position.index), position.offset, so.getContent(), this,replicaNumber));
         }
         return list;
 
@@ -125,7 +129,7 @@ public class LogootSDocument implements Document{
         int n = positions[0].index;
         int o = positions[0].offset;
         while (n != positions[1].index) {
-            list.add(new LogootSDeletion(so,elements.get(n), o, view.get(n).length()));
+            list.add(new LogootSDeletion(so,elements.get(n), o, view.get(n).size()));
             o = 0;
             n++;
         }
@@ -152,12 +156,31 @@ public class LogootSDocument implements Document{
         }
         return insert ? min : -1;
     }
+    
+    public List<Integer> getAllLike(LogootSElement el){
+        List<Integer> list = new ArrayList<Integer>();
+        LogootSElement minEl=el.origin();
+        LogootSElement maxEl=el.origin();
+        maxEl.getIdAt(maxEl.size()-1).setOffset(maxId);
+        int min=IndexOf(minEl,true);
+        int max=IndexOf(maxEl,true);
+        for(int i=min;i<max;i++){
+            if(elements.get(i).size()==el.size()){
+                list.add(i);
+            }
+        }   
+        return list;
+    }
    
-    public String get(int index){
+    public List<T> get(int index){
         return view.get(index);
     }
     
-    public void add(LogootSElement el, String content){
+    public LogootSElement getEl(int index){
+        return elements.get(index);
+    }
+    
+    public void add(LogootSElement el, List<T> content){
         int index=IndexOf(el, true);
         elements.add(index, el);
         view.add(index, content);
@@ -169,11 +192,12 @@ public class LogootSDocument implements Document{
     }
     
     public void delete(int index, int start, int end){
-        String s=view.get(index);
+        List<T> s=view.get(index);
         LogootSElement el=elements.get(index);
         
         if(start==0){//end !=s.length too
-            String ns=s.substring(end);
+            //String ns=s.substring(end);
+            List<T> ns=s.subList(end,s.size());
             LogootSElement nel=new LogootSElement(el, end);
             view.remove(index);
             elements.remove(index);
@@ -182,13 +206,16 @@ public class LogootSDocument implements Document{
             elements.add(nindex, nel);
         }
         else{//start!=0
-            if(end==s.length()){
-                String ns=s.substring(0, start);
+            if(end==s.size()){
+                //String ns=s.substring(0, start);
+                List<T> ns=s.subList(0, start);
                 view.set(index,ns);  
             }
             else{
-                String ns1=s.substring(0, start);
-                String ns2=s.substring(end);
+                //String ns1=s.substring(0, start);
+                //String ns2=s.substring(end);
+                List<T> ns1=s.subList(0, start);
+                List<T> ns2=s.subList(end, s.size());
                 LogootSElement nel=new LogootSElement(el,end);
                 int nindex=IndexOf(nel, true);
                 view.set(index, ns1);
@@ -205,7 +232,9 @@ public class LogootSDocument implements Document{
     public String view() {
         StringBuilder sb = new StringBuilder();
         for (int i=1;i<view.size()-1;i++){
-            sb.append(view.get(i));
+            for(int j=0;j<view.get(i).size();j++){
+                sb.append(view.get(i).get(j));
+            }
         }
         return sb.toString();
     }
@@ -222,14 +251,7 @@ public class LogootSDocument implements Document{
         }
         return s;
     }
-    
-    public int memory(){
-        int m=0;
-        for(int i=0;i<elements.size();i++){
-            m+=elements.get(i).size();
-        }
-        return m;
-    }
+   
     
     public int size(){
         return elements.size();

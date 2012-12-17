@@ -27,7 +27,7 @@ import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 
-public class LogootSAlgorithm extends MergeAlgorithm{
+public class LogootSAlgorithm<T> extends MergeAlgorithm{
     
     public LogootSAlgorithm(){
         super(null,0);
@@ -108,6 +108,6 @@ public class LogootSAlgorithm extends MergeAlgorithm{
 
     @Override
     public CRDT<String> create() {
-        return new LogootSAlgorithm(new LogootSDocument(100), 1);
+        return new LogootSAlgorithm(new LogootSDocument<String>(100), 1);
     }
 }

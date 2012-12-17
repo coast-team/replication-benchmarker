@@ -18,6 +18,7 @@
  */
 package jbenchmarker.logootsplit;
 
+import java.util.List;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 
@@ -36,7 +37,36 @@ public class LogootSSplit extends SequenceMessage implements LogootSOperation{
 
     @Override
     public void apply(LogootSDocument doc) {
-        LogootSElement el = this.element.origin();
+        List<Integer> list=doc.getAllLike(element);
+        if(!list.isEmpty()){
+            int index=0;
+            int p=offset+this.element.getIdAt(this.element.size()-1).getOffset();
+            LogootSElement el;//=doc.getEl(list.get(0));
+            int o;//=el.getIdAt(el.size()-1).getOffset();
+            while (index<list.size()){
+                int length=doc.get(list.get(index)).size();
+                el = doc.getEl(list.get(index));
+                o=el.getIdAt(el.size()-1).getOffset();
+                if(p>=o+length){//no split in this element
+                    index++;
+                }
+                else{
+                    if(p<=o){//no split
+                        return;
+                    }
+                    else{
+                        //String s=doc.get(list.get(index));
+                        List s=doc.get(list.get(index));
+                        //String ns=s.substring(p-o);
+                        List ns=s.subList(p-o, s.size());
+                        LogootSElement el2=new LogootSElement(el, p-o);
+                        doc.delete(list.get(index), p-o, s.size());
+                        doc.add(el2, ns);    
+                    }
+                }
+            }
+        }
+        /*LogootSElement el = this.element.origin();
         LogootSIdentifier id = el.getIdAt(el.size() - 1);
         int elOffset = this.element.getIdAt(this.element.size() - 1).getOffset();
         int maxpeer = this.offset + elOffset;
@@ -62,7 +92,7 @@ public class LogootSSplit extends SequenceMessage implements LogootSOperation{
                     }
                 }
             }
-        }
+        }*/
     }
 
     @Override

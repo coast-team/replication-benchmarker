@@ -26,16 +26,16 @@ import jbenchmarker.core.SequenceOperation;
 public class LogootSInsertion extends SequenceMessage implements LogootSOperation{
     
     private LogootSElement element;
-    private String content;
+    private List content;
     
     
-    private LogootSInsertion(SequenceOperation so,LogootSElement el,String s){
+    private LogootSInsertion(SequenceOperation so,LogootSElement el,List s){
         super(so);
         element=el.clone();
         content=s;
     } 
     
-    public LogootSInsertion(SequenceOperation so, LogootSElement lower, LogootSElement greater, String content, LogootSDocument doc,int siteId) {
+    public LogootSInsertion(SequenceOperation so, LogootSElement lower, LogootSElement greater, List content, LogootSDocument doc,int siteId) {
         super(so);
         this.content = content;
         List<LogootSIdentifier> idList = new ArrayList<LogootSIdentifier>();
@@ -66,7 +66,7 @@ public class LogootSInsertion extends SequenceMessage implements LogootSOperatio
             int distance = gId.getPosition() - lower.getIdAt(i).getPosition();
             if (distance < 2) {
                 if(i==lower.size()-1){
-                    idList.add(new LogootSIdentifier(lower.getIdAt(i), lower.getIdAt(i).getOffset() + doc.get(doc.IndexOf(lower, false)).length() - 1));
+                    idList.add(new LogootSIdentifier(lower.getIdAt(i), lower.getIdAt(i).getOffset() + doc.get(doc.IndexOf(lower, false)).size() - 1));
                 }
                 else{
                     idList.add(new LogootSIdentifier(lower.getIdAt(i)));
@@ -92,7 +92,7 @@ public class LogootSInsertion extends SequenceMessage implements LogootSOperatio
 
     }
 
-    public LogootSInsertion(SequenceOperation so,LogootSElement el, int offset, String content, LogootSDocument doc,int siteId) {
+    public LogootSInsertion(SequenceOperation so,LogootSElement el, int offset, List content, LogootSDocument doc,int siteId) {
         super(so);
         this.content=content;
         List<LogootSIdentifier> idList = new ArrayList<LogootSIdentifier>();
