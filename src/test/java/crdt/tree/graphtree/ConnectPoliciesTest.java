@@ -18,18 +18,25 @@
  */
 package crdt.tree.graphtree;
 
-import collect.HashMapSet;
-import static collect.Utils.*;
-import crdt.set.SetOperation;
 import crdt.tree.graphtree.connection.GraphCompact;
+import collect.HashMapSet;
 import crdt.tree.graphtree.connection.GraphReappear;
 import crdt.tree.graphtree.connection.GraphRoot;
+import java.util.Map;
+import java.util.HashMap;
 import crdt.tree.graphtree.connection.GraphSkip;
-import crdt.tree.PseudoSet;
+import java.util.HashSet;
 import java.util.Iterator;
+import crdt.set.SetOperation;
+import crdt.tree.PseudoSet;
+import collect.Node;
 import java.util.Set;
-import static org.junit.Assert.*;
+import collect.Tree;
+import collect.HashTree;
 import org.junit.Test;
+import static org.junit.Assert.*;
+
+import static collect.Utils.*;
 
 /**
  *
