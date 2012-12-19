@@ -58,45 +58,86 @@ public class CausalSimulator extends Simulator {
         super(rf);
     }
 
+    /**
+     * Lists of remote messages.
+     * @return a map replica id -> messages received.
+     */
     public Map<Integer, List<CRDTMessage>> getGenHistory() {
         return genHistory;
     }
 
+    /**
+     * Lists of local operation.
+     * @return a map replica id -> operation generated.
+     */
     public Map<Integer, List<TraceOperation>> getHistory() {
         return history;
     }
 
+    /**
+     * The whole memory occupied by the replicas.
+     * @return size in bytes.
+     */
     public long getSumMem() {
         return sumMemory;
     }
 
+    /**
+     * The average memory occupied by the replicas.
+     * @return size in bytes.
+     */
     public long getAvgMem() {
         return sumMemory / this.getReplicas().keySet().size();
     }
 
+    /**
+     * The whole time taken by appying local operations.
+     * @return time in nanoseconds.
+     */
     public long getLocalSum() {
         return localSum;
     }
-
+    
+    /**
+     * The average time taken by appying local operations.
+     * @return time in nanoseconds.
+     */
+    public double getLocalAvg() {
+        return localSum / ((double) nbLocal);
+    }
+    
+    /**
+     * The number of local operations.
+     * @return number.
+     */
     public long getNbLocal() {
         return nbLocal;
     }
 
+    /**
+     * The number of remote operations.
+     * @return number.
+     */
     public long getNbRemote() {
         return nbRemote;
     }
-
+    
+    /**
+     * The whole time taken by appying remote operations.
+     * @return time in nanoseconds.
+     */
     public long getRemoteSum() {
         return remoteSum;
     }
-
+    
+    /**
+     * The average time taken by appying remote operations.
+     * @return time in nanoseconds.
+     */
     public double getRemoteAvg() {
         return remoteSum / ((double) nbRemote);
     }
 
-    public double getLocalAvg() {
-        return localSum / ((double) nbLocal);
-    }
     //Viewer view =null; /*new DiagSequence(20);*/
 
     /**
@@ -118,7 +159,19 @@ public class CausalSimulator extends Simulator {
         this.writer = writer;
     }
 
-
+    /**
+     * Runs a trace of operations. 
+     * Iterates trough trace and apply each operation. 
+     * Instanciate replica when needed using the replica factory.
+     * For each operation apply (localy or remotely) store execution time. 
+     * Optionally, computes the memory usage (costly operation)
+     * @param trace a trace, i.e. a enumeration of TraceOperation 
+     * @param detail true for a detail of each execution time false for only the overall sum.
+     * @param nbrTrace frequency with which the calculated memory usage, 0 for no memory measurement.
+     * @param overhead true for replica memory memory measurement, false for document measurement.
+     * @throws Exception if the Trace is incorrect (non causal, etc..)
+     * @see Trace, TraceOperation, crdt.CRDT
+     */
     @Override
     public void run(Trace trace, boolean detail, int nbrTrace, boolean overhead) throws IncorrectTraceException, PreconditionException, IOException {
         this.detail = detail;
@@ -220,7 +273,7 @@ public class CausalSimulator extends Simulator {
         }
     }
 
-    public static void insertCausalOrder(List<TraceOperation> concurrentOps, TraceOperation opt) {
+    private static void insertCausalOrder(List<TraceOperation> concurrentOps, TraceOperation opt) {
         final ListIterator<TraceOperation> it = concurrentOps.listIterator();
         boolean cont = true;
         while (it.hasNext() && cont) {
@@ -233,7 +286,7 @@ public class CausalSimulator extends Simulator {
         it.add(opt);
     }
 
-    void play(CRDT r, VectorClock vc, List<TraceOperation> concurrentOps) throws IOException, IncorrectTraceException {
+    private void play(CRDT r, VectorClock vc, List<TraceOperation> concurrentOps) throws IOException, IncorrectTraceException {
         
         for (TraceOperation t : concurrentOps) {
             int e = t.getReplica();
@@ -287,7 +340,7 @@ public class CausalSimulator extends Simulator {
         }
     }
 
-    public void serializ(CRDT m) throws IOException {
+    private void serializ(CRDT m) throws IOException {
         ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(byteOutput);
         if (overhead) {
@@ -303,7 +356,7 @@ public class CausalSimulator extends Simulator {
         byteOutput.close();
     }
 
-    public void ifSerializ() throws IOException {
+    private void ifSerializ() throws IOException {
         if (nbrTrace > 0 && tour == nbrTrace) {
             for (int rep : this.getReplicas().keySet()) {
                 serializ(this.getReplicas().get(rep));
@@ -331,7 +384,7 @@ public class CausalSimulator extends Simulator {
         return l;
     }
 
-    public void storeOp(TraceOperation op) {
+    private void storeOp(TraceOperation op) {
         // TODO : generalize for any kind of operation
         try {
             writer.writeObject(op);

@@ -63,8 +63,9 @@ public abstract class Simulator {
     
     
     /**
-     * Constructor of a Simulator. Replicas and Document will be instaciated at run time.
-     * @param rf the factory
+     * Constructor of a Simulator. 
+     * Replicas will be instanciated at run time.
+     * @param rf a replica factory
      */
     public Simulator(Factory<? extends CRDT> rf) {
         this.replicas = new HashMap<Integer,CRDT>();
@@ -81,12 +82,22 @@ public abstract class Simulator {
 
     public void run(Trace trace) throws Exception {
         run(trace, false, 0, false);
-    }  
+    } 
     
-    /*
-     * Runs a trace of operations. Iterate trough trace and construct replica with documents while needed.
+    /**
+     * Runs a trace of operations. 
+     * Iterates trough trace and apply each operation. 
+     * Instanciate replica when needed using the replica factory.
+     * For each operation apply (localy or remotely) store execution time. 
+     * Optionally, computes the memory usage (costly operation)
+     * @param trace a trace, i.e. a enumeration of TraceOperation 
+     * @param detail true for a detail of each execution time false for only the overall sum.
+     * @param nbrTrace frequency with which the calculated memory usage, 0 for no memory measurement.
+     * @param overhead true for replica memory memory measurement, false for document measurement.
+     * @throws Exception if the Trace is incorrect (non causal, etc..)
+     * @see Trace, TraceOperation, crdt.CRDT
      */
-    public abstract void run(Trace trace, boolean detail,int nbrTrace, boolean o) throws Exception;    
+    public abstract void run(Trace trace, boolean detail, int nbrTrace, boolean overhead) throws Exception;    
     
     /**
      * Instanciate a new replica with classes given at construction. 
@@ -100,23 +111,27 @@ public abstract class Simulator {
     }
 
     /**
-     * Memory occupied by whole framework. One entry per traceoperation.
+     * Memory occupied by whole framework.
+     * One entry per measurement : trace size divided by nbrTrace.
+     * @return a list of size in bytes, empty list if nbrTrace was 0
      */
     public List<Long> getMemUsed() {
         return memUsed;
     }
     
     /**
-     * Replica generation times
-     * @return 
+     * Replica generation times.
+     * One entry per traceoperation.
+     * @return a list of generation times in nanoseconds, empty list if detail was false
      */
     public List<Long> replicaGenerationTimes() {
         return genTime;
     }
     
     /**
-     * Time for execution remote operation
-     * @return 
+     * Time for execution remote operation.
+     * One entry per traceoperation.
+     * @return a list of generation times in nanoseconds, empty list if detail was false
      */
     public List<Long> getRemoteTimes() {
         return remoteTime;
