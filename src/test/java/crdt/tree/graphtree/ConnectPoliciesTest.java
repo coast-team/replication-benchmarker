@@ -28,7 +28,7 @@ import crdt.tree.graphtree.connection.GraphSkip;
 import java.util.HashSet;
 import java.util.Iterator;
 import crdt.set.SetOperation;
-import crdttest.tree.PseudoSet;
+import crdt.tree.PseudoSet;
 import collect.Node;
 import java.util.Set;
 import collect.Tree;
