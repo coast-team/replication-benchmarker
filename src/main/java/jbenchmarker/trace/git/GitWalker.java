@@ -397,8 +397,12 @@ public class GitWalker {
                     } catch (Exception ex) { // if another exception like inexitant considere 0 file.
                         stateAfterCommit = new RawText(new byte[0]);
                     }
-
-
+                    
+                    int signeMerge=0;
+                    for(int i=0; i<stateAfterMerge.size();i++)
+                        if(stateAfterMerge.getString(i).startsWith("<<<<<<<"))
+                            signeMerge++;
+                            
                     EditList editList = diffAlgorithm.diff(RawTextComparator.DEFAULT, stateAfterMerge, stateAfterCommit);
 
 
@@ -413,6 +417,12 @@ public class GitWalker {
                     for (Edit ed : editList) {// Count line replace is two time counted
                         editCount.addLine(ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB());
                     }
+                    
+                    if(editCount.line>signeMerge && signeMerge>0)
+                        editCount.setLine(editCount.line - signeMerge);
+
+                    signeMerge=0;
+                    
                     //Count the block size
                     editCount.addBlock(editList.size());
 //                    if (tw.getPathString().equals(".gitattributes") && editList.size() > 0) {
@@ -512,8 +522,13 @@ public class GitWalker {
          * @return modified line count
          */
         public int getLine() {
-            return line;
+             return line;
         }
+        
+        public void setLine( int l) {
+             line = l;
+        }
+        
 
         /**
          * Increment modified line number
