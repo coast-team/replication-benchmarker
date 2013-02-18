@@ -400,8 +400,14 @@ public class GitWalker {
                     
                     int signeMerge=0;
                     for(int i=0; i<stateAfterMerge.size();i++)
-                        if(stateAfterMerge.getString(i).startsWith("<<<<<<<"))
+                    {
+                        
+                        if(stateAfterMerge.getString(i).startsWith("<<<<<<<")
+                                 || stateAfterMerge.getString(i).startsWith(">>>>>>>")
+                                || stateAfterMerge.getString(i).startsWith("======="))                            
+  
                             signeMerge++;
+                        }
                             
                     EditList editList = diffAlgorithm.diff(RawTextComparator.DEFAULT, stateAfterMerge, stateAfterCommit);
 
