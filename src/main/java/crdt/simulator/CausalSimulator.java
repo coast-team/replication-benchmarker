@@ -185,6 +185,11 @@ public class CausalSimulator extends Simulator {
         orderTrace = new HashMap();
         int numTrace = 0;
 
+        
+        // Passive replica that only receive operationd
+        this.newReplica(-1);
+        clocks.put(-1, new VectorClock());
+                
         setOp = new HashSet();
         history = new HashMap<Integer, List<TraceOperation>>();
         genHistory = new HashMap<Integer, List<CRDTMessage>>();
@@ -194,6 +199,11 @@ public class CausalSimulator extends Simulator {
             final TraceOperation opt = it.nextElement();
 
             final int r = opt.getReplica();
+            
+            if (r == -1) {
+                throw new IncorrectTraceException("Incorrect replica value (-1) : " + opt);
+            }
+            
             CRDT localReplica = this.getReplicas().get(r);
 
             if (localReplica == null) {
