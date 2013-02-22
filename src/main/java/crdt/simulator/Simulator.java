@@ -104,7 +104,8 @@ public abstract class Simulator {
      * Adds the crated replica to the map.
      */
     public CRDT newReplica(int number) {
-        CRDT r = rf.create();
+
+       CRDT r = rf.create();
         replicas.put(number, r);
         r.setReplicaNumber(number);
         return r;

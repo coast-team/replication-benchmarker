@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class FCPosition implements Serializable {
+public class FCPosition implements Comparable<FCPosition>, Serializable {
 
     List<Byte> position;
 
@@ -40,16 +40,20 @@ public class FCPosition implements Serializable {
     public static LinkedList<Byte> conv(List<Byte> b, FCIdentifier id) {
         LinkedList<Byte> s1 = new LinkedList<Byte>();
         s1.addAll(b);
-        s1.add(Byte.MAX_VALUE);
-        for (byte bb : id.toString().getBytes()) {
+        s1.add(Byte.MIN_VALUE);
+        byte[] b1=Integer.toHexString(id.getReplicaNumber()).getBytes();
+        for (byte bb : b1) {
             s1.add(bb);
-            //System.out.print("" + bb);
         }
-        //System.out.println();
+        s1.add(Byte.MIN_VALUE);
+        b1 = Integer.toHexString(id.getOperationNumber()).getBytes();
+        for (byte bb : b1) {
+            s1.add(bb);
+        }
         return s1;
     }
 
-    int compareTo(FCIdentifier id1, FCIdentifier id2, FCPosition f2) {
+    /*int compareTo(FCIdentifier id1, FCIdentifier id2, FCPosition f2) {
         Iterator<Byte> s1 = conv(this.position, id1).iterator();
         Iterator<Byte> s2 = conv(f2.position, id2).iterator();
         while (s1.hasNext() && s2.hasNext()) {
@@ -69,7 +73,7 @@ public class FCPosition implements Serializable {
             return -1;
         }
         return 0;
-    }
+    }*/
 
     /**
      * Make object from position.
@@ -112,5 +116,33 @@ public class FCPosition implements Serializable {
     @Override
     public String toString() {
         return "FCPosition{" + position + '}';
+    }
+
+   
+    @Override
+    public int compareTo(FCPosition o) {
+        Iterator <Byte> s1=this.position.iterator();
+        Iterator <Byte> s2=o.position.iterator();
+        
+        while (s1.hasNext() && s2.hasNext()) {
+            byte b1 = s1.next();
+            byte b2 = s2.next();
+            if (b1 < b2) {
+                return -1;
+            }
+            if (b1 > b2) {
+                return 1;
+            }
+        }
+        /* S1 is longer than s2*/
+        if (s1.hasNext()) {
+            return 1;
+        }
+        /* S2 is longer than s1*/
+        if (s2.hasNext()) {
+            return -1;
+        }
+        // Both have same size
+        return 0;
     }
 }

@@ -48,7 +48,7 @@ public class HashMapSet<K, T> {
      * @param t element to check
      * @return if t is in values set.
      */
-    public boolean contains(T t) {
+    synchronized public boolean contains(T t) {
         return values.contains(t);
     }
 
@@ -59,7 +59,7 @@ public class HashMapSet<K, T> {
      * @param t
      * @return true if element was present.
      */
-    public boolean remove(K k, T t) {
+    synchronized public boolean remove(K k, T t) {
         HashSet hs = hashmap.get(k);
 
         if (hs != null && hs.remove(t)) {
@@ -80,7 +80,7 @@ public class HashMapSet<K, T> {
      * @param k
      * @return removed elements set
      */
-    public HashSet<T> removeAll(K k) {
+    synchronized public HashSet<T> removeAll(K k) {
         HashSet hs = hashmap.get(k);
         if (hs != null) {
             values.removeAll(hs);
@@ -96,7 +96,7 @@ public class HashMapSet<K, T> {
      * @param o
      * @return all element
      */
-    public HashSet<T> getAll(K o) {
+    synchronized public HashSet<T> getAll(K o) {
         return hashmap.get(o);
     }
 
@@ -104,7 +104,7 @@ public class HashMapSet<K, T> {
      *
      * @return numbers of stored elements
      */
-    public int size() {
+    synchronized public int size() {
         return values.size();
     }
 
@@ -113,7 +113,7 @@ public class HashMapSet<K, T> {
      *
      * @return empty
      */
-    public boolean isEmpty() {
+    synchronized public boolean isEmpty() {
         return values.isEmpty();
     }
 
@@ -122,7 +122,7 @@ public class HashMapSet<K, T> {
      * @param k
      * @return True if key k is present
      */
-    public boolean containsKey(K k) {
+    synchronized public boolean containsKey(K k) {
         return hashmap.containsKey(k);
     }
 
@@ -132,7 +132,7 @@ public class HashMapSet<K, T> {
      * @param t
      * @return true if element t is stored with key k.
      */
-    public boolean containsValue(K k, T t) {
+    synchronized public boolean containsValue(K k, T t) {
         HashSet<T> hs = hashmap.get(k);
 
         return hs != null && hs.contains(t);
@@ -145,7 +145,7 @@ public class HashMapSet<K, T> {
      * @param t
      * @return the set with the element t has been stored
      */
-    public HashSet put(K k, T t) {
+    synchronized public HashSet put(K k, T t) {
         HashSet<T> hs = hashmap.get(k);
         if (hs == null) {
             hs = new HashSet<T>();
@@ -161,7 +161,7 @@ public class HashMapSet<K, T> {
     /**
      * Remove all elements and keys
      */
-    public void clear() {
+    synchronized public void clear() {
         hashmap.clear();
         values.clear();
     }
@@ -170,7 +170,7 @@ public class HashMapSet<K, T> {
      *
      * @return the set of keys
      */
-    public Set<K> keySet() {
+    synchronized public Set<K> keySet() {
         return hashmap.keySet();
     }
    
@@ -179,7 +179,7 @@ public class HashMapSet<K, T> {
      *
      * @return return set of all stored elements
      */
-    public Collection values() {
+    synchronized public Collection values() {
         return values;
     }
 
@@ -187,7 +187,7 @@ public class HashMapSet<K, T> {
      *
      * @return Iterator of values.
      */
-    public Iterator iterator() {
+   synchronized  public Iterator iterator() {
         return values.iterator();
     }
 
@@ -195,7 +195,7 @@ public class HashMapSet<K, T> {
      *
      * @return return set of entry
      */
-    public Set entrySet() {
+    synchronized public Set entrySet() {
         return hashmap.entrySet();
     }
 
@@ -204,7 +204,7 @@ public class HashMapSet<K, T> {
      * @param k the key
      * @return one element stored under k.
      */
-    public T getOne(K k) {
+    synchronized public T getOne(K k) {
         Set<T> set;
         if ((set = this.getAll(k)) != null) {
             Iterator<T> it = set.iterator();
@@ -217,7 +217,7 @@ public class HashMapSet<K, T> {
      * @param k Is the key.
      * @param h and set to add under k.
      */
-    public void putAll(K k, HashSet<T> h){
+   synchronized  public void putAll(K k, HashSet<T> h){
         HashSet set=hashmap.get(k);
         if (set==null){
             hashmap.put(k, (HashSet<T>)h.clone());

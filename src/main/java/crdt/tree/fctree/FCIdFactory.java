@@ -24,19 +24,26 @@ import java.io.Serializable;
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class IdFactory implements Serializable{
+public class FCIdFactory implements Serializable{
     private int replica;
-    private int nbOp;
+    private int nbOp=1;
+
+    public FCIdFactory() {
+    }
+
+    public FCIdFactory(int replica) {
+        this.replica = replica;
+    }
     
     /**
      * Create new id with incremented nbOp
      * @return return new id.
      */
-    FCIdentifier createId(){
+    public FCIdentifier createId(){
         return new FCIdentifier(replica, nbOp++);
     }
 
-    void setReplicaNumber(int replica) {
+    public void setReplicaNumber(int replica) {
         this.replica=replica;
     }
 

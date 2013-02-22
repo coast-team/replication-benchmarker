@@ -1,20 +1,20 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2012
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package crdt.tree.fctree;
 
@@ -24,25 +24,30 @@ import crdt.CRDTMessage;
 import crdt.OperationBasedOneMessage;
 import crdt.PreconditionException;
 import crdt.tree.fctree.Operations.Add;
+import crdt.tree.fctree.Operations.ChX;
 import crdt.tree.fctree.Operations.Del;
+import crdt.tree.fctree.policy.PostAction;
 import crdt.tree.orderedtree.CRDTOrderedTree;
 import java.util.HashMap;
 import java.util.List;
 
 /**
  *
- * @param <T> 
+ * @param <T>
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
 public class FCTree<T> extends CRDTOrderedTree<T> {
 
     FCNode root;
-    HashMap<FCIdentifier, FCNode> map=new HashMap<FCIdentifier, FCNode>();
-    IdFactory idFactory = new IdFactory();
-    FCPositionFactory positionFactory= new FCPositionFactory();
+    HashMap<FCIdentifier, FCNode> map = new HashMap<FCIdentifier, FCNode>();
+    HashMap<FCIdentifier, FCNode> idToCycle = new HashMap<FCIdentifier, FCNode>();
+    FCIdFactory idFactory = new FCIdFactory();
+    FCPositionFactory positionFactory = new FCPositionFactory();
+    PostAction postAction = null;
 
     /**
      * Add a node at end of path, in position p and return a message to others
+     *
      * @param path
      * @param p
      * @param element
@@ -54,13 +59,15 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
         FCNode node = root.getNodeFromPath(path);
         FCNode gnode = node.getChild(p - 1);
         FCNode lnode = node.getChild(p);
-        Add add = new Add(element, positionFactory.createBetween(gnode, lnode), node.getId(), this.idFactory.createId());
-        add.applyOnNode(node, this);
+        FCIdentifier id = this.idFactory.createId();
+        Add add = new Add(element, positionFactory.createBetweenNode(gnode, lnode, id), node.getId(), id);
+        add.apply(node, this);
         return new OperationBasedOneMessage(add);
     }
 
     /**
      * del a node at end of path and return a message to others
+     *
      * @param path
      * @return
      * @throws PreconditionException
@@ -68,13 +75,53 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
     @Override
     public CRDTMessage remove(List<Integer> path) throws PreconditionException {
         FCNode node = root.getNodeFromPath(path);
-        Del del = new Del(node.getId());
-        del.applyOnNode(node, this);
+        Del del = new Del(this.idFactory.createId(), node.getId());
+        del.apply(node, this);
         return new OperationBasedOneMessage(del);
+    }
+
+    public CRDTMessage rename(List<Integer> path, T newValue) {
+        FCNode node = root.getNodeFromPath(path);
+        ChX operation = new ChX(this.idFactory.createId(), node, newValue, FCNode.FcLabels.contain);
+        operation.apply(node, this);
+        return new OperationBasedOneMessage(operation);
+    }
+
+    public CRDTMessage move(List<Integer> from, List<Integer> to) {
+        FCNode node = root.getNodeFromPath(from);
+        FCNode nFather;
+        if (to.size() == 1) {
+            nFather = getRoot();
+        } else {
+            List<Integer> toF = to.subList(0, to.size() - 1);
+            nFather = root.getNodeFromPath(toF);
+        }
+        
+        int p = to.get(to.size() - 1);
+        
+        
+        if(nFather.getId().equals(node.getFather().getId()) && p>from.get(from.size()-1)){
+            p++;
+        }
+        FCNode gnode = nFather.getChild(p - 1);
+        FCNode lnode = nFather.getChild(p);
+        FCIdentifier id = idFactory.createId();
+
+        ChX op = new ChX(id, node, positionFactory.createBetweenNode(gnode, lnode, id), FCNode.FcLabels.priority);
+
+        CRDTMessage ret = new OperationBasedOneMessage(op);
+        if (!nFather.getId().equals(node.getFather().getId())) {
+            ChX move = new ChX(idFactory.createId(), node, nFather.getId(), FCNode.FcLabels.fatherId);
+            move.apply(node, this);
+            ret=ret.concat(new OperationBasedOneMessage(move));
+        }
+        op.apply(node, this);
+        return ret;
     }
 
     /**
      * search node by identifier
+     *
      * @param id
      * @return node identified by ID
      */
@@ -84,6 +131,7 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
 
     /**
      * Apply one remote message from others
+     *
      * @param op
      */
     @Override
@@ -92,18 +140,20 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
     }
 
     /**
-     *Apply one remote message from others
+     * Apply one remote message from others
+     *
      * @param op
      */
     public void applyOneRemote(FCOperation<T> op) {
-       /* System.out.println("op : "+op);
-        System.out.println("before"+root);*/
+        /* System.out.println("op : "+op);
+         System.out.println("before"+root);*/
         op.apply(this);
         //System.out.println("after"+root);
     }
 
     /**
      * return the lookup (the root)
+     *
      * @return
      */
     @Override
@@ -113,15 +163,17 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
 
     /**
      * factory of fctree
+     *
      * @return
      */
     @Override
     public CRDT<OrderedNode<T>> create() {
-        return new FCTree();
+        return new FCTree(postAction.clone());
     }
 
     /**
      * Return the map of identifier -> fcnodes
+     *
      * @return
      */
     public HashMap<FCIdentifier, FCNode> getMap() {
@@ -129,7 +181,8 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
     }
 
     /**
-     * Set replicat number 
+     * Set replicat number
+     *
      * @param replica
      */
     @Override
@@ -142,15 +195,36 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
      * Constructor for an tree with a root identified by site : -1 nbop : 0
      */
     public FCTree() {
-        FCIdentifier idroot=new FCIdentifier(-1, 0);
-        root=new FCNode(root, null, null, idroot);
+        FCIdentifier idroot = new FCIdentifier(-1, 0);
+        root = new FCNode(root, null, null, idroot);
         map.put(idroot, root);
+    }
+    public FCTree(PostAction action){
+        this();
+        this.postAction=action;
+        if (postAction!=null){
+            postAction.setTree(this);
+        }
     }
 
     @Override
     public String toString() {
-        return "FCTree"+idFactory.getReplica() +"{"  + root + '}';
+        return "FCTree" + idFactory.getReplica() + "{" + root + '}';
     }
-    
-    
+
+    public PostAction getPostAction() {
+        return postAction;
+    }
+
+    public FCNode getRoot() {
+        return root;
+    }
+
+    public FCPositionFactory getPositionFactory() {
+        return positionFactory;
+    }
+
+    public FCIdFactory getIdFactory() {
+        return idFactory;
+    }
 }

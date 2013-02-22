@@ -30,8 +30,13 @@ import java.util.Random;
 public class FCPositionFactory implements Serializable {
 
     public static final boolean alea = false;
+
+    public FCPosition createBetweenNode(FCNode n1, FCNode n2, FCIdentifier id) {
+        return createBetweenPosition(n1==null?null:n1.getPosition(),n2==null?null:n2.getPosition(),id);
+    }
     
-    FCPosition createBetween(FCNode n1, FCNode n2) {
+    
+    public FCPosition createBetweenPosition(FCPosition n1, FCPosition n2, FCIdentifier id) {
         Iterator<Byte> s1;
         Iterator<Byte> s2;
         /*
@@ -40,15 +45,17 @@ public class FCPositionFactory implements Serializable {
          }
          */
         if (n1 == null) {
-            s1 = new infinitString(Byte.MIN_VALUE);
+            s1 = new infinitString((byte)(Byte.MIN_VALUE+1));
         } else {
-            s1 = FCPosition.conv(n1.getPosition().getPosition(), n1.getId()).iterator();
+            //s1 = FCPosition.conv(n1.getPosition().getPosition(), n1.getId()).iterator();
+            s1 = n1.getPosition().iterator();
         }
 
         if (n2 == null) {
             s2 = new infinitString((byte) (Byte.MAX_VALUE));
         } else {
-            s2 = FCPosition.conv(n2.getPosition().getPosition(), n2.getId()).iterator();
+            //s2 = FCPosition.conv(n2.getPosition().getPosition(), n2.getId()).iterator();
+            s2 = n2.getPosition().iterator();
         }
 
 
@@ -57,17 +64,26 @@ public class FCPositionFactory implements Serializable {
         while (s1.hasNext() && s2.hasNext()) {
             byte b1 = s1.next();
             byte b2 = s2.next();
-            if (b1 == b2) {
-                sb.addLast(b1);
-            } else if (b2 - b1 > 2) {
-                if (alea) {
-                    Random rnd=new Random();
-                    sb.addLast(new Byte((byte) (rnd.nextInt(b2 - b1))));
-                } else {
-                    sb.addLast(new Byte((byte) ((b1 + b2) / 2)));
-                }
+            if (b2 - b1 > 1) {
+
+                sb.addLast(new Byte((byte) ((b1 + b2) / 2)));
                 break;
+            } else {
+                sb.addLast(b1);
             }
+        } 
+        if (s1.hasNext()) {
+            sb.addLast(s1.next());
+        }
+        sb.addLast(Byte.MIN_VALUE);
+        //sb.addAll(Integer.toHexString(id.getReplicaNumber()).getBytes()); 
+        byte[] b1 = Integer.toHexString(id.getReplicaNumber()).getBytes();
+        for (byte bb : b1) {
+            sb.add(bb);
+        }
+        b1 = Integer.toHexString(id.getOperationNumber()).getBytes();
+        for (byte bb : b1) {
+            sb.add(bb);
         }
         return new FCPosition(sb);
     }
