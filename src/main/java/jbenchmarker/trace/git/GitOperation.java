@@ -21,6 +21,7 @@ package jbenchmarker.trace.git;
 import collect.VectorClock;
 import crdt.CRDT;
 import crdt.simulator.TraceOperation;
+import java.io.Serializable;
 import java.util.List;
 import jbenchmarker.core.LocalOperation;
 import jbenchmarker.core.Operation;

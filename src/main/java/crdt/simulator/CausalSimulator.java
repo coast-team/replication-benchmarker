@@ -33,6 +33,9 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jbenchmarker.core.LocalOperation;
+import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.ot.otset.OTSetOperations.OpType;
+import jbenchmarker.trace.git.GitTrace;
 
 /**
  *
@@ -49,7 +52,8 @@ public class CausalSimulator extends Simulator {
     private int nbrTrace = 0;
     private long sumMemory = 0L;
     ObjectOutputStream writer = null;
-
+    private long timeInsGen=0L,timeDelGen=0L, timeInsRemote=0L,timeDelRemote=0L;
+    private int nbrDel=0,nbrIns=0;
     
     private HashMap<TraceOperation, Integer> orderTrace;
     private boolean detail;
@@ -80,6 +84,30 @@ public class CausalSimulator extends Simulator {
      */
     public long getSumMem() {
         return sumMemory;
+    }
+    
+    public long getTimeInsGen() {
+        return timeInsGen;
+    }
+    
+    public long getTimeInsRemote() {
+        return timeInsRemote;
+    }
+    
+    public long getTimeDelGen() {
+        return timeDelGen;
+    }
+    
+    public long getTimeDelRemote() {
+        return timeDelRemote;
+    }
+    
+    public long getnbrIns() {
+        return nbrIns;
+    }
+    
+    public long getnbrDel() {
+        return nbrDel;
     }
 
     /**
@@ -185,7 +213,6 @@ public class CausalSimulator extends Simulator {
         orderTrace = new HashMap();
         int numTrace = 0;
 
-        
         // Passive replica that only receive operationd
         this.newReplica(-1);
         clocks.put(-1, new VectorClock());
@@ -195,9 +222,8 @@ public class CausalSimulator extends Simulator {
         genHistory = new HashMap<Integer, List<CRDTMessage>>();
         while (it.hasMoreElements()) {
             tour++;
-
             final TraceOperation opt = it.nextElement();
-
+            
             final int r = opt.getReplica();
             
             if (r == -1) {
@@ -205,7 +231,7 @@ public class CausalSimulator extends Simulator {
             }
             
             CRDT localReplica = this.getReplicas().get(r);
-
+            
             if (localReplica == null) {
                 localReplica = this.newReplica(r);
                 clocks.put(r, new VectorClock());
@@ -231,7 +257,6 @@ public class CausalSimulator extends Simulator {
             }
             LocalOperation op = opt.getOperation();
             op = op.adaptTo(localReplica);
-
             if (writer!=null) {
                 storeOp(opt);
             }
@@ -246,14 +271,16 @@ public class CausalSimulator extends Simulator {
             tmp = System.nanoTime();
 
             final CRDTMessage m = localReplica.applyLocal(op);
-
+            
             long after = System.nanoTime();
             localSum += (after - tmp);
             if (detail) {
                 genTime.add(after - tmp);
+                //stat(opt, after - tmp, 0);
                 genSize.add(m.size());
                 remoteTime.add(0L);
             }
+
             nbLocal++;
             final CRDTMessage msg = m.clone();
 
@@ -281,6 +308,7 @@ public class CausalSimulator extends Simulator {
         if (writer != null) {
             writer.close();
         }
+                
     }
 
     private static void insertCausalOrder(List<TraceOperation> concurrentOps, TraceOperation opt) {
@@ -297,7 +325,6 @@ public class CausalSimulator extends Simulator {
     }
 
     private void play(CRDT r, VectorClock vc, List<TraceOperation> concurrentOps) throws IOException, IncorrectTraceException {
-        
         for (TraceOperation t : concurrentOps) {
             int e = t.getReplica();
             CRDTMessage op = genHistory.get(e).get(t.getVectorClock().get(e) - 1);
@@ -312,10 +339,11 @@ public class CausalSimulator extends Simulator {
             if (detail) {
                 int num = orderTrace.get(t);
                 remoteTime.set(num, remoteTime.get(num) + after - tmp);
+                //stat(t, after - tmp, 1);
+                
             }
             nbRemote++;
             vc.inc(e);
-            ifSerializ();
         }
     }
 
@@ -349,7 +377,7 @@ public class CausalSimulator extends Simulator {
             }
         }
     }
-
+    
     private void serializ(CRDT m) throws IOException {
         ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(byteOutput);
@@ -359,14 +387,20 @@ public class CausalSimulator extends Simulator {
             stream.writeObject(m.lookup());
         }
         sumMemory += byteOutput.size();
-
+        
+        //System.out.println("replica :"+m.getReplicaNumber()+" has "+byteOutput.size()+" byte");
+        
+        byteOutput.reset();
+        stream.reset();
         stream.flush();
         stream.close();
         byteOutput.flush();
         byteOutput.close();
+        //System.out.println("After: replica :"+m.getReplicaNumber()+" has "+byteOutput.size()+" byte");
     }
-
-    private void ifSerializ() throws IOException {
+    
+    
+     private void ifSerializ() throws IOException {
         if (nbrTrace > 0 && tour == nbrTrace) {
             for (int rep : this.getReplicas().keySet()) {
                 serializ(this.getReplicas().get(rep));
@@ -374,12 +408,29 @@ public class CausalSimulator extends Simulator {
             memUsed.add(this.getAvgMem());
             sumMemory = 0;
             tour = 0;
-
+            
             //debug
             if (memUsed.size() % 10 == 0) {
                 System.out.println("Serialized :" + memUsed.size() * 100 + "x");
             }
         }
+    }
+
+    public double serializTotal(CRDT m) throws IOException {
+            ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+            ObjectOutputStream stream = new ObjectOutputStream(byteOutput);
+            stream.writeObject(m);
+            sumMemory = byteOutput.size();
+
+            byteOutput.reset();
+            stream.reset();
+            stream.flush();
+            stream.close();
+            byteOutput.flush();
+            byteOutput.close();
+        //System.out.println("replica :"+m.getReplicaNumber()+" has "+byteOutput.size()+" byte");
+        return sumMemory;
+        
     }
 
     public List<Long> splittedGenTime() {
@@ -406,5 +457,28 @@ public class CausalSimulator extends Simulator {
     public boolean fileExist(String name) {
         File f = new File(name);
         return f.exists();
+    }
+    
+    public void stat(TraceOperation op, long t, int type) {
+        if(op instanceof GitTrace.MergeCorrection)
+            return;
+        LocalOperation opL =  op.getOperation();
+        SequenceOperation seqOpt = (SequenceOperation) opL;
+        
+        if (type == 0) { //generation
+            if (seqOpt.getType().equals(SequenceOperation.OpType.ins)) {
+                timeInsGen += t;
+                nbrIns++;
+            } else if (seqOpt.getType().equals(SequenceOperation.OpType.del)) {
+                timeDelGen += t;
+                nbrDel++;
+            }
+        } else {
+            if (seqOpt.getType().equals(SequenceOperation.OpType.ins)) {
+                timeInsRemote += t;
+            } else if (seqOpt.getType().equals(SequenceOperation.OpType.del)) {
+                timeDelRemote += t;
+            }
+        }
     }
 }

@@ -31,6 +31,6 @@ import jbenchmarker.Experience;
  *
  * @author score
  */
-public abstract class ExperienceFactory implements Factory<Experience>{ 
+public abstract class ExperienceFactory implements Factory<Experience> { 
      abstract public Experience create(String[] args) throws Exception;
 }

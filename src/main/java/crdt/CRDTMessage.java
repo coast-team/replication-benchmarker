@@ -18,11 +18,13 @@
  */
 package crdt;
 
+import java.io.Serializable;
+
 /**
  *
  * @author urso
  */
-public interface CRDTMessage extends Cloneable {
+public interface CRDTMessage extends Cloneable, Serializable {
     public static CRDTMessage emptyMessage = new CRDTMessage() {
 
         @Override

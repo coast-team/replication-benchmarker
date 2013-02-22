@@ -63,7 +63,7 @@ public class GitTrace implements Trace{
     public int nbUpdBlock = 0;
     public int insertSize = 0;
     public int deleteSize = 0;
-    
+
     private CommitCRUD commitCRUD;
     private PatchCRUD patchCRUD;
     private List<Commit> initCommit;
@@ -133,10 +133,12 @@ public class GitTrace implements Trace{
     }
 
     private void stat(List<Edition> l, boolean merge) {
+
         if (merge) {
             nbBlockMerge += l.size();
         }
         for (Edition ed : l) {
+                        
             if (merge) {
                 mergeSize += ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB();
             }
@@ -152,9 +154,7 @@ public class GitTrace implements Trace{
         }
     }
 
-    
-
-    static class MergeCorrection extends TraceOperation implements Serializable {
+    public static class MergeCorrection extends TraceOperation implements Serializable {
 
             transient Patch patch;
             transient Walker walker;
@@ -181,17 +181,15 @@ public class GitTrace implements Trace{
                 return new LocalOperation() {
                     @Override
                     public LocalOperation adaptTo(CRDT replica) {
-
                         if (first == null) {
                             try {
 //System.out.println("----- REPLICA -----\n" + replica.lookup());                                
 //System.out.println("----- PATCH -----\n" + new String(patch.getRaws().get(0)));                                
                                 List<Edition> l = gitTrace.diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
                                 gitTrace.stat(l, true);
-                                //for (Edition ed : l) {
-//System.out.println("--- DIFF ---\n" + ed);                                                                    
-                                    
-                                //}                                
+//                                for (Edition ed : l) {
+//                    System.out.println("--- DIFF ---\n" + ed);                                                                    
+//                                }                                
                                 if (l.isEmpty()) {
                                     walker.currentVC.inc(replica.getReplicaNumber());
                                     first = SequenceOperation.noop(/*replica.getReplicaNumber(), getVectorClock()*/);
@@ -218,7 +216,6 @@ public class GitTrace implements Trace{
             public String toString() {
                 return "MergeCorrection{super="+super.toString() + "first=" + first + '}';
             }
-
         }
      class Walker implements Enumeration<TraceOperation> {
         private LinkedList<Commit> pendingCommit;

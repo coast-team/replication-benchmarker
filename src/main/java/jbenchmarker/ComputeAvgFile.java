@@ -37,91 +37,76 @@ public class ComputeAvgFile {
 
     public static void main(String[] args) throws FileNotFoundException, IOException {
 
-        if (args.length != 2) {
+        if (args.length != 4) {
             System.err.println("Arguments : ");
-            System.err.println("- 1 ----> Bloc");
-            System.err.println("- 2 ----> Ins");
-            System.err.println("- 3 ----> Replica");
-            System.err.println("- 4 ----> Operation");
+            System.err.println("- args[0]: 1.Bloc, 2.Ins, 3.Replica, 4.nbOp");
+            System.err.println("- args[1] ----> Algorithm [split by ,]");
+            System.err.println("- args[2] ----> Max");
             System.err.println("- [--with]----> with time Execution");
             System.exit(1);
         }
         
         int arg = Integer.parseInt(args[0]);
-        String[] algo = new String[]{"LogootList", "Logoot" , "RGA", "Treedoc", "WootH", "WootO", "LogootS", "LogootList", "TTFWithoutGC"};
-        //String[] algo = new String[]{"Logoot"};
+        //String[] algo = new String[]{"LogootList", "Logoot" , "RGA", "Treedoc", "WootH", "WootO", "LogootS", "LogootList", "TTFWithoutGC"};
+            String[] algo = args[1].split(",");
         int nbFilebloc = 0, nbFileIns = 0, ins = 0, Replica = 0,
                 operation = 0, nbFileReplic = 0, nbFileOp = 0;
         long tabUsr[] = null, tabGen[] = null, tabMem[] = null;
         String file = "";
         boolean with = Arrays.asList(args).contains("--with");
         for (int j = 0; j < algo.length; j++) {
-            if (!algo[j].equals("TTFWithoutGC")) {
-                nbFilebloc = 20;
-                nbFileIns = 11;
-                ins = 100;
-                Replica = 50;
-                operation = 50000;
-                nbFileReplic = 10;
-                nbFileOp = 9;
-            } else {
-                nbFilebloc = 11;
-                nbFileIns = 7;
-                ins = 80;
-                Replica = 15;
-                operation = 20000;
-                nbFileReplic = 3;
-                nbFileOp = 3;
-            }
 
             if (arg == 1) { //Bloc
+                nbFilebloc = (Integer.parseInt(args[2])/10)+1;
                 tabUsr = new long[nbFilebloc];
                 tabGen = new long[nbFilebloc];
                 tabMem = new long[nbFilebloc];
                 for (int i = 0; i < nbFilebloc; i++) {
-                    if (i < 10) {
-                        file = "trace00";
-                    } else {
-                        file = "trace0";
-                    }
+                        file = "trace.0."+i+"0";
                     if (with) {
-                        tabUsr[i] = keepAvgFile(algo[j] + "-" + file + i + "-usr.res");
-                        tabGen[i] = keepAvgFile(algo[j] + "-" + file + i + "-gen.res");
+                        tabUsr[i] = keepAvgFile(algo[j] + "-" + file +"-usr.res");
+                        tabGen[i] = keepAvgFile(algo[j] + "-" + file +"-gen.res");
                     }
-                    tabMem[i] = keepAvgFile(algo[j] + "-" + file + i + "-mem.res");
+                    tabMem[i] = keepAvgFile(algo[j] + "-" + file +"-mem.res");
                 }
             } else if (arg == 2) { //Ins
+                ins = Integer.parseInt(args[2]);
+                nbFileIns = ((ins-50)/5)+1;
                 tabUsr = new long[nbFileIns];
                 tabGen = new long[nbFileIns];
                 tabMem = new long[nbFileIns];
                 for (int i = 50, k = 0; i <= ins; i += 5, k++) {
                     if (with) {
-                        tabUsr[k] = keepAvgFile(algo[j] + "-trace" + i + "-usr.res");
-                        tabGen[k] = keepAvgFile(algo[j] + "-trace" + i + "-gen.res");
+                        tabUsr[k] = keepAvgFile(algo[j] + "-trace." + i + "-usr.res");
+                        tabGen[k] = keepAvgFile(algo[j] + "-trace." + i + "-gen.res");
                     }
-                    tabMem[k] = keepAvgFile(algo[j] + "-trace" + i + "-mem.res");
+                    tabMem[k] = keepAvgFile(algo[j] + "-trace." + i + "-mem.res");
                 }
             } else if (arg == 3) { //Replica
+                Replica = Integer.parseInt(args[2]);
+                nbFileReplic = nombreElementReplica(Replica);
                 tabUsr = new long[nbFileReplic];
                 tabGen = new long[nbFileReplic];
                 tabMem = new long[nbFileReplic];
-                for (int i = 5, k = 0; i <= Replica; i += 5, k++) {
+                for (int i = 2, k = 0; i <= Replica; i *= 2, k++) {
                     if (with) {
-                        tabUsr[k] = keepAvgFile(algo[j] + "-trace" + i + "-usr.res");
-                        tabGen[k] = keepAvgFile(algo[j] + "-trace" + i + "-gen.res");
+                        tabUsr[k] = keepAvgFile(algo[j] + "-trace." + i + "-usr.res");
+                        tabGen[k] = keepAvgFile(algo[j] + "-trace." + i + "-gen.res");
                     }
-                    tabMem[k] = keepAvgFile(algo[j] + "-trace" + i + "-mem.res");
+                    tabMem[k] = keepAvgFile(algo[j] + "-trace." + i + "-mem.res");
                 }
             } else { //Operation
+                operation = Integer.parseInt(args[2]);
+                nbFileOp = (operation/10000);
                 tabUsr = new long[nbFileOp];
                 tabGen = new long[nbFileOp];
                 tabMem = new long[nbFileOp];
-                for (int i = 10000, k = 0; i <= operation; i += 5000, k++) {
+                for (int i = 10000, k = 0; i <= operation; i = i+10000, k++) {
                     if (with) {
-                        tabUsr[k] = keepAvgFile(algo[j] + "-trace" + i + "-usr.res");
-                        tabGen[k] = keepAvgFile(algo[j] + "-trace" + i + "-gen.res");
+                        tabUsr[k] = keepAvgFile(algo[j] + "-trace." + i + "-usr.res");
+                        tabGen[k] = keepAvgFile(algo[j] + "-trace." + i + "-gen.res");
                     }
-                    tabMem[k] = keepAvgFile(algo[j] + "-trace" + i + "-mem.res");
+                    tabMem[k] = keepAvgFile(algo[j] + "-trace." + i + "-mem.res");
                 }
             }
             String chaine = "";
@@ -150,7 +135,7 @@ public class ComputeAvgFile {
             {
                 //double d = (double)data[op]/1000;//MicroSecond
                 if (!nameFile.contains("mem")) {
-                    out.append(data[op]/1000 + "\n");//miliseconde? divice 1000
+                    out.append(data[op] + "\n");//miliseconde? divice 1000
                 } else {
                     out.append(data[op] + "\n");
                 }
@@ -181,5 +166,20 @@ public class ComputeAvgFile {
             System.out.println(e.toString());
         }
         return avg / nbLine;
+    }
+    
+    static int nombreElementReplica(int Replica)
+    {
+        //raison 2
+        int somme = 0;
+        for(int i=2; i<100; i*=2)
+            somme += i;
+        
+        double k = somme/2; //divise premier terme (2)
+        k = k+1;
+        
+        int n = (int)(Math.log(k)/Math.log(2));   
+        
+        return n;
     }
 }

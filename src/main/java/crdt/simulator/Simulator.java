@@ -31,6 +31,7 @@ import java.util.Map;
  */
 public abstract class Simulator {
     final public Map<Integer,CRDT> replicas;
+    final public List<CRDT> forSerializ;
     
     // memoryUsed
     final protected List<Long> memUsed; 
@@ -74,6 +75,7 @@ public abstract class Simulator {
         this.remoteTime = new ArrayList<Long>();
         this.genSize = new ArrayList<Integer>();
         this.rf = rf;
+        this.forSerializ = new ArrayList<CRDT>();
     }
 
     public Map<Integer, CRDT> getReplicas() {

@@ -30,7 +30,7 @@ import java.util.Set;
  * @author score
  */
 @Deprecated
-public class TreeMessage implements CRDTMessage {
+public class TreeMessage implements CRDTMessage{
     Set<CRDTMessage> operations;
 
     @Override

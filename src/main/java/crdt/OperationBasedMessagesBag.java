@@ -19,6 +19,7 @@
 package crdt;
 
 import crdt.simulator.TraceOperation;
+import java.io.Serializable;
 import java.util.LinkedList;
 
 /**
@@ -28,7 +29,7 @@ import java.util.LinkedList;
  * 
  * A message contains many operations.
  */
-public final class OperationBasedMessagesBag implements OperationBasedMessage,Cloneable {
+public final class OperationBasedMessagesBag implements OperationBasedMessage,Cloneable, Serializable {
     private LinkedList<OperationBasedOneMessage> ops = new LinkedList<OperationBasedOneMessage>();
 
     /*TraceOperation traceOperation;*/

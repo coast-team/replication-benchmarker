@@ -28,6 +28,7 @@ import crdt.CRDT;
 import crdt.Factory;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
+import crdt.simulator.TraceFromFile;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -44,7 +45,7 @@ public final class TraceMain extends Experience {
     
     public TraceMain(String[] args) throws Exception  {
         
-        if (args.length < 9) {
+        if (args.length < 10) {
             System.err.println("Arguments : Factory Trace [nb_exec [thresold]]");
             System.err.println("- Factory to run trace main");
             System.err.println("- Factory : a jbenchmaker.core.ReplicaFactory implementation ");
@@ -55,6 +56,7 @@ public final class TraceMain extends Experience {
             System.err.println("- Save traces ? (0 don't save, else save)");
             System.err.println("- Calcule Time execution ? (0 don't calcul, else calcule)");//make it bool
             System.err.println("- Serialization with overhead ? (0 don't store, else store)");//make it bool
+            System.err.println("- Compute size of messages ? (0 don't store, else store)");//make it bool
             System.exit(1);
         }
                 
@@ -65,18 +67,21 @@ public final class TraceMain extends Experience {
         double thresold = (args.length > 3) ? Double.valueOf(args[4]) : 2.0;
         long ltime[][] = null, mem[][] = null, rtime[][] = null;
         int cop = 0, uop = 0, nbReplica = 0, mop = 0;
-         int minCop = 0, minUop = 0, minMop = 0;
+        int minCop = 0, minUop = 0, minMop = 0;
          
+        boolean calculTimeEx = Integer.valueOf(args[7])==0?false:true;
+        boolean overhead = Integer.valueOf(args[8])==0?false:true;
+        boolean sizeMessage = Integer.valueOf(args[9])==0?false:true; 
+        int sizemsg = 0;
+        
         for (int ex = 0; ex < nbExec; ex++) {
             System.out.println("execution ::: " + ex);
             
-           Trace trace = TraceGenerator.traceFromXML(args[2], 1);
-           //Trace trace = new TraceFromFile(args[2]);
+           //Trace trace = TraceGenerator.traceFromXML(args[2], 1);
+           Trace trace = new TraceFromFile(args[2]);
+           CausalSimulator cd = new CausalSimulator(rf);
 
-            CausalSimulator cd = new CausalSimulator(rf);
-
-            boolean calculTimeEx = Integer.valueOf(args[7])==0?false:true;
-            boolean overhead = Integer.valueOf(args[8])==0?false:true;
+          
             cd.setWriter( Integer.valueOf(args[6])==1?new ObjectOutputStream(new FileOutputStream("trace")):null);
             
             if(ex == 0 || args[1].contains("Logoot"))
@@ -85,7 +90,7 @@ public final class TraceMain extends Experience {
                 cd.run(trace, calculTimeEx,  0, overhead);//0 sans serialisation
             
             if (ltime == null) {
-                cop =  cd.splittedGenTime().size();
+                cop =  cd.getRemoteTimes().size();
                 uop = cd.replicaGenerationTimes().size();
                 mop = cd.getMemUsed().size();
                 nbReplica = cd.replicas.size();
@@ -97,13 +102,13 @@ public final class TraceMain extends Experience {
                 minMop = mop;
             }
 
-            minCop = minCop > cd.splittedGenTime().size()?cd.splittedGenTime().size():minCop;
+            minCop = minCop > cd.getRemoteTimes().size()?cd.getRemoteTimes().size():minCop;
             minUop = minUop > cd.replicaGenerationTimes().size()?cd.replicaGenerationTimes().size():minUop ;
             minMop = minMop> cd.getMemUsed().size()? cd.getMemUsed().size():minMop;
             
             if (calculTimeEx) {
                 toArrayLong(ltime[ex], cd.replicaGenerationTimes());
-                toArrayLong(rtime[ex], cd.splittedGenTime());
+                toArrayLong(rtime[ex], cd.getRemoteTimes());
             }
             if(args[1].contains("Logoot") || ex == 0)
                 toArrayLong(mem[ex], cd.getMemUsed());
@@ -113,6 +118,10 @@ public final class TraceMain extends Experience {
                     rtime[ex][i] /= nbReplica - 1;
                 }
             }
+            
+            if(sizeMessage)
+                sizemsg += this.serializ(cd.getGenHistory());
+            
             sum += cd.getRemoteSum() + cd.getLocalSum();
             cd = null;
             trace = null;
@@ -120,9 +129,12 @@ public final class TraceMain extends Experience {
         }
         sum = sum / nbReplica;
         sum = sum / nbExec;
-
+        
+        if(sizeMessage)
+            System.out.println("Size of message is :"+sizemsg/nbExec);
+        
         System.out.println("average execution time in : " + (sum / Math.pow(10, 6)) + " Mili-second");
-
+        
 
         String fileName = createName(args);
                
@@ -154,7 +166,6 @@ public final class TraceMain extends Experience {
 
         String n = args[1].substring(k + 1, l);
 
-        System.out.println("args[2]=" + args[2] + ", i : " + i + ", j = " + j + ", k = " + k + ", l=" + l + ", n=" + n);
         String[] c;
         if (n.contains("$")) {
             c = n.split("\\$");

@@ -26,14 +26,17 @@ package jbenchmarker;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -88,7 +91,7 @@ public abstract class Experience<T> {
         }
     }
 
-    public long calculAvg(long[][] data, int l, String type, String file) throws IOException {
+    public long calcul(long[][] data, int l, String type, String file, String s) throws IOException {
         long avg = 0L;
         if (type.equals("mem") && !file.contains("Logoot")) {
             for (int ex = 0; ex < l; ++ex) {
@@ -99,16 +102,17 @@ public abstract class Experience<T> {
                 avg += data[data.length - 1][ex];
             }
         }
-        if(l > 0 )
-            avg = avg/l;
+        if (s.equals("avg") && l > 0) {
+            avg = avg / l;
+        }
         return avg;
     }
     
         public void writeToFile(long[][] data, String fileName, String type) throws IOException {
 
         String nameFile = fileName + '-' + type + ".res";
+        nameFile = nameFile.replaceAll("/", "-");
         BufferedWriter out = new BufferedWriter(new FileWriter(nameFile));
-
         if (type.equals("mem") && !fileName.contains("Logoot")) {
             for (int op = 0; op < data[0].length; ++op) {
                 out.append(data[0][op] + "\n");
@@ -125,13 +129,33 @@ public abstract class Experience<T> {
         //return nameFile;
     }
     public void writeTofile(String file, String s) throws IOException {
-        FileWriter local = new FileWriter(file + ".xlsx", true);
+        FileWriter local = new FileWriter(file + ".csv", true);
 
         local.write(s + "\n");
 
         if (local != null) {
             local.close();
         }
+    }
+    
+    
+    public int serializ(Map m) throws IOException {
+        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+        ObjectOutputStream stream = new ObjectOutputStream(byteOutput);
+        stream.writeObject(m);
+
+        int sizeMessage = byteOutput.size();
+        
+        //System.out.println("replica :"+m.getReplicaNumber()+" has "+byteOutput.size()+" byte");
+        
+        byteOutput.reset();
+        stream.reset();
+        stream.flush();
+        stream.close();
+        byteOutput.flush();
+        byteOutput.close();
+        return sizeMessage;
+        //System.out.println("After: replica :"+m.getReplicaNumber()+" has "+byteOutput.size()+" byte");
     }
 
 }
