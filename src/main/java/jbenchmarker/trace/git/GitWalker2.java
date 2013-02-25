@@ -50,7 +50,6 @@ import org.eclipse.jgit.revwalk.RevSort;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.storage.pack.PackConfig;
-import org.eclipse.jgit.treewalk.FileTreeIterator;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
@@ -78,7 +77,7 @@ public class GitWalker2 {
     private static final Logger logger = Logger.getLogger(GitWalker2.class.getCanonicalName());
     private int fileNumber;
     private double filePercent;
-    private int numberOfWorker = 4;
+    private int numberOfWorker = Runtime.getRuntime().availableProcessors();
     /*results*/
     HashMap<String, BlockLine> files;
     HashMapSet<String, Couple> idCommitToFiles;
@@ -92,12 +91,13 @@ public class GitWalker2 {
     public static void main(String... arg) throws Exception {
         int idx;
         if (arg.length < 1) {
-            System.out.println("GitTalker <git Repository> [-l lastcommit] [-o outputfile] [-f fileName] [-p]");
+            System.out.println("GitTalker <git Repository> [-l lastcommit] [-o outputfile] [-f fileName] [-p] [-d/w]");
             System.out.println("-l the last commit");
             System.out.println("-o output csv file");
             System.out.println("-p display a progress bar");
             System.out.println("-f interest only on file");
-            System.out.println("-d debug");
+            System.out.println("-d debug informations");
+            System.out.println("-w display warning");
 
             System.exit(1);
         }
@@ -145,7 +145,7 @@ public class GitWalker2 {
         System.out.println("\n\nNumber of Files :" + gw.files.size() + "\n\n");
         //gw.printResults(p);
         if (progressBar) {
-            System.out.println("Extracting Id of commits ...");
+            System.out.println("Extracting Id of commits with" +gw.getNumberOfWorker()+ " thread(s) ...");
         }
         gw.extractIDCommit();
         // gw.printResults(p);
@@ -392,6 +392,7 @@ public class GitWalker2 {
         commitParent = new HashMapSet<String, String>();
         idCommitToFiles = new HashMapSet<String, Couple>();
         TryMultiThreaded tmt = new TryMultiThreaded(files.size(), this.numberOfWorker);
+        tmt.start();
         for (Entry<String, BlockLine> file : files.entrySet()) {
             tmt.addJob(file);
             //treatFileEntry(file);
@@ -496,12 +497,12 @@ public class GitWalker2 {
             System.out.println(rt2.getString(i));
             System.out.println("+++++++++++");
 
-
-
-
-
-
         }
+        
+    }
+
+    public int getNumberOfWorker() {
+        return numberOfWorker;
     }
 
     /**
@@ -632,12 +633,14 @@ public class GitWalker2 {
         public TryMultiThreaded(int fileTotal, int nbThread) {
             this.fileTotal = fileTotal;
             threads = new Thread[nbThread];
-            for (int i = 0; i < nbThread; i++) {
+            
+        }
+        void start(){
+            for (int i = 0; i < threads.length; i++) {
                 threads[i] = new Thread(new WorkerExtractGit());
                 threads[i].start();
             }
         }
-
         void waitAll() throws InterruptedException {
             for (int i = 0; i < threads.length; i++) {
                 threads[i].join();
