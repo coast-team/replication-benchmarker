@@ -124,11 +124,10 @@ public class GitWalker2 {
         if (argList.contains("-p")) {
             progressBar = true;
         }
-
-        if (argList.contains("-w")) {
-            logger.setLevel(Level.WARNING);
-        } else if (argList.contains("-d")) {
+        if (argList.contains("-d")) {
             logger.setLevel(Level.ALL);
+        } else if (argList.contains("-w")) {
+            logger.setLevel(Level.WARNING);
         } else {
             logger.setLevel(Level.SEVERE);
         }
@@ -145,7 +144,7 @@ public class GitWalker2 {
         System.out.println("\n\nNumber of Files :" + gw.files.size() + "\n\n");
         //gw.printResults(p);
         if (progressBar) {
-            System.out.println("Extracting Id of commits with" +gw.getNumberOfWorker()+ " thread(s) ...");
+            System.out.println("Extracting Id of commits with " + gw.getNumberOfWorker() + " thread(s) ...");
         }
         gw.extractIDCommit();
         // gw.printResults(p);
@@ -153,6 +152,7 @@ public class GitWalker2 {
             System.out.println("\n\nMesures diff...");
         }
         gw.mesuresDiff();
+        System.out.println("");
         //HashMap<String, BlockLine> res = gw.measure();
         //Filtre to obtain only file in last commit 
         //res = gw.filter(res, gw.getFromCommit());
@@ -403,18 +403,12 @@ public class GitWalker2 {
 
     public void mesuresDiff() throws Exception {
         int commit = 0;
-        double commitPercent = idCommitToFiles.size() / 100.0;
+        double commitPercent = idCommitToFiles.keySet().size() / 100.0;
         double nextStep = commitPercent;
 
 
         for (String idcommit : idCommitToFiles.keySet()) {
-            if (progressBar) {
-                while (commit > nextStep) {
-                    System.out.print(".");
-                    System.out.flush();
-                    nextStep += commitPercent;
-                }
-            }
+
             logger.log(Level.INFO, "Treat Commit {0}", idcommit);
             gitPositionMerge(commitParent.getAll(idcommit));
             for (Couple c : idCommitToFiles.getAll(idcommit)) {
@@ -455,6 +449,13 @@ public class GitWalker2 {
 
             }
             commit++;
+            if (progressBar) {
+                while (commit > nextStep) {
+                    System.out.print(".");
+                    System.out.flush();
+                    nextStep += commitPercent;
+                }
+            }
         }
     }
 
@@ -498,7 +499,7 @@ public class GitWalker2 {
             System.out.println("+++++++++++");
 
         }
-        
+
     }
 
     public int getNumberOfWorker() {
@@ -633,14 +634,16 @@ public class GitWalker2 {
         public TryMultiThreaded(int fileTotal, int nbThread) {
             this.fileTotal = fileTotal;
             threads = new Thread[nbThread];
-            
+
         }
-        void start(){
+
+        void start() {
             for (int i = 0; i < threads.length; i++) {
                 threads[i] = new Thread(new WorkerExtractGit());
                 threads[i].start();
             }
         }
+
         void waitAll() throws InterruptedException {
             for (int i = 0; i < threads.length; i++) {
                 threads[i].join();
@@ -695,7 +698,6 @@ public class GitWalker2 {
                     } catch (Exception ex) {
                         Logger.getLogger(GitWalker2.class.getName()).log(Level.SEVERE, null, ex);
                     }
-
                 }
             }
         }

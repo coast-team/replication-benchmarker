@@ -49,7 +49,7 @@ public class TreeOperation<T> implements LocalOperation {
         this.dest = null;
         this.content = content;
     }
-    
+
     // Add operation
     public TreeOperation(Node<T> obj, T elem) {
         this(OpType.add, obj, elem);

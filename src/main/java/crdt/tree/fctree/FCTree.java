@@ -87,17 +87,17 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
         return new OperationBasedOneMessage(operation);
     }
 
-    public CRDTMessage move(List<Integer> from, List<Integer> to) {
+    public CRDTMessage move(List<Integer> from, List<Integer> to, int p) {
         FCNode node = root.getNodeFromPath(from);
         FCNode nFather;
-        if (to.size() == 1) {
+        if (to.isEmpty()) {
             nFather = getRoot();
         } else {
-            List<Integer> toF = to.subList(0, to.size() - 1);
-            nFather = root.getNodeFromPath(toF);
+            //List<Integer> toF = to.subList(0, to.size() - 1);
+            nFather = root.getNodeFromPath(to);
         }
         
-        int p = to.get(to.size() - 1);
+        //int p = to.get(to.size() - 1);
         
         
         if(nFather.getId().equals(node.getFather().getId()) && p>from.get(from.size()-1)){
@@ -168,7 +168,7 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
      */
     @Override
     public CRDT<OrderedNode<T>> create() {
-        return new FCTree(postAction.clone());
+        return new FCTree(postAction==null?null:postAction.clone());
     }
 
     /**

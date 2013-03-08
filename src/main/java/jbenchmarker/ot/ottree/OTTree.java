@@ -106,5 +106,15 @@ public class OTTree<T> extends CRDTOrderedTree<T> {
         hash = 13 * hash + (this.root != null ? this.root.hashCode() : 0);
         return hash;
     }
+
+    @Override
+    public CRDTMessage rename(List<Integer> path, T newValue) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public CRDTMessage move(List<Integer> from, List<Integer> to, int p) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
 }
