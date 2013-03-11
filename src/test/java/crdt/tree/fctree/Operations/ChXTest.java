@@ -19,7 +19,6 @@
  */
 package crdt.tree.fctree.Operations;
 
-import crdt.CRDTMessage;
 import crdt.PreconditionException;
 import crdt.tree.fctree.FCIdFactory;
 import crdt.tree.fctree.FCIdentifier;
@@ -72,6 +71,7 @@ public class ChXTest {
         FCIdentifier id= tree.getIdFactory().createId();
         FCPosition pos= tree.getPositionFactory().createBetweenNode(node.getChild(2),null,id);
         ChX operation = new ChX(id, node.getChild(0),pos, FCNode.FcLabels.priority);
+        tree.applyOneRemote(operation);
         assertEquals("b", node.getChild(0).getValue());
         assertEquals("c", node.getChild(1).getValue());
         assertEquals("a", node.getChild(2).getValue());
