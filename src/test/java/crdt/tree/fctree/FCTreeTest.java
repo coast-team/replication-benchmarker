@@ -21,35 +21,37 @@ package crdt.tree.fctree;
 
 import crdt.CRDTMessage;
 import crdt.PreconditionException;
+import crdt.tree.orderedtree.OrderedTreeOperation;
+import crdt.tree.orderedtree.OrderedTreeOperation.OpType;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedList;
+
 import org.junit.Test;
 import org.junit.Before;
 import static org.junit.Assert.*;
-
 
 /**
  *
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
 public class FCTreeTest {
+
     FCTree<String> tree;
     FCTree<String> tree2;
-    
+
     @Before
-    public void setUp() throws PreconditionException{
-        tree=new FCTree();
-        tree2=new FCTree();
-        CRDTMessage mess1=tree.add(new ArrayList(), 0, "a");
-        CRDTMessage mess2=tree.add(new ArrayList(), 1, "b");
-        CRDTMessage mess3=tree.add(new ArrayList(), 2, "c");
-        CRDTMessage mess4=tree.add(Arrays.asList(0), 0, "d");
-        CRDTMessage mess5=tree.add(Arrays.asList(0), 1, "e");
-        CRDTMessage mess6=tree.add(Arrays.asList(0,1), 1, "f");
-        CRDTMessage mess7=tree.add(Arrays.asList(2), 0, "g");
-        CRDTMessage mess8=tree.add(Arrays.asList(2), 1, "h");
+    public void setUp() throws PreconditionException {
+        tree = new FCTree();
+        tree2 = new FCTree();
+        CRDTMessage mess1 = tree.add(new ArrayList(), 0, "a");
+        CRDTMessage mess2 = tree.add(new ArrayList(), 1, "b");
+        CRDTMessage mess3 = tree.add(new ArrayList(), 2, "c");
+        CRDTMessage mess4 = tree.add(Arrays.asList(0), 0, "d");
+        CRDTMessage mess5 = tree.add(Arrays.asList(0), 1, "e");
+        CRDTMessage mess6 = tree.add(Arrays.asList(0, 1), 1, "f");
+        CRDTMessage mess7 = tree.add(Arrays.asList(2), 0, "g");
+        CRDTMessage mess8 = tree.add(Arrays.asList(2), 1, "h");
         tree2.applyOneRemote(mess1);
         tree2.applyOneRemote(mess4);
         tree2.applyOneRemote(mess5);
@@ -60,172 +62,97 @@ public class FCTreeTest {
         tree2.applyOneRemote(mess2);
     }
 
-    public static void goodTreeAdd(FCTree tree){
-         FCNode node = tree.getRoot();
-        assertEquals(3, node.childrenNumber());
-        assertEquals("a",node.getChild(0).getValue());
-        assertEquals("b",node.getChild(1).getValue());
-        assertEquals("c",node.getChild(2).getValue());
-        assertEquals(0, node.getChild(1).childrenNumber());
-        
-        node=node.getChild(0);
-        assertEquals(2, node.childrenNumber());
-        assertEquals("d",node.getChild(0).getValue());
-        assertEquals("e",node.getChild(1).getValue());
-        assertEquals(0, node.getChild(0).childrenNumber());
-        
-        node=node.getChild(1);
-        assertEquals(1, node.childrenNumber());
-        assertEquals("f",node.getChild(0).getValue());
-        assertEquals(0, node.getChild(0).childrenNumber());
-        
-        node=tree.getRoot().getChild(2);
-        assertEquals(2, node.childrenNumber());
-        assertEquals("g",node.getChild(0).getValue());
-        assertEquals("h",node.getChild(1).getValue());
-        assertEquals(0, node.getChild(0).childrenNumber());
-        assertEquals(0, node.getChild(1).childrenNumber());
-    }
-    
     @Test
-    public void addTest(){
-        goodTreeAdd(tree);
-        goodTreeAdd(tree2);
-    }
-    
-       public static void goodTreeDel(FCTree tree){
-            FCNode node = tree.getRoot();
-        assertEquals(3, node.childrenNumber());
-        assertEquals("a",node.getChild(0).getValue());
-        assertEquals("b",node.getChild(1).getValue());
-        assertEquals("c",node.getChild(2).getValue());
-        assertEquals(0, node.getChild(1).childrenNumber());
-        
-        node=node.getChild(0);
-        assertEquals(1, node.childrenNumber());
-        assertEquals("d",node.getChild(0).getValue());
-        assertEquals(0, node.getChild(0).childrenNumber());
-        
-         node=tree.getRoot().getChild(2);
-        assertEquals(2, node.childrenNumber());
-        assertEquals("g",node.getChild(0).getValue());
-        assertEquals("h",node.getChild(1).getValue());
-        assertEquals(0, node.getChild(0).childrenNumber());
-        assertEquals(0, node.getChild(1).childrenNumber());
-        }
-    @Test
-    public void removeTest() throws PreconditionException{
-        CRDTMessage m=tree2.remove(Arrays.asList(0,1));
-        tree.applyOneRemote(m);
-        goodTreeDel(tree);
-        goodTreeDel(tree2);
-        
-    }
-    public static void goodTreeRename(FCTree tree){
-         FCNode node = tree.getRoot();
-        assertEquals(3, node.childrenNumber());
-        assertEquals("ZoidBerg",node.getChild(0).getValue());
-        assertEquals("b",node.getChild(1).getValue());
-        assertEquals("c",node.getChild(2).getValue());
-        assertEquals(0, node.getChild(1).childrenNumber());
-        
-        node=node.getChild(0);
-        assertEquals(2, node.childrenNumber());
-        assertEquals("d",node.getChild(0).getValue());
-        assertEquals("e",node.getChild(1).getValue());
-        assertEquals(0, node.getChild(0).childrenNumber());
-        
-        node=node.getChild(1);
-        assertEquals(1, node.childrenNumber());
-        assertEquals("f",node.getChild(0).getValue());
-        assertEquals(0, node.getChild(0).childrenNumber());
-         
-        node=tree.getRoot().getChild(2);
-        assertEquals(2, node.childrenNumber());
-        assertEquals("g",node.getChild(0).getValue());
-        assertEquals("h",node.getChild(1).getValue());
-        assertEquals(0, node.getChild(0).childrenNumber());
-        assertEquals(0, node.getChild(1).childrenNumber());
-    }
-    
-    @Test
-    public void ChLabelTest(){
-        CRDTMessage m=tree2.rename(Arrays.asList(0), "ZoidBerg");
-        tree.applyOneRemote(m);
-        goodTreeRename(tree);
-        goodTreeRename(tree2);
-        
-    }
-    
-    public static void goodTreeMove(FCTree tree){
-         FCNode node = tree.getRoot();
-        assertEquals(3, node.childrenNumber());
-        assertEquals("a",node.getChild(0).getValue());
-        assertEquals("b",node.getChild(1).getValue());
-        assertEquals("c",node.getChild(2).getValue());
-        assertEquals(0, node.getChild(1).childrenNumber());
-        
-        
-        node=node.getChild(0);
-        assertEquals(1, node.childrenNumber());
-        assertEquals("d",node.getChild(0).getValue());
-        assertEquals(0, node.getChild(0).childrenNumber());
-        
-        node=tree.getRoot().getChild(2);
-        assertEquals(3, node.childrenNumber());
-        assertEquals("g",node.getChild(0).getValue());
-        assertEquals("e",node.getChild(1).getValue());
-        assertEquals("h",node.getChild(2).getValue());
-        assertEquals(0, node.getChild(0).childrenNumber());
-        assertEquals(1, node.getChild(1).childrenNumber());
-        assertEquals(0, node.getChild(2).childrenNumber());
-        
-        node=node.getChild(1);
-        assertEquals(1, node.childrenNumber());
-        assertEquals("f",node.getChild(0).getValue());
-        assertEquals(0, node.getChild(0).childrenNumber());
-         
-        
-    }
-    @Test
-    public void switchTest(){
-        CRDTMessage m=tree2.move(Arrays.asList(0),Arrays.asList(1));
-        tree.applyOneRemote(m);
-        
-        FCNode node=tree.getRoot();
-        
-        assertEquals("b",node.getChild(0).getValue());
-        assertEquals("a",node.getChild(1).getValue());
-        assertEquals("c",node.getChild(2).getValue());
-    }
-    @Test
-    public void moveTest(){
-        CRDTMessage m=tree2.move(Arrays.asList(0,1),Arrays.asList(2,1));
-        tree.applyRemote(m);
-        goodTreeMove(tree);
-        goodTreeMove(tree2);
-    }
-    
-    
-    public FCTreeTest() {
+    public void addTest() {
+
+        assertEquals("null{a{d,e{f,},},b,c{g,h,},}", tree.getRoot().nodetail());
+        assertEquals("null{a{d,e{f,},},b,c{g,h,},}", tree2.getRoot().nodetail());
+
     }
 
-    
-   /* public static class NodeMock{
-        List<NodeMock> children;
-        String name;
-        public NodeMock(String name,NodeMock... node){
-           children=Arrays.asList(node);
-           this.name=name;
-        }
-        public boolean equals(FCNode<String> node){
-           String val=node.getValue();
-           if((name!=null && !name.equals(val)) || (name == null && val!=null)){
-                   return false;
-           }
-           Iterator<FCNode> it=node.getElements().iterator();
-           
-           
-        }
-    }*/
+    @Test
+    public void removeTest() throws PreconditionException {
+        CRDTMessage m = tree2.remove(Arrays.asList(0, 1));
+        tree.applyOneRemote(m);
+
+        assertEquals("null{a{d,},b,c{g,h,},}", tree.getRoot().nodetail());
+        assertEquals("null{a{d,},b,c{g,h,},}", tree2.getRoot().nodetail());
+    }
+
+    @Test
+    public void ChLabelTest() {
+        CRDTMessage m = tree2.rename(Arrays.asList(0), "ZoidBerg");
+        tree.applyOneRemote(m);
+
+        assertEquals("null{ZoidBerg{d,e{f,},},b,c{g,h,},}", tree.getRoot().nodetail());
+        assertEquals("null{ZoidBerg{d,e{f,},},b,c{g,h,},}", tree2.getRoot().nodetail());
+
+
+    }
+
+    @Test
+    public void switchTest() {
+        CRDTMessage m = tree2.move(Arrays.asList(0), new LinkedList(), 1);
+        tree.applyOneRemote(m);
+
+        assertEquals("null{b,a{d,e{f,},},c{g,h,},}", tree.getRoot().nodetail());
+        assertEquals("null{b,a{d,e{f,},},c{g,h,},}", tree2.getRoot().nodetail());
+    }
+
+    @Test
+    public void moveTest() {
+        CRDTMessage m = tree2.move(Arrays.asList(0, 1), Arrays.asList(2), 1);
+        tree.applyRemote(m);
+        
+        assertEquals("null{a{d,},b,c{g,e{f,},h,},}", tree.getRoot().nodetail());
+        assertEquals("null{a{d,},b,c{g,e{f,},h,},}", tree2.getRoot().nodetail());
+
+    }
+
+    @Test
+    public void removeTestop() throws PreconditionException {
+
+        CRDTMessage m = tree2.applyLocal(new OrderedTreeOperation<String>(Arrays.asList(0, 1)));
+        tree.applyOneRemote(m);
+
+        assertEquals("null{a{d,},b,c{g,h,},}", tree.getRoot().nodetail());
+        assertEquals("null{a{d,},b,c{g,h,},}", tree2.getRoot().nodetail());
+    }
+
+    @Test
+    public void ChLabelTestop() throws PreconditionException {
+        OpType rename = OrderedTreeOperation.OpType.chContent;
+        OrderedTreeOperation<String> op1 = new OrderedTreeOperation<String>(rename, Arrays.asList(0), null, 0, "ZoidBerg");
+        CRDTMessage m = tree2.applyLocal(op1);
+        tree.applyOneRemote(m);
+
+        assertEquals("null{ZoidBerg{d,e{f,},},b,c{g,h,},}", tree.getRoot().nodetail());
+        assertEquals("null{ZoidBerg{d,e{f,},},b,c{g,h,},}", tree2.getRoot().nodetail());
+
+
+    }
+    final static OpType MOVE = OrderedTreeOperation.OpType.move;
+
+    @Test
+    public void switchTestop() throws PreconditionException {
+        OrderedTreeOperation<String> op1 = new OrderedTreeOperation<String>(MOVE, Arrays.asList(0), new LinkedList(), 1, null);
+        CRDTMessage m = tree2.applyLocal(op1);
+        tree.applyOneRemote(m);
+
+        assertEquals("null{b,a{d,e{f,},},c{g,h,},}", tree.getRoot().nodetail());
+        assertEquals("null{b,a{d,e{f,},},c{g,h,},}", tree2.getRoot().nodetail());
+    }
+
+    @Test
+    public void moveTestop() throws PreconditionException {
+        OrderedTreeOperation<String> op1 = new OrderedTreeOperation<String>(MOVE, Arrays.asList(0, 1), Arrays.asList(2), 1, null);
+        CRDTMessage m = tree2.applyLocal(op1);
+        tree.applyRemote(m);
+        assertEquals("null{a{d,},b,c{g,e{f,},h,},}", tree.getRoot().nodetail());
+        assertEquals("null{a{d,},b,c{g,e{f,},h,},}", tree2.getRoot().nodetail());
+
+    }
+
+    public FCTreeTest() {
+    }
 }

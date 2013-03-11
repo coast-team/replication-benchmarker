@@ -20,8 +20,13 @@
 package crdt.tree.fctree.policy;
 
 import crdt.CRDTMessage;
+import crdt.CRDTMessage;
 import crdt.PreconditionException;
 import crdt.tree.fctree.FCTree;
+import crdt.tree.orderedtree.OrderedTreeOperation;
+import crdt.tree.orderedtree.OrderedTreeOperation;
+import crdt.tree.orderedtree.OrderedTreeOperation.OpType;
+import java.lang.String;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.Test;
@@ -64,44 +69,86 @@ public class FastCycleBreakingTest {
     public FastCycleBreakingTest() {
     }
 
-    
     @Test
-    public void afterAddAndDelConcurency() throws PreconditionException{
+    public void afterAddAndDelConcurency() throws PreconditionException {
         CRDTMessage mess1 = tree.add(Arrays.asList(0), 1, "TEST");
         CRDTMessage mess2 = tree2.remove(Arrays.asList(0));
         tree.applyRemote(mess2);
         tree2.applyRemote(mess1);
-        String result="null{b,c{g,h,},Garbage{d,TEST,e{f,},},}";
+        String result = "null{b,c{g,h,},Garbage{d,TEST,e{f,},},}";
         assertEquals(result, tree.getRoot().nodetail());
         assertEquals(result, tree2.getRoot().nodetail());
-        
+
     }
-    
+
     @Test
     public void afterDelRescue() throws PreconditionException {
         CRDTMessage mess2 = tree2.remove(Arrays.asList(0));
         tree.applyRemote(mess2);
-        String result="null{b,c{g,h,},Garbage{d,e{f,},},}";
+        String result = "null{b,c{g,h,},Garbage{d,e{f,},},}";
         assertEquals(result, tree.getRoot().nodetail());
         assertEquals(result, tree2.getRoot().nodetail());
     }
 
     @Test
     public void afterMoveCycleBreak() {
-        CRDTMessage mess1 = tree.move(Arrays.asList(0, 1), Arrays.asList(2, 1, 0));
-        CRDTMessage mess2 = tree2.move(Arrays.asList(2, 1), Arrays.asList(0, 1, 0, 0));
-        assertEquals("null{a{d,},b,c{g,h{e{f,},},},Garbage,}",tree.getRoot().nodetail());
-        assertEquals("null{a{d,e{f{h,},},},b,c{g,},Garbage,}",tree2.getRoot().nodetail());
+        CRDTMessage mess1 = tree.move(Arrays.asList(0, 1), Arrays.asList(2, 1), 0);
+        CRDTMessage mess2 = tree2.move(Arrays.asList(2, 1), Arrays.asList(0, 1, 0), 0);
+        assertEquals("null{a{d,},b,c{g,h{e{f,},},},Garbage,}", tree.getRoot().nodetail());
+        assertEquals("null{a{d,e{f{h,},},},b,c{g,},Garbage,}", tree2.getRoot().nodetail());
         tree.applyRemote(mess2);
         tree2.applyRemote(mess1);
-        String result="null{a{d,},b,c{g,},Garbage{h{e{f,},},},}";
+        String result = "null{a{d,},b,c{g,},Garbage{h{e{f,},},},}";
         assertEquals(result, tree.getRoot().nodetail());
         assertEquals(result, tree2.getRoot().nodetail());
-        CRDTMessage mess3 = tree.move(Arrays.asList(3,0,0,0), Arrays.asList(0,1));
+        CRDTMessage mess3 = tree.move(Arrays.asList(3, 0, 0, 0), Arrays.asList(0), 1);
         tree2.applyRemote(mess3);
-        result="null{a{d,f{h{e,},},},b,c{g,},Garbage,}";
+        result = "null{a{d,f{h{e,},},},b,c{g,},Garbage,}";
         assertEquals(result, tree.getRoot().nodetail());
         assertEquals(result, tree2.getRoot().nodetail());
     }
-   
+
+    @Test
+    public void afterAddAndDelConcurencyop() throws PreconditionException {
+        OrderedTreeOperation<String> op1 = new OrderedTreeOperation<String>(Arrays.asList(0), 1, "TEST");
+        OrderedTreeOperation<String> op2 = new OrderedTreeOperation<String>(Arrays.asList(0));
+        CRDTMessage mess1 = tree.applyLocal(op1);
+        CRDTMessage mess2 = tree2.applyLocal(op2);
+        tree.applyRemote(mess2);
+        tree2.applyRemote(mess1);
+        String result = "null{b,c{g,h,},Garbage{d,TEST,e{f,},},}";
+        assertEquals(result, tree.getRoot().nodetail());
+        assertEquals(result, tree2.getRoot().nodetail());
+
+    }
+
+    @Test
+    public void afterDelRescueop() throws PreconditionException {
+        CRDTMessage mess2 = tree2.applyLocal(new OrderedTreeOperation(Arrays.asList(0)));
+        tree.applyRemote(mess2);
+        String result = "null{b,c{g,h,},Garbage{d,e{f,},},}";
+        assertEquals(result, tree.getRoot().nodetail());
+        assertEquals(result, tree2.getRoot().nodetail());
+    }
+    final static OpType MOVE = OrderedTreeOperation.OpType.move;
+
+    @Test
+    public void afterMoveCycleBreakop() throws PreconditionException {
+        OrderedTreeOperation<String> op1 = new OrderedTreeOperation<String>(MOVE, Arrays.asList(0, 1), Arrays.asList(2, 1), 0, null);
+        OrderedTreeOperation<String> op2 = new OrderedTreeOperation<String>(MOVE, Arrays.asList(2, 1), Arrays.asList(0, 1, 0), 0, null);
+        CRDTMessage mess1 = tree.applyLocal(op1);
+        CRDTMessage mess2 = tree2.applyLocal(op2);
+        assertEquals("null{a{d,},b,c{g,h{e{f,},},},Garbage,}", tree.getRoot().nodetail());
+        assertEquals("null{a{d,e{f{h,},},},b,c{g,},Garbage,}", tree2.getRoot().nodetail());
+        tree.applyRemote(mess2);
+        tree2.applyRemote(mess1);
+        String result = "null{a{d,},b,c{g,},Garbage{h{e{f,},},},}";
+        assertEquals(result, tree.getRoot().nodetail());
+        assertEquals(result, tree2.getRoot().nodetail());
+        CRDTMessage mess3 = tree.move(Arrays.asList(3, 0, 0, 0), Arrays.asList(0), 1);
+        tree2.applyRemote(mess3);
+        result = "null{a{d,f{h{e,},},},b,c{g,},Garbage,}";
+        assertEquals(result, tree.getRoot().nodetail());
+        assertEquals(result, tree2.getRoot().nodetail());
+    }
 }
