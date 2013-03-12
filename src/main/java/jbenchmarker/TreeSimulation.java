@@ -219,6 +219,7 @@ public class TreeSimulation {
         String nameUsr;
         if (clas.equals("OTTree")
                 || clas.equals("FCTree")
+                || clas.equals("FCTreeCycleBreaker")
                 || clas.equals("OTTreeWithoutGarbage")
                 || clas.equals("TreeOPTWithoutGarbage")
                 || clas.equals("OTTreeWithoutGarbageO")
