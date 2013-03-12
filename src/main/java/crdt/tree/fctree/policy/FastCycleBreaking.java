@@ -26,6 +26,7 @@ import crdt.tree.fctree.FCTree;
 import crdt.tree.fctree.Operations.Add;
 import crdt.tree.fctree.Operations.ChX;
 import crdt.tree.fctree.Operations.Del;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -33,7 +34,7 @@ import java.util.LinkedList;
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class FastCycleBreaking<T> implements PostAction {
+public class FastCycleBreaking<T> implements PostAction,Serializable {
 
     static final FCIdentifier garbageAddress = new FCIdentifier(-1, 1);
     FCNode garbage;
