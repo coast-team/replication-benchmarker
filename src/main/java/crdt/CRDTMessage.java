@@ -52,5 +52,8 @@ public interface CRDTMessage extends Cloneable, Serializable {
     public void execute(CRDT crdt);
     public CRDTMessage clone();
     
+    /**
+     * Number of messages embeded in this one.
+     */
     public int size();
 }

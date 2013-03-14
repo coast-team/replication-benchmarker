@@ -25,9 +25,10 @@ import java.util.LinkedList;
 /**
  *
  *  
- * @author Stephane Martin
+ * @author urso, Stephane Martin
  * 
- * A message contains many operations.
+ * A message that contains several other one messages.
+ * @see OperationBasedOneMessage
  */
 public final class OperationBasedMessagesBag implements OperationBasedMessage,Cloneable, Serializable {
     private LinkedList<OperationBasedOneMessage> ops = new LinkedList<OperationBasedOneMessage>();
@@ -152,13 +153,5 @@ public final class OperationBasedMessagesBag implements OperationBasedMessage,Cl
         int hash = 5;
         hash = 37 * hash + (this.ops != null ? this.ops.hashCode() : 0);
         return hash;
-    }
-
-   
-
- 
-
-    
-   
-    
+    }   
 }

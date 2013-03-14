@@ -80,7 +80,7 @@ public class GitTrace implements Trace{
      * @return a new git extractor
      * @throws IOException if git directory not accessible
      */
-    public static GitTrace create(String gitdir, CouchConnector cc, String path, boolean cleanDB) throws IOException {
+    public static GitTrace create(String gitdir, CouchConnector cc, String path, boolean cleanDB, boolean detectMaU) throws IOException {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         Repository repo = builder.setGitDir(new File(gitdir + "/.git")).readEnvironment()
                 .findGitDir().build();
@@ -99,7 +99,7 @@ public class GitTrace implements Trace{
             clearDB(dbInstance, pa);
             commitCRUD = new CommitCRUD(dbcc);
             patchCRUD = new PatchCRUD(dbcp);
-            GitExtraction ge = new GitExtraction(repo, commitCRUD, patchCRUD, GitExtraction.defaultDiffAlgorithm, path);
+            GitExtraction ge = new GitExtraction(repo, commitCRUD, patchCRUD, GitExtraction.defaultDiffAlgorithm, path, detectMaU);
             ge.parseRepository();
         } else {
             commitCRUD = new CommitCRUD(dbcc);
@@ -187,9 +187,7 @@ public class GitTrace implements Trace{
 //System.out.println("----- PATCH -----\n" + new String(patch.getRaws().get(0)));                                
                                 List<Edition> l = gitTrace.diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
                                 gitTrace.stat(l, true);
-//                                for (Edition ed : l) {
-//                    System.out.println("--- DIFF ---\n" + ed);                                                                    
-//                                }                                
+//for (Edition ed : l) { System.out.println("--- DIFF ---\n" + ed); }                                
                                 if (l.isEmpty()) {
                                     walker.currentVC.inc(replica.getReplicaNumber());
                                     first = SequenceOperation.noop(/*replica.getReplicaNumber(), getVectorClock()*/);

@@ -29,7 +29,7 @@ public class Main {
              System.err.println("- Factory to run git main");
             System.err.println("- git directory ");
             System.err.println("- file [optional] path or number (default : all files)");
-            System.err.println("- --save Store traces");
+            System.err.println("- --save [optional] Store traces");
             System.err.println("- --clean [optional] clean DB");
             System.err.println("- --stat [optional] compute execution time and memory");
             System.err.println("- i :  number of file [To begin]");
