@@ -252,7 +252,7 @@ public class TreeSimulation {
              * StandardSeqOpProfile(perIns, perBlock, avgBlockSize,
              * sdvBlockSize), probability, delay, sdv, replicas);
              */
-            CausalSimulator cd = new CausalSimulator(rf);
+            CausalSimulator cd = new CausalSimulator(rf, true, scaleMemory, true);
             Trace trace;
             if (fileUsr.exists()) {
                 System.out.println("-Trace From File : " + nameUsr);
@@ -285,7 +285,7 @@ public class TreeSimulation {
              * overhead
              */
 
-            cd.run(trace, true, scaleMemory, true);
+            cd.run(trace);
             System.out.println("End of simulation");
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();

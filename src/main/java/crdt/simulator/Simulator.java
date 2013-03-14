@@ -82,9 +82,7 @@ public abstract class Simulator {
         return replicas;
     }
 
-    public void run(Trace trace) throws Exception {
-        run(trace, false, 0, false);
-    } 
+    public abstract void run(Trace trace) throws Exception ;
     
     /**
      * Runs a trace of operations. 
@@ -99,7 +97,7 @@ public abstract class Simulator {
      * @throws Exception if the Trace is incorrect (non causal, etc..)
      * @see Trace, TraceOperation, crdt.CRDT
      */
-    public abstract void run(Trace trace, boolean detail, int nbrTrace, boolean overhead) throws Exception;    
+   // public abstract void run(Trace trace, boolean detail, int nbrTrace, boolean overhead) throws Exception;    
     
     /**
      * Instanciate a new replica with classes given at construction. 

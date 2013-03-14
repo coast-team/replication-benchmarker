@@ -104,7 +104,7 @@ public class TreeOPT<T> extends CRDTOrderedTree<T> implements Serializable {
      * @return
      */
     @Override
-    public CRDT<OrderedNode<T>> create() {
+    public CRDTOrderedTree<T> create() {
         return new TreeOPT<T>(this.root.soct2);
     }
 

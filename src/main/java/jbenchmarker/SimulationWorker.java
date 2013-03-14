@@ -92,7 +92,7 @@ public class SimulationWorker {
             /*Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
                     new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);*/
             Trace trace = config.getTrace();
-            CausalSimulator cd = new CausalSimulator(config.getRf());
+            CausalSimulator cd = new CausalSimulator(config.getRf(), config.isTimeExecution(),  config.getScaleMemory(), config.isOverHead());
             if(config.getOutLog()!=null){
                 cd.setLogging(config.getOutLog());//file result
             }
@@ -102,7 +102,7 @@ public class SimulationWorker {
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.run(trace, config.isTimeExecution(),  config.getScaleMemory(), config.isOverHead());
+            cd.run(trace);
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();

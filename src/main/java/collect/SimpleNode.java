@@ -16,15 +16,54 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package crdt.tree;
+package collect;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Iterator;
 
 
 /**
  *
- * @author score
+ * @param <T> 
+ * @author Stephane Martin
  */
-public interface ConnectionPolicies {
+public interface SimpleNode<T> extends Serializable, Iterable  {
     
-    CRDTUnorderedTree RootredCrdtTree (CRDTUnorderedTree crdtTree);
+    /**
+     * 
+     * @return Node value
+     */
+    public T getValue();
     
+    /**
+     * 
+     * @return Father node.
+     */
+    public SimpleNode<T> getFather();
+    
+    
+    
+    /**
+     * 
+     * @return an iterator of Children
+     */
+    @Override
+    public Iterator<? extends SimpleNode <T>> iterator();
+
+    
+    /**
+     * 
+     * @return number of children
+     */
+    public int getChildrenNumber();
+    
+    /**
+     * Check if n is directly children of this node
+     * @param n
+     * @return true if n is childre of this
+     */
+    public boolean isChildren(SimpleNode<T> n);
+    
+  
 }

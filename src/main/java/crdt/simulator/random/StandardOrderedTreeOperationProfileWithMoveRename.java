@@ -50,7 +50,7 @@ public class StandardOrderedTreeOperationProfileWithMoveRename extends StandardO
     @Override
     public OrderedTreeOperation<String> nextOperation(CRDT crdt) {
         List<Integer> pathSrc = new LinkedList();
-        int n = getPath((OrderedNode) crdt.lookup(), pathSrc).childrenNumber();
+        int n = getPath((OrderedNode) crdt.lookup(), pathSrc).getChildrenNumber();
 
         double perAddSum = this.getPerChild() + perMove + perRename;
         double perMoveSum = perMove + perRename;
@@ -61,7 +61,7 @@ public class StandardOrderedTreeOperationProfileWithMoveRename extends StandardO
         }
         if (random < perMoveSum) {
             List<Integer> pathDst = new LinkedList();
-            int n2 = getPath((OrderedNode) crdt.lookup(), pathDst).childrenNumber();
+            int n2 = getPath((OrderedNode) crdt.lookup(), pathDst).getChildrenNumber();
             return new OrderedTreeOperation<String>(OrderedTreeOperation.OpType.move, pathSrc, pathDst, n == 0 ? 0 : getRandomGauss().nextInt(n2), null);
         } else if (random < perRename) {
             return new OrderedTreeOperation<String>(OrderedTreeOperation.OpType.chContent, pathSrc, null, 0, nextElement());

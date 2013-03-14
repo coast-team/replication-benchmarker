@@ -26,14 +26,14 @@ import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.set.CRDTSet;
 import crdt.PreconditionException;
-import crdt.tree.CRDTTree;
+import crdt.tree.CRDTUnorderedTree;
 import java.util.*;
 
 /**
  *
  * @author score
  */
-public class Gtree<T> extends CRDTTree<T> {
+public class Gtree<T> extends CRDTUnorderedTree<T> {
     
     private CRDTSet<T> node;
     private CRDTSet<Edge<T>> edge;
@@ -123,7 +123,7 @@ public class Gtree<T> extends CRDTTree<T> {
     }
     
     @Override
-    public CRDTTree<T> create() {
+    public CRDTUnorderedTree<T> create() {
         return new Gtree<T>(factory, graphConnectPol, graphMappPol);
     }
 }

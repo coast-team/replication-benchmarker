@@ -48,7 +48,7 @@ public class OrderedTreeOperation<T> implements LocalOperation {
         int i = 0;
         for (Integer pNext : this.path) {
 
-            if (root.childrenNumber() <= pNext) {
+            if (root.getChildrenNumber() <= pNext) {
                 //return this.path.subList(0, i);
                 return root;
             }
@@ -70,8 +70,8 @@ public class OrderedTreeOperation<T> implements LocalOperation {
 
         switch (this.type) {
             case add:
-                if (nPos > node.childrenNumber()) {
-                    nPos = node.childrenNumber();
+                if (nPos > node.getChildrenNumber()) {
+                    nPos = node.getChildrenNumber();
                 }
                 return new OrderedTreeOperation(nPath, nPos, this.content);
             case del:
@@ -79,8 +79,8 @@ public class OrderedTreeOperation<T> implements LocalOperation {
             case move:
                 List<Integer> nPathDst = new LinkedList();
                 OrderedNode nodedst = adaptPath(this.dstPath, root, nPathDst);
-                if (nPos > nodedst.childrenNumber()) {
-                    nPos = nodedst.childrenNumber();
+                if (nPos > nodedst.getChildrenNumber()) {
+                    nPos = nodedst.getChildrenNumber();
                 }
                 return new OrderedTreeOperation(type, nPath, nPathDst, nPos, null);
             case chContent:

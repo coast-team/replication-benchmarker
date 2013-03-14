@@ -75,11 +75,11 @@ public class MainSimulation {
             
             Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
                     new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
-            CausalSimulator cd = new CausalSimulator(rf);
+            CausalSimulator cd = new CausalSimulator(rf, false,  0, false);
             cd.setWriter(new ObjectOutputStream(new FileOutputStream(nameUsr)));
 
 
-            cd.run(trace, false,  0, false); //create Trace
+            cd.run(trace); //create Trace
 
     }
 }

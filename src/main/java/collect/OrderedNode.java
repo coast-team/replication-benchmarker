@@ -25,36 +25,21 @@ import java.util.List;
  *
  * @author urso
  */
-public interface OrderedNode<T> extends Serializable{
-
-    /**
-     * Number of children
-     *
-     * @return number of visible children
-     */
-    int childrenNumber();
-
-    /**
-     * Value of the root of the tree
-     *
-     * @return node value
-     */
-    T getValue();
-
-    /**
+public interface OrderedNode<T> extends Serializable, SimpleNode<T> {
+ /**
      * Gets the ith child of this node
      *
      * @param p
      * @return children Node at ith visible pos.
      */
-    OrderedNode<T> getChild(int p);
+    public OrderedNode<T> getChild(int p);
 
     /**
      * Gets all children in order
      *
      * @return the children
      */
-    List<? extends OrderedNode<T>> getElements();
+    public List<? extends OrderedNode<T>> getElements();
 
     /**
      * Creates a new ordered node
@@ -62,7 +47,7 @@ public interface OrderedNode<T> extends Serializable{
      * @param elem the content
      * @return the children
      */
-    OrderedNode<T> createNode(T elem);
+    public OrderedNode<T> createNode(T elem);
 
     /**
      * Sets the replica number

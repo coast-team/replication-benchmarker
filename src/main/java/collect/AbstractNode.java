@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @author urso
  */
-public abstract class AbstractNode<T> implements Node<T> {
+public abstract class AbstractNode<T> implements Node<T>,Iterable {
     final protected T value;
     protected AbstractNode<T> father;
 
@@ -50,23 +50,24 @@ public abstract class AbstractNode<T> implements Node<T> {
     }
     
     @Override
-    public boolean isChildren(Node<T> n) {
+    public boolean isChildren(SimpleNode<T> n) {
         return getChildren().contains((NodeImpl)n);
         /* TODO : Possible qu'un this.children.containsKey(n.getValue()) 
          * serait plus rapide*/
     }
     
     @Override
-    public Iterator<? extends AbstractNode<T>> getChildrenIterator() {
+    public Iterator iterator() {
         // TODO : make unmutable iterator
         return getChildren().iterator();
     }
-
+    
     @Override
     public Node<T> getFather() {
         return father;
     }
 
+    @Override
     public List<T> getPath() {
         LinkedList<T> p = new LinkedList();
         AbstractNode<T> n = this;

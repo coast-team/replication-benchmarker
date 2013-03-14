@@ -199,8 +199,8 @@ public class SOCT2GarbageCollectorTest {
                     System.out.println(l.getClass().getCanonicalName() + " | " + (g == null ? "No gc" : g.getClass().getCanonicalName()) + " | " + t);                   
                     CausalSimulator cd = new CausalSimulator
                             (new TTFMergeAlgorithm(new TTFDocument(), 0,
-                        new SOCT2<TTFOperation>(l, g)));
-                    cd.run(TraceGenerator.traceFromXML(t, 1),  false, 0, false);
+                        new SOCT2<TTFOperation>(l, g)),  false, 0, false);
+                    cd.run(TraceGenerator.traceFromXML(t, 1));
                     assertConsistentViews(cd);
                 }
             }

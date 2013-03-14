@@ -96,10 +96,10 @@ public class MainCRDT {
     }
 
     static CausalSimulator testRun(Factory<CRDT> factory, int duration, int rn, OperationProfile opp, double prob, long delay) throws PreconditionException, IncorrectTraceException, IOException {
-        CausalSimulator cd = new CausalSimulator(factory);
+        CausalSimulator cd = new CausalSimulator(factory, false,  0, false);
         Trace tr = new RandomTrace(duration, RandomTrace.FLAT, opp, prob, delay, 3, rn);
 
-        cd.run(tr, false,  0, false);
+        cd.run(tr);
         //System.out.println(cd.getlTime());
 
         //result.add(cd.getlTime());

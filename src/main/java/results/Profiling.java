@@ -61,8 +61,8 @@ public class Profiling {
          Factory f = createTree(new LogootTreeNode(null, 0, new BoundaryStrategy(32, 100)), new NaiveSet(), new WordIncrementalSkipUnique());
          for (int t = 0; t < times; ++t) {
             //System.out.println(t);
-            CausalSimulator cd = new CausalSimulator(f);
-            cd.run(new RandomTrace(duration, RandomTrace.FLAT, otreeop, 0.4, 3, 2, nbreplica),  false, 0, false);
+            CausalSimulator cd = new CausalSimulator(f,  false, 0, false);
+            cd.run(new RandomTrace(duration, RandomTrace.FLAT, otreeop, 0.4, 3, 2, nbreplica));
             System.out.println(t);
         }    
     }

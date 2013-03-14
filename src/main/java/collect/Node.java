@@ -21,7 +21,6 @@ package collect;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -29,56 +28,62 @@ import java.util.Set;
  * @param <T> 
  * @author Stephane Martin
  */
-public interface Node<T> {
+public interface Node<T>  extends SimpleNode<T> {
     
     /**
      * 
      * @return Node value
      */
-    T getValue();
+    @Override
+    public T getValue();
     
     /**
      * 
      * @return Father node.
      */
-    Node<T> getFather();
+    @Override
+    public Node<T> getFather();
     
     /**
      * 
      * @return Father node.
      */
-    Node<T> getRoot();
+    public Node<T> getRoot();
     
     /**
      * 
      * @return Path to this node.
      */
-    List<T> getPath();
+    public List<T> getPath();
     
     /**
      * 
      * @return an iterator of Children
      */
-    Iterator<?extends Node<T>> getChildrenIterator();
+    @Override
+    public Iterator<?extends Node<T>> iterator();
 
     /**
      * 
      * @return a copy of Children
      */
-    Collection<?extends Node<T>> getChildrenCopy();
+    public Collection<?extends Node<T>> getChildrenCopy();
 
     /**
      * 
      * @return number of children
      */
-    int getChildrenNumber();
+    @Override
+    public int getChildrenNumber();
     
     /**
      * Check if n is directly children of this node
      * @param n
      * @return true if n is childre of this
      */
-    boolean isChildren(Node<T> n);
+    //public boolean isChildren(Node<T> n);
+    @Override
+    public boolean isChildren(SimpleNode<T> n);
     
     // Node<T> clone();
     
@@ -87,10 +92,10 @@ public interface Node<T> {
      * @param current: node father
      * @param node to delete
      */
-    void deleteChild( Collection<? extends Node<T>> nodeToDelet);
+    public void deleteChild( Collection<? extends Node<T>> nodeToDelet);
     /**
      * 
      * @return the level of this node on tree.
      */
-    int getLevel();
+    public int getLevel();
 }

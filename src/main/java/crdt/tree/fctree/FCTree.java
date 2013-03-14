@@ -167,7 +167,7 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
      * @return
      */
     @Override
-    public CRDT<OrderedNode<T>> create() {
+    public FCTree<T> create() {
         return new FCTree(postAction==null?null:postAction.clone());
     }
 

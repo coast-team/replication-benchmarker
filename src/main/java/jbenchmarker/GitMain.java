@@ -125,10 +125,10 @@ public final class GitMain extends Experience {
             for (int k = 0; k < nbrExec; k++) {
                 GitTrace trace = GitTrace.create(gitdir, cc, path, oneclean, dmau);
                 oneclean = false;
-                CausalSimulator cd = new CausalSimulator(rf);
+                CausalSimulator cd = new CausalSimulator(rf, stat, stat ? nbserializ : 0, stat);
                 cd.setWriter(save ? new ObjectOutputStream(new FileOutputStream("trace")) : null);
 
-                cd.run(trace, stat, stat ? nbserializ : 0, stat);
+                cd.run(trace);
 
                 if (k == 0 && stat) {
                     cop = cd.getRemoteTimes().size();

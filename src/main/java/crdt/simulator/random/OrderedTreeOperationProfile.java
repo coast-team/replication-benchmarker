@@ -56,12 +56,12 @@ public abstract class OrderedTreeOperationProfile<T> implements OperationProfile
      * @return the existing node
      */
     OrderedNode getPath(OrderedNode<T> node, List<Integer> path) {
-        int n = node.childrenNumber();
+        int n = node.getChildrenNumber();
         while (n > 0 && r.nextDouble() < 1.0 - (perChild * 1.0 / n)) {
             int i = r.nextInt(n);
             path.add(i);
             node = node.getChild(i);
-            n = node.childrenNumber();
+            n = node.getChildrenNumber();
         }
         return node;
     }
@@ -70,7 +70,7 @@ public abstract class OrderedTreeOperationProfile<T> implements OperationProfile
     public OrderedTreeOperation<T> nextOperation(CRDT crdt) {
 
         List<Integer> path = new LinkedList();
-        int n = getPath((OrderedNode<T>) crdt.lookup(), path).childrenNumber();
+        int n = getPath((OrderedNode<T>) crdt.lookup(), path).getChildrenNumber();
 
         if (path.isEmpty()/* || n == 0*/ || r.nextDouble() < perAdd) {
             /*Generate add operation*/

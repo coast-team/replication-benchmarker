@@ -87,8 +87,8 @@ public class CausalDispatcherSetsAndTreesTest {
     public static void testRunX(Factory<CRDT> factory, int times, int duration, int nbreplica, OperationProfile opp) throws PreconditionException, IncorrectTraceException, IOException {
         for (int t = 0; t < times; ++t) {
             //System.out.println(t);
-            CausalSimulator cd = new CausalSimulator(factory);
-            cd.run(new RandomTrace(duration, RandomTrace.FLAT, opp, 0.4, 3, 2, nbreplica),  false, 0, false);
+            CausalSimulator cd = new CausalSimulator(factory,  false, 0, false);
+            cd.run(new RandomTrace(duration, RandomTrace.FLAT, opp, 0.4, 3, 2, nbreplica));
             //System.out.println(cd.getlTime());
 
             //result.add(cd.getlTime());

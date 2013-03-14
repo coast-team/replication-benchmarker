@@ -72,7 +72,7 @@ public class OTTree<T> extends CRDTOrderedTree<T> {
     }
 
     @Override
-    public CRDT<OrderedNode<T>> create() {
+    public CRDTOrderedTree<T> create() {
         return new OTTree<T>((OTAlgorithm)soct2.create());
     }
     @Override

@@ -24,8 +24,6 @@ import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.set.CRDTSet;
 import crdt.set.NaiveSet;
-import crdt.set.lastwriterwins.CommutativeLwwSet;
-import crdt.set.lastwriterwins.ConvergentLwwSet;
 import crdt.set.observedremove.CommutativeOrSet;
 import crdt.set.observedremove.ConvergentOrSet;
 import crdt.simulator.CausalDispatcherSetsAndTreesTest;

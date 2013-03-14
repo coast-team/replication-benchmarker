@@ -531,12 +531,12 @@ public class TTFSOCT2Test {
         site1.applyRemote(mess3.clone());
 
         site3.applyRemote(mess1.clone());
-        System.out.println("site3 " + site3.lookup());
+        
         site3.applyRemote(mess3.clone());
-        System.out.println("site3 " + site3.lookup());
+        
         site3.applyRemote(mess2.clone());
         assertEquals(site1.lookup(), site3.lookup());
-        System.out.println("site1 " + site1.lookup());
+        
 
     }
 

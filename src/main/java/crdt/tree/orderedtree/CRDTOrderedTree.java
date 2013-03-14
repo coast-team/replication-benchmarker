@@ -30,7 +30,7 @@ import jbenchmarker.core.LocalOperation;
  * @author score
  */
 public abstract class CRDTOrderedTree<T> extends CRDT<OrderedNode<T>> {
-
+   
     abstract public CRDTMessage add(List<Integer> path, int p, T element) throws PreconditionException;
 
     abstract public CRDTMessage remove(List<Integer> path) throws PreconditionException;
@@ -68,10 +68,10 @@ public abstract class CRDTOrderedTree<T> extends CRDT<OrderedNode<T>> {
                 && (n1.getValue() == null || !n1.getValue().equals(n2.getValue()))) {
             return false;
         }
-        if (n1.childrenNumber() != n2.childrenNumber()) {
+        if (n1.getChildrenNumber() != n2.getChildrenNumber()) {
             return false;
         }
-        for (int i = 0; i < n1.childrenNumber(); ++i) {
+        for (int i = 0; i < n1.getChildrenNumber(); ++i) {
             if (!sameNode(n1.getChild(i), (n2.getChild(i)))) {
                 return false;
             }
@@ -96,4 +96,6 @@ public abstract class CRDTOrderedTree<T> extends CRDT<OrderedNode<T>> {
      *
      * }
      */
+    @Override
+    abstract public CRDTOrderedTree<T> create();
 }

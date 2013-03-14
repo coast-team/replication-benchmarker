@@ -32,7 +32,7 @@ import crdt.set.lastwriterwins.CommutativeLwwSet;
 import crdt.set.lastwriterwins.ConvergentLwwSet;
 import crdt.set.observedremove.CommutativeOrSet;
 import crdt.set.observedremove.ConvergentOrSet;
-import crdt.tree.CRDTTree;
+import crdt.tree.CRDTUnorderedTree;
 import crdt.tree.CrdtTreeGeneric;
 import crdt.tree.wordtree.policy.WordCompact;
 import crdt.tree.wordtree.policy.WordIncrementalCompact;
@@ -127,7 +127,7 @@ public class WordTreeTest {
         Tree tr, resultTree;
         Node a, b, c, x, y, z, k;
         CrdtTreeGeneric test = new CrdtTreeGeneric();
-        Factory<CRDTTree> tf = new WordTree(new CommutativeCounterSet(), new WordSkip());
+        Factory<CRDTUnorderedTree> tf = new WordTree(new CommutativeCounterSet(), new WordSkip());
         test.testAdopt(tf.create(), tf.create());
 
         tr = test.testConcurAddRmvFather(tf.create(), tf.create());
@@ -183,7 +183,7 @@ public class WordTreeTest {
         Tree tr, resultTree;
         Node a, b, c, x, y, z, k;
         CrdtTreeGeneric test = new CrdtTreeGeneric();
-        Factory<CRDTTree> tf = new WordTree(new CommutativeOrSet(), new WordSkip());
+        Factory<CRDTUnorderedTree> tf = new WordTree(new CommutativeOrSet(), new WordSkip());
         test.testAdopt(tf.create(), tf.create());
 
         tr = test.testConcurAddRmvFather(tf.create(), tf.create());
@@ -245,7 +245,7 @@ public class WordTreeTest {
         Node a, b, c, x, y, z, k;
         CrdtTreeGeneric test = new CrdtTreeGeneric();
         CRDTSet s = new CommutativeCounterSet();
-        Factory<CRDTTree> tf = new WordTree(s, new WordReappear());
+        Factory<CRDTUnorderedTree> tf = new WordTree(s, new WordReappear());
 
         tr = test.testConcurAddRmvFather(tf.create(), tf.create());
         resultTree = new HashTree();
@@ -269,7 +269,7 @@ public class WordTreeTest {
         Tree tr, resultTree;
         Node a, b, c, x, y, z, k;
         CrdtTreeGeneric test = new CrdtTreeGeneric();
-        Factory<CRDTTree> tf = new WordTree(new CommutativeLwwSet(), new WordReappear());
+        Factory<CRDTUnorderedTree> tf = new WordTree(new CommutativeLwwSet(), new WordReappear());
 
         tr = test.testConcurAddRmvSameElement(tf.create(), tf.create());
         resultTree = new HashTree();

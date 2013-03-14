@@ -19,7 +19,9 @@
 package crdt.tree.orderedtree;
 
 import collect.OrderedNode;
+import collect.SimpleNode;
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.List;
 import jbenchmarker.factories.LogootFactory;
 import jbenchmarker.logoot.LogootDocument;
@@ -34,6 +36,21 @@ import jbenchmarker.logoot.LogootStrategy;
 public class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> implements PositionnedNode<T> {
     private final T value;
     private final Clock clock;
+
+    @Override
+    public SimpleNode<T> getFather() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Iterator<? extends SimpleNode<T>> iterator() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean isChildren(SimpleNode<T> n) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
     static private class Clock implements Serializable{
         int value = 0; 
@@ -55,7 +72,7 @@ public class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> impleme
     }
     
     @Override
-    public int childrenNumber() {
+    public int getChildrenNumber() {
         return document.size()-2; 
     }
 
@@ -120,10 +137,10 @@ public class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> impleme
         if (this.value != other.getValue() && (this.value == null || !this.value.equals(other.getValue()))) {
             return false;
         }
-        if (childrenNumber() != other.childrenNumber()) {
+        if (getChildrenNumber() != other.getChildrenNumber()) {
             return false;
         }
-        for (int i = 0; i < childrenNumber(); ++i) {
+        for (int i = 0; i < getChildrenNumber(); ++i) {
             if (!getChild(i).same(other.getChild(i))) {
                 return false;
             }

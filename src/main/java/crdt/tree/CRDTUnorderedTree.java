@@ -30,7 +30,7 @@ import jbenchmarker.core.LocalOperation;
  *
  * @author score
  */
-public abstract class CRDTTree<T> extends CRDT<Tree<T>>  {
+public abstract class CRDTUnorderedTree<T> extends CRDT<Tree<T>>  {
     
    abstract public CRDTMessage add(UnorderedNode<T> father, T element) throws PreconditionException;
     

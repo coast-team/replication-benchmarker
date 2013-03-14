@@ -18,10 +18,13 @@
  */
 package crdt.tree.fctree;
 
+import collect.Node;
 import collect.OrderedNode;
+import collect.SimpleNode;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
@@ -31,7 +34,7 @@ import java.util.TreeSet;
  * @param <T>
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class FCNode<T> implements OrderedNode<T>, Iterable<FCNode<T>> {
+public class FCNode<T> implements OrderedNode<T> {
 
     // private ArrayList<FCNode<T>> childrens;
     private ArrayList<FCNode<T>> childrens;
@@ -52,7 +55,13 @@ public class FCNode<T> implements OrderedNode<T>, Iterable<FCNode<T>> {
     public void delete(){
         this.deleted=true;
     }
-    
+
+    @Override
+    public boolean isChildren(SimpleNode<T> n) {
+        return childrens.contains((FCNode)n);
+    }
+
+   
     public enum FcLabels {
 
         contain, fatherId, priority
@@ -140,7 +149,7 @@ public class FCNode<T> implements OrderedNode<T>, Iterable<FCNode<T>> {
     }
 
     @Override
-    public int childrenNumber() {
+    public int getChildrenNumber() {
         return childrens.size();
     }
 
@@ -305,7 +314,7 @@ public class FCNode<T> implements OrderedNode<T>, Iterable<FCNode<T>> {
     }
 
     @Override
-    public Iterator<FCNode<T>> iterator() {
+    public Iterator iterator() {
         return childrens.iterator();
     }
 

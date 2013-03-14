@@ -39,7 +39,7 @@ public abstract class AbstractIntegrationTest {
 
 	@Before
 	public void setUp() {
-		cd = new CausalSimulator(createFactory());
+		cd = new CausalSimulator(createFactory(),  false, 0, false);
 	}
 
 	protected abstract ReplicaFactory createFactory();
@@ -59,31 +59,31 @@ public abstract class AbstractIntegrationTest {
         
 	@Test
 	public void testExempleRun() throws Exception {
-		cd.run(TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1),  false, 0, false);
+		cd.run(TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1));
 		assertConsistentViews(cd);
 	}
 
 	@Test
 	public void testG1Run() throws Exception {
-		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1), false, 0, false);
+		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1));
 		assertConsistentViews(cd);
 	}
 
 	@Test
 	public void testG2Run() throws Exception {
-		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1, 16), false, 0, false);
+		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1, 16));
 		assertConsistentViews(cd);
 	}
 
 	@Test
 	public void testG3Run() throws Exception {
-		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1), false, 0, false);
+		cd.run(TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1));
 		assertConsistentViews(cd);
 	}
 
 	@Test
 	public void testSerieRun() throws Exception {
-		cd.run(TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1), false, 0, false);
+		cd.run(TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1));
 		assertConsistentViews(cd);
 	}
         

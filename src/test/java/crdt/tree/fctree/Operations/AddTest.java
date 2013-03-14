@@ -86,23 +86,23 @@ public class AddTest {
         tree.applyOneRemote(mess5);
 
         FCNode node = tree.getRoot();
-        assertEquals(3, node.childrenNumber());
+        assertEquals(3, node.getChildrenNumber());
         assertEquals("a",node.getChild(0).getValue());
         assertEquals("b",node.getChild(1).getValue());
         assertEquals("c",node.getChild(2).getValue());
-        assertEquals(0, node.getChild(1).childrenNumber());
-        assertEquals(0, node.getChild(2).childrenNumber());
+        assertEquals(0, node.getChild(1).getChildrenNumber());
+        assertEquals(0, node.getChild(2).getChildrenNumber());
         
         node=node.getChild(0);
-        assertEquals(2, node.childrenNumber());
+        assertEquals(2, node.getChildrenNumber());
         assertEquals("d",node.getChild(0).getValue());
         assertEquals("e",node.getChild(1).getValue());
-        assertEquals(0, node.getChild(0).childrenNumber());
+        assertEquals(0, node.getChild(0).getChildrenNumber());
         
         node=node.getChild(1);
-        assertEquals(1, node.childrenNumber());
+        assertEquals(1, node.getChildrenNumber());
         assertEquals("f",node.getChild(0).getValue());
-        assertEquals(0, node.getChild(0).childrenNumber());
+        assertEquals(0, node.getChild(0).getChildrenNumber());
         
         
         
