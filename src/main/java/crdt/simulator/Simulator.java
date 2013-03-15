@@ -34,7 +34,7 @@ public abstract class Simulator {
     final public List<CRDT> forSerializ;
     
     // memoryUsed
-    final protected List<Long> memUsed; 
+    final protected List<Double> memUsed; 
 
     // operation's generation time
     final protected List<Long> genTime;
@@ -70,7 +70,7 @@ public abstract class Simulator {
      */
     public Simulator(Factory<? extends CRDT> rf) {
         this.replicas = new HashMap<Integer,CRDT>();
-        this.memUsed = new ArrayList<Long>();
+        this.memUsed = new ArrayList();
         this.genTime = new ArrayList<Long>();
         this.remoteTime = new ArrayList<Long>();
         this.genSize = new ArrayList<Integer>();
@@ -116,7 +116,7 @@ public abstract class Simulator {
      * One entry per measurement : trace size divided by nbrTrace.
      * @return a list of size in bytes, empty list if nbrTrace was 0
      */
-    public List<Long> getMemUsed() {
+    public List<Double> getMemUsed() {
         return memUsed;
     }
     

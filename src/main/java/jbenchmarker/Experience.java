@@ -128,7 +128,8 @@ public abstract class Experience<T> {
         out.close();
         //return nameFile;
     }
-    public void writeTofile(String file, String s) throws IOException {
+    
+   public void writeTofile(String file, String s) throws IOException {
         FileWriter local = new FileWriter(file + ".csv", true);
 
         local.write(s + "\n");
@@ -137,7 +138,21 @@ public abstract class Experience<T> {
             local.close();
         }
     }
-    
+   
+    public void writeTofile(String file, List<String> s) throws IOException {
+
+        for (int i = 0; i < s.size(); i++) {
+            FileWriter local = new FileWriter(file + ".csv", true);
+
+            local.write(s.get(i) + "\n");
+
+            if (local != null) {
+                local.close();
+            }
+        }
+
+    }
+
     
     public int serializ(Map m) throws IOException {
         ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();

@@ -35,28 +35,30 @@ public class StandardSizeCalculator implements SizeCalculator{
         this.overhead = overhead;
     }
     
-    
-    @Override
-     public int serializ(CRDT m) throws IOException {
+    public static int sizeOf(Object o) throws IOException{
         int size;
         ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(byteOutput);
-        if (overhead) {
-            stream.writeObject(m);
-        } else {
-            stream.writeObject(m.lookup());
-        }
+         stream.writeObject(o);
+          stream.flush();
+        byteOutput.flush();
         size= byteOutput.size();
 
         //System.out.println("replica :"+m.getReplicaNumber()+" has "+byteOutput.size()+" byte");
 
-        byteOutput.reset();
-        stream.reset();
-        stream.flush();
         stream.close();
-        byteOutput.flush();
         byteOutput.close();
         //System.out.println("After: replica :"+m.getReplicaNumber()+" has "+byteOutput.size()+" byte");
         return size;
+    }
+    @Override
+     public int serializ(CRDT m) throws IOException {
+        
+        if (overhead) {
+            return (sizeOf(m));
+        } else {
+            return sizeOf(m.lookup());
+        }
+       
     }
 }

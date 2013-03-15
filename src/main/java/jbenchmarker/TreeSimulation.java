@@ -40,6 +40,7 @@ import crdt.tree.wordtree.WordConnectionPolicy;
 import crdt.tree.wordtree.WordTree;
 import crdt.tree.wordtree.policy.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.logoot.BoundaryStrategy;
@@ -306,7 +307,8 @@ public class TreeSimulation {
             }
             toArrayLong(ltime[ex], l, minSizeGen);
 
-            List<Long> m = cd.getMemUsed();
+            List<Long> m = new ArrayList();
+            toListLong(m, cd.getMemUsed());
             if (m.size() < minSizeMem) {
                 minSizeMem = m.size();
             }
@@ -350,6 +352,13 @@ public class TreeSimulation {
     private static void toArrayLong(long[] t, List<Long> l, int minSize) {
         for (int i = 0; i < minSize - 1; i++) {
             t[i] = l.get(i);
+        }
+    }
+    private static void toListLong(List<Long> t, List<Double> l) {
+        for (int i = 0; i < l.size(); i++) {
+            double d = l.get(i);
+            long g = (long) d;
+            t.add(g);
         }
     }
 

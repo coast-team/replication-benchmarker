@@ -120,7 +120,7 @@ public class MainSimulaReplica {
         writeFile(calculAverag(rtime), "gen", nameUsr);
         writeFile(calculAverag(mem), "mem", nameUsr);
     }
-    private static void toArrayDouble(double[] tab, List<Long> memUsed) {
+    private static void toArrayDouble(double[] tab, List<Double> memUsed) {
         for(int i=0; i<memUsed.size(); i++)
             tab[i] = memUsed.get(i).doubleValue();
     }

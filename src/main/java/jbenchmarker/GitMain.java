@@ -25,6 +25,7 @@ package jbenchmarker;
 import crdt.CRDT;
 import crdt.Factory;
 import crdt.simulator.CausalSimulator;
+import crdt.simulator.sizeclaculator.StandardSizeCalculator;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -65,9 +66,11 @@ public final class GitMain extends Experience {
             extractFiles(new File(gitdir), gitdir, paths);
         }
         int end = paths.size();
-        if (args.length > 6 && args[2].matches("[0-9]*")) {
-            end = Integer.parseInt(args[2]);
-        }
+
+//        if (args.length > 1 && args[2].matches("[0-9]*")) {
+//            end = Integer.parseInt(args[2]);
+//        }
+//        
         boolean clean = Arrays.asList(args).contains("--clean");
         boolean save = Arrays.asList(args).contains("--save");
         boolean stat = Arrays.asList(args).contains("--stat");
@@ -92,15 +95,15 @@ public final class GitMain extends Experience {
                     + "nbrOpIns;nbrOpDel;TotalInsLocal;TotalDelLocal;TotalInsRemote;TotalDelRemote;"
                     + "Nbr Ligne;NbrOp;TimeGen;AvgTimeGen;TimeRemote;AvgTimeRemote;"
                     + "AllMemory;AvgMemory;SizeMessage";
-            writeTofile(file, statr);
+            result.add(statr);
+            //writeTofile(file, statr);
         } else {
             for (String s : args) {
                 System.out.print(s + " ");
             }
             System.out.println("\nPath;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
+            result.add("Path;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
         }
-
-
 
         int nbrExec = Integer.parseInt(args[args.length - 2]);
         Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[args.length - 1]).newInstance();
@@ -159,6 +162,7 @@ public final class GitMain extends Experience {
                             + trace.insertSize + ';' + trace.deleteSize;
 
                     System.out.println(statr);
+                    result.add(statr);
                 }
 
 
@@ -203,7 +207,7 @@ public final class GitMain extends Experience {
                 Iterator<Integer> a = cd.replicas.keySet().iterator();
                 if (a.hasNext()) {
                     int r = a.next();
-                    serMem += cd.serializTotal(cd.replicas.get(r));
+                    serMem += StandardSizeCalculator.sizeOf(cd.replicas.get(r));
                     memOk = true;
                 }
 
@@ -252,23 +256,19 @@ public final class GitMain extends Experience {
                 statr = statr + ';' + nbrLigne + ';' + minCop + ';' + somGen + ';' + avgGen
                         + ';' + somUsr + ';' + avgUsr + ';' + sumMem + ';' + avgMem + ';' + sizeMsg / nbrExec;
 
-                result.add(file);
-                //writeTofile(file, statr);
+                result.add(statr);
                 System.out.println(statr);
-
-                //writeToFile(ltime, path, "gen");
-                //writeToFile(rtime, path, "usr");
-                //writeToFile(mem, path, "mem");
             }
         }
 
         double resMem = 0;
         for (int p = 0; p < memory.length; p++) {
             resMem += memory[p];
+
+            System.out.println("Max Memory : " + resMem);
+            writeTofile(file, result);
+
         }
-
-        System.out.println("Max Memory : " + resMem);
-
     }
 
     @Override

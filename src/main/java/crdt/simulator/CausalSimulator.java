@@ -52,7 +52,6 @@ public class CausalSimulator extends Simulator {
     private Map<Integer, List<CRDTMessage>> genHistory;
     private long localSum = 0L, nbLocal = 0L, remoteSum = 0L, nbRemote = 0L;
     private int nbrTrace = 0;
-    private long sumMemory = 0L;
     ObjectOutputStream writer = null;
     private long timeInsGen = 0L, timeDelGen = 0L, timeInsRemote = 0L, timeDelRemote = 0L;
     private int nbrDel = 0, nbrIns = 0;
@@ -108,14 +107,6 @@ public class CausalSimulator extends Simulator {
         return history;
     }
 
-    /**
-     * The whole memory occupied by the replicas.
-     *
-     * @return size in bytes.
-     */
-    public long getSumMem() {
-        return sumMemory;
-    }
 
     public long getTimeInsGen() {
         return timeInsGen;
@@ -146,9 +137,9 @@ public class CausalSimulator extends Simulator {
      *
      * @return size in bytes.
      */
-    public long getAvgMem() {
-        return sumMemory / this.getReplicas().keySet().size();
-    }
+    public double getAvgMem() {
+        return memUsed.get(memUsed.size()-1);
+    } 
 
     /**
      * The whole time taken by appying local operations.
@@ -410,15 +401,13 @@ public class CausalSimulator extends Simulator {
         }
     }
 
-   
-
     private void ifSerializ() throws IOException {
         if (nbrTrace > 0 && tour == nbrTrace && serializer!=null) {
+            long SumMemory=0;
             for (int rep : this.getReplicas().keySet()) {
-                sumMemory+= serializer.serializ(this.getReplicas().get(rep));
+                SumMemory+= serializer.serializ(this.getReplicas().get(rep));
             }
-            memUsed.add(this.getAvgMem());
-            sumMemory = 0;
+            memUsed.add(new Double((double)SumMemory /(double) this.getReplicas().keySet().size()));
             tour = 0;
 
             //debug
@@ -426,23 +415,6 @@ public class CausalSimulator extends Simulator {
                 System.out.println("Serialized :" + memUsed.size() * 100 + "x");
             }
         }
-    }
-
-    public double serializTotal(CRDT m) throws IOException {
-        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-        ObjectOutputStream stream = new ObjectOutputStream(byteOutput);
-        stream.writeObject(m);
-        sumMemory = byteOutput.size();
-
-        byteOutput.reset();
-        stream.reset();
-        stream.flush();
-        stream.close();
-        byteOutput.flush();
-        byteOutput.close();
-        //System.out.println("replica :"+m.getReplicaNumber()+" has "+byteOutput.size()+" byte");
-        return sumMemory;
-
     }
 
     public List<Long> splittedGenTime() {
