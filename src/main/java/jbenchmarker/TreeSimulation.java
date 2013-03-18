@@ -1,20 +1,20 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2012
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker;
 
@@ -26,9 +26,12 @@ import crdt.set.NaiveSet;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
 import crdt.simulator.TraceFromFile;
+import crdt.simulator.random.OperationProfile;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardOrderedTreeOpProfile;
+import crdt.simulator.random.StandardOrderedTreeOperationProfileWithMoveRename;
 import crdt.tree.fctree.FCTree;
+import crdt.tree.fctree.policy.FastCycleBreaking;
 import crdt.tree.orderedtree.LogootTreeNode;
 import crdt.tree.orderedtree.PositionIdentifierTree;
 import crdt.tree.orderedtree.PositionnedNode;
@@ -37,6 +40,7 @@ import crdt.tree.wordtree.WordConnectionPolicy;
 import crdt.tree.wordtree.WordTree;
 import crdt.tree.wordtree.policy.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.logoot.BoundaryStrategy;
@@ -62,7 +66,7 @@ public class TreeSimulation {
     static Factory policy[] = {new WordSkip(), new WordReappear(), new WordRoot(), new WordCompact(),
         new WordIncrementalSkip(), new WordIncrementalReappear(),
         new WordIncrementalRoot(), new WordIncrementalCompact(), new WordIncrementalSkipOpti(),
-    new WordIncrementalSkipUnique()};
+        new WordIncrementalSkipUnique()};
     static Factory set[] = {/*
          * new CommutativeCounterSet(), new ConvergentCounterSet(), new
          * CommutativeLwwSet(), new ConvergentLwwSet(), new CommutativeOrSet(),
@@ -79,7 +83,7 @@ public class TreeSimulation {
          * ,"ConvergentLwwSet" ,"CommutativeOrSet" ,"ConvergentOrSet" ,"OTset
          * Addwin without gc" ,"OTset delwin without gc" ,"OTset Addwin with gc"
          * ,"OTset delwin with gc"
-           ,
+         ,
          */"NaiveSet"};
     /*
      * static Factory<CRDT> fact[]={ new OTTree(new SOCT2(0, new SOCT2Log(new
@@ -102,27 +106,29 @@ public class TreeSimulation {
                 }
             }
         }
-        fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), 
+        fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()),
                 new SOCT2GarbageCollector(4))));
         factstr.add("OTTree");
         fact.add(new FCTree());
         factstr.add("FCTree");
-        
-        
+        fact.add(new FCTree(new FastCycleBreaking("Garbage")));
+        factstr.add("FCTreeCycleBreaker");
+
+
         //withoutGarbage
-         fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), 
+        fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()),
                 null)));
         factstr.add("OTTreeWithoutGarbage");
-         fact.add(new TreeOPT(new SOCT2(0, new SOCT2Log(new TreeOPTTTFTranformation()), 
+        fact.add(new TreeOPT(new SOCT2(0, new SOCT2Log(new TreeOPTTTFTranformation()),
                 null)));
         factstr.add("TreeOPTWithoutGarbage");
-          fact.add(new OTTree(new SOCT2(0, new SOCT2LogTTFOpt(new OTTreeTranformation()), 
+        fact.add(new OTTree(new SOCT2(0, new SOCT2LogTTFOpt(new OTTreeTranformation()),
                 null)));
         factstr.add("OTTreeWithoutGarbageO");
-         fact.add(new TreeOPT(new SOCT2(0, new SOCT2LogTTFOpt(new TreeOPTTTFTranformation()), 
+        fact.add(new TreeOPT(new SOCT2(0, new SOCT2LogTTFOpt(new TreeOPTTTFTranformation()),
                 null)));
         factstr.add("TreeOPTWithoutGarbageO");
-        
+
 
     }
     static int base = 100;
@@ -132,7 +138,7 @@ public class TreeSimulation {
 
         generateFactory();
 
-        if (args.length < 11) {
+        if (args.length < 13) {
             System.err.println("Arguments :");
             System.err.println("- Factory number ");
             for (int p = 0; p < factstr.size(); p++) {
@@ -141,7 +147,9 @@ public class TreeSimulation {
             System.err.println("- Number of execu : ");
             System.err.println("- duration : ");
             System.err.println("- perIns : ");
-            System.err.println("- perBlock : ");
+            System.err.println("- perMove : ");
+            System.err.println("- perRen : ");
+            System.err.println("- perChild : ");
             /*
              * System.err.println("- avgBlockSize : "); System.err.println("-
              * sdvBlockSize : ");
@@ -165,6 +173,8 @@ public class TreeSimulation {
         System.err.println("- Number of execu : " + args[j++]);
         System.err.println("- duration : " + args[j++]);
         System.err.println("- perIns : " + args[j++]);
+        System.err.println("- perMove : " + args[j++]);
+        System.err.println("- perRen : " + args[j++]);
         System.err.println("- perChild : " + args[j++]);
         /*
          * System.err.println("- avgBlockSize : "); System.err.println("-
@@ -177,7 +187,7 @@ public class TreeSimulation {
         System.err.println("- thresold : " + args[j++]);
         System.err.println("- scale for serealization : " + args[j++]);
 
-       // System.err.println("- name File : " + args[j]);
+        // System.err.println("- name File : " + args[j]);
         j = 0;
 
         Factory<CRDT> rf = (Factory<CRDT>) fact.get(Integer.parseInt(args[j++]));
@@ -190,6 +200,8 @@ public class TreeSimulation {
         }
         long duration = Long.valueOf(args[j++]);
         double perIns = Double.valueOf(args[j++]);
+        double perMove = Double.valueOf(args[j++]);
+        double perRen = Double.valueOf(args[j++]);
         double perChild = Double.valueOf(args[j++]);
         /*
          * int avgBlockSize = Integer.valueOf(args[5]); double sdvBlockSize = Double.valueOf(args[6]);
@@ -206,30 +218,29 @@ public class TreeSimulation {
          */
         String fileRes;
         String nameUsr;
-        if (clas.equals("OTTree") 
-                || clas.equals("FCTree") 
-                || clas.equals("OTTreeWithoutGarbage") 
+        if (clas.equals("OTTree")
+                || clas.equals("FCTree")
+                || clas.equals("FCTreeCycleBreaker")
+                || clas.equals("OTTreeWithoutGarbage")
                 || clas.equals("TreeOPTWithoutGarbage")
-                || clas.equals("OTTreeWithoutGarbageO") 
-                || clas.equals("TreeOPTWithoutGarbageO")
-                ) 
+                || clas.equals("OTTreeWithoutGarbageO")
+                || clas.equals("TreeOPTWithoutGarbageO")) {
             nameUsr = clas;
-        else
-        {
+        } else {
             String[] res = clas.split("\\,");
             String[] typeTree = res[0].split("\\.");
             String[] typePlicy = res[2].split("\\.");
             nameUsr = typeTree[typeTree.length - 1] + "." + res[1] + "." + typePlicy[typePlicy.length - 1];
-            
+
         }
         fileRes = nameUsr;
-        
+
         if (j < args.length) {
             nameUsr = args[j++];
-        } 
-        
+        }
+
         File fileUsr = new File(nameUsr);
-        
+
         long ltime[][] = null, rtime[][] = null, mem[][] = null;
         int minSizeGen = 0, minSizeInteg = 0, minSizeMem = 0, nbrReplica = 0;
         int cop = 0, uop = 0, mop = 0;
@@ -242,16 +253,22 @@ public class TreeSimulation {
              * StandardSeqOpProfile(perIns, perBlock, avgBlockSize,
              * sdvBlockSize), probability, delay, sdv, replicas);
              */
-            CausalSimulator cd = new CausalSimulator(rf);
+            CausalSimulator cd = new CausalSimulator(rf, true, scaleMemory, true);
             Trace trace;
             if (fileUsr.exists()) {
-                System.out.println( "-Trace From File : " + nameUsr);
-                trace = new TraceFromFile(fileUsr,true);
+                System.out.println("-Trace From File : " + nameUsr);
+                trace = new TraceFromFile(fileUsr, true);
                 cd.setWriter(null);
             } else {
-                System.out.println( "-Trace to File  " + nameUsr);
-                trace = new RandomTrace(duration, RandomTrace.FLAT,
-                        new StandardOrderedTreeOpProfile(perIns, perChild), probability, delay, sdv, replicas);
+                OperationProfile opprof;
+                if (perMove <= 0 && perRen <=0) {
+                    opprof = new StandardOrderedTreeOpProfile(perIns, perChild);
+                } else {
+                    opprof = new StandardOrderedTreeOperationProfileWithMoveRename(perIns, perMove, perRen, perChild);
+                }
+
+                System.out.println("-Trace to File  " + nameUsr);
+                trace = new RandomTrace(duration, RandomTrace.FLAT,opprof, probability, delay, sdv, replicas);
                 cd.setWriter(new ObjectOutputStream(new FileOutputStream(nameUsr)));
             }
             System.out.println("perIns" + perIns + ", perChild" + perChild + " probability " + probability + "delay " + delay + "sdv+" + sdv + "+, replicas" + replicas);
@@ -268,8 +285,8 @@ public class TreeSimulation {
              * calculate time execution boolean : calculate document with
              * overhead
              */
-            
-            cd.run(trace, true,  scaleMemory, true);
+
+            cd.run(trace);
             System.out.println("End of simulation");
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
@@ -289,8 +306,9 @@ public class TreeSimulation {
                 minSizeGen = l.size();
             }
             toArrayLong(ltime[ex], l, minSizeGen);
-            
-            List<Long> m = cd.getMemUsed();
+
+            List<Long> m = new ArrayList();
+            toListLong(m, cd.getMemUsed());
             if (m.size() < minSizeMem) {
                 minSizeMem = m.size();
             }
@@ -308,15 +326,15 @@ public class TreeSimulation {
             trace = null;
             System.gc();
             Thread.sleep(1000);
-            System.out.println("-----ltime : "+ltime[ex].length);
-            System.out.println("-----rtime : "+rtime[ex].length);
+            System.out.println("-----ltime : " + ltime[ex].length);
+            System.out.println("-----rtime : " + rtime[ex].length);
         }
         sum = sum / nbrReplica;
         sum = sum / nbExec;
         System.out.println("Best execution time in :" + (sum / Math.pow(10, 9)) + " second");
-        
-        
-        
+
+
+
         if (nbExec > 1) {
             computeAverage(ltime, thresold, minSizeGen);
             computeAverage(mem, thresold, minSizeMem);
@@ -334,6 +352,13 @@ public class TreeSimulation {
     private static void toArrayLong(long[] t, List<Long> l, int minSize) {
         for (int i = 0; i < minSize - 1; i++) {
             t[i] = l.get(i);
+        }
+    }
+    private static void toListLong(List<Long> t, List<Double> l) {
+        for (int i = 0; i < l.size(); i++) {
+            double d = l.get(i);
+            long g = (long) d;
+            t.add(g);
         }
     }
 

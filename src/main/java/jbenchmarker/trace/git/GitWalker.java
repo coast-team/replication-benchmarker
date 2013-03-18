@@ -20,7 +20,8 @@
 package jbenchmarker.trace.git;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.*;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -78,7 +79,6 @@ public class GitWalker {
     static boolean progressBar = false;
     String fileFilter = null;
     static final Logger logger = Logger.getLogger(GitWalker.class.getCanonicalName());
-
     /**
      *
      * @param arg
@@ -354,11 +354,11 @@ public class GitWalker {
             while (tw.next()) {
                 //if the object is not an folder.
                 if (!tw.isSubtree()) {
-
                     RawText stateAfterMerge = null;//State after merger
                     if (file) { // if git used
                         File f = new File(gitDir + "/" + tw.getPathString());
                         if (f.exists()) { // if file is existing after merge
+                            launchAndWait("sed /^[<=>][<=>][<=>][<=>]*/d -i "+f.getPath());
                             stateAfterMerge = new RawText(f);
                         } else { //else the file is created by commit
                             stateAfterMerge = null;
@@ -369,7 +369,6 @@ public class GitWalker {
                                 continue;
                             }
                         }
-
                     } else {
                         stateAfterMerge = map.get(tw.getPathString());
                         if (stateAfterMerge == null && !countCreatedFile) {
@@ -381,8 +380,11 @@ public class GitWalker {
                         stateAfterMerge = new RawText(new byte[0]);
                     }
 
-
-
+//                    for(int i=0;i<stateAfterMerge.size();i++)
+//                    {
+//                        System.out.println(stateAfterMerge.getString(i));
+//                    }
+//                    
                     RawText stateAfterCommit;
                     //Path of commit
                     try {
@@ -397,8 +399,7 @@ public class GitWalker {
                     } catch (Exception ex) { // if another exception like inexitant considere 0 file.
                         stateAfterCommit = new RawText(new byte[0]);
                     }
-
-
+                    
                     EditList editList = diffAlgorithm.diff(RawTextComparator.DEFAULT, stateAfterMerge, stateAfterCommit);
 
 
@@ -411,8 +412,13 @@ public class GitWalker {
                     editCount.increment();
 
                     for (Edit ed : editList) {// Count line replace is two time counted
-                        editCount.addLine(ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB());
+                        editCount.addLine(ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB());                      
                     }
+                    
+//                    if(editCount.line>signeMerge && signeMerge>0)
+//                        editCount.setLine(editCount.line - signeMerge);
+
+                    
                     //Count the block size
                     editCount.addBlock(editList.size());
 //                    if (tw.getPathString().equals(".gitattributes") && editList.size() > 0) {
@@ -433,6 +439,35 @@ public class GitWalker {
         }
         return result;
     }
+    
+    
+    void ReadFile(File file)
+    {
+    FileInputStream fis = null;
+    BufferedInputStream bis = null;
+    DataInputStream dis = null;
+
+    try {
+      fis = new FileInputStream(file);
+
+      bis = new BufferedInputStream(fis);
+      dis = new DataInputStream(bis);
+
+      while (dis.available() != 0) {
+        System.out.println(dis.readLine());
+      }
+
+      fis.close();
+      bis.close();
+      dis.close();
+
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    }
+    
 
     /**
      *
@@ -512,8 +547,13 @@ public class GitWalker {
          * @return modified line count
          */
         public int getLine() {
-            return line;
+             return line;
         }
+        
+        public void setLine( int l) {
+             line = l;
+        }
+        
 
         /**
          * Increment modified line number

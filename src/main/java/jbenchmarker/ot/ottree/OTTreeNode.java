@@ -19,9 +19,11 @@
 package jbenchmarker.ot.ottree;
 
 import collect.OrderedNode;
+import collect.SimpleNode;
 import crdt.tree.orderedtree.PositionIdentifier;
 import crdt.tree.orderedtree.Positioned;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.core.Operation;
@@ -111,7 +113,7 @@ public class OTTreeNode<T> implements OrderedNode<T> {
      * ----
      */
     @Override
-    public int childrenNumber() {
+    public int getChildrenNumber() {
         return this.visibleChildren;
     }
 
@@ -199,4 +201,22 @@ public class OTTreeNode<T> implements OrderedNode<T> {
 
         return t.toString();
     }
+
+    @Override
+    public SimpleNode<T> getFather() {
+        return father;
+    }
+
+    @Override
+    public Iterator<? extends SimpleNode<T>> iterator() {
+        return this.getElements().iterator();
+    }
+
+    @Override
+    public boolean isChildren(SimpleNode<T> n) {
+        OTTreeNode node=(OTTreeNode)n;
+        return node.visible && childrens.contains(node);
+    }
+
+   
 }

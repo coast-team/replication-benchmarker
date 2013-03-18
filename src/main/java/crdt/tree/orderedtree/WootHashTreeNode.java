@@ -19,8 +19,10 @@
 package crdt.tree.orderedtree;
 
 import collect.OrderedNode;
+import collect.SimpleNode;
 import java.util.AbstractList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import jbenchmarker.core.Operation;
@@ -57,7 +59,7 @@ public class WootHashTreeNode<T> extends WootHashDocument<WootHashTreeNode<T>> i
     }
     
     @Override
-    public int childrenNumber() {
+    public int getChildrenNumber() {
         return viewLength(); 
     }
 
@@ -137,14 +139,29 @@ public class WootHashTreeNode<T> extends WootHashDocument<WootHashTreeNode<T>> i
         if (this.value != other.getValue() && (this.value == null || !this.value.equals(other.getValue()))) {
             return false;
         }
-        if (childrenNumber() != other.childrenNumber()) {
+        if (getChildrenNumber() != other.getChildrenNumber()) {
             return false;
         }
-        for (int i = 0; i < childrenNumber(); ++i) {
+        for (int i = 0; i < getChildrenNumber(); ++i) {
             if (!getChild(i).same(other.getChild(i))) {
                 return false;
             }
         }
         return true;
     }*/
+
+    @Override
+    public SimpleNode<T> getFather() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Iterator<? extends SimpleNode<T>> iterator() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean isChildren(SimpleNode<T> n) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

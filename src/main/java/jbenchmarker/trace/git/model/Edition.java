@@ -117,10 +117,10 @@ public class Edition implements Serializable{
     public String toString() {
         StringBuilder  s = new StringBuilder();
         for (int i = this.getBeginA(); i < this.getEndA(); ++i) {
-            s.append("--- (").append(i).append(") ").append(ca.get(i-this.getBeginA())).append('\n');
+            s.append("--- (").append(i).append(") ").append(ca.get(i-this.getBeginA()));
         }
         for (int i = this.getBeginB(); i < this.getEndB(); ++i) {
-            s.append("+++ (").append(i).append(") ").append(cb.get(i-this.getBeginB())).append('\n');
+            s.append("+++ (").append(i).append(") ").append(cb.get(i-this.getBeginB()));
         }
         return s.toString();
     }

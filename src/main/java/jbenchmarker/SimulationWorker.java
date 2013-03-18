@@ -27,6 +27,7 @@ import crdt.simulator.random.StandardSeqOpProfile;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -92,7 +93,7 @@ public class SimulationWorker {
             /*Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
                     new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);*/
             Trace trace = config.getTrace();
-            CausalSimulator cd = new CausalSimulator(config.getRf());
+            CausalSimulator cd = new CausalSimulator(config.getRf(), config.isTimeExecution(),  config.getScaleMemory(), config.isOverHead());
             if(config.getOutLog()!=null){
                 cd.setLogging(config.getOutLog());//file result
             }
@@ -102,7 +103,7 @@ public class SimulationWorker {
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.run(trace, config.isTimeExecution(),  config.getScaleMemory(), config.isOverHead());
+            cd.run(trace);
             if (ltime == null) {
                 cop = cd.splittedGenTime().size();
                 uop = cd.replicaGenerationTimes().size();
@@ -121,7 +122,9 @@ public class SimulationWorker {
                 minSizeGen = l.size();
             toArrayLong(ltime[ex], l, minSizeGen);  
             
-            List<Long> m = cd.getMemUsed();
+            List<Long> m = new ArrayList();
+            toListLong(m, cd.getMemUsed());
+            
             if(m.size() < minSizeMem)
                 minSizeMem = m.size();
             toArrayLong(mem[ex], m, minSizeMem);
@@ -160,6 +163,14 @@ public class SimulationWorker {
      private static void toArrayLong(long[] t, List<Long> l, int minSize) {
         for (int i = 0; i < minSize-1; i++) {
             t[i] = l.get(i);
+        }
+    }
+     
+     private static void toListLong(List<Long> t, List<Double> l) {
+        for (int i = 0; i < l.size(); i++) {
+            double d = l.get(i);
+            long g = (long) d;
+            t.add(g);
         }
     }
      

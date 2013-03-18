@@ -210,8 +210,8 @@ public class HashTree<T> extends Observable implements Tree<T>, Serializable {
             if (next == null) {
                 throw new NoSuchElementException();
             }
-            //Iterator <?extends Node<T>> it=next.getChildrenIterator();
-            pile.push(next.getChildrenIterator());
+            //Iterator <?extends Node<T>> it=next.iterator();
+            pile.push(next.iterator());
             ret = next;
             while (!pile.empty() && !pile.peek().hasNext()) {
                 pile.pop();
@@ -248,8 +248,8 @@ public class HashTree<T> extends Observable implements Tree<T>, Serializable {
             if (next == null) {
                 throw new NoSuchElementException();
             }
-            //Iterator <?extends Node<T>> it=next.getChildrenIterator();
-            file.addFirst(next.getChildrenIterator());
+            //Iterator <?extends Node<T>> it=next.iterator();
+            file.addFirst(next.iterator());
             ret = next;
             while (!file.isEmpty() && !file.peekLast().hasNext()) {
                 file.removeLast();

@@ -18,11 +18,13 @@
  */
 package crdt;
 
+import java.io.Serializable;
+
 /**
  *
  * @author urso
  */
-public interface CRDTMessage extends Cloneable {
+public interface CRDTMessage extends Cloneable, Serializable {
     public static CRDTMessage emptyMessage = new CRDTMessage() {
 
         @Override
@@ -50,5 +52,8 @@ public interface CRDTMessage extends Cloneable {
     public void execute(CRDT crdt);
     public CRDTMessage clone();
     
+    /**
+     * Number of messages embeded in this one.
+     */
     public int size();
 }

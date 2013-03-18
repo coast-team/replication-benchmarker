@@ -19,8 +19,10 @@
 package jbenchmarker.ot.ottree;
 
 import collect.OrderedNode;
+import collect.SimpleNode;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.ot.soct2.OTAlgorithm;
@@ -181,7 +183,7 @@ public class TreeOPTTTFNode<T> implements OrderedNode<T>, Serializable {
      * ----
      */
     @Override
-    public int childrenNumber() {
+    public int getChildrenNumber() {
         return visibleChildren;
     }
 
@@ -258,5 +260,21 @@ public class TreeOPTTTFNode<T> implements OrderedNode<T>, Serializable {
         hash = 29 * hash + (this.contains != null ? this.contains.hashCode() : 0);
         hash = 29 * hash + (this.childrens != null ? this.childrens.hashCode() : 0);
         return hash;
+    }
+
+    @Override
+    public SimpleNode<T> getFather() {
+        return father;
+    }
+
+    @Override
+    public Iterator<? extends SimpleNode<T>> iterator() {
+        return childrens.iterator();
+    }
+
+    @Override
+    public boolean isChildren(SimpleNode<T> n) {
+        TreeOPTTTFNode node=(TreeOPTTTFNode)n;
+        return node.visible && this.childrens.contains(node);
     }
 }

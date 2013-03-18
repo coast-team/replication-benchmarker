@@ -104,7 +104,17 @@ public class TreeOPT<T> extends CRDTOrderedTree<T> implements Serializable {
      * @return
      */
     @Override
-    public CRDT<OrderedNode<T>> create() {
+    public CRDTOrderedTree<T> create() {
         return new TreeOPT<T>(this.root.soct2);
+    }
+
+    @Override
+    public CRDTMessage rename(List<Integer> path, T newValue) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public CRDTMessage move(List<Integer> from, List<Integer> to, int p) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

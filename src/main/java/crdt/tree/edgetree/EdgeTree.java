@@ -25,7 +25,7 @@ import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.set.CRDTSet;
-import crdt.tree.CRDTTree;
+import crdt.tree.CRDTUnorderedTree;
 import crdt.tree.edgetree.connectionpolicy.EdgeConnectionPolicy;
 import crdt.tree.edgetree.mappingpolicy.EdgeMappPolicy;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import java.util.Iterator;
  *
  * @author Stephane Martin
  */
-public class EdgeTree<T> extends CRDTTree<T>{
+public class EdgeTree<T> extends CRDTUnorderedTree<T>{
     CRDTSet<Edge<T>> edgesSet;
     HashMap<T,Edge<T>> annuaire;
     //Node<T> root;
@@ -60,7 +60,7 @@ public class EdgeTree<T> extends CRDTTree<T>{
    
 
     @Override
-    public CRDTTree create() {
+    public CRDTUnorderedTree create() {
         
         EdgeTree<T> ret=new EdgeTree(setFactory,emp,ecp);
         ret.edgesSet=setFactory.create();

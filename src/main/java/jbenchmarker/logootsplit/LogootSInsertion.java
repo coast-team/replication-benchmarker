@@ -66,7 +66,8 @@ public class LogootSInsertion extends SequenceMessage implements LogootSOperatio
             int distance = gId.getPosition() - lower.getIdAt(i).getPosition();
             if (distance < 2) {
                 if(i==lower.size()-1){
-                    idList.add(new LogootSIdentifier(lower.getIdAt(i), lower.getIdAt(i).getOffset() + doc.get(doc.IndexOf(lower, false)).size() - 1));
+                    //idList.add(new LogootSIdentifier(lower.getIdAt(i), lower.getIdAt(i).getOffset() + doc.get(doc.IndexOf(lower, false)).size() - 1));
+                    idList.add(lower.getIdAt(i));
                 }
                 else{
                     idList.add(new LogootSIdentifier(lower.getIdAt(i)));

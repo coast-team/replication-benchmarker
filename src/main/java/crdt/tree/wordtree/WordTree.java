@@ -26,7 +26,7 @@ import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.set.CRDTSet;
-import crdt.tree.CRDTTree;
+import crdt.tree.CRDTUnorderedTree;
 import java.io.Serializable;
 import java.util.*;
 
@@ -36,7 +36,7 @@ import java.util.*;
  * 
  * 
  */
-public class WordTree<T> extends CRDTTree<T>{
+public class WordTree<T> extends CRDTUnorderedTree<T>{
     CRDTSet words;
     WordPolicy<T> wcp;
     

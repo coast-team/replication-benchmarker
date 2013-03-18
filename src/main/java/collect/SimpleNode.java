@@ -16,44 +16,54 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package crdt.tree.fctree;
+package collect;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Iterator;
+
 
 /**
  *
- * @author Stephane Martin <stephane.martin@loria.fr>
+ * @param <T> 
+ * @author Stephane Martin
  */
-public class IdFactory implements Serializable{
-    private int replica;
-    private int nbOp;
+public interface SimpleNode<T> extends Serializable, Iterable  {
     
     /**
-     * Create new id with incremented nbOp
-     * @return return new id.
-     */
-    FCIdentifier createId(){
-        return new FCIdentifier(replica, nbOp++);
-    }
-
-    void setReplicaNumber(int replica) {
-        this.replica=replica;
-    }
-
-    /**
      * 
-     * @return number of generated operation
+     * @return Node value
      */
-    public int getNbOp() {
-        return nbOp;
-    }
-
-    /**
-     * 
-     * @return get replica number
-     */
-    public int getReplica() {
-        return replica;
-    }
+    public T getValue();
     
+    /**
+     * 
+     * @return Father node.
+     */
+    public SimpleNode<T> getFather();
+    
+    
+    
+    /**
+     * 
+     * @return an iterator of Children
+     */
+    @Override
+    public Iterator<? extends SimpleNode <T>> iterator();
+
+    
+    /**
+     * 
+     * @return number of children
+     */
+    public int getChildrenNumber();
+    
+    /**
+     * Check if n is directly children of this node
+     * @param n
+     * @return true if n is childre of this
+     */
+    public boolean isChildren(SimpleNode<T> n);
+    
+  
 }

@@ -19,13 +19,14 @@
 package crdt;
 
 import crdt.simulator.TraceOperation;
+import java.io.Serializable;
 import jbenchmarker.core.Operation;
 
 /**
  *
  * @author urso
  */
-public  class OperationBasedOneMessage implements OperationBasedMessage {
+public  class OperationBasedOneMessage implements OperationBasedMessage,Serializable {
     //TraceOperation traceOperation;
     //private LinkedList<CommutativeMessage<T>> msgs = new LinkedList<CommutativeMessage<T>>();
 

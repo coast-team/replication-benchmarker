@@ -18,43 +18,37 @@
  */
 package jbenchmarker.trace.git;
 
+import org.eclipse.jgit.diff.Edit.Type;
 import collect.HashMapSet;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import jbenchmarker.trace.git.model.Commit;
 import jbenchmarker.trace.git.model.Edition;
 import jbenchmarker.trace.git.model.FileEdition;
 import jbenchmarker.trace.git.model.Patch;
+import name.fraser.neil.plaintext.DiffMatchPatch;
+import name.fraser.neil.plaintext.DiffMatchPatch.Diff;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.*;
 import static org.eclipse.jgit.diff.DiffEntry.Side.NEW;
 import static org.eclipse.jgit.diff.DiffEntry.Side.OLD;
-import org.eclipse.jgit.diff.*;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.LargeObjectException;
 import org.eclipse.jgit.errors.MissingObjectException;
-import static org.eclipse.jgit.lib.FileMode.GITLINK;
 import org.eclipse.jgit.lib.*;
+import static org.eclipse.jgit.lib.FileMode.GITLINK;
 import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.patch.FileHeader.PatchType;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevSort;
 import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.storage.pack.PackConfig;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.ektorp.CouchDbConnector;
-import org.ektorp.CouchDbInstance;
-import org.ektorp.DbPath;
-import org.ektorp.http.HttpClient;
-import org.ektorp.http.StdHttpClient;
-import org.ektorp.impl.StdCouchDbConnector;
-import org.ektorp.impl.StdCouchDbInstance;
 import org.ektorp.support.CouchDbRepositorySupport;
 import org.ektorp.support.GenericRepository;
 
@@ -84,9 +78,16 @@ public class GitExtraction {
     private final Git git;   
     private final String path;
     public static final DiffAlgorithm defaultDiffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
-    
+    private static final DiffMatchPatch neil = new DiffMatchPatch();
+    private boolean detectMaU;
+                
     public GitExtraction(Repository repo, CouchDbRepositorySupport<Commit> dbc,  
             CouchDbRepositorySupport<Patch> dbp, DiffAlgorithm diffAlgorithm, String path) {
+        this(repo, dbc, dbp, diffAlgorithm, path, false);
+    }
+    
+    public GitExtraction(Repository repo, CouchDbRepositorySupport<Commit> dbc,  
+            CouchDbRepositorySupport<Patch> dbp, DiffAlgorithm diffAlgorithm, String path, boolean detectMaU) {
         this.repository = repo;
         this.reader = repo.newObjectReader();
    	this.source = ContentSource.create(reader);
@@ -96,6 +97,7 @@ public class GitExtraction {
         this.commitCrud = dbc;
         this.git = new Git(repo);
         this.path = path;
+        this.detectMaU = detectMaU;
     }
     
     // TODO : resolve problem of diff docuement in same DB
@@ -157,7 +159,7 @@ public class GitExtraction {
         
     static public List<Edition> edits(final EditList edits, final RawText a, final RawText b)
             throws IOException {
-        List<Edition> editions = new LinkedList<Edition>();
+        List<Edition> editions = new ArrayList<Edition>();
         for (int curIdx = 0; curIdx < edits.size(); ++curIdx) {
             editions.add(0, new Edition(edits.get(curIdx), a, b));
         }
@@ -170,7 +172,79 @@ public class GitExtraction {
         final EditList editList = diffAlgorithm.diff(RawTextComparator.DEFAULT, a, b);
         return edits(editList, a, b);
     }
-
+    
+    private static final int UPDATE_THRESHOLD = 10;
+    private static final int LINE_UPDATE_THRESHOLD = 10;
+    private static final int MOVE_UPDATE_THRESHOLD = 10; 
+    
+    /**
+     * Detects move. Replace couples delete/insert by moves.
+     * @param edits 
+     */
+    private void detectMovesAndUpdates(List<Edition> edits) {
+        List<String> sa = new ArrayList<String>(), sb = new ArrayList<String>();
+        for (Edition e : edits) {
+            sa.add(stringer(e.getCa()));
+            sb.add(stringer(e.getCb()));
+        }
+        for (int i = 0; i < edits.size(); ++i) {
+            Edition e = edits.get(i);
+            String ea = sa.get(i), eb = sb.get(i);
+            boolean match = false;
+            if (e.getType() == Type.REPLACE) {
+                int d = dist(ea, eb);
+                if (d < UPDATE_THRESHOLD) {
+                    System.out.println(">>>>> UPDATE (" + d + ")\n" + e);
+                    match = true;
+                } else {
+                    match = lineUpdate(edits.get(i));
+                }
+            } 
+            if ((e.getType() == Type.DELETE || e.getType() == Type.REPLACE)) {
+                for (int j = 0; !match && j < edits.size(); ++j) {
+                    Edition f = edits.get(j); 
+                    if (i != j && (f.getType() == Type.INSERT || f.getType() == Type.REPLACE)) {
+                        String fb = sb.get(j); 
+                        int d = dist(ea, fb);
+                        if (d < MOVE_UPDATE_THRESHOLD) {
+                            System.out.println(">>>>> MOVE (" + d + ")\n" + e + "\n============================\n" + f);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private boolean lineUpdate(Edition e) {
+        List<String> la = e.getCa(), lb = e.getCb();
+        int j = 0;
+        boolean match = false;
+        for (int i = 0; i < la.size(); ++i) {
+            while (j < lb.size() && dist(la.get(i), lb.get(j)) >= LINE_UPDATE_THRESHOLD) {
+                ++j;
+            }
+            if (j < lb.size()) {
+                match = true;
+            }
+        }
+        if (match) {
+            System.out.println(">>>>> PARTIAL UPDATE\n" + e);
+        }
+        return match;
+    }
+    
+    private int dist(String a, String b) {
+        return neil.diff_levenshtein(neil.diff_main(a, b)) * 100 / a.length();
+    } 
+    
+    private String stringer(List<String> list) {
+        StringBuilder b = new StringBuilder();
+        for (String s : list) {
+            b.append(s);
+        }
+        return b.toString();
+    }
+    
     /*
      * Creates a file edition corresponding to a diff entry (without content if merge is true)
      */
@@ -187,6 +261,11 @@ public class GitExtraction {
                 elist = diff(aRaw, bRaw);
             }
         }
+        // Detect move
+        if (detectMaU) {
+            detectMovesAndUpdates(elist);
+        }
+        
         return new FileEdition(ent, type, elist);
     }
     
@@ -265,6 +344,7 @@ public class GitExtraction {
                             paths.put(parentId, entry.getOldPath());
                         }
                     }
+                    
                     patchCrud.add(new Patch(co, parent, edits));
                     if (itid.hasNext()) {
                         identifiers.put(parentId, itid.next());
@@ -305,4 +385,8 @@ public class GitExtraction {
         }
         return walk;
     }
+
+
+
+
 }

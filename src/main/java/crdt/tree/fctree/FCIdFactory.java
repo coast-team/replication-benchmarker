@@ -16,36 +16,51 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package crdt.tree.fctree.Operations;
+package crdt.tree.fctree;
 
-import crdt.tree.fctree.FCIdentifier;
-import crdt.tree.fctree.FCOperation;
-import crdt.tree.fctree.FCTree;
-import jbenchmarker.core.Operation;
+import java.io.Serializable;
 
 /**
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class Move extends FCOperation {
+public class FCIdFactory implements Serializable{
+    private int replica;
+    private int nbOp=1;
+
+    public FCIdFactory() {
+    }
+
+    public FCIdFactory(int replica) {
+        this.replica = replica;
+    }
     
-    public Move(FCIdentifier id) {
-        super(id);
+    /**
+     * Create new id with incremented nbOp
+     * @return return new id.
+     */
+    public FCIdentifier createId(){
+        return new FCIdentifier(replica, nbOp++);
     }
 
-    @Override
-    public Operation clone() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setReplicaNumber(int replica) {
+        this.replica=replica;
     }
 
-    @Override
-    public void apply(FCTree tree) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * 
+     * @return number of generated operation
+     */
+    public int getNbOp() {
+        return nbOp;
     }
 
-    @Override
-    public FCIdentifier[] DependOf() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * 
+     * @return get replica number
+     */
+    public int getReplica() {
+        return replica;
     }
     
 }

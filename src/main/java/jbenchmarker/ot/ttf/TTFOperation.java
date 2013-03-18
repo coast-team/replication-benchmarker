@@ -33,8 +33,6 @@ public class TTFOperation<T> implements Operation, Serializable{
 
     private int pos;
     private T content;
-    //private VectorClock clock;
-   // private final int siteId;
     private OpType type;
     private int siteId;
 
@@ -78,8 +76,6 @@ public class TTFOperation<T> implements Operation, Serializable{
       * @param t Type of operation
       */
      public TTFOperation(OpType t) {
-        //super(o);
-      //  this.siteId = this.getOriginalOp().getReplica();
         this.type = t;
     }
 
@@ -114,14 +110,6 @@ public class TTFOperation<T> implements Operation, Serializable{
         return this.content;
     }
 
-   /* public int getSiteId() {
-        return this.siteId;
-    }*/
-
-  /*  public VectorClock getClock() {
-        return this.clock;
-    }*/
-
     /**
      * clone operation
      * @return new instance of the operation
@@ -148,39 +136,4 @@ public class TTFOperation<T> implements Operation, Serializable{
         sb.append(')');
         return sb.toString();
     }
-
-   /* public static TTFOperation delete(SequenceOperation o, int pos/*, VectorClock vc*) {
-        TTFOperation op = new TTFOperation(OpType.del,pos);
-        //op.pos = pos;
-        //op.clock = vc;
-        return op;
-    }
-
-    public static <T> TTFOperation insert(SequenceOperation o, int pos, T content/*, VectorClock vc*) {
-        TTFOperation op = new TTFOperation(OpType.ins,pos,);
-        op.pos = pos;
-        op.content = content;
-        //op.clock = vc;
-        return op;
-    }
-
-    public static TTFOperation from(SequenceOperation opt) {
-        TTFOperation op = new TTFOperation(opt,opt.getType());
-        //op.clock = opt.getVectorClock();
-        op.pos = opt.getPosition();
-        if (opt.getType() == OpType.ins) {
-            op.content = opt.getContent().get(0);
-        }
-        return op;
-    }*/
-
-  /*  @Override
-    public SequenceMessage clone() {
-        TTFOperation op = new TTFOperation(getOriginalOp());
-        op.pos = this.pos;
-        op.content = this.content;
-//        op.clock = new VectorClock(this.clock);
-
-        return op;
-    }*/
 }

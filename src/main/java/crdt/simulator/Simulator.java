@@ -31,9 +31,10 @@ import java.util.Map;
  */
 public abstract class Simulator {
     final public Map<Integer,CRDT> replicas;
+    final public List<CRDT> forSerializ;
     
     // memoryUsed
-    final protected List<Long> memUsed; 
+    final protected List<Double> memUsed; 
 
     // operation's generation time
     final protected List<Long> genTime;
@@ -69,20 +70,19 @@ public abstract class Simulator {
      */
     public Simulator(Factory<? extends CRDT> rf) {
         this.replicas = new HashMap<Integer,CRDT>();
-        this.memUsed = new ArrayList<Long>();
+        this.memUsed = new ArrayList();
         this.genTime = new ArrayList<Long>();
         this.remoteTime = new ArrayList<Long>();
         this.genSize = new ArrayList<Integer>();
         this.rf = rf;
+        this.forSerializ = new ArrayList<CRDT>();
     }
 
     public Map<Integer, CRDT> getReplicas() {
         return replicas;
     }
 
-    public void run(Trace trace) throws Exception {
-        run(trace, false, 0, false);
-    } 
+    public abstract void run(Trace trace) throws Exception ;
     
     /**
      * Runs a trace of operations. 
@@ -97,14 +97,15 @@ public abstract class Simulator {
      * @throws Exception if the Trace is incorrect (non causal, etc..)
      * @see Trace, TraceOperation, crdt.CRDT
      */
-    public abstract void run(Trace trace, boolean detail, int nbrTrace, boolean overhead) throws Exception;    
+   // public abstract void run(Trace trace, boolean detail, int nbrTrace, boolean overhead) throws Exception;    
     
     /**
      * Instanciate a new replica with classes given at construction. 
      * Adds the crated replica to the map.
      */
     public CRDT newReplica(int number) {
-        CRDT r = rf.create();
+
+       CRDT r = rf.create();
         replicas.put(number, r);
         r.setReplicaNumber(number);
         return r;
@@ -115,7 +116,7 @@ public abstract class Simulator {
      * One entry per measurement : trace size divided by nbrTrace.
      * @return a list of size in bytes, empty list if nbrTrace was 0
      */
-    public List<Long> getMemUsed() {
+    public List<Double> getMemUsed() {
         return memUsed;
     }
     

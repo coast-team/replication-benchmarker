@@ -1,20 +1,20 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2012
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.core;
 
@@ -25,48 +25,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * local operation of document.
- * T is a Character or a String.
+ * local operation of document. T is a Character or a String.
+ *
  * @author urso
  */
-public class SequenceOperation<T> /*extends TraceOperation */implements LocalOperation, Serializable{
-
-   /* @Override
-    public Operation getOperation(CRDT replica) {
-        
-        int sizeDoc = ((MergeAlgorithm) replica).getDoc().viewLength();
-//
-        if (this.getType() == OpType.ins && this.position > sizeDoc) {
-            this.position = sizeDoc;//a position exceeds document size
-        } else if (this.getType() != OpType.ins) {
-            if (this.position >= sizeDoc) {
-               this.position = sizeDoc - 1;//a position exceeds document size
-            }
-            if ((this.position + this.numberOf) > sizeDoc) {
-                this.numberOf = sizeDoc - this.position; //delete document at position exceeds document size
-            }
-        }
-        return this;
-    }*/
+public class SequenceOperation<T> implements LocalOperation, Serializable {
 
     @Override
     public SequenceOperation clone() {
         throw new UnsupportedOperationException("Not implemented yet");
-      /*  return new SequenceOperation(type, this.getReplica(), position, numberOf, 
-                new ArrayList(content), new VectorClock(this.getVectorClock()));*/
-                 
+        /*  return new SequenceOperation(type, this.getReplica(), position, numberOf, 
+         new ArrayList(content), new VectorClock(this.getVectorClock()));*/
+
     }
 
     @Override
     public LocalOperation adaptTo(CRDT replica) {
-       
+
         int sizeDoc = ((MergeAlgorithm) replica).getDoc().viewLength();
 //
         if (this.getType() == OpType.ins && this.position > sizeDoc) {
             this.position = sizeDoc;//a position exceeds document size
         } else if (this.getType() != OpType.ins) {
             if (this.position >= sizeDoc) {
-               this.position = sizeDoc - 1;//a position exceeds document size
+                this.position = sizeDoc - 1;//a position exceeds document size
             }
             if ((this.position + this.lenghOfADel) > sizeDoc) {
                 this.lenghOfADel = sizeDoc - this.position; //delete document at position exceeds document size
@@ -74,18 +56,20 @@ public class SequenceOperation<T> /*extends TraceOperation */implements LocalOpe
         }
         return this;
     }
- 
-    public enum OpType {ins, del, update, unsupported, noop}; 
+
+    public enum OpType {
+        ins, del, update, unsupported, noop
+    };
     
     private OpType type;                  // type of operation : insert or delete
     private int position;                 // position in the document
     private int lenghOfADel;                   // length of a del
     private List<T> content;          // content of an ins
-    
+
     public List<T> getContent() {
         return content;
     }
-    
+
     public String getContentAsString() {
         StringBuilder s = new StringBuilder();
         for (T t : content) {
@@ -106,7 +90,7 @@ public class SequenceOperation<T> /*extends TraceOperation */implements LocalOpe
         return type;
     }
 
-    public SequenceOperation(OpType type/*, /*int replica*/, int position, int offset, List<T> content/*/*, VectorClock VC*/) {
+    public SequenceOperation(OpType type, int position, int offset, List<T> content) {
         //super(replica, VC);
         this.type = type;
         this.position = position;
@@ -117,51 +101,50 @@ public class SequenceOperation<T> /*extends TraceOperation */implements LocalOpe
     /*
      * Construction of an insert operation (character)
      */
-    static public SequenceOperation<Character> insert(/*/*int replica, */int position, String content/*/*, VectorClock VC*/) {
+    static public SequenceOperation<Character> insert(int position, String content) {
         List<Character> l = new ArrayList<Character>();
         for (int i = 0; i < content.length(); ++i) {
             l.add(content.charAt(i));
-        }        
-        return new SequenceOperation(OpType.ins, /*replica,*/ position, 0, l/*,/* VC*/);
+        }
+        return new SequenceOperation(OpType.ins, position, 0, l);
     }
-    
+
     /*
      * Construction of an delete operation
      */
-    static public SequenceOperation delete(/*int replica,*/ int position, int offset /*VectorClock VC*/) {
-        return new SequenceOperation(OpType.del, /*replica,*/ position, offset, null/*, VC*/);
+    static public SequenceOperation delete(int position, int offset) {
+        return new SequenceOperation(OpType.del, position, offset, null);
     }
-    
+
     /*
      * Construction of an update operation
      */
-     static public SequenceOperation<Character> update(/*int replica, */int position, int offset, String content/*, VectorClock VC*/){
-         List<Character> l = new ArrayList<Character>();
-         for (int i = 0; i < content.length(); ++i) {
+    static public SequenceOperation<Character> update(int position, int offset, String content) {
+        List<Character> l = new ArrayList<Character>();
+        for (int i = 0; i < content.length(); ++i) {
             l.add(content.charAt(i));
-         }        
-         return new SequenceOperation<Character>(OpType.update,/* replica, */position, offset, l/*, VC*/);
-     }  
-     
-     static public <T> SequenceOperation<T> update(/*int replica, */int position, int offset, List<T> content/*, VectorClock VC*/){
-         return new SequenceOperation(OpType.update,/*replica,*/ position, offset, content/*, VC*/);
-     }
-     
-     /** 
-      * Construction of a noop operation (usefull for pure merge) 
-      */
-     public static SequenceOperation noop(/*int replica*//*, VectorClock VC*/) {
-        return new SequenceOperation(OpType.noop, /*replica, */-1, -1, null/*, VC*/);
-     }
-     
-     /*
+        }
+        return new SequenceOperation<Character>(OpType.update, position, offset, l);
+    }
+
+    static public <T> SequenceOperation<T> update(int position, int offset, List<T> content) {
+        return new SequenceOperation(OpType.update, position, offset, content);
+    }
+
+    /**
+     * Construction of a noop operation (usefull for pure merge)
+     */
+    public static SequenceOperation noop() {
+        return new SequenceOperation(OpType.noop, -1, -1, null);
+    }
+
+    /*
      * Construction of a stylage operation
      */
-     static public SequenceOperation<Character> unsupported(/*int replica*//*, VectorClock VC*/){
-         return new SequenceOperation(OpType.unsupported,/*replica,*/ -1, -1, null/*, VC*/);
-     }    
-     
-     
+    static public SequenceOperation<Character> unsupported() {
+        return new SequenceOperation(OpType.unsupported, -1, -1, null);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -178,10 +161,10 @@ public class SequenceOperation<T> /*extends TraceOperation */implements LocalOpe
             return false;
         }
         if (this.lenghOfADel != other.lenghOfADel) {
-             return false;
+            return false;
         }
         if ((this.content == null) ? (other.content != null) : !this.content.equals(other.content)) {
-             return false;
+            return false;
         }
         return super.equals(obj);
     }
@@ -199,18 +182,5 @@ public class SequenceOperation<T> /*extends TraceOperation */implements LocalOpe
     @Override
     public String toString() {
         return "SequenceOperation{" + "type=" + type + ", position=" + position + ", numberOf=" + lenghOfADel + ", content=" + content + '}';
-    }
-
-
-    /*@Override
-    public String toString() {
-        return "SequenceOperation{" + "replica=" + getReplica() + ", VC=" + getVectorClock() +
-                ", type=" + type + ", position=" + position + 
-                (type == OpType.ins ? "" : ", offset=" + numberOf) + 
-                (type == OpType.del ? "" : ", content=" + content) + '}';
-    }*/
-    
-    public int getRange() {
-        return (type == OpType.ins) ? content.size() : lenghOfADel;  
     }
 }

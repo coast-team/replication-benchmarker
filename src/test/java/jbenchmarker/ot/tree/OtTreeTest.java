@@ -57,9 +57,9 @@ public class OtTreeTest {
         
         
         
-        assertEquals(tree1.lookup().childrenNumber(), 1);
-        assertEquals(tree1.lookup().getChild(0).childrenNumber(), 1);
-        assertEquals(tree1.lookup().getChild(0).getChild(0).childrenNumber(), 0);
+        assertEquals(tree1.lookup().getChildrenNumber(), 1);
+        assertEquals(tree1.lookup().getChild(0).getChildrenNumber(), 1);
+        assertEquals(tree1.lookup().getChild(0).getChild(0).getChildrenNumber(), 0);
         assertEquals(tree1.lookup().getChild(0).getValue(), 'a');
         assertEquals(tree1.lookup().getChild(0).getChild(0).getValue(), 'm');
 
@@ -78,11 +78,11 @@ public class OtTreeTest {
         Assert.assertFalse(tree1.equals(tree2));
         
         tree2.applyRemote(mess2);
-        System.out.println(tree2);
+        
         assertEquals(tree1, tree2);
-        assertEquals(tree1.lookup().childrenNumber(), 1);
-        assertEquals(tree1.lookup().getChild(0).childrenNumber(), 2);
-        assertEquals(getFromPath(tree1.lookup(),0,0).childrenNumber(), 1);
+        assertEquals(tree1.lookup().getChildrenNumber(), 1);
+        assertEquals(tree1.lookup().getChild(0).getChildrenNumber(), 2);
+        assertEquals(getFromPath(tree1.lookup(),0,0).getChildrenNumber(), 1);
         assertEquals(tree1.lookup().getChild(0).getValue(), 'a');
         assertEquals(getFromPath(tree1.lookup(),0,1).getValue(), 'm');
         assertEquals(getFromPath(tree1.lookup(),0,1,0).getValue(), 'x');

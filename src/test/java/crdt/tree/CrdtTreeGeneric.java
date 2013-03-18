@@ -40,14 +40,14 @@ public class CrdtTreeGeneric<T> {
             y = basicTree.add(b, 'y'),
             z = basicTree.add(c, 'z');
 
-    public CRDTMessage populateTreeABC(CRDTTree crdttree) throws PreconditionException {
+    public CRDTMessage populateTreeABC(CRDTUnorderedTree crdttree) throws PreconditionException {
         CRDTMessage ABC = crdttree.add(crdttree.getRoot(), 'a');
         ABC = ABC.concat(crdttree.add(crdttree.getRoot(), 'b'));
         ABC = ABC.concat(crdttree.add(crdttree.getRoot(), 'c'));
         return ABC;
     }
 
-    public CRDTMessage populateTreeXYZ(CRDTTree crdttree) throws PreconditionException {
+    public CRDTMessage populateTreeXYZ(CRDTUnorderedTree crdttree) throws PreconditionException {
         CRDTMessage XYZ = crdttree.add(crdttree.getNode('b'), 'x');
         XYZ = XYZ.concat(crdttree.add(crdttree.getNode('b'), 'y'));
         XYZ = XYZ.concat(crdttree.add(crdttree.getNode('c'), 'z'));
@@ -60,7 +60,7 @@ public class CrdtTreeGeneric<T> {
      * @param treeFactory a CRDT tree factory
      * @throws Exception if test fails
      */
-    public void runAllBasic(Factory<CRDTTree> treeFactory) throws Exception {
+    public void runAllBasic(Factory<CRDTUnorderedTree> treeFactory) throws Exception {
         this.testAdd(treeFactory.create());
         this.testRemove(treeFactory.create());
         this.testApplyRemoteAdd(treeFactory.create(), treeFactory.create());
@@ -72,7 +72,7 @@ public class CrdtTreeGeneric<T> {
     }
 
     // Simple Add    
-    public void testAdd(CRDTTree crdttree) throws Exception {
+    public void testAdd(CRDTUnorderedTree crdttree) throws Exception {
 
         //creatTree
         populateTreeABC(crdttree);
@@ -83,7 +83,7 @@ public class CrdtTreeGeneric<T> {
     }
 
     // Add + remove   
-    public void testRemove(CRDTTree crdttree) throws Exception {
+    public void testRemove(CRDTUnorderedTree crdttree) throws Exception {
         //creatTree
         populateTreeABC(crdttree);
         populateTreeXYZ(crdttree);
@@ -99,7 +99,7 @@ public class CrdtTreeGeneric<T> {
     }
 
     // Add 1 -> 2   
-    public void testApplyRemoteAdd(CRDTTree crdttree1, CRDTTree crdttree2) throws Exception {
+    public void testApplyRemoteAdd(CRDTUnorderedTree crdttree1, CRDTUnorderedTree crdttree2) throws Exception {
         /*
          * crdttree1.setReplicaNumber(0);
         crdttree2.setReplicaNumber(1);
@@ -116,7 +116,7 @@ public class CrdtTreeGeneric<T> {
     }
 
     // Concurrent insertion under two diffrent father      
-    public void testAddConcurDiffFather(CRDTTree crdttree1, CRDTTree crdttree2) throws Exception {
+    public void testAddConcurDiffFather(CRDTUnorderedTree crdttree1, CRDTUnorderedTree crdttree2) throws Exception {
         crdttree2.applyRemote(populateTreeABC(crdttree1));
 
         //Add concurrently        
@@ -138,7 +138,7 @@ public class CrdtTreeGeneric<T> {
      * crdttree.getNode('b') and crdt2 add 'z' under crdttree.getNode('c')
      * concurrently
      */
-    public void testAddConcurSameFather(CRDTTree crdttree1, CRDTTree crdttree2) throws Exception {
+    public void testAddConcurSameFather(CRDTUnorderedTree crdttree1, CRDTUnorderedTree crdttree2) throws Exception {
 
         crdttree2.applyRemote(populateTreeABC(crdttree1));
 
@@ -160,7 +160,7 @@ public class CrdtTreeGeneric<T> {
      * crdttree.getNode('b') and crdttree2 delete crdttree.getNode('c')
      * concurrently result is juste root --> a
      */
-    public void testRmvConcurDiffFather(CRDTTree crdttree1, CRDTTree crdttree2) throws Exception {
+    public void testRmvConcurDiffFather(CRDTUnorderedTree crdttree1, CRDTUnorderedTree crdttree2) throws Exception {
 
 
         crdttree2.applyRemote(populateTreeABC(crdttree1));
@@ -185,7 +185,7 @@ public class CrdtTreeGeneric<T> {
      * delete concurrently the same element under same father both crdt delete
      * crdttree.getNode('b') concurrently
      */
-    public void testRmvConcurSameFather(CRDTTree crdttree1, CRDTTree crdttree2) throws Exception {
+    public void testRmvConcurSameFather(CRDTUnorderedTree crdttree1, CRDTUnorderedTree crdttree2) throws Exception {
 
         crdttree2.applyRemote(populateTreeABC(crdttree1));
         crdttree2.applyRemote(populateTreeXYZ(crdttree1));
@@ -211,7 +211,7 @@ public class CrdtTreeGeneric<T> {
      * Add/delete concurrently under two different father crdt1 remove
      * crdttree.getNode('c') when crdt2 add 'm' under crdttree.getNode('b')
      */
-    public void testConcuAddRmvDiffFather(CRDTTree crdttree1, CRDTTree crdttree2) throws Exception {
+    public void testConcuAddRmvDiffFather(CRDTUnorderedTree crdttree1, CRDTUnorderedTree crdttree2) throws Exception {
 
         crdttree2.applyRemote(populateTreeABC(crdttree1));
         crdttree2.applyRemote(populateTreeXYZ(crdttree1));
@@ -239,7 +239,7 @@ public class CrdtTreeGeneric<T> {
      * Add/delete father crdt2 add 'k' under crdttree.getNode('b') when crdt1
      * delete crdttree.getNode('b')
      */
-    public Tree testConcurAddRmvFather(CRDTTree crdttree1, CRDTTree crdttree2) throws Exception {
+    public Tree testConcurAddRmvFather(CRDTUnorderedTree crdttree1, CRDTUnorderedTree crdttree2) throws Exception {
 
         crdttree2.applyRemote(populateTreeABC(crdttree1));
         crdttree2.applyRemote(populateTreeXYZ(crdttree1));
@@ -260,7 +260,7 @@ public class CrdtTreeGeneric<T> {
      * crdttree.getNode('b') ther delete it, crdt2 add crdttree.getNode('b')
      * concurrently
      */
-    public Tree testConcurAddRmvSameElement(CRDTTree crdttree1, CRDTTree crdttree2) throws Exception {
+    public Tree testConcurAddRmvSameElement(CRDTUnorderedTree crdttree1, CRDTUnorderedTree crdttree2) throws Exception {
 
         crdttree2.applyRemote(populateTreeABC(crdttree1));
 
@@ -288,7 +288,7 @@ public class CrdtTreeGeneric<T> {
      * concurrently crdt2 add x under A degre(x) from A = 2 and degre(x) from
      * crdttree.getNode('b') = 3
      */
-    public Tree testTwoPath(CRDTTree crdttree1, CRDTTree crdttree2) throws Exception {
+    public Tree testTwoPath(CRDTUnorderedTree crdttree1, CRDTUnorderedTree crdttree2) throws Exception {
 
         crdttree2.applyRemote(populateTreeABC(crdttree1));
 
@@ -312,7 +312,7 @@ public class CrdtTreeGeneric<T> {
      * Creat Cycle crdt1 add x under y and concurrently crdt2 add y under x
      */
 
-    public Tree testCycle(CRDTTree crdttree1, CRDTTree crdttree2) throws Exception {
+    public Tree testCycle(CRDTUnorderedTree crdttree1, CRDTUnorderedTree crdttree2) throws Exception {
 
         crdttree2.applyRemote(populateTreeABC(crdttree1));
 
@@ -335,7 +335,7 @@ public class CrdtTreeGeneric<T> {
      * Add/delete father crdt2 add 'k' under crdttree.getNode('b') when crdt1
      * delete crdttree.getNode('b') then readd father
      */
-    public void testAdopt(CRDTTree crdttree1, CRDTTree crdttree2) throws Exception {
+    public void testAdopt(CRDTUnorderedTree crdttree1, CRDTUnorderedTree crdttree2) throws Exception {
         CrdtTreeGeneric test = new CrdtTreeGeneric();
 
         crdttree2.applyRemote(test.populateTreeABC(crdttree1));

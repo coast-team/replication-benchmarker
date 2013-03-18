@@ -80,7 +80,7 @@ public class MainSimulaReplica {
             System.out.println("algorithm : "+nameUsr+",execution : " + ex + ", with " + replicas + " replica");
             Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
                     new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
-            CausalSimulator cd = new CausalSimulator(rf);
+            CausalSimulator cd = new CausalSimulator(rf, false,  scaleMemory, false);
             long befor = System.nanoTime();
             /*
              * trace : trace xml
@@ -88,7 +88,7 @@ public class MainSimulaReplica {
              * boolean : calculate time execution
              * boolean : calculate document with overhead
              */
-            cd.run(trace, false,  scaleMemory, false);
+            cd.run(trace);
             long after = System.nanoTime();
             if (ltime == null) {
                 worst = after-befor;
@@ -120,7 +120,7 @@ public class MainSimulaReplica {
         writeFile(calculAverag(rtime), "gen", nameUsr);
         writeFile(calculAverag(mem), "mem", nameUsr);
     }
-    private static void toArrayDouble(double[] tab, List<Long> memUsed) {
+    private static void toArrayDouble(double[] tab, List<Double> memUsed) {
         for(int i=0; i<memUsed.size(); i++)
             tab[i] = memUsed.get(i).doubleValue();
     }

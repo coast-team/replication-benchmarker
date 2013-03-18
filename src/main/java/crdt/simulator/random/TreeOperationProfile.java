@@ -23,7 +23,7 @@ import collect.UnorderedNode;
 import crdt.CRDT;
 import jbenchmarker.core.Operation;
 import collect.VectorClock;
-import crdt.tree.CRDTTree;
+import crdt.tree.CRDTUnorderedTree;
 import crdt.tree.TreeOperation;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -53,7 +53,7 @@ public abstract class TreeOperationProfile<T> implements OperationProfile {
     @Override
     public LocalOperation nextOperation(CRDT crdt) {
    
-        Iterator<? extends Node<T>> it = ((CRDTTree<T>) crdt).lookup().getBFSIterator(null);
+        Iterator<? extends Node<T>> it = ((CRDTUnorderedTree<T>) crdt).lookup().getBFSIterator(null);
         ArrayList<Node<T>> l = new ArrayList<Node<T>>();  
         while (it.hasNext()) {
             l.add(it.next());

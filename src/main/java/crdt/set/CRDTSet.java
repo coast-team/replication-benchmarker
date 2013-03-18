@@ -110,4 +110,7 @@ public abstract class CRDTSet<T> extends CRDT<Set<T>>  {
         this.setChanged();
         this.notifyObservers(new SetOperation<T>(SetOperation.OpType.del, t));
     }
+    public String view(){
+        return this.lookup().toString();
+    }
 }

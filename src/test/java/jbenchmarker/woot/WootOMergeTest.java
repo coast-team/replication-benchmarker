@@ -18,6 +18,9 @@
  */
 package jbenchmarker.woot;
 
+import crdt.CRDTMessage;
+import crdt.OperationBasedOneMessage;
+import crdt.PreconditionException;
 import crdt.simulator.IncorrectTraceException;
 import java.util.NoSuchElementException;
 import jbenchmarker.woot.wooto.WootOptimizedDocument;
@@ -45,32 +48,33 @@ public class WootOMergeTest {
      * Test of generateLocal method, of class WootMerge.
      */
     @Test
-    public void testGenerateLocal() throws IncorrectTraceException {
+    public void testGenerateLocal() throws IncorrectTraceException, PreconditionException {
         System.out.println("generateLocal");
         WootMerge instance = new WootMerge(new WootOptimizedDocument(), 1);
         
-        List<SequenceMessage> r = instance.localInsert(SequenceOperation.insert(0,"a"));
+        CRDTMessage r = instance.applyLocal(SequenceOperation.insert(0,"a"));
         assertEquals(1, r.size());
-        assertEquals('a', ((WootOperation) r.get(0)).getContent());
+
+        assertEquals('a', ((WootOperation) ((OperationBasedOneMessage) r).getOperation()).getContent());
         assertEquals("a", instance.lookup());        
 
-        r = instance.localInsert(SequenceOperation.insert(0,"bc"));
+        r = instance.applyLocal(SequenceOperation.insert(0,"bc"));
         assertEquals(2, r.size());
         assertEquals("bca", instance.lookup());         
 
-        r = instance.localInsert(SequenceOperation.delete(0,1));
+        r = instance.applyLocal(SequenceOperation.delete(0,1));
         assertEquals(1, r.size());
         assertEquals("ca", instance.lookup()); 
 
-        r = instance.localInsert(SequenceOperation.insert(1,"efg"));
+        r = instance.applyLocal(SequenceOperation.insert(1,"efg"));
         assertEquals(3, r.size());
         assertEquals("cefga", instance.lookup()); 
 
-        r = instance.localInsert(SequenceOperation.delete(1,2));
+        r = instance.applyLocal(SequenceOperation.delete(1,2));
         assertEquals(2, r.size());
         assertEquals("cga", instance.lookup()); 
-
-        r = instance.localInsert(SequenceOperation.delete(1,2));
+        
+        r = instance.applyLocal(SequenceOperation.delete(1,2));
         assertEquals(2, r.size());
         assertEquals("c", instance.lookup()); 
     }
@@ -93,7 +97,7 @@ public class WootOMergeTest {
     public void testGenerateDelIncorrect() throws IncorrectTraceException {
         WootMerge instance = new WootMerge(new WootOptimizedDocument(), 1);
         
-        instance.localInsert(SequenceOperation.delete(0,1));
+        instance.localDelete(SequenceOperation.delete(0,1));
         fail("Out of bound delete not detected.");    
     }
     

@@ -25,6 +25,6 @@ package crdt.tree;
  */
 public interface ConnectionPolicies {
     
-    CRDTTree RootredCrdtTree (CRDTTree crdtTree);
+    CRDTUnorderedTree RootredCrdtTree (CRDTUnorderedTree crdtTree);
     
 }

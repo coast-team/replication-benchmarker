@@ -19,9 +19,11 @@
 package crdt.tree.orderedtree;
 
 import collect.OrderedNode;
+import collect.SimpleNode;
 import crdt.CRDTMessage;
 import crdt.OperationBasedMessagesBag;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,7 +40,7 @@ public class OrderedNodeMock<T> implements OrderedNode<T> {
     }
     
     @Override
-    public int childrenNumber() {
+    public int getChildrenNumber() {
         return children.size(); 
     }
 
@@ -76,10 +78,10 @@ public class OrderedNodeMock<T> implements OrderedNode<T> {
         if (this.value != other.getValue() && (this.value == null || !this.value.equals(other.getValue()))) {
             return false;
         }
-        if (childrenNumber() != other.childrenNumber()) {
+        if (getChildrenNumber() != other.getChildrenNumber()) {
             return false;
         }
-        for (int i = 0; i < childrenNumber(); ++i) {
+        for (int i = 0; i < getChildrenNumber(); ++i) {
             if (!getChild(i).same(other.getChild(i))) {
                 return false;
             }
@@ -104,7 +106,7 @@ public class OrderedNodeMock<T> implements OrderedNode<T> {
     } 
     static private CRDTMessage makeOrderedTreeByMock(OrderedNodeMock mock, CRDTOrderedTree tree,LinkedList<Integer> path)throws Exception {
         CRDTMessage mess=new OperationBasedMessagesBag();
-        for(int i=0;i<mock.childrenNumber();i++){
+        for(int i=0;i<mock.getChildrenNumber();i++){
             mess=mess.concat(tree.add(path, i, mock.getChild(i).getValue()));
             path.addLast(i);
             mess=mess.concat(makeOrderedTreeByMock(mock.getChild(i),tree,path));
@@ -119,6 +121,21 @@ public class OrderedNodeMock<T> implements OrderedNode<T> {
 
     @Override
     public void setReplicaNumber(int replicaNumber) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public SimpleNode<T> getFather() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Iterator<? extends SimpleNode<T>> iterator() {
+        return this.getElements().iterator();
+    }
+
+    @Override
+    public boolean isChildren(SimpleNode<T> n) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     

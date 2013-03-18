@@ -52,7 +52,7 @@ public abstract class CRDT<L> extends Observable implements Factory<CRDT<L>>,Ser
     
     abstract public void applyOneRemote(CRDTMessage op);
     abstract public L lookup();
-        
+            
     @Deprecated
     public Long lastExecTime(){
         return 0L;

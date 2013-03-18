@@ -1,20 +1,20 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2012
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package crdt.tree.orderedtree;
 
@@ -30,18 +30,30 @@ import jbenchmarker.core.LocalOperation;
  * @author score
  */
 public abstract class CRDTOrderedTree<T> extends CRDT<OrderedNode<T>> {
-
+   
     abstract public CRDTMessage add(List<Integer> path, int p, T element) throws PreconditionException;
 
     abstract public CRDTMessage remove(List<Integer> path) throws PreconditionException;
 
+    abstract public CRDTMessage rename(List<Integer> path, T newValue);
+
+    abstract public CRDTMessage move(List<Integer> from, List<Integer> to, int p);
+
     @Override
     final public CRDTMessage applyLocal(LocalOperation op) throws PreconditionException {
         OrderedTreeOperation<T> top = (OrderedTreeOperation<T>) op;
-        if (top.getType() == OrderedTreeOperation.OpType.add) {
-            return add(top.getPath(), top.getPosition(), top.getContent());
-        } else {
-            return remove(top.getPath());
+
+        switch (top.getType()) {
+            case add:
+                return add(top.getPath(), top.getPosition(), top.getContent());
+            case del:
+                return remove(top.getPath());
+            case chContent:
+                return rename(top.getPath(), top.getContent());
+            case move:
+                return move(top.getPath(), top.getDstPath(), top.getPosition());
+            default:
+                throw new UnsupportedOperationException("Not compatible");
         }
     }
 
@@ -56,10 +68,10 @@ public abstract class CRDTOrderedTree<T> extends CRDT<OrderedNode<T>> {
                 && (n1.getValue() == null || !n1.getValue().equals(n2.getValue()))) {
             return false;
         }
-        if (n1.childrenNumber() != n2.childrenNumber()) {
+        if (n1.getChildrenNumber() != n2.getChildrenNumber()) {
             return false;
         }
-        for (int i = 0; i < n1.childrenNumber(); ++i) {
+        for (int i = 0; i < n1.getChildrenNumber(); ++i) {
             if (!sameNode(n1.getChild(i), (n2.getChild(i)))) {
                 return false;
             }
@@ -67,13 +79,14 @@ public abstract class CRDTOrderedTree<T> extends CRDT<OrderedNode<T>> {
         return true;
     }
 
-    public OrderedNode<T> getNodeFromPath(List<Integer> path){
-        OrderedNode<T> node=this.lookup();
-        for (Integer i:path){
-            node=node.getChild(i);
+    public OrderedNode<T> getNodeFromPath(List<Integer> path) {
+        OrderedNode<T> node = this.lookup();
+        for (Integer i : path) {
+            node = node.getChild(i);
         }
         return node;
     }
+
     public boolean sameLookup(CRDTOrderedTree tree) {
         return sameNode(this.lookup(), (OrderedNode) tree.lookup());
     }
@@ -83,4 +96,6 @@ public abstract class CRDTOrderedTree<T> extends CRDT<OrderedNode<T>> {
      *
      * }
      */
+    @Override
+    abstract public CRDTOrderedTree<T> create();
 }

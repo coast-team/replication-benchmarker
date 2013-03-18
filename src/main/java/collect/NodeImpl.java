@@ -138,7 +138,7 @@ public class NodeImpl<T>  extends AbstractNode<T> implements UnorderedNode<T>, S
 
     @Override
     public void deleteChild( Collection<? extends Node<T>> nodeToDelet) {
-        Iterator itr = this.getChildrenIterator();
+        Iterator itr = this.iterator();
         while (itr.hasNext()) {
             Node node = (Node) itr.next();
             if (nodeToDelet.contains(node)) {

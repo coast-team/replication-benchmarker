@@ -112,7 +112,8 @@ public class LogootSDocument<T> implements Document{
         Position position = getPositionFromCarret(start);
         List<SequenceMessage> list = new ArrayList<SequenceMessage>();
         if (position.offset == 0) {
-            list.add(new LogootSInsertion(so,elements.get(position.index - 1), elements.get(position.index), so.getContent(), this, replicaNumber));
+            LogootSElement el =new LogootSElement(elements.get(position.index - 1), view.get(position.index - 1).size()-1);
+            list.add(new LogootSInsertion(so,el, elements.get(position.index), so.getContent(), this, replicaNumber));
         } else {
             list.add(new LogootSSplit(so,elements.get(position.index), position.offset));
             list.add(new LogootSInsertion(so,elements.get(position.index), position.offset, so.getContent(), this,replicaNumber));

@@ -122,7 +122,7 @@ public class HashTreeTest<T> {
         Node<T> Y = t.add(B, 'y');
         Node<T> Z = t.add(C, 'z');
 
-        Iterator it1 = B.getChildrenIterator();
+        Iterator it1 = B.iterator();
         Set s1 = new HashSet() {
 
             {
@@ -134,7 +134,7 @@ public class HashTreeTest<T> {
             assertTrue(s1.contains(((NodeImpl<T>) it1.next()).getValue()));
         }
 
-        Iterator it2 = C.getChildrenIterator();
+        Iterator it2 = C.iterator();
         assertEquals('z', (((NodeImpl<T>) it2.next()).getValue()));
     }
 
@@ -325,13 +325,13 @@ public class HashTreeTest<T> {
 
             /*  if(n.equals(B))
             {
-            Iterator itChildB = n.getChildrenIterator();
+            iterator itChildB = n.iterator();
             assertTrue(childB.contains(itChildB.next()));
             assertTrue(childB.contains(itChildB.next()));
             }
             if(n.equals(Y))
             {
-            Iterator itChildY = n.getChildrenIterator();
+            iterator itChildY = n.iterator();
             assertTrue(childY.contains(itChildY.next()));
             assertTrue(childY.contains(itChildY.next()));
             }

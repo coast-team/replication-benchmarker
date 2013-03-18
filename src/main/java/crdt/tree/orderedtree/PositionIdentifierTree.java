@@ -26,7 +26,7 @@ import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
-import crdt.tree.CRDTTree;
+import crdt.tree.CRDTUnorderedTree;
 import crdt.tree.TreeOperation;
 import java.util.List;
 import java.util.Observable;
@@ -38,11 +38,11 @@ import java.util.Observer;
  */
 public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Observer {
 
-    CRDTTree<Positioned<T>> tree;
+    CRDTUnorderedTree<Positioned<T>> tree;
     PositionnedNode<T> root;
 
     public PositionIdentifierTree(PositionnedNode<T> pic, Factory<CRDT<Tree<Positioned<T>>>> tree) {
-        this.tree = (CRDTTree<Positioned<T>>) tree.create();
+        this.tree = (CRDTUnorderedTree<Positioned<T>>) tree.create();
         this.root = pic;
         this.tree.addObserver(this);
     }
@@ -119,5 +119,15 @@ public class PositionIdentifierTree<T> extends CRDTOrderedTree<T> implements Obs
         super.setReplicaNumber(replicaNumber);
         tree.setReplicaNumber(replicaNumber);
         root.setReplicaNumber(replicaNumber);
+    }
+
+    @Override
+    public CRDTMessage rename(List<Integer> path, T newValue) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public CRDTMessage move(List<Integer> from, List<Integer> to, int p) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

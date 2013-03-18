@@ -63,7 +63,7 @@ public class GitTrace implements Trace{
     public int nbUpdBlock = 0;
     public int insertSize = 0;
     public int deleteSize = 0;
-    
+
     private CommitCRUD commitCRUD;
     private PatchCRUD patchCRUD;
     private List<Commit> initCommit;
@@ -80,7 +80,7 @@ public class GitTrace implements Trace{
      * @return a new git extractor
      * @throws IOException if git directory not accessible
      */
-    public static GitTrace create(String gitdir, CouchConnector cc, String path, boolean cleanDB) throws IOException {
+    public static GitTrace create(String gitdir, CouchConnector cc, String path, boolean cleanDB, boolean detectMaU) throws IOException {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         Repository repo = builder.setGitDir(new File(gitdir + "/.git")).readEnvironment()
                 .findGitDir().build();
@@ -99,7 +99,7 @@ public class GitTrace implements Trace{
             clearDB(dbInstance, pa);
             commitCRUD = new CommitCRUD(dbcc);
             patchCRUD = new PatchCRUD(dbcp);
-            GitExtraction ge = new GitExtraction(repo, commitCRUD, patchCRUD, GitExtraction.defaultDiffAlgorithm, path);
+            GitExtraction ge = new GitExtraction(repo, commitCRUD, patchCRUD, GitExtraction.defaultDiffAlgorithm, path, detectMaU);
             ge.parseRepository();
         } else {
             commitCRUD = new CommitCRUD(dbcc);
@@ -133,10 +133,12 @@ public class GitTrace implements Trace{
     }
 
     private void stat(List<Edition> l, boolean merge) {
+
         if (merge) {
             nbBlockMerge += l.size();
         }
         for (Edition ed : l) {
+                        
             if (merge) {
                 mergeSize += ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB();
             }
@@ -152,9 +154,7 @@ public class GitTrace implements Trace{
         }
     }
 
-    
-
-    static class MergeCorrection extends TraceOperation implements Serializable {
+    public static class MergeCorrection extends TraceOperation implements Serializable {
 
             transient Patch patch;
             transient Walker walker;
@@ -181,17 +181,13 @@ public class GitTrace implements Trace{
                 return new LocalOperation() {
                     @Override
                     public LocalOperation adaptTo(CRDT replica) {
-
                         if (first == null) {
                             try {
 //System.out.println("----- REPLICA -----\n" + replica.lookup());                                
 //System.out.println("----- PATCH -----\n" + new String(patch.getRaws().get(0)));                                
                                 List<Edition> l = gitTrace.diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
                                 gitTrace.stat(l, true);
-                                //for (Edition ed : l) {
-//System.out.println("--- DIFF ---\n" + ed);                                                                    
-                                    
-                                //}                                
+//for (Edition ed : l) { System.out.println("--- DIFF ---\n" + ed); }                                
                                 if (l.isEmpty()) {
                                     walker.currentVC.inc(replica.getReplicaNumber());
                                     first = SequenceOperation.noop(/*replica.getReplicaNumber(), getVectorClock()*/);
@@ -218,7 +214,6 @@ public class GitTrace implements Trace{
             public String toString() {
                 return "MergeCorrection{super="+super.toString() + "first=" + first + '}';
             }
-
         }
      class Walker implements Enumeration<TraceOperation> {
         private LinkedList<Commit> pendingCommit;

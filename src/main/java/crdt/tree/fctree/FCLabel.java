@@ -153,6 +153,6 @@ public class FCLabel<T> implements Serializable{
         hash = 97 * hash + (this.label != null ? this.label.hashCode() : 0);
         return hash;
     }
-    
+   
     
 }
