@@ -37,6 +37,7 @@ import crdt.tree.orderedtree.LogootTreeNode;
 import crdt.tree.orderedtree.PositionIdentifierTree;
 import crdt.tree.orderedtree.PositionnedNode;
 import crdt.tree.orderedtree.WootHashTreeNode;
+import crdt.tree.orderedtree.renderer.SizeXMLDoc;
 import crdt.tree.wordtree.WordConnectionPolicy;
 import crdt.tree.wordtree.WordTree;
 import crdt.tree.wordtree.policy.*;
@@ -233,12 +234,16 @@ public class TreeSimulation {
             nameUsr = typeTree[typeTree.length - 1] + "." + res[1] + "." + typePlicy[typePlicy.length - 1];
 
         }
+
+
         fileRes = nameUsr;
 
         if (j < args.length) {
             nameUsr = args[j++];
         }
 
+
+        
         File fileUsr = new File(nameUsr);
 
         long ltime[][] = null, rtime[][] = null, mem[][] = null;
@@ -247,14 +252,22 @@ public class TreeSimulation {
 
         Long sum = 0L;
         for (int ex = 0; ex < nbExec; ex++) {
-            TraceObjectWriter writer=null;
+            TraceObjectWriter writer = null;
             System.out.println("execution : " + ex);
             /*
              * Trace trace = new RandomTrace(duration, RandomTrace.FLAT, new
              * StandardSeqOpProfile(perIns, perBlock, avgBlockSize,
              * sdvBlockSize), probability, delay, sdv, replicas);
              */
-            CausalSimulator cd = new CausalSimulator(rf, true, scaleMemory, true);
+            CausalSimulator cd;
+            if (j < args.length) {
+                cd = new CausalSimulator(rf, true, scaleMemory, new SizeXMLDoc());
+
+                fileRes = args[j++];
+            } else {
+                cd = new CausalSimulator(rf, true, scaleMemory, true);
+            }
+
             Trace trace;
             if (fileUsr.exists()) {
                 System.out.println("-Trace From File : " + nameUsr);
@@ -263,14 +276,14 @@ public class TreeSimulation {
             } else {
                 writer = new TraceObjectWriter(nameUsr);
                 OperationProfile opprof;
-                if (perMove <= 0 && perRen <=0) {
+                if (perMove <= 0 && perRen <= 0) {
                     opprof = new StandardOrderedTreeOpProfile(perIns, perChild);
                 } else {
                     opprof = new StandardOrderedTreeOperationProfileWithMoveRename(perIns, perMove, perRen, perChild);
                 }
 
                 System.out.println("-Trace to File  " + nameUsr);
-                trace = new RandomTrace(duration, RandomTrace.FLAT,opprof, probability, delay, sdv, replicas);
+                trace = new RandomTrace(duration, RandomTrace.FLAT, opprof, probability, delay, sdv, replicas);
                 cd.setWriter(writer);
             }
             System.out.println("perIns" + perIns + ", perChild" + perChild + " probability " + probability + "delay " + delay + "sdv+" + sdv + "+, replicas" + replicas);
@@ -290,10 +303,10 @@ public class TreeSimulation {
 
             cd.run(trace);
             System.out.println("End of simulation");
-            if(writer!=null){
+            if (writer != null) {
                 writer.close();
             }
-            List <Long> remoteMess=cd.getAvgLongPerRemoteMessage();
+            List<Long> remoteMess = cd.getAvgLongPerRemoteMessage();
             if (ltime == null) {
                 cop = remoteMess.size();
                 uop = cd.getGenerationTimes().size();
@@ -328,7 +341,7 @@ public class TreeSimulation {
             }
             sum += cd.getRemoteSum() + cd.getLocalTimeSum();
             cd = null;
-            
+
             trace = null;
             System.gc();
             Thread.sleep(1000);

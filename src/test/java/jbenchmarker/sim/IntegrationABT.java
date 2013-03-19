@@ -39,7 +39,7 @@ public class IntegrationABT {
    @Test
    public void testABTExempleRun() throws Exception {
        System.out.println("Integration test with ABT");        
-       Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
+       Trace trace = TraceGenerator.traceFromXML(Class.class.getResource("exemple.xml").getPath(), 1);
        
        CausalSimulator cd = new CausalSimulator(new ABTFactory());
 
@@ -53,7 +53,7 @@ public class IntegrationABT {
    // @Ignore
    @Test
    public void testABTG1Run() throws Exception {
-       Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
+       Trace trace = TraceGenerator.traceFromXML(Class.class.getResource("xml/G1.xml").getPath(), 1);
        CausalSimulator cd = new CausalSimulator(new ABTFactory());
 
        cd.run(trace);
@@ -67,7 +67,7 @@ public class IntegrationABT {
    
    @Test
    public void testABTG2Run() throws Exception {
-       Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1,16);
+       Trace trace = TraceGenerator.traceFromXML(Class.class.getResource("G2.xml").getPath(), 1,16);
        CausalSimulator cd = new CausalSimulator(new ABTFactory());
 
        cd.run(trace);
@@ -79,7 +79,7 @@ public class IntegrationABT {
    
    @Test
    public void testABTG3Run() throws Exception {
-       Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
+       Trace trace = TraceGenerator.traceFromXML(Class.class.getResource("G3.xml").getPath(), 1);
        CausalSimulator cd = new CausalSimulator(new ABTFactory());
 
        cd.run(trace);
@@ -91,7 +91,7 @@ public class IntegrationABT {
    
    @Test
    public void testABTSerieRun() throws Exception {
-       Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
+       Trace trace = TraceGenerator.traceFromXML(Class.class.getResource("Serie.xml").getPath(), 1);
        CausalSimulator cd = new CausalSimulator(new ABTFactory());
 
        cd.run(trace);

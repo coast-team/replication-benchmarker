@@ -40,7 +40,7 @@ public class IntegrationWOOTO {
     @Test
     public void testWootOExempleRun() throws Exception {
         System.out.println("Integration test with wooto");
-        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("exemple.xml").getPath(), 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTO.class.getResource("exemple.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
         cd.run(trace);
@@ -54,7 +54,7 @@ public class IntegrationWOOTO {
     //@Ignore
     @Test
     public void testWootOG1Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G1.xml").getPath(), 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTO.class.getResource("G1.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
         cd.run(trace);
@@ -66,7 +66,7 @@ public class IntegrationWOOTO {
     //@Ignore
     @Test
     public void testWootOG2Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G2.xml").getPath(), 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTO.class.getResource("G2.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
         cd.run(trace);
@@ -78,7 +78,7 @@ public class IntegrationWOOTO {
     //@Ignore
     @Test
     public void testWootOG3Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G3.xml").getPath(), 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTO.class.getResource("G3.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
         cd.run(trace);
@@ -90,7 +90,7 @@ public class IntegrationWOOTO {
     //@Ignore
     @Test
     public void testWootOSerieRun() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("Serie.xml").getPath(), 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTO.class.getResource("Serie.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
         cd.run(trace);

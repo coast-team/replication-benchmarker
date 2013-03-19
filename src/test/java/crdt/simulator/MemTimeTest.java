@@ -53,10 +53,7 @@ public class MemTimeTest {
         CRDTMock.resetCounter();
         cd.setPassiveReplica(0);
         cd.run(new RandomTrace(20, RandomTrace.FLAT, new CRDTMock.OperationMock(), 0.4, 3, 2, 5));
-        //System.out.println(cd.getAvgPerRemoteMessage());
-         /*System.out.println(cd.getRemoteTimes()); 
-          System.out.println(cd.getGenerationTimes()); 
-          System.out.println(cd.getAvgLongPerRemoteOperation()); */
+       
         for(long t:cd.getGenerationTimes()){
             assertEquals(2, t/10000000);
         }
@@ -64,12 +61,6 @@ public class MemTimeTest {
             assertEquals(3.0, t/10000000,0.1);
         }
        
-        System.out.println();
-        /*for (Entry<Integer,CRDT> e:cd.replicas.entrySet()){
-            System.out.println("+"+e.getValue().lookup().toString().length());
-        }*/
-        System.out.println("key"+cd.replicas.size());
-        System.out.println("that all");
     }
             
 }

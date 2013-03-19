@@ -40,7 +40,7 @@ public class IntegrationSOCT2 {
     @Test
     public void testSOCT2ExempleRun() throws Exception {
         System.out.println("Integration test with WootH");
-        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("exemple.xml").getPath(), 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationSOCT2.class.getResource("exemple.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGCFactory());
 
         cd.run(trace);
@@ -53,7 +53,7 @@ public class IntegrationSOCT2 {
     @Ignore   // 231,986 s  on rev 105
     @Test
     public void testSOCT2RunG1() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G1.xml").getPath(), 1);         
+        Trace trace = TraceGenerator.traceFromXML(IntegrationSOCT2.class.getResource("G1.xml").getPath(), 1);         
         CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGCFactory());
 
         long startTime = System.currentTimeMillis();

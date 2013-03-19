@@ -36,7 +36,7 @@ public class IntegrationLogootSplit {
     @Ignore
     @Test
     public void testLogootSplitG1Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G1.xml").getPath(), 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationLogootSplit.class.getResource("G1.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new LogootSFactory());
 
         assertConsistency(cd, trace);
@@ -45,7 +45,7 @@ public class IntegrationLogootSplit {
     @Ignore
     @Test
     public void testLogootSplitG2Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G2.xml").getPath(), 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationLogootSplit.class.getResource("G2.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator( new LogootSFactory());
 
         assertConsistency(cd, trace);
@@ -54,7 +54,7 @@ public class IntegrationLogootSplit {
     @Ignore
     @Test
     public void testLogootSplitG3Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G3.xml").getPath(), 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationLogootSplit.class.getResource("G3.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new LogootSFactory());
 
         assertConsistency(cd, trace);
@@ -63,7 +63,7 @@ public class IntegrationLogootSplit {
     @Ignore
     @Test
     public void testLogootSplitSerieRun() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("Serie.xml").getPath(), 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationLogootSplit.class.getResource("Serie.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new LogootSFactory());
 
         assertConsistency(cd, trace);

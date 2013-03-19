@@ -160,6 +160,7 @@
                     </includes>
                     <excludes>
                         <exclude>target/**</exclude>
+                        <exclude>**/resources/**</exclude>
                     </excludes>					
                 </configuration>
                 <executions>
