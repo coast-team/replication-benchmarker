@@ -23,7 +23,6 @@ import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
@@ -31,7 +30,8 @@ import java.util.logging.Logger;
 public class TraceFromFile implements Trace {
 
     ObjectInputStream input;
-    FileInputStream inputf;
+    InputStream inputf;
+
     public TraceFromFile(String str) throws IOException {
         this(new ObjectInputStream(new FileInputStream(str)));
     }
@@ -42,20 +42,29 @@ public class TraceFromFile implements Trace {
 
     public TraceFromFile(File file, boolean progress) throws IOException {
         if (progress) {
-            this.input = new ObjectInputStream(new FileInputStreamProgress(file));
+            fromInputStream(new FileInputStreamProgress(file));
         } else {
-            this.input = new ObjectInputStream(new FileInputStream(file));
+            fromInputStream(new FileInputStream(file));
         }
     }
 
     public TraceFromFile(String file, boolean progress) throws IOException {
         if (progress) {
-            this.input = new ObjectInputStream(new FileInputStreamProgress(file));
+            fromInputStream(new FileInputStreamProgress(file));
         } else {
-            this.input = new ObjectInputStream(new FileInputStream(file));
+            fromInputStream(new FileInputStream(file));
         }
     }
 
+    
+    public TraceFromFile(InputStream inputf) throws IOException{
+        fromInputStream(inputf);
+    }
+            
+    private void fromInputStream(InputStream inputf)throws IOException{
+        this.inputf=inputf;
+        this.input = new ObjectInputStream(inputf);
+    }
     public TraceFromFile(ObjectInputStream input) {
         this.input = input;
     }
@@ -63,7 +72,6 @@ public class TraceFromFile implements Trace {
     @Override
     public Enumeration<TraceOperation> enumeration() {
         return new Enumeration<TraceOperation>() {
-
             TraceOperation nextElement;
 
             @Override
@@ -90,7 +98,9 @@ public class TraceFromFile implements Trace {
                 } catch (EOFException ex1) {
                     try {
                         input.close();
-                        inputf.close();
+                        if (inputf != null) {
+                            inputf.close();
+                        }
                     } catch (IOException ex) {
                         Logger.getLogger(TraceFromFile.class.getName()).log(Level.SEVERE, null, ex);
                     }
