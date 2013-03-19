@@ -50,9 +50,9 @@ public abstract class SequenceOperationProfile<T> implements OperationProfile {
 
         int l = replica.viewLength();
         int position = nextPosition(l);
-        OpType type = (l == 0) ? OpType.ins : nextType();
-        int offset = (type == OpType.ins) ? 0 : nextOffset(position, l);
-        List<T> content = (type == OpType.del) ? null : nextContent(); 
+        OpType type = (l == 0) ? OpType.insert : nextType();
+        int offset = (type == OpType.insert) ? 0 : nextOffset(position, l);
+        List<T> content = (type == OpType.delete) ? null : nextContent(); 
 
         return new SequenceOperation<T>(type,  position, offset, content);
     }

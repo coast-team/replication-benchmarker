@@ -80,7 +80,7 @@ public class WootHashDocument<T> implements Document {
     public void apply(Operation op) {
         WootOperation<T> wop = (WootOperation<T>) op;
 
-        if (wop.getType() == SequenceOperation.OpType.del) {
+        if (wop.getType() == SequenceOperation.OpType.delete) {
             del(wop.getId());
         } else {
             add(wop.getId(), wop.getContent(), wop.getIp(), wop.getIn());
@@ -161,11 +161,11 @@ public class WootHashDocument<T> implements Document {
     }
 
     public WootOperation delete(SequenceOperation o, WootIdentifier id) {
-        return new WootOperation(o, SequenceOperation.OpType.del, id, null);
+        return new WootOperation(o, SequenceOperation.OpType.delete, id, null);
     }
 
     public WootOperation insert(SequenceOperation o, WootIdentifier ip, WootIdentifier in, T content) {
-        return new WootOperation(o, SequenceOperation.OpType.ins,
+        return new WootOperation(o, SequenceOperation.OpType.insert,
                 new WootPosition(nextIdentifier(), ip, in), content);
     }
 

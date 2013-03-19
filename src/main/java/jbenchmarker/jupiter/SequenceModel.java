@@ -27,13 +27,13 @@ public class SequenceModel implements OTModel<String> {
     public List<OTOperation> generate(LocalOperation local) {
         SequenceOperation op = (SequenceOperation) local;
         List<OTOperation> ops = new LinkedList<OTOperation>();
-        if (op.getType() == OpType.del || op.getType() == OpType.replace) {
+        if (op.getType() == OpType.delete || op.getType() == OpType.replace) {
             for (int i = 0; i < op.getLenghOfADel(); ++i) {
                 ops.add(new SequenceOTOperation(op.getPosition()));
             }
             content.delete(op.getPosition(), op.getPosition() + op.getLenghOfADel());
         }
-        if (op.getType() == OpType.ins || op.getType() == OpType.replace) {
+        if (op.getType() == OpType.insert || op.getType() == OpType.replace) {
             for (int i = 0; i < op.getContent().size(); ++i) {
                 ops.add(new SequenceOTOperation(op.getPosition() + i, (Character) op.getContent().get(i)));
             }
@@ -50,7 +50,7 @@ public class SequenceModel implements OTModel<String> {
     @Override
     public void apply(OTOperation msg) {
         SequenceOTOperation op = (SequenceOTOperation) msg;
-        if (op.type == OpType.ins) {
+        if (op.type == OpType.insert) {
             content.insert(op.position, op.content);
         } else {
             content.delete(op.position, op.position + 1);
@@ -67,14 +67,14 @@ public class SequenceModel implements OTModel<String> {
         // A DEL
         SequenceOTOperation(int position) {
             this.position = position;
-            this.type = OpType.del;
+            this.type = OpType.delete;
         }
         
         // AN INS 
         SequenceOTOperation(int position, char content) {
             this.position = position;
             this.content = content;
-            this.type = OpType.ins;
+            this.type = OpType.insert;
         }
 
         private SequenceOTOperation(int replicaNumber, int position, char content, OpType type) {

@@ -57,9 +57,9 @@ public class ABTLog {
 		
 		if(o1==null){
 			// do nothing
-		} else if(o1.getType()==OpType.del){
+		} else if(o1.getType()==OpType.delete){
 			Hd.add(o1);
-		} else if(o1.getType()==OpType.ins){
+		} else if(o1.getType()==OpType.insert){
 			ListIterator<ABTOperation> li = Hd.listIterator();			
 			ABTOperation ox = (ABTOperation)o2.clone();
 			ABTOperation oy = (ABTOperation)o2.clone();
@@ -82,7 +82,7 @@ public class ABTLog {
 		ListIterator<ABTOperation> 	liHd = Hd.listIterator(Hd.size());
 		
 		while(liHd.hasPrevious()){
-			if(op.getType()==OpType.ins){
+			if(op.getType()==OpType.insert){
 				ABTOperation top=(ABTOperation)liHd.previous().clone();
 				swap(tmp, top, true);
 				sHd.addFirst(top);
@@ -91,9 +91,9 @@ public class ABTLog {
 			}
 		}
 		
-		if(op.getType()==OpType.del){
+		if(op.getType()==OpType.delete){
 			Hd.add(op);
-		} else if(op.getType()==OpType.ins){
+		} else if(op.getType()==OpType.insert){
 			Hi.add(tmp);
 			Hd = sHd;
 		}
@@ -128,29 +128,29 @@ public class ABTLog {
 		ABTOperation o2;
 		if(!realswap) o2=(ABTOperation)op2.clone();
 		else o2=op2;
-		int pos1=(o1.getType()==OpType.ins?o1.pos:o1.pos-1);
-		int pos2=(o2.getType()==OpType.ins?o2.pos:o2.pos-1);
+		int pos1=(o1.getType()==OpType.insert?o1.pos:o1.pos-1);
+		int pos2=(o2.getType()==OpType.insert?o2.pos:o2.pos-1);
 		if(pos1 > pos2){
-			if(o2.getType()==OpType.ins) {
+			if(o2.getType()==OpType.insert) {
 				o1.pos = o1.pos - 1;
-			} else if(o2.getType()==OpType.del){
+			} else if(o2.getType()==OpType.delete){
 				o1.pos = o1.pos + 1;
 			}			
 		} else if(pos1 == pos2){
-			if(o2.getType()==OpType.del &&
-			   o1.getType()==OpType.del){
+			if(o2.getType()==OpType.delete &&
+			   o1.getType()==OpType.delete){
 				o1.pos = o1.pos+1;
-			} else if(o1.getType()==OpType.del &&
-					  o2.getType()==OpType.ins){
+			} else if(o1.getType()==OpType.delete &&
+					  o2.getType()==OpType.insert){
 				throw new RuntimeException("Not admissible swap");
-			} else if(o1.getType()==OpType.ins &&
-					  o2.getType()==OpType.ins){
+			} else if(o1.getType()==OpType.insert &&
+					  o2.getType()==OpType.insert){
 				o2.pos = o2.pos + 1;
 			} else { // o1 = ins, op2=del
 				o2.pos = o2.pos +1;
 			}
 		} else { // o1.pos < op2.pos
-			if(o1.getType()==OpType.ins){
+			if(o1.getType()==OpType.insert){
 				o2.pos = o2.pos + 1;
 			} else { //o1=del
 				o2.pos = o2.pos - 1;
@@ -159,25 +159,25 @@ public class ABTLog {
 	}
 	
 	private ABTOperation IT(ABTOperation o1, final ABTOperation o2){
-		int pos1=(o1.getType()==OpType.ins?o1.pos:o1.pos-1);
-		int pos2=(o2.getType()==OpType.ins?o2.pos:o2.pos-1);
+		int pos1=(o1.getType()==OpType.insert?o1.pos:o1.pos-1);
+		int pos2=(o2.getType()==OpType.insert?o2.pos:o2.pos-1);
 	
 		if(pos2 < pos1){
-			if(o2.getType()==OpType.ins){
+			if(o2.getType()==OpType.insert){
 				o1.pos = o1.pos + 1;
-			} else if(o2.getType()==OpType.del){
+			} else if(o2.getType()==OpType.delete){
 				o1.pos = o1.pos - 1;
 			}
 		} else if(pos2 == pos1){
-			if(o2.getType()==OpType.ins && 
-			   o1.getType()==OpType.del){
+			if(o2.getType()==OpType.insert && 
+			   o1.getType()==OpType.delete){
 				o1.pos = o1.pos + 1;
-			} else if(o2.getType()==OpType.ins && 
-					  o1.getType()==OpType.ins &&
+			} else if(o2.getType()==OpType.insert && 
+					  o1.getType()==OpType.insert &&
 					  o2.getReplica() < o1.getReplica()){
 				o1.pos = o1.pos + 1;
-			} else if(o2.getType()==OpType.del &&
-					  o1.getType()==OpType.del){
+			} else if(o2.getType()==OpType.delete &&
+					  o1.getType()==OpType.delete){
 				o1=null;
 			}
 		}		
@@ -188,17 +188,17 @@ public class ABTLog {
 	private ABTOperation ET(ABTOperation o1, ABTOperation o2){
 		ABTOperation op = (ABTOperation)o1.clone();
 		if(o2.pos < o1.pos){
-			if(o2.getType()==OpType.ins){
+			if(o2.getType()==OpType.insert){
 				op.pos = op.pos - 1;
-			} else if(o2.getType()==OpType.del){
+			} else if(o2.getType()==OpType.delete){
 				op.pos = op.pos + 1;
 			}
 		} else if(o2.pos == o1.pos){
-			if(o2.getType()==OpType.del && 
-			   o1.getType()==OpType.del){
+			if(o2.getType()==OpType.delete && 
+			   o1.getType()==OpType.delete){
 				
-			} else if(o1.getType()==OpType.del &&
-					  o2.getType()==OpType.ins){				
+			} else if(o1.getType()==OpType.delete &&
+					  o2.getType()==OpType.insert){				
 				throw new RuntimeException("Not admissible transformation");
 			}
 		}

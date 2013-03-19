@@ -197,15 +197,16 @@ public class GitExtraction {
                 if (e.getEndA() - e.getBeginA() == e.getEndB() - e.getBeginB() 
                         && dist(ea, eb) < UPDATE_THRESHOLD) {
                     System.out.println(">>>>> UPDATE (" + dist(ea, eb) + ")\n" + e);
+                    e.setType(OpType.replace);
                     match = true;
                 } else {
                     match = lineUpdate(edits.get(i));
                 }
             } 
-            if ((e.getType() == OpType.del || e.getType() == OpType.replace)) {
+            if ((e.getType() == OpType.delete || e.getType() == OpType.replace)) {
                 for (int j = 0; !match && j < edits.size(); ++j) {
                     Edition f = edits.get(j); 
-                    if (i != j && (f.getType() == OpType.ins || f.getType() == OpType.replace)) {
+                    if (i != j && (f.getType() == OpType.insert || f.getType() == OpType.replace)) {
                         String fb = sb.get(j); 
                         int d = dist(ea, fb);
                         if (d < MOVE_UPDATE_THRESHOLD) {
@@ -264,38 +265,38 @@ public class GitExtraction {
                     }
                     --i; --j;
                 } else if (mat[i][j] == mat[i-1][j] + 100) {
-                    if (first != null && first.getType() == OpType.del) {
+                    if (first != null && first.getType() == OpType.delete) {
                         first.setBeginA(first.getBeginA()-1);
                         first.getCa().add(0, la.get(i-1));
                     } else {
-                        editList.addFirst(new Edition(OpType.del, edit.getBeginA() + i - 1, edit.getBeginB() + j - 1, la.get(i-1), null));
+                        editList.addFirst(new Edition(OpType.delete, edit.getBeginA() + i - 1, edit.getBeginB() + j - 1, la.get(i-1), null));
                     }
                     --i;
                 } else if (mat[i][j] == mat[i][j-1] + 100) {
-                    if (first != null && first.getType() == OpType.ins) {
+                    if (first != null && first.getType() == OpType.insert) {
                         first.setBeginB(first.getBeginB()-1);
                         first.getCb().add(0, lb.get(j-1));
                     } else {
-                        editList.addFirst(new Edition(OpType.ins, edit.getBeginA() + i - 1, edit.getBeginB() + j - 1, null, lb.get(j-1)));
+                        editList.addFirst(new Edition(OpType.insert, edit.getBeginA() + i - 1, edit.getBeginB() + j - 1, null, lb.get(j-1)));
                     }
                     --j;
                 }
             }
             Edition first = editList.getFirst();
             if (i > 0) {
-                if (first.getType() == OpType.del) {
+                if (first.getType() == OpType.delete) {
                     first.setBeginA(edit.getBeginA());
                     first.getCa().addAll(la.subList(0, i));
                 } else {
-                    editList.addFirst(new Edition(OpType.del, edit.getBeginA(), edit.getBeginA() + i,
+                    editList.addFirst(new Edition(OpType.delete, edit.getBeginA(), edit.getBeginA() + i,
                             edit.getBeginB(), edit.getBeginB(), la.subList(0, i), null));
                 }
             } else if (j > 0) {
-                if (first.getType() == OpType.ins) {
+                if (first.getType() == OpType.insert) {
                     first.setBeginB(edit.getBeginB());
                     first.getCb().addAll(lb.subList(0, j));
                 } else {
-                    editList.addFirst(new Edition(OpType.ins, edit.getBeginA(), edit.getBeginA(),
+                    editList.addFirst(new Edition(OpType.insert, edit.getBeginA(), edit.getBeginA(),
                             edit.getBeginB(), edit.getBeginB() + j, null, lb.subList(0, j)));
                 }
             }

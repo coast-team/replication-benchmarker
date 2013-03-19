@@ -161,9 +161,9 @@ public class Edition implements Serializable{
     private OpType typeof(Type type) {
                 switch (type) {
         case DELETE: 
-            return OpType.del;
+            return OpType.delete;
         case INSERT:
-            return OpType.ins;
+            return OpType.insert;
         case REPLACE:
             return OpType.replace;
         default:

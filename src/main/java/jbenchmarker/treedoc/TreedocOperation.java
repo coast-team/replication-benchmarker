@@ -49,7 +49,7 @@ public class TreedocOperation<T> extends SequenceMessage {
 	 */
 	public TreedocOperation(final SequenceOperation o, final TreedocIdentifier id) {
 		super(o);
-                this.type = OpType.del;
+                this.type = OpType.delete;
 		this.id = id;
 		this.content = null; // Dummy.
 	}
@@ -67,7 +67,7 @@ public class TreedocOperation<T> extends SequenceMessage {
 	public TreedocOperation(final SequenceOperation o, final TreedocIdentifier id,
 			final List<T> content) {
 		super(o);         
-                this.type = OpType.ins;
+                this.type = OpType.insert;
 		this.id = id;
 		this.content = content;
 	}

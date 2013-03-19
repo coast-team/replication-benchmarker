@@ -86,9 +86,9 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
      */
     private List<SequenceMessage> oldApplyLocal(SequenceOperation opt) throws IncorrectTraceException {
         switch (opt.getType()) {
-            case ins:
+            case insert:
                 return localInsert(opt);
-            case del:
+            case delete:
                 return localDelete(opt);
             case replace:
                 return localUpdate(opt);

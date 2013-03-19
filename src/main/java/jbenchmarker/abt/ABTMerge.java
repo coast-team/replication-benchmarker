@@ -74,13 +74,13 @@ public class ABTMerge extends MergeAlgorithm {
 
 		int offset;
 		int p = opt.getPosition();
-		if(opt.getType() ==  SequenceOperation.OpType.del) offset = opt.getLenghOfADel();
+		if(opt.getType() ==  SequenceOperation.OpType.delete) offset = opt.getLenghOfADel();
 		else offset = opt.getContent().size();
 		
 		for(int i=0;i<offset;i++){
 			this.siteVC.inc(this.getReplicaNumber());
 			
-			if(opt.getType() == SequenceOperation.OpType.del){
+			if(opt.getType() == SequenceOperation.OpType.delete){
 				abtop = new ABTOperation(opt,this.getReplicaNumber() ,p+1, siteVC);
 			} else {
 				abtop = new ABTOperation(opt,this.getReplicaNumber(),p+i, opt.getContent().get(i), siteVC);

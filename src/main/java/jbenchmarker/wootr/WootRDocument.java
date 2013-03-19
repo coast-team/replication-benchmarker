@@ -49,7 +49,7 @@ public abstract class WootRDocument implements Document {
     public void apply(Operation op) {
         WootROperation wop = (WootROperation) op;
         WootRNode e = wop.getNode();
-        if (wop.getType() == SequenceOperation.OpType.del) {
+        if (wop.getType() == SequenceOperation.OpType.delete) {
             elements.remove(e);
         } else {             
             elements.add(find(e), e);

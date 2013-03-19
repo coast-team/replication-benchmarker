@@ -58,7 +58,7 @@ public class TreedocDocument<T> extends Treedoc<TreedocId, T> implements
 	@Override
 	public void apply(Operation op) {
 		final TreedocOperation<T> treedocOp = (TreedocOperation<T>) op;
-		if (treedocOp.getOriginalOp().getType() == SequenceOperation.OpType.ins) {
+		if (treedocOp.getOriginalOp().getType() == SequenceOperation.OpType.insert) {
 			insert(treedocOp.getId(), treedocOp.getContent());
 		} else {
 			remove(treedocOp.getId());

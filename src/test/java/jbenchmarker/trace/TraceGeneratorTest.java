@@ -96,11 +96,11 @@ public class TraceGeneratorTest {
         List<TraceOperation> trace = it2list(TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1));
         
         assertEquals(5, trace.size());
-        assertEquals(SequenceOperation.OpType.ins, ((SequenceOperation) trace.get(0).getOperation()).getType());
+        assertEquals(SequenceOperation.OpType.insert, ((SequenceOperation) trace.get(0).getOperation()).getType());
         assertEquals(14, ((SequenceOperation) trace.get(1).getOperation()).getPosition());
         assertEquals(" Mehdi",((SequenceOperation) trace.get(2).getOperation()).getContentAsString());
         assertEquals(2, (long)trace.get(2).getVectorClock().get(2));
-        assertEquals(SequenceOperation.OpType.del, ((SequenceOperation) trace.get(3).getOperation()).getType());
+        assertEquals(SequenceOperation.OpType.delete, ((SequenceOperation) trace.get(3).getOperation()).getType());
         assertEquals(4, trace.get(3).getReplica());
         assertEquals(3,((SequenceOperation)  trace.get(3).getOperation()).getLenghOfADel());        
         assertEquals(1, (long)trace.get(3).getVectorClock().get(4));
@@ -138,7 +138,7 @@ public class TraceGeneratorTest {
         List<TraceOperation> trace = it2list(TraceGenerator.traceFromJson("/home/damien/etherpad-lite/var/dirtyCS.db"));
         //assertEquals(21, trace.size());
 
-        assertEquals(SequenceOperation.OpType.ins,((SequenceOperation) trace.get(0).getOperation()).getType());
+        assertEquals(SequenceOperation.OpType.insert,((SequenceOperation) trace.get(0).getOperation()).getType());
         assertEquals(0, ((SequenceOperation) trace.get(0).getOperation()).getPosition());        
         assertEquals("f", ((SequenceOperation) trace.get(0).getOperation()).getContentAsString());
         assertEquals(1, (long)trace.get(0).getVectorClock().get(1));

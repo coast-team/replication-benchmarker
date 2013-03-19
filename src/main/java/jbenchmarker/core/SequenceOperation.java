@@ -44,9 +44,9 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
 
         int sizeDoc = ((MergeAlgorithm) replica).getDoc().viewLength();
 //
-        if (this.getType() == OpType.ins && this.position > sizeDoc) {
+        if (this.getType() == OpType.insert && this.position > sizeDoc) {
             this.position = sizeDoc;//a position exceeds document size
-        } else if (this.getType() != OpType.ins) {
+        } else if (this.getType() != OpType.insert) {
             if (this.position >= sizeDoc) {
                 this.position = sizeDoc - 1;//a position exceeds document size
             }
@@ -58,7 +58,7 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
     }
 
     public enum OpType {
-        ins, del, replace, update, move, unsupported, noop
+        insert, delete, replace, update, move, unsupported, noop
     };
     
     private OpType type;                  // type of operation : insert or delete
@@ -106,14 +106,14 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
         for (int i = 0; i < content.length(); ++i) {
             l.add(content.charAt(i));
         }
-        return new SequenceOperation(OpType.ins, position, 0, l);
+        return new SequenceOperation(OpType.insert, position, 0, l);
     }
 
     /*
      * Construction of an delete operation
      */
     static public SequenceOperation delete(int position, int offset) {
-        return new SequenceOperation(OpType.del, position, offset, null);
+        return new SequenceOperation(OpType.delete, position, offset, null);
     }
 
     /*

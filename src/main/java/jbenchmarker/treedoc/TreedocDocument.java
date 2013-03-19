@@ -40,10 +40,10 @@ public class TreedocDocument extends TreedocRoot implements Document {
 	public void apply(Operation op) {
 		final TreedocOperation treedocOp = (TreedocOperation) op;
 		switch (treedocOp.getType()) {
-		case ins:
+		case insert:
 			insertAt(treedocOp.getId(), treedocOp.getContent());
 			break;
-		case del:
+		case delete:
 			deleteAt(treedocOp.getId());
 			break;
 		default:

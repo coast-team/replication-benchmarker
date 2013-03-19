@@ -52,8 +52,8 @@ public class TP2Test {
         {new OTSetOperations(OTSetOperations.OpType.Add, 1, 1),
             new OTSetOperations(OTSetOperations.OpType.Del, 1, 0)
         },
-        {new TTFOperation(SequenceOperation.OpType.del, 1, 1),
-            new TTFOperation(SequenceOperation.OpType.ins, 1, 2),},
+        {new TTFOperation(SequenceOperation.OpType.delete, 1, 1),
+            new TTFOperation(SequenceOperation.OpType.insert, 1, 2),},
         {new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0}), 'a', 0, OTTreeRemoteOperation.OpType.ins),
             new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0}), 'b', 1, OTTreeRemoteOperation.OpType.ins),
             new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0, 0}), 'b', 2, OTTreeRemoteOperation.OpType.ins),

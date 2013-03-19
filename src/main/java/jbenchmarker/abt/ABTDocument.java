@@ -47,7 +47,7 @@ public class ABTDocument<T> implements Document{
 		// TODO Auto-generated method stub
 		ABTOperation abtop = (ABTOperation)op;
 		try{
-			if(abtop.getType()==OpType.del){
+			if(abtop.getType()==OpType.delete){
 //				if(abtop.c=='\0') abtop.c = model.charAt(abtop.pos-1);
 //				else {
 					if(abtop.c != model.get(abtop.pos-1)) {

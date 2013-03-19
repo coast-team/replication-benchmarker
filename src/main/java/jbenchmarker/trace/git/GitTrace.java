@@ -150,10 +150,10 @@ public class GitTrace implements Trace{
                 case replace :
                     ++nbUpdBlock;
                     break;
-                case ins :
+                case insert :
                     ++nbInsBlock;
                     break;
-                case del :
+                case delete :
                     ++nbDelBlock;
                     break;
             }

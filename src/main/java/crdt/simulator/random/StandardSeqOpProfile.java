@@ -52,7 +52,7 @@ public class StandardSeqOpProfile extends SequenceOperationProfile<Character> {
 
     @Override
     public SequenceOperation.OpType nextType() {
-        return (r.nextDouble() < perIns) ? SequenceOperation.OpType.ins : SequenceOperation.OpType.del;            
+        return (r.nextDouble() < perIns) ? SequenceOperation.OpType.insert : SequenceOperation.OpType.delete;            
     }
     
     @Override

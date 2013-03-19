@@ -55,7 +55,7 @@ public class TreedocMerge<T> extends MergeAlgorithm {
 		final List<SequenceMessage> ops = new LinkedList<SequenceMessage>();
 
 		switch (opt.getType()) {
-		case ins:
+		case insert:
 			final int index = restrictedIndex(opt.getPosition(), true);
 			if (content.size() == 1) {
 				final TreedocId id = treedoc.insert(index, content.get(0),
@@ -73,7 +73,7 @@ public class TreedocMerge<T> extends MergeAlgorithm {
 							.get(i)));
 			}
 			break;
-		case del:
+		case delete:
 			// TODO: implement batch delete more efficiently?
 			for (int i = opt.getPosition(); i < opt.getPosition()
 					+ opt.getLenghOfADel(); i++) {

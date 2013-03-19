@@ -108,9 +108,9 @@ public class ABTOperation<T> extends SequenceMessage{
 		fmt2.format("%2d", this.getReplica());
 		ret=fmt2+".";	
 		
-		if(getType()==OpType.ins) {
+		if(getType()==OpType.insert) {
 			ret+="ins("+fmt+",\'";			
-		} else if(getType()==OpType.del) {
+		} else if(getType()==OpType.delete) {
 			ret+="del("+fmt+",\'";			
 		}
 //		if(this.c=='\0') ret+="\\0";

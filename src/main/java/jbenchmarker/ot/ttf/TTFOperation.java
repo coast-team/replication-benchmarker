@@ -129,7 +129,7 @@ public class TTFOperation<T> implements Operation, Serializable{
         sb.append(this.getType());
         sb.append('(');
         sb.append(this.pos);
-        if (OpType.ins == this.getType()) {
+        if (OpType.insert == this.getType()) {
             sb.append(',');
             sb.append(this.content);
         } 

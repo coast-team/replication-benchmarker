@@ -84,7 +84,7 @@ public class TTFDocument<T> implements Document {
         TTFOperation oop = (TTFOperation) op;
         int pos = oop.getPosition();
 
-        if (oop.getType() == SequenceOperation.OpType.del) {
+        if (oop.getType() == SequenceOperation.OpType.delete) {
             TTFChar c = this.model.get(pos);
             if (c.isVisible()) { --size; }
             c.hide();

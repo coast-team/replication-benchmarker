@@ -71,7 +71,7 @@ public abstract class WootDocument<N extends WootNode> implements Document, Fact
     public void apply(Operation op) {
         WootOperation wop = (WootOperation) op;
         
-        if (wop.getType() == SequenceOperation.OpType.del) {
+        if (wop.getType() == SequenceOperation.OpType.delete) {
             setInvisible(find(wop.getId()));
         } else { 
             int ip = find(wop.getIp()), in = findAfter(ip, wop.getIn());               
@@ -126,12 +126,12 @@ public abstract class WootDocument<N extends WootNode> implements Document, Fact
     }
 
     static public WootOperation delete(SequenceOperation o, WootIdentifier id) {
-        return new WootOperation(o, SequenceOperation.OpType.del, id, null);
+        return new WootOperation(o, SequenceOperation.OpType.delete, id, null);
     }
     
     static public <T> WootOperation insert(SequenceOperation o, WootIdentifier id, 
             WootIdentifier ip, WootIdentifier in, T content) {
-        return new WootOperation(o, SequenceOperation.OpType.ins, 
+        return new WootOperation(o, SequenceOperation.OpType.insert, 
                 new WootPosition(id, ip, in), content);
     }
 

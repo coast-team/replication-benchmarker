@@ -45,9 +45,9 @@ public class CalculStats {
         
         while(en.hasMoreElements()){
             SequenceOperation so = (SequenceOperation)en.nextElement().getOperation();
-            if (so.getType().equals(OpType.ins)){  
+            if (so.getType().equals(OpType.insert)){  
                     ins.add((double)so.getContentAsString().length());
-                }else if(so.getType().equals(OpType.del)){
+                }else if(so.getType().equals(OpType.delete)){
                      del.add((double)so.getLenghOfADel());
                 }else if(so.getType().equals(OpType.replace)){
                     up.add((double)(so.getContentAsString().length()-so.getLenghOfADel()));

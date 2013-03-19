@@ -57,7 +57,7 @@ public class RGADocument<T> implements Document {
 
     public void apply(Operation op) {
         RGAOperation rgaop = (RGAOperation) op;
-        if (rgaop.getType() == SequenceOperation.OpType.del) {
+        if (rgaop.getType() == SequenceOperation.OpType.delete) {
             RemoteDelete(rgaop);
         } else {
             RemoteInsert(rgaop);
