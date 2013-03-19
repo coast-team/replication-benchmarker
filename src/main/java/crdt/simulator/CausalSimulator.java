@@ -51,7 +51,7 @@ public class CausalSimulator extends Simulator {
     private HashMap<TraceOperation, Integer> orderTrace;
     private boolean detail = true;
     private SizeCalculator serializer;
-    private int passiveReplica = 1;
+    private int passiveReplica = 0;
 
     public CausalSimulator(Factory<? extends CRDT> rf) {
         super(rf);
@@ -254,6 +254,7 @@ public class CausalSimulator extends Simulator {
             }
 
             history.get(r).add(opt);
+            
             if (detail) {
                 orderTrace.put(opt, numTrace++);
             }
