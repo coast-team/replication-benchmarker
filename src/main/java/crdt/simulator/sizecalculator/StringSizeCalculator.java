@@ -17,50 +17,20 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package crdt.tree.orderedtree.renderer;
+package crdt.simulator.sizecalculator;
 
-import collect.OrderedNode;
-import collect.SimpleNode;
 import crdt.CRDT;
-import crdt.simulator.sizecalculator.SizeCalculator;
 import java.io.IOException;
 
 /**
  *
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public class SizeXMLDoc implements SizeCalculator {
-
-    public String view(SimpleNode<String> in) {
-        StringBuilder str = new StringBuilder();
-
-        for (Object no : in) {
-            SimpleNode<String> node = (SimpleNode<String>) no;
-
-
-            if (node.getChildrenNumber() == 0) {
-                str.append("<");
-                str.append(node.getValue());
-                str.append("/>");
-            } else {
-                str.append("<");
-                str.append(node.getValue());
-                str.append(">");
-
-                str.append(view(node));
-
-                str.append("</");
-                str.append(node.getValue());
-                str.append(">");
-            }
-        }
-        return str.toString();
-
-    }
+public class StringSizeCalculator implements SizeCalculator {
 
     @Override
     public int serializ(CRDT m) throws IOException {
-        String xml = view((OrderedNode<String>) m.lookup());
-        return xml.length();
+        return ((String)m.lookup()).length();
     }
+    
 }

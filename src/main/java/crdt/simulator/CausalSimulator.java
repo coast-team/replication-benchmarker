@@ -18,16 +18,14 @@
  */
 package crdt.simulator;
 
-import crdt.simulator.sizeclaculator.SizeCalculator;
-import crdt.simulator.sizeclaculator.StandardSizeCalculator;
 import collect.VectorClock;
 import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
-import java.io.ByteArrayOutputStream;
+import crdt.simulator.sizecalculator.SizeCalculator;
+import crdt.simulator.sizecalculator.StandardSizeCalculator;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.*;
@@ -35,9 +33,6 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jbenchmarker.core.LocalOperation;
-import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.ot.otset.OTSetOperations.OpType;
-import jbenchmarker.trace.git.GitTrace;
 
 /**
  *
@@ -52,27 +47,26 @@ public class CausalSimulator extends Simulator {
     private Map<Integer, List<CRDTMessage>> genHistory;
     private long localSum = 0L, nbLocal = 0L, remoteSum = 0L, nbRemote = 0L;
     private int nbrTrace = 0;
-    ObjectOutputStream writer = null;
-    private long timeInsGen = 0L, timeDelGen = 0L, timeInsRemote = 0L, timeDelRemote = 0L;
-    private int nbrDel = 0, nbrIns = 0;
+    TraceStore writer = null;
     private HashMap<TraceOperation, Integer> orderTrace;
-    private boolean detail=true;
+    private boolean detail = true;
     private SizeCalculator serializer;
+    private int passiveReplica = 1;
 
     public CausalSimulator(Factory<? extends CRDT> rf) {
         super(rf);
         this.serializer = new StandardSizeCalculator(true);
     }
 
-    public CausalSimulator(Factory<? extends CRDT> rf, boolean detail, int nbrTrace,SizeCalculator sizeCalc ) {
+    public CausalSimulator(Factory<? extends CRDT> rf, boolean detail, int nbrTrace, SizeCalculator sizeCalc) {
         super(rf);
         this.detail = detail;
         this.nbrTrace = nbrTrace;
         this.serializer = sizeCalc;
     }
-    
+
     /**
-     * 
+     *
      * @param rf
      * @param detail true for a detail of each execution time false for only the
      * overall sum.
@@ -80,7 +74,7 @@ public class CausalSimulator extends Simulator {
      * no memory measurement.
      * @param overhead true for replica memory memory measurement, false for
      * document measurement.
-     * 
+     *
      */
     public CausalSimulator(Factory<? extends CRDT> rf, boolean detail, int nbrTrace, boolean overhead) {
         super(rf);
@@ -88,7 +82,20 @@ public class CausalSimulator extends Simulator {
         this.nbrTrace = nbrTrace;
         this.serializer = new StandardSizeCalculator(overhead);
     }
+/*
+ * Passive replica is a replicat added in simulation witch recieve all operations
+ * 
+ */
 
+    public int getPassiveReplica() {
+        return passiveReplica;
+    }
+    
+    public void setPassiveReplica(int passiveReplica) {
+        this.passiveReplica = passiveReplica;
+    }
+
+    
     /**
      * Lists of remote messages.
      *
@@ -107,64 +114,24 @@ public class CausalSimulator extends Simulator {
         return history;
     }
 
-
-    public long getTimeInsGen() {
-        return timeInsGen;
-    }
-
-    public long getTimeInsRemote() {
-        return timeInsRemote;
-    }
-
-    public long getTimeDelGen() {
-        return timeDelGen;
-    }
-
-    public long getTimeDelRemote() {
-        return timeDelRemote;
-    }
-
-    public long getnbrIns() {
-        return nbrIns;
-    }
-
-    public long getnbrDel() {
-        return nbrDel;
-    }
-
-    /**
-     * The average memory occupied by the replicas.
-     *
-     * @return size in bytes.
-     */
-    public double getAvgMem() {
-        return memUsed.get(memUsed.size()-1);
-    } 
-
+  
+    
     /**
      * The whole time taken by appying local operations.
      *
      * @return time in nanoseconds.
      */
-    public long getLocalSum() {
+    public long getLocalTimeSum() {
         return localSum;
     }
 
-    /**
-     * The average time taken by appying local operations.
-     *
-     * @return time in nanoseconds.
-     */
-    public double getLocalAvg() {
-        return localSum / ((double) nbLocal);
-    }
-
+  
     /**
      * The number of local operations.
      *
      * @return number.
      */
-    public long getNbLocal() {
+    public long getNbLocalOp() {
         return nbLocal;
     }
 
@@ -207,11 +174,11 @@ public class CausalSimulator extends Simulator {
         nbRemote = 0L;
     }
 
-    public ObjectOutputStream getWriter() {
+    public TraceStore getWriter() {
         return writer;
     }
 
-    public void setWriter(ObjectOutputStream writer) {
+    public void setWriter(TraceStore writer) {
         this.writer = writer;
     }
 
@@ -236,9 +203,11 @@ public class CausalSimulator extends Simulator {
         orderTrace = new HashMap();
         int numTrace = 0;
 
-        // Passive replica that only receive operationd
-        this.newReplica(-1);
-        clocks.put(-1, new VectorClock());
+        // Passive replica that only receive operations
+        for(int i=0;i<passiveReplica;i++) {
+            this.newReplica(-i);
+            clocks.put(-i, new VectorClock());
+        }
 
         setOp = new HashSet();
         history = new HashMap<Integer, List<TraceOperation>>();
@@ -281,7 +250,7 @@ public class CausalSimulator extends Simulator {
             LocalOperation op = opt.getOperation();
             op = op.adaptTo(localReplica);
             if (writer != null) {
-                storeOp(opt);
+                writer.storeOp(opt);
             }
 
             history.get(r).add(opt);
@@ -327,10 +296,7 @@ public class CausalSimulator extends Simulator {
             }
             play(r, vc, concurrentOps);
         }
-
-        if (writer != null) {
-            writer.close();
-        }
+        
 
     }
 
@@ -347,6 +313,14 @@ public class CausalSimulator extends Simulator {
         it.add(opt);
     }
 
+    /**
+     *
+     * @param r
+     * @param vc
+     * @param concurrentOps
+     * @throws IOException
+     * @throws IncorrectTraceException
+     */
     private void play(CRDT r, VectorClock vc, List<TraceOperation> concurrentOps) throws IOException, IncorrectTraceException {
         for (TraceOperation t : concurrentOps) {
             int e = t.getReplica();
@@ -355,13 +329,15 @@ public class CausalSimulator extends Simulator {
             if (!vc.readyFor(e, t.getVectorClock())) {
                 throw new IncorrectTraceException("replica " + r.getReplicaNumber() + " with vc " + vc + " not ready for " + t.getVectorClock());
             }
-            long tmp = System.nanoTime();
+
+            long before = System.nanoTime();
             r.applyRemote(optime);
             long after = System.nanoTime();
-            remoteSum += (after - tmp);
+
+            remoteSum += (after - before);
             if (detail) {
                 int num = orderTrace.get(t);
-                remoteTime.set(num, remoteTime.get(num) + after - tmp);
+                remoteTime.set(num, remoteTime.get(num) + after - before);
                 //stat(t, after - tmp, 1);
 
             }
@@ -402,12 +378,12 @@ public class CausalSimulator extends Simulator {
     }
 
     private void ifSerializ() throws IOException {
-        if (nbrTrace > 0 && tour == nbrTrace && serializer!=null) {
-            long SumMemory=0;
+        if (nbrTrace > 0 && tour == nbrTrace && serializer != null) {
+            long SumMemory = 0;
             for (int rep : this.getReplicas().keySet()) {
-                SumMemory+= serializer.serializ(this.getReplicas().get(rep));
+                SumMemory += serializer.serializ(this.getReplicas().get(rep));
             }
-            memUsed.add(new Double((double)SumMemory /(double) this.getReplicas().keySet().size()));
+            memUsed.add(new Long(SumMemory / this.getReplicas().keySet().size()));
             tour = 0;
 
             //debug
@@ -416,8 +392,29 @@ public class CausalSimulator extends Simulator {
             }
         }
     }
-
-    public List<Long> splittedGenTime() {
+    
+    public List<Double> getAvgPerRemoteMessage(){
+        List<Double> l = new LinkedList();
+        double div=(double)(this.genHistory.size()-1);
+        for (int i = 0; i < remoteTime.size(); ++i) {
+            l.add((double)remoteTime.get(i) / div);
+        }
+        return l;
+    }
+     public List<Long> getAvgLongPerRemoteMessage(){
+        List<Long> l = new LinkedList();
+        long div=this.genHistory.size()-1;
+        for (int i = 0; i < remoteTime.size(); ++i) {
+            l.add(remoteTime.get(i) / div);
+        }
+        return l;
+    }
+/**
+ * Return list of integration by remote operation
+ * One message can contain many operations
+ * @return list of long
+ */
+     public List<Long> getAvgLongPerRemoteOperation() {
         List<Long> l = new ArrayList();
         for (int i = 0; i < remoteTime.size(); ++i) {
             int gs = genSize.get(i);
@@ -429,41 +426,4 @@ public class CausalSimulator extends Simulator {
         return l;
     }
 
-    private void storeOp(TraceOperation op) {
-        // TODO : generalize for any kind of operation
-        try {
-            writer.writeObject(op);
-        } catch (IOException ex) {
-            Logger.getLogger(CausalSimulator.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public boolean fileExist(String name) {
-        File f = new File(name);
-        return f.exists();
-    }
-
-    public void stat(TraceOperation op, long t, int type) {
-        if (op instanceof GitTrace.MergeCorrection) {
-            return;
-        }
-        LocalOperation opL = op.getOperation();
-        SequenceOperation seqOpt = (SequenceOperation) opL;
-
-        if (type == 0) { //generation
-            if (seqOpt.getType().equals(SequenceOperation.OpType.ins)) {
-                timeInsGen += t;
-                nbrIns++;
-            } else if (seqOpt.getType().equals(SequenceOperation.OpType.del)) {
-                timeDelGen += t;
-                nbrDel++;
-            }
-        } else {
-            if (seqOpt.getType().equals(SequenceOperation.OpType.ins)) {
-                timeInsRemote += t;
-            } else if (seqOpt.getType().equals(SequenceOperation.OpType.del)) {
-                timeDelRemote += t;
-            }
-        }
-    }
 }

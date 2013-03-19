@@ -302,8 +302,8 @@ public class MainCRDT {
         long nbLocal = 0L;
 
         public void addCD(CausalSimulator cd) {
-            timeLocal += cd.getLocalSum();
-            nbLocal += cd.getNbLocal();
+            timeLocal += cd.getLocalTimeSum();
+            nbLocal += cd.getNbLocalOp();
             timeRemote += cd.getRemoteSum();
             nbRemote += cd.getNbRemote();
         }

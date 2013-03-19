@@ -27,7 +27,6 @@ import crdt.simulator.random.StandardSeqOpProfile;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -105,8 +104,8 @@ public class SimulationWorker {
              */
             cd.run(trace);
             if (ltime == null) {
-                cop = cd.splittedGenTime().size();
-                uop = cd.replicaGenerationTimes().size();
+                cop = cd.getAvgLongPerRemoteOperation().size();
+                uop = cd.getGenerationTimes().size();
                 mop = cd.getMemUsed().size();
                 ltime = new long[nb][uop];
                 rtime = new long[nb][cop];
@@ -117,26 +116,24 @@ public class SimulationWorker {
                 nbrReplica = cd.replicas.size();
             }
 
-            List<Long> l = cd.replicaGenerationTimes();
+            List<Long> l = cd.getGenerationTimes();
             if(l.size() < minSizeGen)
                 minSizeGen = l.size();
             toArrayLong(ltime[ex], l, minSizeGen);  
             
-            List<Long> m = new ArrayList();
-            toListLong(m, cd.getMemUsed());
-            
+            List<Long> m = cd.getMemUsed();
             if(m.size() < minSizeMem)
                 minSizeMem = m.size();
             toArrayLong(mem[ex], m, minSizeMem);
             
-            if (minSizeInteg > cd.splittedGenTime().size()) {
-                minSizeInteg = cd.splittedGenTime().size();
+            if (minSizeInteg > cd.getAvgLongPerRemoteOperation().size()) {
+                minSizeInteg = cd.getAvgLongPerRemoteOperation().size();
             }
-            toArrayLong(rtime[ex], cd.splittedGenTime(), minSizeInteg);
+            toArrayLong(rtime[ex], cd.getAvgLongPerRemoteOperation(), minSizeInteg);
             for (int i = 0; i < cop - 1; i++) {
                 rtime[ex][i] /= nbrReplica - 1;
             }
-            sum += cd.getRemoteSum()+cd.getLocalSum();           
+            sum += cd.getRemoteSum()+cd.getLocalTimeSum();           
             cd = null;
             //trace = null; .???
             System.gc();
@@ -163,14 +160,6 @@ public class SimulationWorker {
      private static void toArrayLong(long[] t, List<Long> l, int minSize) {
         for (int i = 0; i < minSize-1; i++) {
             t[i] = l.get(i);
-        }
-    }
-     
-     private static void toListLong(List<Long> t, List<Double> l) {
-        for (int i = 0; i < l.size(); i++) {
-            double d = l.get(i);
-            long g = (long) d;
-            t.add(g);
         }
     }
      

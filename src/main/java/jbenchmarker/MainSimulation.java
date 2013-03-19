@@ -22,12 +22,9 @@ import crdt.CRDT;
 import crdt.Factory;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
+import crdt.simulator.TraceObjectWriter;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
-import java.io.*;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
 /**
  *
  * @author score
@@ -76,7 +73,7 @@ public class MainSimulation {
             Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
                     new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
             CausalSimulator cd = new CausalSimulator(rf, false,  0, false);
-            cd.setWriter(new ObjectOutputStream(new FileOutputStream(nameUsr)));
+            cd.setWriter(new TraceObjectWriter(nameUsr));
 
 
             cd.run(trace); //create Trace

@@ -25,7 +25,8 @@ package jbenchmarker;
 import crdt.CRDT;
 import crdt.Factory;
 import crdt.simulator.CausalSimulator;
-import crdt.simulator.sizeclaculator.StandardSizeCalculator;
+import crdt.simulator.TraceObjectWriter;
+import crdt.simulator.sizecalculator.StandardSizeCalculator;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -87,13 +88,12 @@ public final class GitMain extends Experience {
         if (stat) {
             System.out.println("\nPath;Num;Replicas;Merges;Merge Blocks;"
                     + "Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size;"
-                    + "nbrOpIns;nbrOpDel;TotalInsLocal;TotalDelLocal;TotalInsRemote;TotalDelRemote;"
+                    + "nbrOpIns;nbrOpDel;"
                     + "Nbr Ligne;NbrOp;TimeGen;AvgTimeGen;TimeRemote;AvgTimeRemote;"
                     + "AllMemory;AvgMemory");
             statr = "Path;Num;Replicas;Merges;Merge Blocks;"
                     + "Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size;"
-                    + "nbrOpIns;nbrOpDel;TotalInsLocal;TotalDelLocal;TotalInsRemote;TotalDelRemote;"
-                    + "Nbr Ligne;NbrOp;TimeGen;AvgTimeGen;TimeRemote;AvgTimeRemote;"
+                    + "nbrOpIns;nbrOpDel;"+ "Nbr Ligne;NbrOp;TimeGen;AvgTimeGen;TimeRemote;AvgTimeRemote;"
                     + "AllMemory;AvgMemory;SizeMessage";
             result.add(statr);
             //writeTofile(file, statr);
@@ -121,7 +121,6 @@ public final class GitMain extends Experience {
             int nbBlockMerge = 0, mergeSize = 0, nbInsBlock = 0,
                     nbDelBlock = 0, insertSize = 0, deleteSize = 0, nbUpdBlock = 0, nbMerge = 0, nbCommit = 0;
 
-            long timeInsLocal = 0L, timeDelLocal = 0L, timeDelRemote = 0L, timeInsRemote = 0L;
             int nbrIns = 0, nbrDel = 0;
             int sizeMsg = 0;
             boolean oneclean = clean;
@@ -129,13 +128,13 @@ public final class GitMain extends Experience {
                 GitTrace trace = GitTrace.create(gitdir, cc, path, oneclean, dmau);
                 oneclean = false;
                 CausalSimulator cd = new CausalSimulator(rf, stat, stat ? nbserializ : 0, stat);
-                cd.setWriter(save ? new ObjectOutputStream(new FileOutputStream("trace")) : null);
+                cd.setWriter(save ? new TraceObjectWriter("trace") : null);
 
                 cd.run(trace);
 
                 if (k == 0 && stat) {
                     cop = cd.getRemoteTimes().size();
-                    uop = cd.replicaGenerationTimes().size();
+                    uop = cd.getGenerationTimes().size();
                     mop = cd.getMemUsed().size();
                     nbReplica = cd.replicas.keySet().size();
                     ltime = new long[nb][uop];
@@ -178,19 +177,15 @@ public final class GitMain extends Experience {
                     nbUpdBlock += trace.nbUpdBlock;
                     insertSize += trace.insertSize;
                     deleteSize += trace.deleteSize;
-                    timeInsLocal += cd.getTimeInsGen();
-                    timeDelLocal += cd.getTimeDelGen();
-                    timeInsRemote += cd.getTimeInsRemote();
-                    timeDelRemote += cd.getTimeDelRemote();
-                    nbrIns += cd.getnbrIns();
-                    nbrDel += cd.getnbrDel();
+                    /*nbrIns += cd.getnbrIns();
+                    nbrDel += cd.getnbrDel();*/
                     sizeMsg += this.serializ(cd.getGenHistory());
 
                     minCop = minCop > cd.getRemoteTimes().size() ? cd.getRemoteTimes().size() : minCop;
-                    minUop = minUop > cd.replicaGenerationTimes().size() ? cd.replicaGenerationTimes().size() : minUop;
+                    minUop = minUop > cd.getGenerationTimes().size() ? cd.getGenerationTimes().size() : minUop;
                     minMop = minMop > cd.getMemUsed().size() ? cd.getMemUsed().size() : minMop;
 
-                    toArrayLong(ltime[k], cd.replicaGenerationTimes());
+                    toArrayLong(ltime[k], cd.getGenerationTimes());
                     toArrayLong(rtime[k], cd.getRemoteTimes());
 
                     if (k == 0 || args[args.length - 1].contains("Logoot")) {
@@ -230,9 +225,7 @@ public final class GitMain extends Experience {
                         + nbInsBlock / nbrExec + ';' + nbDelBlock / nbrExec
                         + ';' + nbUpdBlock / nbrExec + ';'
                         + insertSize / nbrExec + ';' + deleteSize / nbrExec + ';'
-                        + nbrIns / nbrExec + ';' + nbrDel / nbrExec + ';'
-                        + timeInsLocal / nbrExec + ';' + timeDelLocal / nbrExec + ';'
-                        + timeInsRemote / nbrExec + ';' + timeDelRemote / nbrExec;
+                        + nbrIns / nbrExec + ';' + nbrDel / nbrExec;
 
 
                 double thresold = 2.0;

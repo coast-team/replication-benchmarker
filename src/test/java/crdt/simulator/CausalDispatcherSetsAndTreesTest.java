@@ -167,7 +167,7 @@ public class CausalDispatcherSetsAndTreesTest {
 //        long l = 0, r = 0, nl = 0, nr = 0;
 //        for (int i = 0; i < 50; i++) {
 //            CausalSimulator cd = testRun(new CommutativeCounterSet(), 200, 20, seqopp);
-//            l += cd.getLocalSum(); r += cd.getRemoteSum(); nl += cd.getNbLocal(); nr += cd.getNbRemote();
+//            l += cd.getLocalTimeSum(); r += cd.getRemoteSum(); nl += cd.getNbLocalOp(); nr += cd.getNbRemote();
 //        }
 //        System.out.println("local : " + (l/nl) + "\nRemote : " + (r/nr));
 

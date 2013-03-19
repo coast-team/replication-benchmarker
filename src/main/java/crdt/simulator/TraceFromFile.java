@@ -20,6 +20,8 @@ package crdt.simulator;
 
 import java.io.*;
 import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -29,7 +31,7 @@ import java.util.Enumeration;
 public class TraceFromFile implements Trace {
 
     ObjectInputStream input;
-
+    FileInputStream inputf;
     public TraceFromFile(String str) throws IOException {
         this(new ObjectInputStream(new FileInputStream(str)));
     }
@@ -86,6 +88,12 @@ public class TraceFromFile implements Trace {
                         throw new Exception("File is not a trace");
                     }
                 } catch (EOFException ex1) {
+                    try {
+                        input.close();
+                        inputf.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(TraceFromFile.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     return null;
                 } catch (Exception ex) {
                     ex.printStackTrace();

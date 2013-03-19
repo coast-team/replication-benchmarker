@@ -26,6 +26,7 @@ import crdt.set.NaiveSet;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
 import crdt.simulator.TraceFromFile;
+import crdt.simulator.TraceObjectWriter;
 import crdt.simulator.random.OperationProfile;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardOrderedTreeOpProfile;
@@ -40,7 +41,6 @@ import crdt.tree.wordtree.WordConnectionPolicy;
 import crdt.tree.wordtree.WordTree;
 import crdt.tree.wordtree.policy.*;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.logoot.BoundaryStrategy;
@@ -247,6 +247,7 @@ public class TreeSimulation {
 
         Long sum = 0L;
         for (int ex = 0; ex < nbExec; ex++) {
+            TraceObjectWriter writer=null;
             System.out.println("execution : " + ex);
             /*
              * Trace trace = new RandomTrace(duration, RandomTrace.FLAT, new
@@ -260,6 +261,7 @@ public class TreeSimulation {
                 trace = new TraceFromFile(fileUsr, true);
                 cd.setWriter(null);
             } else {
+                writer = new TraceObjectWriter(nameUsr);
                 OperationProfile opprof;
                 if (perMove <= 0 && perRen <=0) {
                     opprof = new StandardOrderedTreeOpProfile(perIns, perChild);
@@ -269,7 +271,7 @@ public class TreeSimulation {
 
                 System.out.println("-Trace to File  " + nameUsr);
                 trace = new RandomTrace(duration, RandomTrace.FLAT,opprof, probability, delay, sdv, replicas);
-                cd.setWriter(new ObjectOutputStream(new FileOutputStream(nameUsr)));
+                cd.setWriter(writer);
             }
             System.out.println("perIns" + perIns + ", perChild" + perChild + " probability " + probability + "delay " + delay + "sdv+" + sdv + "+, replicas" + replicas);
 
@@ -288,9 +290,13 @@ public class TreeSimulation {
 
             cd.run(trace);
             System.out.println("End of simulation");
+            if(writer!=null){
+                writer.close();
+            }
+            List <Long> remoteMess=cd.getAvgLongPerRemoteMessage();
             if (ltime == null) {
-                cop = cd.splittedGenTime().size();
-                uop = cd.replicaGenerationTimes().size();
+                cop = remoteMess.size();
+                uop = cd.getGenerationTimes().size();
                 mop = cd.getMemUsed().size();
                 ltime = new long[nb][uop];
                 rtime = new long[nb][cop];
@@ -301,28 +307,28 @@ public class TreeSimulation {
                 nbrReplica = cd.replicas.size();
             }
 
-            List<Long> l = cd.replicaGenerationTimes();
+            List<Long> l = cd.getGenerationTimes();
             if (l.size() < minSizeGen) {
                 minSizeGen = l.size();
             }
             toArrayLong(ltime[ex], l, minSizeGen);
 
-            List<Long> m = new ArrayList();
-            toListLong(m, cd.getMemUsed());
+            List<Long> m = cd.getMemUsed();
             if (m.size() < minSizeMem) {
                 minSizeMem = m.size();
             }
             toArrayLong(mem[ex], m, minSizeMem);
 
-            if (minSizeInteg > cd.splittedGenTime().size()) {
-                minSizeInteg = cd.splittedGenTime().size();
+            if (minSizeInteg > remoteMess.size()) {
+                minSizeInteg = remoteMess.size();
             }
-            toArrayLong(rtime[ex], cd.splittedGenTime(), minSizeInteg);
+            toArrayLong(rtime[ex], remoteMess, minSizeInteg);
             for (int i = 0; i < cop - 1; i++) {
                 rtime[ex][i] /= nbrReplica - 1;
             }
-            sum += cd.getRemoteSum() + cd.getLocalSum();
+            sum += cd.getRemoteSum() + cd.getLocalTimeSum();
             cd = null;
+            
             trace = null;
             System.gc();
             Thread.sleep(1000);
@@ -352,13 +358,6 @@ public class TreeSimulation {
     private static void toArrayLong(long[] t, List<Long> l, int minSize) {
         for (int i = 0; i < minSize - 1; i++) {
             t[i] = l.get(i);
-        }
-    }
-    private static void toListLong(List<Long> t, List<Double> l) {
-        for (int i = 0; i < l.size(); i++) {
-            double d = l.get(i);
-            long g = (long) d;
-            t.add(g);
         }
     }
 

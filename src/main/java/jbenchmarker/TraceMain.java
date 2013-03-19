@@ -27,6 +27,7 @@ import crdt.Factory;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
 import crdt.simulator.TraceFromFile;
+import crdt.simulator.TraceObjectWriter;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -88,11 +89,11 @@ public final class TraceMain extends Experience {
             } else {
                 cd = new CausalSimulator(rf, calculTimeEx, 0, overhead);
             }
-            cd.setWriter(Integer.valueOf(args[6]) == 1 ? new ObjectOutputStream(new FileOutputStream("trace")) : null);
+            cd.setWriter(Integer.valueOf(args[6]) == 1 ? new TraceObjectWriter("trace") : null);
             cd.run(trace);
             if (ltime == null) {
                 cop = cd.getRemoteTimes().size();
-                uop = cd.replicaGenerationTimes().size();
+                uop = cd.getGenerationTimes().size();
                 mop = cd.getMemUsed().size();
                 nbReplica = cd.replicas.size();
                 ltime = new long[nb][uop];
@@ -104,11 +105,11 @@ public final class TraceMain extends Experience {
             }
 
             minCop = minCop > cd.getRemoteTimes().size() ? cd.getRemoteTimes().size() : minCop;
-            minUop = minUop > cd.replicaGenerationTimes().size() ? cd.replicaGenerationTimes().size() : minUop;
+            minUop = minUop > cd.getGenerationTimes().size() ? cd.getGenerationTimes().size() : minUop;
             minMop = minMop > cd.getMemUsed().size() ? cd.getMemUsed().size() : minMop;
 
             if (calculTimeEx) {
-                toArrayLong(ltime[ex], cd.replicaGenerationTimes());
+                toArrayLong(ltime[ex], cd.getGenerationTimes());
                 toArrayLong(rtime[ex], cd.getRemoteTimes());
             }
             if (args[1].contains("Logoot") || ex == 0) {
@@ -125,7 +126,7 @@ public final class TraceMain extends Experience {
                 sizemsg += this.serializ(cd.getGenHistory());
             }
 
-            sum += cd.getRemoteSum() + cd.getLocalSum();
+            sum += cd.getRemoteSum() + cd.getLocalTimeSum();
             cd = null;
             trace = null;
             System.gc();
