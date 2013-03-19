@@ -23,7 +23,9 @@ package jbenchmarker.trace.git.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import jbenchmarker.core.SequenceOperation.OpType;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.Edit.Type;
 import org.eclipse.jgit.diff.RawText;
@@ -32,11 +34,12 @@ import org.eclipse.jgit.diff.RawText;
  *
  * @author urso
  */
-public class Edition implements Serializable{
+public class Edition implements Serializable{    
+
     protected int beginA, endA, beginB, endB;
     protected List<String> ca;
     protected List<String> cb;
-    protected Type type;
+    protected OpType type;
 
     public Edition() {
     }
@@ -89,11 +92,11 @@ public class Edition implements Serializable{
         this.endB = endB;
     }
 
-    public Type getType() {
+    public OpType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(OpType type) {
         this.type = type;
     }
 
@@ -102,7 +105,7 @@ public class Edition implements Serializable{
         this.endA = edit.getEndA();
         this.beginB = edit.getBeginB();
         this.endB = edit.getEndB();
-        this.type = edit.getType();
+        this.type = typeof(edit.getType());
         this.ca = new ArrayList<String>();
         this.cb = new ArrayList<String>();
         for (int i = beginA; i < endA; ++i) {
@@ -113,6 +116,36 @@ public class Edition implements Serializable{
         }
     }
 
+    public Edition(OpType type, int beginA, int endA, int beginB, int endB, List<String> ca, List<String> cb) {
+        this.beginA = beginA;
+        this.endA = endA;
+        this.beginB = beginB;
+        this.endB = endB;
+        this.ca = ca;
+        this.cb = cb;
+        this.type = type;
+    }
+    /**
+     * One line edition.
+     */
+    public Edition(OpType type, int beginA, int beginB, String a, String b) {
+        this.beginA = beginA;
+        this.endA = beginA;
+        this.beginB = beginB;
+        this.endB = beginB;
+        this.ca = new LinkedList<String>();
+        if (a != null) {
+            this.ca.add(a);
+            ++endA;
+        }
+        this.cb = new LinkedList<String>();
+        if (b != null) {
+            this.cb.add(b);
+            ++endB;
+        }
+        this.type = type;
+    }
+    
     @Override
     public String toString() {
         StringBuilder  s = new StringBuilder();
@@ -123,5 +156,18 @@ public class Edition implements Serializable{
             s.append("+++ (").append(i).append(") ").append(cb.get(i-this.getBeginB()));
         }
         return s.toString();
+    }
+
+    private OpType typeof(Type type) {
+                switch (type) {
+        case DELETE: 
+            return OpType.del;
+        case INSERT:
+            return OpType.ins;
+        case REPLACE:
+            return OpType.replace;
+        default:
+            return OpType.unsupported;    
+        }
     }
 }

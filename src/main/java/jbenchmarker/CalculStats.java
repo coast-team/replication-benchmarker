@@ -49,7 +49,7 @@ public class CalculStats {
                     ins.add((double)so.getContentAsString().length());
                 }else if(so.getType().equals(OpType.del)){
                      del.add((double)so.getLenghOfADel());
-                }else if(so.getType().equals(OpType.update)){
+                }else if(so.getType().equals(OpType.replace)){
                     up.add((double)(so.getContentAsString().length()-so.getLenghOfADel()));
                 }
         }

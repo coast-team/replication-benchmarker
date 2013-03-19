@@ -38,22 +38,8 @@ public class GitOperation extends TraceOperation {
         
     public GitOperation(int replica, VectorClock VC, FileEdition f, Edition e) {
         super(replica, new VectorClock(VC));
-        SequenceOperation.OpType type;
-        switch (e.getType()) {
-        case DELETE: 
-            type = SequenceOperation.OpType.del;
-            break;
-        case INSERT:
-            type = SequenceOperation.OpType.ins;
-            break;
-        case REPLACE:
-            type = SequenceOperation.OpType.update;
-            break;
-        default:
-            type = SequenceOperation.OpType.unsupported;    
-        }
-        sop = new SequenceOperation<String>(type, /*replica,*/ e.getBeginA(), 
-                e.getEndA() - e.getBeginA(), e.getCb()/*, new VectorClock(VC)*/);
+        sop = new SequenceOperation<String>(e.getType(), e.getBeginA(), 
+                e.getEndA() - e.getBeginA(), e.getCb());
     }
 
     @Override

@@ -90,7 +90,7 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
                 return localInsert(opt);
             case del:
                 return localDelete(opt);
-            case update:
+            case replace:
                 return localUpdate(opt);
             case noop:
                 return null;

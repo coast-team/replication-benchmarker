@@ -41,7 +41,8 @@ public final class GitMain extends Experience {
 
     public GitMain(String[] args) throws Exception {
 
-        if (args.length < 6) {
+        if (args.length < 6 || !args[args.length-2].matches("[0-9]*") 
+                || !args[args.length-3].matches("[0-9]*") || !args[args.length-4].matches("[0-9]*")) {
             System.err.println("Arguments : ");
             System.err.println("- Factory to run git main");
             System.err.println("- git directory ");

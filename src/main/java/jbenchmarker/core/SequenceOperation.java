@@ -58,7 +58,7 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
     }
 
     public enum OpType {
-        ins, del, update, unsupported, noop
+        ins, del, replace, update, move, unsupported, noop
     };
     
     private OpType type;                  // type of operation : insert or delete
@@ -124,11 +124,11 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
         for (int i = 0; i < content.length(); ++i) {
             l.add(content.charAt(i));
         }
-        return new SequenceOperation<Character>(OpType.update, position, offset, l);
+        return new SequenceOperation<Character>(OpType.replace, position, offset, l);
     }
 
     static public <T> SequenceOperation<T> update(int position, int offset, List<T> content) {
-        return new SequenceOperation(OpType.update, position, offset, content);
+        return new SequenceOperation(OpType.replace, position, offset, content);
     }
 
     /**

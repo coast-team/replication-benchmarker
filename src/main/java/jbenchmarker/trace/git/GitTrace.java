@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import jbenchmarker.core.LocalOperation;
 import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.trace.git.model.Commit;
 import jbenchmarker.trace.git.model.Edition;
 import jbenchmarker.trace.git.model.FileEdition;
@@ -144,12 +145,17 @@ public class GitTrace implements Trace{
             }
             insertSize += ed.getEndB() - ed.getBeginB();
             deleteSize += ed.getEndA() - ed.getBeginA();
-            if (ed.getType() == Type.REPLACE) {
-                ++nbUpdBlock;
-            } else if (ed.getType() == Type.INSERT) {
-                ++nbInsBlock;
-            } else {
-                ++nbDelBlock;
+            switch (ed.getType()) {
+                case update : 
+                case replace :
+                    ++nbUpdBlock;
+                    break;
+                case ins :
+                    ++nbInsBlock;
+                    break;
+                case del :
+                    ++nbDelBlock;
+                    break;
             }
         }
     }

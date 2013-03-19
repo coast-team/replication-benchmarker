@@ -18,6 +18,7 @@
  */
 package jbenchmarker.trace.git;
 
+import jbenchmarker.core.SequenceOperation.OpType;
 import org.eclipse.jgit.diff.Edit.Type;
 import collect.HashMapSet;
 import java.io.IOException;
@@ -58,6 +59,7 @@ import org.ektorp.support.GenericRepository;
  */
 public class GitExtraction {
 
+  
     private static final int binaryFileThreshold = PackConfig.DEFAULT_BIG_FILE_THRESHOLD;
     /**
      * Magic return content indicating it is empty or no content present.
@@ -173,13 +175,13 @@ public class GitExtraction {
         return edits(editList, a, b);
     }
     
-    private static final int UPDATE_THRESHOLD = 10;
-    private static final int LINE_UPDATE_THRESHOLD = 10;
+    private static final int UPDATE_THRESHOLD = 15;
+    private static final int LINE_UPDATE_THRESHOLD = 50;
     private static final int MOVE_UPDATE_THRESHOLD = 10; 
     
     /**
-     * Detects move. Replace couples delete/insert by moves.
-     * @param edits 
+     * Detects moves and updates. Replace couples delete/insert by update or moves.
+     * @param edits the edit list to parse
      */
     private void detectMovesAndUpdates(List<Edition> edits) {
         List<String> sa = new ArrayList<String>(), sb = new ArrayList<String>();
@@ -191,19 +193,19 @@ public class GitExtraction {
             Edition e = edits.get(i);
             String ea = sa.get(i), eb = sb.get(i);
             boolean match = false;
-            if (e.getType() == Type.REPLACE) {
-                int d = dist(ea, eb);
-                if (d < UPDATE_THRESHOLD) {
-                    System.out.println(">>>>> UPDATE (" + d + ")\n" + e);
+            if (e.getType() == OpType.replace) {
+                if (e.getEndA() - e.getBeginA() == e.getEndB() - e.getBeginB() 
+                        && dist(ea, eb) < UPDATE_THRESHOLD) {
+                    System.out.println(">>>>> UPDATE (" + dist(ea, eb) + ")\n" + e);
                     match = true;
                 } else {
                     match = lineUpdate(edits.get(i));
                 }
             } 
-            if ((e.getType() == Type.DELETE || e.getType() == Type.REPLACE)) {
+            if ((e.getType() == OpType.del || e.getType() == OpType.replace)) {
                 for (int j = 0; !match && j < edits.size(); ++j) {
                     Edition f = edits.get(j); 
-                    if (i != j && (f.getType() == Type.INSERT || f.getType() == Type.REPLACE)) {
+                    if (i != j && (f.getType() == OpType.ins || f.getType() == OpType.replace)) {
                         String fb = sb.get(j); 
                         int d = dist(ea, fb);
                         if (d < MOVE_UPDATE_THRESHOLD) {
@@ -215,28 +217,107 @@ public class GitExtraction {
         }
     }
     
-    private boolean lineUpdate(Edition e) {
-        List<String> la = e.getCa(), lb = e.getCb();
-        int j = 0;
+    /**
+     * Identify partial updates. I.E. updates combined with insertion and deletions.
+     * Dynamic programming algorithm for diffing. 
+     */
+    private boolean lineUpdate(Edition edit) {
+        List<String> la = edit.getCa(), lb = edit.getCb();
         boolean match = false;
+        int [][]mat = new int[la.size() + 1][lb.size() + 1];
+        int [][]md = new int[la.size()][lb.size()];
         for (int i = 0; i < la.size(); ++i) {
-            while (j < lb.size() && dist(la.get(i), lb.get(j)) >= LINE_UPDATE_THRESHOLD) {
-                ++j;
-            }
-            if (j < lb.size()) {
-                match = true;
+            for (int j = 0; j < lb.size(); ++j) { 
+                md[i][j] = dist(la.get(i), lb.get(j));
+            }        
+        }
+
+        for (int j = 0; j <= lb.size(); ++j) {
+            mat[0][j] = j * 100;
+        }
+        for (int i = 1; i <= la.size(); ++i) {
+            mat[i][0] = i * 100;
+            for (int j = 1; j <= lb.size(); ++j) { 
+                mat[i][j] = Math.min(mat[i][j-1], mat[i-1][j]) + 100;
+                int d = md[i - 1][j - 1];
+                if (d < LINE_UPDATE_THRESHOLD) {
+                    if (d < MOVE_UPDATE_THRESHOLD) { 
+                        match = true;
+                    }
+                    mat[i][j] = Math.min(mat[i-1][j-1] + d, mat[i][j]); 
+                }
             }
         }
         if (match) {
-            System.out.println(">>>>> PARTIAL UPDATE\n" + e);
+            LinkedList<Edition> editList = new LinkedList<Edition>();
+            int i = la.size(), j = lb.size();
+            while (i > 0 && j > 0) {
+                Edition first = editList.isEmpty() ? null : editList.getFirst();
+                if (mat[i][j] == mat[i-1][j-1] + md[i-1][j-1]) {
+                    if (first != null && first.getType() == OpType.update) {
+                        first.setBeginA(first.getBeginA()-1);
+                        first.setBeginB(first.getBeginB()-1);
+                        first.getCa().add(0, la.get(i-1));
+                        first.getCb().add(0, lb.get(j-1));
+                    } else {
+                        editList.addFirst(new Edition(OpType.update, edit.getBeginA() + i - 1, edit.getBeginB() + j - 1, la.get(i-1), lb.get(j-1)));
+                    }
+                    --i; --j;
+                } else if (mat[i][j] == mat[i-1][j] + 100) {
+                    if (first != null && first.getType() == OpType.del) {
+                        first.setBeginA(first.getBeginA()-1);
+                        first.getCa().add(0, la.get(i-1));
+                    } else {
+                        editList.addFirst(new Edition(OpType.del, edit.getBeginA() + i - 1, edit.getBeginB() + j - 1, la.get(i-1), null));
+                    }
+                    --i;
+                } else if (mat[i][j] == mat[i][j-1] + 100) {
+                    if (first != null && first.getType() == OpType.ins) {
+                        first.setBeginB(first.getBeginB()-1);
+                        first.getCb().add(0, lb.get(j-1));
+                    } else {
+                        editList.addFirst(new Edition(OpType.ins, edit.getBeginA() + i - 1, edit.getBeginB() + j - 1, null, lb.get(j-1)));
+                    }
+                    --j;
+                }
+            }
+            Edition first = editList.getFirst();
+            if (i > 0) {
+                if (first.getType() == OpType.del) {
+                    first.setBeginA(edit.getBeginA());
+                    first.getCa().addAll(la.subList(0, i));
+                } else {
+                    editList.addFirst(new Edition(OpType.del, edit.getBeginA(), edit.getBeginA() + i,
+                            edit.getBeginB(), edit.getBeginB(), la.subList(0, i), null));
+                }
+            } else if (j > 0) {
+                if (first.getType() == OpType.ins) {
+                    first.setBeginB(edit.getBeginB());
+                    first.getCb().addAll(lb.subList(0, j));
+                } else {
+                    editList.addFirst(new Edition(OpType.ins, edit.getBeginA(), edit.getBeginA(),
+                            edit.getBeginB(), edit.getBeginB() + j, null, lb.subList(0, j)));
+                }
+            }
+            System.out.println(">>>>> PARTIAL UPDATE (" + mat[la.size()][lb.size()] + ")\n" + edit + "=======================");
+            for (Edition e : editList) {
+                System.out.println(e);
+            }
+            
         }
         return match;
     }
     
+    /**
+     * Relative edit distance.
+     */
     private int dist(String a, String b) {
         return neil.diff_levenshtein(neil.diff_main(a, b)) * 100 / a.length();
     } 
     
+    /*
+     * A list of string to a string.
+     */
     private String stringer(List<String> list) {
         StringBuilder b = new StringBuilder();
         for (String s : list) {

@@ -27,13 +27,13 @@ public class SequenceModel implements OTModel<String> {
     public List<OTOperation> generate(LocalOperation local) {
         SequenceOperation op = (SequenceOperation) local;
         List<OTOperation> ops = new LinkedList<OTOperation>();
-        if (op.getType() == OpType.del || op.getType() == OpType.update) {
+        if (op.getType() == OpType.del || op.getType() == OpType.replace) {
             for (int i = 0; i < op.getLenghOfADel(); ++i) {
                 ops.add(new SequenceOTOperation(op.getPosition()));
             }
             content.delete(op.getPosition(), op.getPosition() + op.getLenghOfADel());
         }
-        if (op.getType() == OpType.ins || op.getType() == OpType.update) {
+        if (op.getType() == OpType.ins || op.getType() == OpType.replace) {
             for (int i = 0; i < op.getContent().size(); ++i) {
                 ops.add(new SequenceOTOperation(op.getPosition() + i, (Character) op.getContent().get(i)));
             }
