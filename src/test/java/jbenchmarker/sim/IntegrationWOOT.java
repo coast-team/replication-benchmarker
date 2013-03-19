@@ -40,7 +40,7 @@ public class IntegrationWOOT {
     @Test
     public void testWootExempleRun() throws Exception {
         System.out.println("Integration test with causal + WOOT");
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1, 100);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("exemple.xml").getPath(), 1, 100);
         CausalSimulator cd = new CausalSimulator(new WootFactory());
 
         cd.run(trace);
@@ -57,7 +57,7 @@ public class IntegrationWOOT {
     @Ignore // Too long -- Passes on revision 96 -- 1800s
     @Test
     public void testWootG1Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1, 2000);         
+        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G1.xml").getPath(), 1, 2000);         
         CausalSimulator cd = new CausalSimulator(new WootFactory());
 
         cd.run(trace);
@@ -70,7 +70,7 @@ public class IntegrationWOOT {
     @Ignore // Too long -- Passess on revision 98 -- 9500s !
     @Test
     public void testWootG2Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G2.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootFactory());
 
         cd.run(trace);
@@ -83,7 +83,7 @@ public class IntegrationWOOT {
     @Ignore // Too long -- G3 pass on revision 86 -- 100s
     @Test
     public void testWootG3Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);         
+        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G3.xml").getPath(), 1);         
         CausalSimulator cd = new CausalSimulator(new WootFactory());
         
         cd.run(trace);
@@ -99,7 +99,7 @@ public class IntegrationWOOT {
     @Test
     public void testWootOG1Run() throws Exception {        
         System.out.println("Integration test with causal + WOOTO");
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
+        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G1.xml").getPath(), 1);         
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
         cd.run(trace);
@@ -115,7 +115,7 @@ public class IntegrationWOOT {
     @Ignore
     @Test
     public void testWootOG1RunSubset() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1, 2000);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G1.xml").getPath(), 1, 2000);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
         cd.run(trace);

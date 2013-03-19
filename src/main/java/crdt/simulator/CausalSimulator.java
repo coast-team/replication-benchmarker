@@ -340,7 +340,6 @@ public class CausalSimulator extends Simulator {
                 int num = orderTrace.get(t);
                 remoteTime.set(num, remoteTime.get(num) + after - before);
                 //stat(t, after - tmp, 1);
-
             }
             nbRemote++;
             vc.inc(e);
