@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package crdt.simulator;
+package crdt;
 
 import crdt.CRDT;
 import crdt.CRDTMessage;
@@ -40,9 +40,9 @@ import jbenchmarker.core.LocalOperation;
  */
 public class CRDTMock extends CRDT<String> {
 
-    static int sent = 0;
+    public static int sent = 0;
 
-    static void resetCounter() {
+    public static void resetCounter() {
         sent = 0;
     }
 
@@ -50,8 +50,8 @@ public class CRDTMock extends CRDT<String> {
         return sent;
     }
     HashMap<Integer, AtomicInteger> counter = new HashMap();
-    public static int waitTimeLocal = 200;
-    public static int waitTimeRemote = 300;
+    public static int waitTimeLocal = 20;
+    public static int waitTimeRemote = 30;
 
     public static int getWaitTimeLocal() {
         return waitTimeLocal;
@@ -123,7 +123,7 @@ public class CRDTMock extends CRDT<String> {
         return new CRDTMock();
     }
 
-    static class MessageMock implements CRDTMessage {
+    public static class MessageMock implements CRDTMessage {
 
         List<Integer> intr;
 
@@ -163,7 +163,7 @@ public class CRDTMock extends CRDT<String> {
         }
     }
 
-    static class OperationMock implements OperationProfile {
+    public static class OperationMock implements OperationProfile {
 
         @Override
         public LocalOperation nextOperation(CRDT a) {

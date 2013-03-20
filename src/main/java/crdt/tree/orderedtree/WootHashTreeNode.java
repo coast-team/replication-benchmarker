@@ -157,7 +157,7 @@ public class WootHashTreeNode<T> extends WootHashDocument<WootHashTreeNode<T>> i
 
     @Override
     public Iterator<? extends SimpleNode<T>> iterator() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getElements().iterator();
     }
 
     @Override

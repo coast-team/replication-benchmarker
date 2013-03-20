@@ -20,6 +20,7 @@ package jbenchmarker;
 
 import collect.OrderedNode;
 import crdt.CRDT;
+import crdt.CRDTMock;
 import crdt.Factory;
 import crdt.set.CRDTSet;
 import crdt.set.NaiveSet;
@@ -129,7 +130,9 @@ public class TreeSimulation {
         fact.add(new TreeOPT(new SOCT2(0, new SOCT2LogTTFOpt(new TreeOPTTTFTranformation()),
                 null)));
         factstr.add("TreeOPTWithoutGarbageO");
-
+        
+       /* fact.add((CRDT) new CRDTMock());
+        factstr.add("Mock");*/
 
     }
     static int base = 100;
@@ -219,21 +222,21 @@ public class TreeSimulation {
          */
         String fileRes;
         String nameUsr;
-        if (clas.equals("OTTree")
+        /*if (clas.equals("OTTree")
                 || clas.equals("FCTree")
                 || clas.equals("FCTreeCycleBreaker")
                 || clas.equals("OTTreeWithoutGarbage")
                 || clas.equals("TreeOPTWithoutGarbage")
                 || clas.equals("OTTreeWithoutGarbageO")
-                || clas.equals("TreeOPTWithoutGarbageO")) {
+                || clas.equals("TreeOPTWithoutGarbageO")) {*/
             nameUsr = clas;
-        } else {
+       /* } else {
             String[] res = clas.split("\\,");
             String[] typeTree = res[0].split("\\.");
             String[] typePlicy = res[2].split("\\.");
             nameUsr = typeTree[typeTree.length - 1] + "." + res[1] + "." + typePlicy[typePlicy.length - 1];
 
-        }
+        }*/
 
 
         fileRes = nameUsr;
@@ -336,9 +339,9 @@ public class TreeSimulation {
                 minSizeInteg = remoteMess.size();
             }
             toArrayLong(rtime[ex], remoteMess, minSizeInteg);
-            for (int i = 0; i < cop - 1; i++) {
+            /*for (int i = 0; i < cop - 1; i++) {
                 rtime[ex][i] /= nbrReplica - 1;
-            }
+            }*/
             sum += cd.getRemoteSum() + cd.getLocalTimeSum();
             cd = null;
 
@@ -360,10 +363,10 @@ public class TreeSimulation {
             computeAverage(rtime, thresold, minSizeInteg);
         }
 
-        String file = writeToFile(ltime, fileRes, "gen", minSizeGen);
-        treatFile(file, "gen", base);
-        String file2 = writeToFile(rtime, fileRes, "usr", minSizeInteg);
-        treatFile(file2, "usr", base);
+        String file = writeToFile(ltime, fileRes, "loc", minSizeGen);
+        treatFile(file, "loc", base);
+        String file2 = writeToFile(rtime, fileRes, "dist", minSizeInteg);
+        treatFile(file2, "dist", base);
         String file3 = writeToFile(mem, fileRes, "mem", minSizeMem);
         treatFile(file3, "mem", baseSerializ);
     }

@@ -19,6 +19,7 @@
  */
 package crdt.simulator;
 
+import crdt.CRDTMock;
 import crdt.CRDT;
 import crdt.PreconditionException;
 import crdt.simulator.random.RandomTrace;
