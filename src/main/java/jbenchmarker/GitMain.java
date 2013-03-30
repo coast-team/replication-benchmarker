@@ -60,14 +60,20 @@ public final class GitMain extends Experience {
 
         List<String> result = new LinkedList<String>();
         String gitdir = args[1];
-
+        int end;
         List<String> paths = new LinkedList<String>();
-        if (args.length > 6 && !args[2].startsWith("--") && !args[2].matches("[0-9]*")) {
-            paths.add(args[2]);
+        if (args.length > 6 && !args[2].startsWith("--")) {
+            if (args[2].matches("[0-9]*")) {
+                extractFiles(new File(gitdir), gitdir, paths);
+                end = Integer.parseInt(args[2]);
+            } else {
+                paths.add(args[2]);
+                end = 1;
+            }
         } else {
             extractFiles(new File(gitdir), gitdir, paths);
+            end = paths.size();
         }
-        int end = paths.size();
 
 //        if (args.length > 1 && args[2].matches("[0-9]*")) {
 //            end = Integer.parseInt(args[2]);
@@ -256,12 +262,13 @@ public final class GitMain extends Experience {
         }
 
         double resMem = 0;
-        for (int p = 0; p < memory.length; p++) {
-            resMem += memory[p];
+        if (stat) {
+            for (int p = 0; p < memory.length; p++) {
+                resMem += memory[p];
 
-            System.out.println("Max Memory : " + resMem);
-            writeTofile(file, result);
-
+                System.out.println("Max Memory : " + resMem);
+                writeTofile(file, result);
+            }
         }
     }
 
