@@ -108,7 +108,7 @@ public class GitExtractionTest {
             Ba = "BBBBBBBBBBBBBBBBBx";
     
     @Test 
-    public void detectNothing() {
+    public void detectNone() {
         GitExtraction ge = new GitExtraction(50, 20, 10);
         Edition e = new Edition(OpType.replace, 42, 44, 33, 36, toList(A, B), toList(X, Y, Z)),
                 r1 = new Edition(OpType.delete, 42, 44, 33, 33, toList(A, B), null),
@@ -170,17 +170,33 @@ public class GitExtractionTest {
     }
     
     @Test 
-    public void detectPartialMove() {
+    public void detectPartialMoveDown() {
         GitExtraction ge = new GitExtraction(50, 20, 10);
-        Edition e = new Edition(OpType.update, 55, 59, 43, 44, toList(X, A, Ba, Y), toList(Z)),
+        Edition e = new Edition(OpType.replace, 55, 59, 43, 44, toList(X, A, Ba, Y), toList(Z)),
                 f = new Edition(OpType.insert, 42, 42, 33, 35, null, toList(A, B)),
                 
-                r1 = new Edition(OpType.delete, 58, 59, 44, 44, toList(Y), null),
+                r1 = new Edition(OpType.delete, 58, 59, 45, 45, toList(Y), null), // 45 instead of 44 
                 r2 = new Edition(OpType.move, 56, 58, 42, 44, toList(A, Ba), toList(A, B)),
-                r3 = new Edition(OpType.delete, 57, 58, 44, 44, toList(X), null),
+                r3 = new Edition(OpType.delete, 57, 58, 43, 43, toList(X), null),
                 r4 = new Edition(OpType.insert, 57, 57, 43, 44, null, toList(Z));
         List<Edition> result = ge.detectMovesAndUpdates(toList(e, f));
 
         assertEquals(toList(r1, r2, r3, r4), result);
+    }
+
+    @Test 
+    public void detectPartialMoveUp() {
+        GitExtraction ge = new GitExtraction(50, 20, 10);
+        Edition e = new Edition(OpType.replace, 55, 59, 73, 74, toList(X, A, Ba, Y), toList(Z)),
+                f = new Edition(OpType.insert, 62, 62, 83, 87, null, toList(A, B, C, Z)),
+                
+                r0 = new Edition(OpType.insert, 62, 62, 85, 87, null, toList(C, Z)),
+                r1 = new Edition(OpType.delete, 58, 59, 77, 77, toList(Y), null),
+                r2 = new Edition(OpType.move, 56, 58, 59, 61, toList(A, Ba), toList(A, B)),
+                r3 = new Edition(OpType.delete, 55, 56, 73, 73, toList(X), null),
+                r4 = new Edition(OpType.insert, 55, 55, 73, 74, null, toList(Z));
+        List<Edition> result = ge.detectMovesAndUpdates(toList(f, e));
+
+        assertEquals(toList(r0, r1, r2, r3, r4), result);
     }
 }

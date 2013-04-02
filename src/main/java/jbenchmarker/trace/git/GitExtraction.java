@@ -230,10 +230,8 @@ public class GitExtraction {
                         edits.get(ed.getType()).add(ed);
                     }
                 } else {
-                    edits.get(OpType.insert).add(new Edition(OpType.insert, e.getBeginA(), e.getBeginA(),
-                            e.getBeginB(), e.getEndB(), null, e.getCb()));
-                    edits.get(OpType.delete).add(new Edition(OpType.delete, e.getBeginA(), e.getEndA(),
-                            e.getBeginB(), e.getBeginB(), e.getCa(), null));
+                    edits.get(OpType.insert).add(new Edition(OpType.insert, e.getBeginA(), e.getBeginA(), e.getBeginB(), e.getEndB(), null, e.getCb()));
+                    edits.get(OpType.delete).add(new Edition(OpType.delete, e.getBeginA(), e.getEndA(), e.getBeginB(), e.getBeginB(), e.getCa(), null));
                 }
             } else {
                 edits.get(e.getType()).add(e);
@@ -251,8 +249,7 @@ public class GitExtraction {
                 while (insit.hasNext()) {
                     Edition f = insit.next();
                     if (f.getCb().size() > 1) {
-                        List<Edition> lines = lineUpdate(e.getCa(), e.getBeginA(),
-                                f.getCb(), f.getBeginB(), true, f.getBeginA());
+                        List<Edition> lines = lineUpdate(e.getCa(), f.getCb(), e.getBeginA(), e.getBeginB(), f.getBeginA(), f.getBeginB());
                         if (lines != null && (move == null || lines.size() < move.size())) {
                             move = lines;
                             pos = insit.previousIndex();
@@ -293,7 +290,7 @@ public class GitExtraction {
         while (!allEmpty(edits)) {
             Edition edm = null;
             for (LinkedList<Edition> l : edits.values()) {
-                if (!l.isEmpty() && (edm == null || l.peekFirst().getBeginA() > edm.getBeginA()
+                if (!l.isEmpty() && (edm == null || l.peekFirst().getBeginA() > edm.getBeginA() 
                         || (edm.getType() == OpType.insert && l.peekFirst().getBeginA() == edm.getBeginA()))) {
                     edm = l.peekFirst();
                 }
@@ -314,7 +311,7 @@ public class GitExtraction {
                         f.setEndA(f.getEndA() + shift);
                     }
                 } else {
-                    int shift = 0;
+                    int shift = -e.getCa().size();
                     for (int j = i - 1; j >= 0 && result.get(j).getBeginA() < e.getBeginB(); --j) {
                         Edition f = result.get(j);
                         if (f.getType() == OpType.insert) {
@@ -336,30 +333,35 @@ public class GitExtraction {
     }
 
     private LinkedList<Edition> lineUpdate(Edition edit) {
-        return lineUpdate(edit.getCa(), edit.getBeginA(), edit.getCb(), edit.getBeginB(), false, 0);
+        return lineUpdate(edit.getCa(), edit.getCb(), edit.getBeginA(), edit.getBeginB(), -1, -1);
     }
 
     /**
      * Identify partial updates. I.E. updates combined with insertion and
      * deletions. Dynamic programming algorithm for diffing.
      */
-    private LinkedList<Edition> lineUpdate(List<String> listA, int beginA,
-            List<String> listB, int beginB, boolean move, int beginMove) {
-        boolean match = false;
-        int[][] mat = new int[listA.size() + 1][listB.size() + 1];
-        int[][] md = new int[listA.size()][listB.size()];
-        for (int i = 0; i < listA.size(); ++i) {
-            for (int j = 0; j < listB.size(); ++j) {
-                md[i][j] = dist(listA.get(i), listB.get(j));
+    private LinkedList<Edition> lineUpdate(List<String> listDelete, List<String> listInsert, int origDelete, int destDelete, int origInsert, int destInsert) {
+        int[][] mat = new int[listDelete.size() + 1][listInsert.size() + 1];
+        int[][] md = new int[listDelete.size()][listInsert.size()];
+        boolean match = false, move = origInsert >= 0;
+        
+        if (!move) {
+            origInsert = origDelete;
+            destInsert = destDelete;
+        }
+        
+        for (int i = 0; i < listDelete.size(); ++i) {
+            for (int j = 0; j < listInsert.size(); ++j) {
+                md[i][j] = dist(listDelete.get(i), listInsert.get(j));
             }
         }
 
-        for (int j = 0; j <= listB.size(); ++j) {
+        for (int j = 0; j <= listInsert.size(); ++j) {
             mat[0][j] = j * 100;
         }
-        for (int i = 1; i <= listA.size(); ++i) {
+        for (int i = 1; i <= listDelete.size(); ++i) {
             mat[i][0] = i * 100;
-            for (int j = 1; j <= listB.size(); ++j) {
+            for (int j = 1; j <= listInsert.size(); ++j) {
                 mat[i][j] = Math.min(mat[i][j - 1], mat[i - 1][j]) + 100;
                 int d = md[i - 1][j - 1];
                 if (d < lineUpdateThresold) {
@@ -375,7 +377,7 @@ public class GitExtraction {
                 match = false;
             }
             LinkedList<Edition> editList = new LinkedList<Edition>();
-            int i = listA.size(), j = listB.size();
+            int i = listDelete.size(), j = listInsert.size();
             while (i > 0 && j > 0) {
                 Edition last = editList.isEmpty() ? null : editList.getLast();
                 if (mat[i][j] == mat[i - 1][j - 1] + md[i - 1][j - 1]) {
@@ -384,41 +386,37 @@ public class GitExtraction {
                     if (last != null && last.getType() == OpType.update) {
                         last.setBeginA(last.getBeginA() - 1);
                         last.setBeginB(last.getBeginB() - 1);
-                        last.getCa().add(0, listA.get(i));
-                        last.getCb().add(0, listB.get(j));
+                        last.getCa().add(0, listDelete.get(i));
+                        last.getCb().add(0, listInsert.get(j));
                         match = true; // 2 consecutive lines
                     } else {
-                        editList.add(new Edition(OpType.update, beginA + i,
-                                (move ? beginMove : beginB) + j,
-                                listA.get(i), listB.get(j)));
+                        editList.add(new Edition(OpType.update, origDelete + i, (move ? origInsert : destDelete) + j, listDelete.get(i), listInsert.get(j)));
                     }
                 } else if (mat[i][j] == mat[i - 1][j] + 100) {
                     --i;
                     if (last != null && last.getType() == OpType.delete) {
                         last.setBeginA(last.getBeginA() - 1);
-                        last.getCa().add(0, listA.get(i));
+                        last.getCa().add(0, listDelete.get(i));
                     } else {
-                        editList.add(new Edition(OpType.delete,
-                                beginA + i, beginB + j, listA.get(i), null));
+                        editList.add(new Edition(OpType.delete, origDelete + i, destDelete + j, listDelete.get(i), null));
                     }
 
                 } else if (mat[i][j] == mat[i][j - 1] + 100) {
                     --j;
                     if (last != null && last.getType() == OpType.insert) {
                         last.setBeginB(last.getBeginB() - 1);
-                        last.getCb().add(0, listB.get(j));
+                        last.getCb().add(0, listInsert.get(j));
                     } else {
-                        editList.add(new Edition(OpType.insert,
-                                beginA + i, beginB + j, null, listB.get(j)));
+                        editList.add(new Edition(OpType.insert, move ? origInsert : origInsert + i, destInsert + j, null, listInsert.get(j)));
                     }
                 }
             }
             if (i > 0) {
-                editList.add(new Edition(OpType.delete, beginA, beginA + i,
-                        beginB, beginB, listA.subList(0, i), null));
+                editList.add(new Edition(OpType.delete, origDelete, origDelete + i,
+                        destDelete, destDelete, listDelete.subList(0, i), null));
             } else if (j > 0) {
-                editList.add(new Edition(OpType.insert, beginA, beginA,
-                        beginB, beginB + j, null, listB.subList(0, j)));
+                editList.add(new Edition(OpType.insert, origInsert, origInsert,
+                        destInsert, destInsert + j, null, listInsert.subList(0, j)));
             }
             if (match) {
                 return editList;
