@@ -19,7 +19,9 @@
 package jbenchmarker.trace.git;
 
 import java.net.MalformedURLException;
+import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.trace.git.model.Commit;
+import jbenchmarker.trace.git.model.Edition;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.DbPath;
@@ -29,6 +31,9 @@ import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.impl.StdCouchDbInstance;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static collect.Utils.*;
+import jbenchmarker.core.SequenceOperation.OpType;
+import java.util.List;
 import org.junit.Ignore;
 
 /**
@@ -37,6 +42,17 @@ import org.junit.Ignore;
  */
 public class GitExtractionTest {
 
+    public static boolean sorted(List<Edition> l) {
+        int m = Integer.MAX_VALUE;
+        for (Edition e : l) {
+            if (e.getBeginA() > m || (e.getBeginA() == m && e.getType() != OpType.insert)) {
+                return false;
+            }
+            m = e.getBeginA();
+        }
+        return true;
+    }
+    
     @Test
     public void storeCommitTest() throws MalformedURLException {
         HttpClient httpClient = new StdHttpClient.Builder().url("http://localhost:5984").build();
@@ -80,5 +96,91 @@ public class GitExtractionTest {
         db.createDatabaseIfNotExists();
         
         fail("Not implemented yet");
+    }
+    
+    String A = "AAAAAAAAAAAAAAAAA", 
+            B= "BBBBBBBBBBBBBBBBB",
+            C= "CCCCCCCCCCCCCCCCC",
+            X= "XXXXXXXXXXXXXXXXX",
+            Y= "YYYYYYYYYYYYYYYYY",
+            Z= "ZZZZZZZZZZZZZZZZZ",
+            Aa = "AAAAAAAAAAAAAAAAAx", 
+            Ba = "BBBBBBBBBBBBBBBBBx";
+    
+    @Test 
+    public void detectNothing() {
+        GitExtraction ge = new GitExtraction(50, 20, 10);
+        Edition e = new Edition(OpType.replace, 42, 44, 33, 36, toList(A, B), toList(X, Y, Z)),
+                r1 = new Edition(OpType.delete, 42, 44, 33, 33, toList(A, B), null),
+                r2 = new Edition(OpType.insert, 42, 42, 33, 36, null, toList(X, Y, Z));
+        List<Edition> result = ge.detectMovesAndUpdates(toList(e));
+        
+        assertEquals(toList(r1, r2), result);
+    }
+    
+    @Test 
+    public void detectUpdate() {
+        GitExtraction ge = new GitExtraction(50, 20, 10);
+        Edition e = new Edition(OpType.replace, 42, 44, 33, 35, toList(A, B), toList(Aa, Ba)),
+                r = new Edition(OpType.update, 42, 44, 33, 35, toList(A, B), toList(Aa, Ba));
+        List<Edition> result = ge.detectMovesAndUpdates(toList(e));
+        
+        assertEquals(toList(r), result);
+    }
+    
+    @Test 
+    public void detectPartialUpdate() {
+        GitExtraction ge = new GitExtraction(50, 20, 10);
+        Edition e = new Edition(OpType.delete, 55, 56, 43, 43, toList(X), null),
+                f = new Edition(OpType.replace, 42, 44, 33, 36, toList(A, B), toList(Y, Aa, Z)),
+                
+                r1 = new Edition(OpType.delete, 55, 56, 43, 43, toList(X), null),
+                r2 = new Edition(OpType.delete, 43, 44, 36, 36, toList(B), null),
+                r3 = new Edition(OpType.insert, 43, 43, 35, 36, null, toList(Z)),
+                r4 = new Edition(OpType.update, 42, 43, 34, 35, toList(A), toList(Aa)),
+                r5 = new Edition(OpType.insert, 42, 42, 33, 34, null, toList(Y));
+        List<Edition> result = ge.detectMovesAndUpdates(toList(e, f));
+
+        assertTrue(sorted(result));
+        assertEquals(toList(r1, r2, r3, r4, r5), result);
+    }
+
+    @Test 
+    public void detectPureMove() {
+        GitExtraction ge = new GitExtraction(50, 20, 10);
+        Edition e = new Edition(OpType.delete, 55, 57, 43, 43, toList(A, B), null),
+                f = new Edition(OpType.insert, 42, 42, 33, 35, null, toList(A, B)),
+                
+                r = new Edition(OpType.move, 55, 57, 42, 44, toList(A, B), toList(A, B));
+        List<Edition> result = ge.detectMovesAndUpdates(toList(e, f));
+
+        assertEquals(toList(r), result);
+    }
+    
+    @Test 
+    public void detectMove() {
+        GitExtraction ge = new GitExtraction(50, 20, 10);
+        Edition e = new Edition(OpType.delete, 55, 57, 43, 43, toList(A, Ba), null),
+                f = new Edition(OpType.insert, 42, 42, 33, 35, null, toList(Aa, B)),
+                
+                r = new Edition(OpType.move, 55, 57, 42, 44, toList(A, Ba), toList(Aa, B));
+        List<Edition> result = ge.detectMovesAndUpdates(toList(e, f));
+
+        assertEquals(toList(r), result);
+    }
+    
+    @Test 
+    public void detectPartialMove() {
+        GitExtraction ge = new GitExtraction(50, 20, 10);
+        Edition e = new Edition(OpType.update, 55, 59, 43, 44, toList(X, A, Ba, Y), toList(Z)),
+                f = new Edition(OpType.insert, 42, 42, 33, 35, null, toList(A, B)),
+                
+                r1 = new Edition(OpType.delete, 58, 59, 44, 44, toList(Y), null),
+                r2 = new Edition(OpType.move, 56, 58, 42, 44, toList(A, Ba), toList(A, B)),
+                r3 = new Edition(OpType.delete, 57, 58, 44, 44, toList(X), null),
+                r4 = new Edition(OpType.insert, 57, 57, 43, 44, null, toList(Z));
+        List<Edition> result = ge.detectMovesAndUpdates(toList(e, f));
+
+        assertEquals(toList(r1, r2, r3, r4), result);
     }
 }

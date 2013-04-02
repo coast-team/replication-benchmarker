@@ -53,8 +53,9 @@ import org.ektorp.impl.StdCouchDbConnector;
  *
  * @author urso
  */
-public class GitTrace implements Trace{
+public class GitTrace implements Trace {
     /* Statistics */
+
     public int nbBlockMerge = 0;
     public int mergeSize = 0;
     public int nbMerge = 0;
@@ -64,15 +65,16 @@ public class GitTrace implements Trace{
     public int nbUpdBlock = 0;
     public int insertSize = 0;
     public int deleteSize = 0;
-
     private CommitCRUD commitCRUD;
     private PatchCRUD patchCRUD;
     private List<Commit> initCommit;
-    private static final DiffAlgorithm diffAlgorithm = GitExtraction.defaultDiffAlgorithm;;    
+    private static final DiffAlgorithm diffAlgorithm = GitExtraction.defaultDiffAlgorithm;
+
+    ;    
     
     /**
-     * Creates a git extractor using a git directory a couch db URL and a file
-     * path
+     * Produces a git trace using a git directory a couch db URL and a file path.
+     * Operations are insert, delete, and replace (block of lines).
      *
      * @param gitdir directory that contains ".git"
      * @param couchURL URL of couch BD
@@ -81,12 +83,36 @@ public class GitTrace implements Trace{
      * @return a new git extractor
      * @throws IOException if git directory not accessible
      */
-    public static GitTrace create(String gitdir, CouchConnector cc, String path, boolean cleanDB, boolean detectMaU) throws IOException {
+     public static GitTrace create(String gitdir, CouchConnector cc, String path, boolean cleanDB) throws IOException {
+        return create(gitdir, cc, path, cleanDB, false, 0, 0, 0);
+    }
+
+    /**
+     * Produces a git trace with move and update operations using a git
+     * directory a couch db URL and a file path. Operations are insert, delete,
+     * update and move (block of lines).
+     *
+     * @param gitdir directory that contains ".git"
+     * @param couchURL URL of couch BD
+     * @param path a path in the gir repository
+     * @param clean if true recreates db
+     * @param lineUpdateThresold difference percentage thresold to integrate a line in an update 
+     * @param updateThresold difference percentage thresold to detect an update 
+     * @param moveThresold difference percentage thresold to detect a move 
+     * @return a new git extractor
+     * @throws IOException if git directory not accessible
+     */
+    public static GitTrace createWithMoves(String gitdir, CouchConnector cc, String path, boolean cleanDB,
+            int lineUpdateThresold, int updateThresold, int moveThresold) throws IOException {
+        return create(gitdir, cc, path, cleanDB, true, lineUpdateThresold, updateThresold, moveThresold);
+    }
+
+    public static GitTrace create(String gitdir, CouchConnector cc, String path, boolean cleanDB, boolean detectMaU, int lut, int ut, int mt) throws IOException {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         Repository repo = builder.setGitDir(new File(gitdir + "/.git")).readEnvironment()
                 .findGitDir().build();
         CouchDbInstance dbInstance = cc.getDbInstance();
-        
+
         String prefix = clearName(gitdir, path),
                 co = prefix + "_commit", pa = prefix + "_patch";
         CouchDbConnector dbcc = new StdCouchDbConnector(co, dbInstance);
@@ -100,7 +126,7 @@ public class GitTrace implements Trace{
             clearDB(dbInstance, pa);
             commitCRUD = new CommitCRUD(dbcc);
             patchCRUD = new PatchCRUD(dbcp);
-            GitExtraction ge = new GitExtraction(repo, commitCRUD, patchCRUD, GitExtraction.defaultDiffAlgorithm, path, detectMaU);
+            GitExtraction ge = new GitExtraction(repo, commitCRUD, patchCRUD, GitExtraction.defaultDiffAlgorithm, path, detectMaU, lut, ut, mt);
             ge.parseRepository();
         } else {
             commitCRUD = new CommitCRUD(dbcc);
@@ -139,21 +165,21 @@ public class GitTrace implements Trace{
             nbBlockMerge += l.size();
         }
         for (Edition ed : l) {
-                        
+
             if (merge) {
                 mergeSize += ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB();
             }
             insertSize += ed.getEndB() - ed.getBeginB();
             deleteSize += ed.getEndA() - ed.getBeginA();
             switch (ed.getType()) {
-                case update : 
-                case replace :
+                case update:
+                case replace:
                     ++nbUpdBlock;
                     break;
-                case insert :
+                case insert:
                     ++nbInsBlock;
                     break;
-                case delete :
+                case delete:
                     ++nbDelBlock;
                     break;
             }
@@ -162,66 +188,68 @@ public class GitTrace implements Trace{
 
     public static class MergeCorrection extends TraceOperation implements Serializable {
 
-            transient Patch patch;
-            transient Walker walker;
-            transient GitTrace gitTrace;
-            LocalOperation first;
+        transient Patch patch;
+        transient Walker walker;
+        transient GitTrace gitTrace;
+        LocalOperation first;
 
-            MergeCorrection(int replica, VectorClock VC, Patch merge, Walker walker,GitTrace gitTrace) {
-                super(replica, new VectorClock(VC));
-                getVectorClock().inc(replica);
-                this.patch = merge;
-                this.walker=walker;
-                this.gitTrace=gitTrace;
-            }
+        MergeCorrection(int replica, VectorClock VC, Patch merge, Walker walker, GitTrace gitTrace) {
+            super(replica, new VectorClock(VC));
+            getVectorClock().inc(replica);
+            this.patch = merge;
+            this.walker = walker;
+            this.gitTrace = gitTrace;
+        }
 
-            /**
-             * Introduce to the trace on-the-fly correction operations to obtain
-             * the merge result.
-             *
-             * @param replica the replica that will originate the correction
-             * @return the first edit of the correction operation
-             */
-            @Override
-            public LocalOperation getOperation(/*CRDT replica*/) {
-                return new LocalOperation() {
-                    @Override
-                    public LocalOperation adaptTo(CRDT replica) {
-                        if (first == null) {
-                            try {
+        /**
+         * Introduce to the trace on-the-fly correction operations to obtain the
+         * merge result.
+         *
+         * @param replica the replica that will originate the correction
+         * @return the first edit of the correction operation
+         */
+        @Override
+        public LocalOperation getOperation(/*CRDT replica*/) {
+            return new LocalOperation() {
+                @Override
+                public LocalOperation adaptTo(CRDT replica) {
+                    if (first == null) {
+                        try {
 //System.out.println("----- REPLICA -----\n" + replica.lookup());                                
 //System.out.println("----- PATCH -----\n" + new String(patch.getRaws().get(0)));                                
-                                List<Edition> l = gitTrace.diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
-                                gitTrace.stat(l, true);
+                            List<Edition> l = gitTrace.diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
+                            gitTrace.stat(l, true);
 //for (Edition ed : l) { System.out.println("--- DIFF ---\n" + ed); }                                
-                                if (l.isEmpty()) {
-                                    walker.currentVC.inc(replica.getReplicaNumber());
-                                    first = SequenceOperation.noop(/*replica.getReplicaNumber(), getVectorClock()*/);
-                                } else {
-                                    walker.editions.addAll(l);
-                                    first = walker.nextElement().getOperation().adaptTo(replica);
-                                }
-                            } catch (IOException ex) {
-                                Logger.getLogger(GitTrace.class.getName()).log(Level.SEVERE, "During merge correction computation", ex);
+                            if (l.isEmpty()) {
+                                walker.currentVC.inc(replica.getReplicaNumber());
+                                first = SequenceOperation.noop(/*replica.getReplicaNumber(), getVectorClock()*/);
+                            } else {
+                                walker.editions.addAll(l);
+                                first = walker.nextElement().getOperation().adaptTo(replica);
                             }
+                        } catch (IOException ex) {
+                            Logger.getLogger(GitTrace.class.getName()).log(Level.SEVERE, "During merge correction computation", ex);
                         }
-                        return first;
                     }
+                    return first;
+                }
 
-                    @Override
-                    public Operation clone() {
-                        throw new UnsupportedOperationException("Not Yet fucked clone on trace");
-                        //return first==null?(LocalOperation)super.clone():first;
-                    }
-                };
-            }
-
-            @Override
-            public String toString() {
-                return "MergeCorrection{super="+super.toString() + "first=" + first + '}';
-            }
+                @Override
+                public Operation clone() {
+                    throw new UnsupportedOperationException("Not Yet fucked clone on trace");
+                    //return first==null?(LocalOperation)super.clone():first;
+                }
+            };
         }
-     class Walker implements Enumeration<TraceOperation> {
+
+        @Override
+        public String toString() {
+            return "MergeCorrection{super=" + super.toString() + "first=" + first + '}';
+        }
+    }
+
+    class Walker implements Enumeration<TraceOperation> {
+
         private LinkedList<Commit> pendingCommit;
         private LinkedList<Commit> startingCommit;
         private LinkedList<FileEdition> files;
@@ -234,7 +262,7 @@ public class GitTrace implements Trace{
         private boolean init = true;
         private TraceOperation next = null;
         private boolean finish = false;
-        
+
         public Walker() {
             startingCommit = new LinkedList<Commit>(initCommit);
             pendingCommit = new LinkedList<Commit>();
@@ -283,12 +311,12 @@ public class GitTrace implements Trace{
                         while (!treated.containsAll(candidate.getParents())) {
                             pendingCommit.addLast(candidate);
                             candidate = pendingCommit.removeFirst();
-                        } 
+                        }
                         commit = candidate;
                         currentVC = startVC.get(commit.getId());
                         if (commit.parentCount() > 1) {
                             ++nbMerge;
-                            op = new MergeCorrection(commit.getReplica(), currentVC, patchCRUD.get(commit.patchId()),this,GitTrace.this);
+                            op = new MergeCorrection(commit.getReplica(), currentVC, patchCRUD.get(commit.patchId()), this, GitTrace.this);
                         } else {
                             Patch p = patchCRUD.get(commit.parentPatchId(0));
                             files = new LinkedList<FileEdition>(p.getEdits());
@@ -299,14 +327,14 @@ public class GitTrace implements Trace{
                 }
             }
 //System.out.println(commit);
-            return op; 
+            return op;
         }
-        
+
         @Override
         public boolean hasMoreElements() {
             if (next == null) {
                 next = next();
-            } 
+            }
             return !finish;
         }
 
@@ -316,7 +344,7 @@ public class GitTrace implements Trace{
             if (next == null) {
                 op = next();
             } else {
-                op = next;                
+                op = next;
             }
             if (finish) {
                 throw new NoSuchElementException("No more operation");

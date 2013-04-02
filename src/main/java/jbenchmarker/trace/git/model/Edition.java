@@ -133,13 +133,13 @@ public class Edition implements Serializable{
         this.endA = beginA;
         this.beginB = beginB;
         this.endB = beginB;
-        this.ca = new LinkedList<String>();
         if (a != null) {
+            this.ca = new LinkedList<String>();
             this.ca.add(a);
             ++endA;
         }
-        this.cb = new LinkedList<String>();
         if (b != null) {
+            this.cb = new LinkedList<String>();
             this.cb.add(b);
             ++endB;
         }
@@ -153,12 +153,13 @@ public class Edition implements Serializable{
             s.append("--- (").append(i).append(") ").append(ca.get(i-this.getBeginA()));
         }
         for (int i = this.getBeginB(); i < this.getEndB(); ++i) {
-            s.append("+++ (").append(i).append(") ").append(cb.get(i-this.getBeginB()));
+            s.append("+++ (").append(type == OpType.move ? i : i - this.getBeginB() + this.getBeginA()).
+                    append(") ").append(cb.get(i-this.getBeginB()));
         }
         return s.toString();
     }
 
-    private OpType typeof(Type type) {
+    private static OpType typeof(Type type) {
                 switch (type) {
         case DELETE: 
             return OpType.delete;
@@ -169,5 +170,49 @@ public class Edition implements Serializable{
         default:
             return OpType.unsupported;    
         }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 37 * hash + this.beginA;
+        hash = 37 * hash + this.beginB;
+        hash = 37 * hash + (this.ca != null ? this.ca.hashCode() : 0);
+        hash = 37 * hash + (this.cb != null ? this.cb.hashCode() : 0);
+        hash = 37 * hash + (this.type != null ? this.type.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Edition other = (Edition) obj;
+        if (this.beginA != other.beginA) {
+            return false;
+        }
+        if (this.endA != other.endA) {
+            return false;
+        }
+        if (this.beginB != other.beginB) {
+            return false;
+        }
+        if (this.endB != other.endB) {
+            return false;
+        }
+        if (this.ca != other.ca && (this.ca == null || !this.ca.equals(other.ca))) {
+            return false;
+        }
+        if (this.cb != other.cb && (this.cb == null || !this.cb.equals(other.cb))) {
+            return false;
+        }
+        if (this.type != other.type) {
+            return false;
+        }
+        return true;
     }
 }

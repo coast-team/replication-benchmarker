@@ -59,6 +59,12 @@ import org.ektorp.support.GenericRepository;
  */
 public class GitExtraction {
 
+    private boolean MIN_TWO_LINES_MOVE = true;
+    private static final int DEFAULT_LINE_UPDATE_THRESHOLD = 50;
+    private static final int DEFAULT_UPDATE_THRESHOLD = 20;
+    private static final int DEFAULT_MOVE_THRESHOLD = 10;
+
+
     private static final int binaryFileThreshold = PackConfig.DEFAULT_BIG_FILE_THRESHOLD;
     /**
      * Magic return content indicating it is empty or no content present.
@@ -79,15 +85,39 @@ public class GitExtraction {
     private final String path;
     public static final DiffAlgorithm defaultDiffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
     private static final DiffMatchPatch neil = new DiffMatchPatch();
-    private boolean detectMaU;
-
+    private final boolean detectMoveAndUpdate;
+    private int lineUpdateThresold = 50;
+    private int updateThresold = 20;
+    private int moveThresold = 10;
+    
+    
+    /**
+     * Test constructor. Do not use outside test.
+     **/
+    GitExtraction(int lineUpdateThresold, int updateThresold, int moveThresold) {
+        this.repository = null;
+        this.reader = null;
+        this.source = null;
+        this.pairSource = null;
+        this.diffAlgorithm = defaultDiffAlgorithm;
+        this.patchCrud = null;
+        this.commitCrud = null;
+        this.git = null;
+        this.path = null;
+        this.detectMoveAndUpdate = true;
+        this.lineUpdateThresold = lineUpdateThresold;
+        this.updateThresold = updateThresold;
+        this.moveThresold = moveThresold;       
+    }
+    
     public GitExtraction(Repository repo, CouchDbRepositorySupport<Commit> dbc,
             CouchDbRepositorySupport<Patch> dbp, DiffAlgorithm diffAlgorithm, String path) {
-        this(repo, dbc, dbp, diffAlgorithm, path, false);
+        this(repo, dbc, dbp, diffAlgorithm, path, false, 0, 0, 0);
     }
 
     public GitExtraction(Repository repo, CouchDbRepositorySupport<Commit> dbc,
-            CouchDbRepositorySupport<Patch> dbp, DiffAlgorithm diffAlgorithm, String path, boolean detectMaU) {
+            CouchDbRepositorySupport<Patch> dbp, DiffAlgorithm diffAlgorithm, String path, 
+            boolean detectMovesAndUpdates, int lineUpdateThresold, int updateThresold, int moveThresold) {
         this.repository = repo;
         this.reader = repo.newObjectReader();
         this.source = ContentSource.create(reader);
@@ -97,7 +127,10 @@ public class GitExtraction {
         this.commitCrud = dbc;
         this.git = new Git(repo);
         this.path = path;
-        this.detectMaU = detectMaU;
+        this.detectMoveAndUpdate = detectMovesAndUpdates;
+        this.lineUpdateThresold = lineUpdateThresold;
+        this.updateThresold = updateThresold;
+        this.moveThresold = moveThresold;
     }
 
     // TODO : resolve problem of diff docuement in same DB
@@ -172,67 +205,54 @@ public class GitExtraction {
         final EditList editList = diffAlgorithm.diff(RawTextComparator.DEFAULT, a, b);
         return edits(editList, a, b);
     }
-    private static final int LINE_UPDATE_THRESHOLD = 50;
-    private static final int UPDATE_THRESHOLD = 10;
-    private static final int MOVE_OVERCOST = 2;
 
     /**
      * Detects moves and updates. Replace couples delete/insert by update or
      * moves.
      *
-     * @param edits the edit list to parse
+     * @param input the edit list to parse
      */
-    private void detectMovesAndUpdates(List<Edition> edits) {
-        List<Edition> inserts = new LinkedList<Edition>(),
-                deletes = new LinkedList<Edition>(),
-                updates = new LinkedList<Edition>();
-        ListIterator<Edition> edit = edits.listIterator();
+    List<Edition> detectMovesAndUpdates(List<Edition> input) {
+        Map<OpType, LinkedList<Edition>> edits = new EnumMap<OpType, LinkedList<Edition>>(OpType.class);
+        edits.put(OpType.delete, new LinkedList<Edition>());
+        edits.put(OpType.insert, new LinkedList<Edition>());
+        edits.put(OpType.update, new LinkedList<Edition>());
+        edits.put(OpType.move, new LinkedList<Edition>());
+        ListIterator<Edition> edit = input.listIterator();
+
+        // Replaces "replace" by updates, insert and delete
         while (edit.hasNext()) {
             Edition e = edit.next();
-            switch (e.getType()) {
-                case replace:
-                    LinkedList<Edition> lines = lineUpdate(e);
-                    if (lines != null) {
-                        for (Edition ed : lines) {
-                            switch (ed.getType()) {
-                                case update:
-                                    updates.add(ed);
-                                    break;
-                                case insert:
-                                    inserts.add(ed);
-                                    break;
-                                case delete:
-                                    deletes.add(ed);
-                                    break;
-                            }
-                        }
-                    } else {
-                        inserts.add(new Edition(OpType.insert, e.getBeginA(), e.getBeginA(),
-                                e.getBeginB(), e.getEndB(), null, e.getCb()));
-                        deletes.add(new Edition(OpType.delete, e.getBeginA(), e.getEndA(),
-                                e.getBeginB(), e.getBeginB(), e.getCa(), null));
+            if (e.getType() == OpType.replace) {
+                LinkedList<Edition> lines = lineUpdate(e);
+                if (lines != null) {
+                    for (Edition ed : lines) {
+                        edits.get(ed.getType()).add(ed);
                     }
-                    break;
-                case insert:
-                    inserts.add(e);
-                    break;
-                case delete:
-                    deletes.add(e);
-                    break;
+                } else {
+                    edits.get(OpType.insert).add(new Edition(OpType.insert, e.getBeginA(), e.getBeginA(),
+                            e.getBeginB(), e.getEndB(), null, e.getCb()));
+                    edits.get(OpType.delete).add(new Edition(OpType.delete, e.getBeginA(), e.getEndA(),
+                            e.getBeginB(), e.getBeginB(), e.getCa(), null));
+                }
+            } else {
+                edits.get(e.getType()).add(e);
             }
         }
-        ListIterator<Edition> delit = deletes.listIterator();
+
+        // Identify moves between delete and insert
+        ListIterator<Edition> delit = edits.get(OpType.delete).listIterator();
         while (delit.hasNext()) {
             Edition e = delit.next();
             if (e.getCa().size() > 1) {
-                ListIterator<Edition> insit = inserts.listIterator();
+                ListIterator<Edition> insit = edits.get(OpType.insert).listIterator();
                 List<Edition> move = null;
                 int pos = 0;
                 while (insit.hasNext()) {
                     Edition f = insit.next();
                     if (f.getCb().size() > 1) {
                         List<Edition> lines = lineUpdate(e.getCa(), e.getBeginA(),
-                                f.getCb(), f.getBeginB(), true);
+                                f.getCb(), f.getBeginB(), true, f.getBeginA());
                         if (lines != null && (move == null || lines.size() < move.size())) {
                             move = lines;
                             pos = insit.previousIndex();
@@ -240,33 +260,83 @@ public class GitExtraction {
                     }
                 }
                 if (move != null) {
-                    inserts.remove(pos);
+                    int back = 0;
+                    insit = edits.get(OpType.insert).listIterator(pos);
+                    insit.next();
+                    insit.remove();
                     delit.remove();
                     for (Edition ed : move) {
                         switch (ed.getType()) {
                             case update:
                                 ed.setType(OpType.move);
-                                updates.add(ed);
+                                edits.get(OpType.move).add(ed);
                                 break;
                             case insert:
-                                inserts.add(ed);
+                                insit.add(ed);
                                 break;
                             case delete:
                                 delit.add(ed);
-                                delit.previous();
+                                back++;
                                 break;
                         }
+                    }
+                    for (; back > 0; --back) {
+                        delit.previous();
                     }
                 }
             }
         }
-        for (Edition ed : updates) {
-            System.out.println((ed.getType() == OpType.move ? ">>>>>>>>> MOVE" : ">>>>>>>>>> UPDATE") + "\n" + ed);
+
+
+        // Fusion of edit operations. Insert has lower priority. 
+        List<Edition> result = new ArrayList<Edition>();
+        while (!allEmpty(edits)) {
+            Edition edm = null;
+            for (LinkedList<Edition> l : edits.values()) {
+                if (!l.isEmpty() && (edm == null || l.peekFirst().getBeginA() > edm.getBeginA()
+                        || (edm.getType() == OpType.insert && l.peekFirst().getBeginA() == edm.getBeginA()))) {
+                    edm = l.peekFirst();
+                }
+            }
+            result.add(edm);
+            edits.get(edm.getType()).removeFirst();
         }
+
+        // Apply position shift due to moves
+        for (int i = 0; i < result.size(); ++i) {
+            Edition e = result.get(i);
+            if (e.getType() == OpType.move) {
+                if (e.getBeginB() < e.getBeginA()) {
+                    int shift = e.getCb().size();
+                    for (int j = i + 1; j < result.size() && result.get(j).getBeginA() >= e.getBeginB(); ++j) {
+                        Edition f = result.get(j);
+                        f.setBeginA(f.getBeginA() + shift);
+                        f.setEndA(f.getEndA() + shift);
+                    }
+                } else {
+                    int shift = 0;
+                    for (int j = i - 1; j >= 0 && result.get(j).getBeginA() < e.getBeginB(); --j) {
+                        Edition f = result.get(j);
+                        if (f.getType() == OpType.insert) {
+                            shift += f.getCb().size();
+                        } else if (f.getType() == OpType.delete) {
+                            shift -= f.getCa().size();
+                        }
+                    }
+                    e.setBeginB(e.getBeginB() + shift);
+                    e.setEndB(e.getEndB() + shift);
+                }
+            }
+        }
+        System.out.println("========= PATCH ===========");
+        for (Edition ed : result) {
+            System.out.println(">>>>>>>>> " + ed.getType() + "\n" + ed);
+        }
+        return result;
     }
 
     private LinkedList<Edition> lineUpdate(Edition edit) {
-        return lineUpdate(edit.getCa(), edit.getBeginA(), edit.getCb(), edit.getBeginB(), false);
+        return lineUpdate(edit.getCa(), edit.getBeginA(), edit.getCb(), edit.getBeginB(), false, 0);
     }
 
     /**
@@ -274,7 +344,7 @@ public class GitExtraction {
      * deletions. Dynamic programming algorithm for diffing.
      */
     private LinkedList<Edition> lineUpdate(List<String> listA, int beginA,
-            List<String> listB, int beginB, boolean move) {
+            List<String> listB, int beginB, boolean move, int beginMove) {
         boolean match = false;
         int[][] mat = new int[listA.size() + 1][listB.size() + 1];
         int[][] md = new int[listA.size()][listB.size()];
@@ -292,8 +362,8 @@ public class GitExtraction {
             for (int j = 1; j <= listB.size(); ++j) {
                 mat[i][j] = Math.min(mat[i][j - 1], mat[i - 1][j]) + 100;
                 int d = md[i - 1][j - 1];
-                if (d < LINE_UPDATE_THRESHOLD) {
-                    if (d < UPDATE_THRESHOLD / (move ? MOVE_OVERCOST : 1)) {
+                if (d < lineUpdateThresold) {
+                    if (d < (move ? moveThresold : updateThresold)) {
                         match = true;
                     }
                     mat[i][j] = Math.min(mat[i - 1][j - 1] + d, mat[i][j]);
@@ -301,51 +371,53 @@ public class GitExtraction {
             }
         }
         if (match) { // compute edit operations
-            if (move) {
-                match = false; // check for at least 2 lines
+            if (move && MIN_TWO_LINES_MOVE) { // check for at least 2 lines
+                match = false;
             }
             LinkedList<Edition> editList = new LinkedList<Edition>();
             int i = listA.size(), j = listB.size();
             while (i > 0 && j > 0) {
-                Edition first = editList.isEmpty() ? null : editList.getFirst();
+                Edition last = editList.isEmpty() ? null : editList.getLast();
                 if (mat[i][j] == mat[i - 1][j - 1] + md[i - 1][j - 1]) {
-                    if (first != null && first.getType() == OpType.update) {
-                        first.setBeginA(first.getBeginA() - 1);
-                        first.setBeginB(first.getBeginB() - 1);
-                        first.getCa().add(0, listA.get(i - 1));
-                        first.getCb().add(0, listB.get(j - 1));
+                    --i;
+                    --j;
+                    if (last != null && last.getType() == OpType.update) {
+                        last.setBeginA(last.getBeginA() - 1);
+                        last.setBeginB(last.getBeginB() - 1);
+                        last.getCa().add(0, listA.get(i));
+                        last.getCb().add(0, listB.get(j));
                         match = true; // 2 consecutive lines
                     } else {
-                        editList.addFirst(new Edition(OpType.update,
-                                beginA + i - 1, beginB + j - 1, listA.get(i - 1), listB.get(j - 1)));
+                        editList.add(new Edition(OpType.update, beginA + i,
+                                (move ? beginMove : beginB) + j,
+                                listA.get(i), listB.get(j)));
                     }
-                    --i;
-                    --j;
                 } else if (mat[i][j] == mat[i - 1][j] + 100) {
-                    if (first != null && first.getType() == OpType.delete) {
-                        first.setBeginA(first.getBeginA() - 1);
-                        first.getCa().add(0, listA.get(i - 1));
-                    } else {
-                        editList.addFirst(new Edition(OpType.delete,
-                                beginA + i - 1, beginB + j - 1, listA.get(i - 1), null));
-                    }
                     --i;
-                } else if (mat[i][j] == mat[i][j - 1] + 100) {
-                    if (first != null && first.getType() == OpType.insert) {
-                        first.setBeginB(first.getBeginB() - 1);
-                        first.getCb().add(0, listB.get(j - 1));
+                    if (last != null && last.getType() == OpType.delete) {
+                        last.setBeginA(last.getBeginA() - 1);
+                        last.getCa().add(0, listA.get(i));
                     } else {
-                        editList.addFirst(new Edition(OpType.insert,
-                                beginA + i - 1, beginB + j - 1, null, listB.get(j - 1)));
+                        editList.add(new Edition(OpType.delete,
+                                beginA + i, beginB + j, listA.get(i), null));
                     }
+
+                } else if (mat[i][j] == mat[i][j - 1] + 100) {
                     --j;
+                    if (last != null && last.getType() == OpType.insert) {
+                        last.setBeginB(last.getBeginB() - 1);
+                        last.getCb().add(0, listB.get(j));
+                    } else {
+                        editList.add(new Edition(OpType.insert,
+                                beginA + i, beginB + j, null, listB.get(j)));
+                    }
                 }
             }
             if (i > 0) {
-                editList.addFirst(new Edition(OpType.delete, beginA, beginA + i,
+                editList.add(new Edition(OpType.delete, beginA, beginA + i,
                         beginB, beginB, listA.subList(0, i), null));
             } else if (j > 0) {
-                editList.addFirst(new Edition(OpType.insert, beginA, beginA,
+                editList.add(new Edition(OpType.insert, beginA, beginA,
                         beginB, beginB + j, null, listB.subList(0, j)));
             }
             if (match) {
@@ -390,7 +462,7 @@ public class GitExtraction {
             }
         }
         // Detect move and update
-        if (detectMaU) {
+        if (detectMoveAndUpdate) {
             detectMovesAndUpdates(elist);
         }
 
@@ -512,5 +584,14 @@ public class GitExtraction {
             walk.setFilter(PathFilter.create(path));
         }
         return walk;
+    }
+
+    static private boolean allEmpty(Map<OpType, LinkedList<Edition>> results) {
+        for (LinkedList<Edition> l : results.values()) {
+            if (!l.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

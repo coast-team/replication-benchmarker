@@ -126,13 +126,15 @@ public final class GitMain extends Experience {
             int minCop = 0, minUop = 0, minMop = 0;
 
             int nbBlockMerge = 0, mergeSize = 0, nbInsBlock = 0,
-                    nbDelBlock = 0, insertSize = 0, deleteSize = 0, nbUpdBlock = 0, nbMerge = 0, nbCommit = 0;
+                    nbDelBlock = 0, insertSize = 0, deleteSize = 0, 
+                    nbUpdBlock = 0, nbMerge = 0, nbCommit = 0;
 
             int nbrIns = 0, nbrDel = 0;
             int sizeMsg = 0;
             boolean oneclean = clean;
             for (int k = 0; k < nbrExec; k++) {
-                GitTrace trace = GitTrace.create(gitdir, cc, path, oneclean, dmau);
+                GitTrace trace = dmau ? GitTrace.createWithMoves(gitdir, cc, path, oneclean, 50, 20, 10) 
+                        : GitTrace.create(gitdir, cc, path, oneclean);
                 oneclean = false;
                 CausalSimulator cd = new CausalSimulator(rf, stat, stat ? nbserializ : 0, stat);
                 cd.setWriter(save ? new TraceObjectWriter("trace") : null);

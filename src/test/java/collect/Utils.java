@@ -39,4 +39,12 @@ public class Utils {
         }
         return new Word(l);
     }
+    
+    public static <T> List<T> toList(T ... t) {
+        List<T> l = new LinkedList<T>();
+        for (T c : t) {
+            l.add(c);
+        }
+        return l;
+    }
 }
