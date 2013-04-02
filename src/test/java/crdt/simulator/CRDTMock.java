@@ -17,10 +17,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package crdt;
+package crdt.simulator;
 
 import crdt.CRDT;
+import crdt.CRDT;
 import crdt.CRDTMessage;
+import crdt.CRDTMessage;
+import crdt.PreconditionException;
 import crdt.PreconditionException;
 import crdt.simulator.random.OperationProfile;
 import java.util.HashMap;

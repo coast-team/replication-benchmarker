@@ -51,7 +51,8 @@ public class CausalSimulator extends Simulator {
     private HashMap<TraceOperation, Integer> orderTrace;
     private boolean detail = true;
     private SizeCalculator serializer;
-    private int passiveReplica = 0;
+    private int passiveReplica = 1;
+    private boolean debugInformation=true;
 
     public CausalSimulator(Factory<? extends CRDT> rf) {
         super(rf);
@@ -93,6 +94,14 @@ public class CausalSimulator extends Simulator {
     
     public void setPassiveReplica(int passiveReplica) {
         this.passiveReplica = passiveReplica;
+    }
+
+    public boolean isDebugInformation() {
+        return debugInformation;
+    }
+
+    public void setDebugInformation(boolean debugInformation) {
+        this.debugInformation = debugInformation;
     }
 
     
@@ -204,7 +213,7 @@ public class CausalSimulator extends Simulator {
         int numTrace = 0;
 
         // Passive replica that only receive operations
-        for(int i=0;i<passiveReplica;i++) {
+        for(int i=1;i<passiveReplica;i++) {
             this.newReplica(-i);
             clocks.put(-i, new VectorClock());
         }
@@ -387,7 +396,7 @@ public class CausalSimulator extends Simulator {
             tour = 0;
 
             //debug
-            if (memUsed.size() % 10 == 0) {
+            if (debugInformation && memUsed.size() % 10 == 0) {
                 System.out.println("Serialized :" + memUsed.size() * 100 + "x");
             }
         }
@@ -425,5 +434,4 @@ public class CausalSimulator extends Simulator {
         }
         return l;
     }
-
 }

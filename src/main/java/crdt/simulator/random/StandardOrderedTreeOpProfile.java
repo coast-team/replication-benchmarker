@@ -77,7 +77,6 @@ public class StandardOrderedTreeOpProfile extends OrderedTreeOperationProfile<St
 
     @Override
     public String nextElement() {
-
         return "" + ('a' + (int) (Math.random() * 26));
 
     }

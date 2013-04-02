@@ -20,7 +20,7 @@ package jbenchmarker;
 
 import collect.OrderedNode;
 import crdt.CRDT;
-import crdt.CRDTMock;
+import crdt.CRDTMockTime;
 import crdt.Factory;
 import crdt.set.CRDTSet;
 import crdt.set.NaiveSet;
@@ -104,7 +104,7 @@ public class TreeSimulation {
             for (int i = 0; i < set.length; i++) {
                 for (OrderedNode node : nodes) {
                     fact.add(createTree(node, set[i], pol));
-                    factstr.add("WordTree " + node.getClass().getName() + "," + setstr[i] + "," + pol.getClass().getName());
+                    factstr.add("WordTree:" + node.getClass().getName() + "-" + setstr[i] + "-" + pol.getClass().getName());
                 }
             }
         }
@@ -131,8 +131,8 @@ public class TreeSimulation {
                 null)));
         factstr.add("TreeOPTWithoutGarbageO");
         
-       /* fact.add((CRDT) new CRDTMock());
-        factstr.add("Mock");*/
+        fact.add(new CRDTMockTime(new FCTree(),2,3));
+        factstr.add("Mock");
 
     }
     static int base = 100;
@@ -270,7 +270,7 @@ public class TreeSimulation {
             } else {
                 cd = new CausalSimulator(rf, true, scaleMemory, true);
             }
-
+            cd.setDebugInformation(false);
             Trace trace;
             if (fileUsr.exists()) {
                 System.out.println("-Trace From File : " + nameUsr);
