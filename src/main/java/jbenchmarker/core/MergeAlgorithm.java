@@ -23,6 +23,7 @@ import crdt.simulator.IncorrectTraceException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  * Squeleton of mergeAlgorithm
@@ -91,7 +92,11 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
             case delete:
                 return localDelete(opt);
             case replace:
+                return localReplace(opt);
+            case update:
                 return localUpdate(opt);
+            case move:
+                return localMove(opt);
             case noop:
                 return null;
             default:
@@ -189,9 +194,27 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
     abstract protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException;
 
     /**
-     * Default behavior of localUpdate is to throw IncorrectTraceException.
+     * Default behavior of update is to delete and insert
      */
     protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
+        return localReplace(opt);
+    }
+
+    /**
+     * Default behavior of move is to delele plus insert
+     */
+    protected List<SequenceMessage> localMove(SequenceOperation opt) throws IncorrectTraceException {
+        SequenceOperation del = new SequenceOperation(OpType.delete, opt.getPosition(), opt.getContent().size(), null),
+                ins = new SequenceOperation(OpType.insert, opt.getMovePosition(), 0, opt.getContent());
+        List<SequenceMessage> lop = localDelete(del);
+        lop.addAll(localInsert(ins));
+        return lop;        
+    }
+
+    /**
+     * Default behavior of replace is to delele plus insert
+     */
+    private List<SequenceMessage> localReplace(SequenceOperation opt) throws IncorrectTraceException {
         List<SequenceMessage> lop = localDelete(opt);
         lop.addAll(localInsert(opt));
         return lop;

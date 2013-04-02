@@ -41,7 +41,7 @@ public class LogootMergeTest
          return SequenceOperation.delete( p, o);//Replica , position , offset , VH
     }
     SequenceOperation update(int p, int o, String s) {
-        return SequenceOperation.update( p, o, s); //Replica , position , content , VH
+        return SequenceOperation.replace( p, o, s); //Replica , position , content , VH
     }
     
     @Test

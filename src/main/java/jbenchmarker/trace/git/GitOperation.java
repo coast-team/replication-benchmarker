@@ -19,12 +19,8 @@
 package jbenchmarker.trace.git;
 
 import collect.VectorClock;
-import crdt.CRDT;
 import crdt.simulator.TraceOperation;
-import java.io.Serializable;
-import java.util.List;
 import jbenchmarker.core.LocalOperation;
-import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.trace.git.model.Edition;
 import jbenchmarker.trace.git.model.FileEdition;
@@ -38,8 +34,7 @@ public class GitOperation extends TraceOperation {
         
     public GitOperation(int replica, VectorClock VC, FileEdition f, Edition e) {
         super(replica, new VectorClock(VC));
-        sop = new SequenceOperation<String>(e.getType(), e.getBeginA(), 
-                e.getEndA() - e.getBeginA(), e.getCb());
+        sop = new SequenceOperation<String>(e.getType(), e.getBeginA(), e.getEndA() - e.getBeginA(), e.getCb());
     }
 
     @Override

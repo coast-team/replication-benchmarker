@@ -20,13 +20,10 @@ package jbenchmarker.logoot;
 
 import collect.RangeList;
 import crdt.Factory;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.core.SequenceOperation;
 
 /**
  * A Logoot document. Contains a list of Charater and the corresponding list of LogootIndentitifer.

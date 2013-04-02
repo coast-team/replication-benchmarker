@@ -18,6 +18,8 @@
  */
 package jbenchmarker.woot.wooth;
 
+import crdt.CRDT;
+import crdt.Factory;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.woot.WootDocument;
 import jbenchmarker.woot.WootIdentifier;
@@ -35,6 +37,12 @@ public class WootHDocumentTest {
    
 //    WootHashNode a, b, c, d, e, f, g, h, x, z;
 
+    @Test
+    public void testFactory() throws Exception {
+        Factory<CRDT> rf = (Factory<CRDT>) Class.forName("jbenchmarker.factories.WootFactories$WootHFactory").newInstance();
+        rf.create();
+    }
+    
     /**
      * Test of view method, of class WootHDocumentTest.
      */

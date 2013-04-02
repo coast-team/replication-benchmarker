@@ -18,18 +18,15 @@
  */
 package jbenchmarker.trace.git;
 
-import org.eclipse.jgit.diff.Edit.Type;
 import collect.HashMapSet;
 import java.io.IOException;
 import java.util.*;
-import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.trace.git.model.Commit;
 import jbenchmarker.trace.git.model.Edition;
 import jbenchmarker.trace.git.model.FileEdition;
 import jbenchmarker.trace.git.model.Patch;
 import name.fraser.neil.plaintext.DiffMatchPatch;
-import name.fraser.neil.plaintext.DiffMatchPatch.Diff;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.*;
 import static org.eclipse.jgit.diff.DiffEntry.Side.NEW;
@@ -153,12 +150,12 @@ public class GitExtraction {
         }
     }
 
-    private byte[] open(String path, ObjectId id) throws IOException {
+    byte[] open(String path, ObjectId id) throws IOException {
         ObjectLoader ldr = source.open(path, id);
         return getBytes(ldr, id);
     }
 
-    private byte[] open(DiffEntry.Side side, DiffEntry entry) throws IOException {
+    byte[] open(DiffEntry.Side side, DiffEntry entry) throws IOException {
         if (entry.getMode(side) == FileMode.MISSING) {
             return EMPTY;
         }
@@ -325,10 +322,6 @@ public class GitExtraction {
                 }
             }
         }
-        System.out.println("========= PATCH ===========");
-        for (Edition ed : result) {
-            System.out.println(">>>>>>>>> " + ed.getType() + "\n" + ed);
-        }
         return result;
     }
 
@@ -461,7 +454,7 @@ public class GitExtraction {
         }
         // Detect move and update
         if (detectMoveAndUpdate) {
-            detectMovesAndUpdates(elist);
+            elist = detectMovesAndUpdates(elist);
         }
 
         return new FileEdition(ent, type, elist);
@@ -532,18 +525,18 @@ public class GitExtraction {
                     RevCommit parent = commit.getParent(p);
                     String parentId = ObjectId.toString(parent);
                     children.put(parentId, co.getId());
-                    List<FileEdition> edits = new LinkedList<FileEdition>();
-                    TreeWalk walk = walker(commit, parent, path); // paths.get(co.getId()));
 
                     // compute diff
+                    List<FileEdition> edits = new LinkedList<FileEdition>();
+                    TreeWalk walk = walker(commit, parent, path); // paths.get(co.getId()));
                     for (DiffEntry entry : DiffEntry.scan(walk)) {
                         edits.add(createDiffResult(entry, merge));
                         if (path != null) {
                             paths.put(parentId, entry.getOldPath());
                         }
                     }
-
                     patchCrud.add(new Patch(co, parent, edits));
+                    
                     if (itid.hasNext()) {
                         identifiers.put(parentId, itid.next());
                     } else if (!identifiers.containsKey(ObjectId.toString(parent))) {

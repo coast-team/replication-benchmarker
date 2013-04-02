@@ -70,7 +70,7 @@ public class GitTrace implements Trace {
     private List<Commit> initCommit;
     private static final DiffAlgorithm diffAlgorithm = GitExtraction.defaultDiffAlgorithm;
 
-    ;    
+    private static final boolean DEBUG = true;
     
     /**
      * Produces a git trace using a git directory a couch db URL and a file path.
@@ -320,6 +320,9 @@ public class GitTrace implements Trace {
                         } else {
                             Patch p = patchCRUD.get(commit.parentPatchId(0));
                             files = new LinkedList<FileEdition>(p.getEdits());
+                            if (DEBUG) {
+//                                op = new Check(commit.getReplica(), currentVC, getState(commit));
+                            }
                         }
                     } else {
                         finish = true;
@@ -379,5 +382,14 @@ public class GitTrace implements Trace {
         gitdir = d[d.length - 1];
         path = path.replaceAll("[^a-zA-Z0-9]", "");
         return gitdir + "_" + path;
+    }
+    
+    private static final class Check extends TraceOperation implements Serializable {
+
+        @Override
+        public LocalOperation getOperation() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+        
     }
 }

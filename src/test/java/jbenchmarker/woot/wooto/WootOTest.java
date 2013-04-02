@@ -81,7 +81,7 @@ public class WootOTest {
         int pos = 3, off = 5;       
         replica.applyLocal(SequenceOperation.insert(0, content));
         assertEquals(content, replica.lookup());
-        replica.applyLocal(SequenceOperation.update(pos, off, upd));
+        replica.applyLocal(SequenceOperation.replace(pos, off, upd));
         assertEquals(content.substring(0, pos) + upd + content.substring(pos+off), replica.lookup());        
     }
 }
