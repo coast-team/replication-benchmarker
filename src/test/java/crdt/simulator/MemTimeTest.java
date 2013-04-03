@@ -58,7 +58,7 @@ public class MemTimeTest {
             assertEquals(2, t/10000000);
         }
         for(double t:cd.getAvgPerRemoteMessage()){
-            assertEquals(3.0, t/10000000,0.1);
+            assertEquals(3.0, t/10000000,0.2);
         }
        
     }
