@@ -118,6 +118,7 @@ public final class GitMain extends Experience {
         int nbserializ = Integer.parseInt(args[args.length - 4]);
         CouchConnector cc = new CouchConnector(dbURL);
         for (String path : paths.subList(i, end)) {
+            System.out.print(path + ';' + ++i + ';');
             long ltime[][] = null, mem[][] = null, rtime[][] = null;
             int cop = 0, uop = 0, nbReplica = 0, mop = 0;
             int minCop = 0, minUop = 0, minMop = 0;
@@ -158,7 +159,7 @@ public final class GitMain extends Experience {
                 }
 
                 if (!stat) {
-                    statr = path + ';' + ++i + ';' + cd.replicas.keySet().size()
+                    statr = "" + cd.replicas.keySet().size()
                             + ';' + trace.nbMerge + ';' + trace.nbBlockMerge
                             + ';' + trace.mergeSize
                             + ';' + trace.nbCommit + ';'
@@ -167,7 +168,7 @@ public final class GitMain extends Experience {
                             + trace.insertSize + ';' + trace.deleteSize;
 
                     System.out.println(statr);
-                    result.add(statr);
+                    result.add(path + ';' + i + ';' + statr);
                 }
 
 
@@ -224,10 +225,8 @@ public final class GitMain extends Experience {
             }
 
             if (stat) {
-                statr = path + ';' + ++i + ';' + nbReplica
-                        + ';' + nbMerge + ';' + nbBlockMerge / nbrExec
-                        + ';' + mergeSize / nbrExec
-                        + ';' + nbCommit + ';'
+                statr = "" + nbReplica + ';' + nbMerge + ';' + nbBlockMerge / nbrExec
+                        + ';' + mergeSize / nbrExec + ';' + nbCommit + ';'
                         + nbInsBlock / nbrExec + ';' + nbDelBlock / nbrExec
                         + ';' + nbUpdBlock / nbrExec + ';'
                         + insertSize / nbrExec + ';' + deleteSize / nbrExec + ';'
@@ -255,7 +254,7 @@ public final class GitMain extends Experience {
                 statr = statr + ';' + nbrLigne + ';' + minCop + ';' + somGen + ';' + avgGen
                         + ';' + somUsr + ';' + avgUsr + ';' + sumMem + ';' + avgMem + ';' + sizeMsg / nbrExec;
 
-                result.add(statr);
+                result.add(path + ';' + i + ';' + statr);
                 System.out.println(statr);
             }
         }

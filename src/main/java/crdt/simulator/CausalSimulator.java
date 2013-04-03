@@ -267,7 +267,7 @@ public class CausalSimulator extends Simulator {
             if (detail) {
                 orderTrace.put(opt, numTrace++);
             }
-            if (!vc.readyFor(r, opt.getVectorClock())) {
+            if (!vc.readyFor(r, opt.getVectorClock())) { // Check causal readiness 
                 throw new IncorrectTraceException("replica " + r + " with vc " + vc + " not ready for " + opt.getVectorClock());
             }
             tmp = System.nanoTime();

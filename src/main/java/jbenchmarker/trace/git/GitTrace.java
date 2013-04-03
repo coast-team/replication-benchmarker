@@ -70,7 +70,7 @@ public class GitTrace implements Trace {
     private List<Commit> initCommit;
     private static final DiffAlgorithm diffAlgorithm = GitExtraction.defaultDiffAlgorithm;
 
-    private static final boolean DEBUG = true;
+    static final boolean DEBUG = true;
     
     /**
      * Produces a git trace using a git directory a couch db URL and a file path.
@@ -152,7 +152,7 @@ public class GitTrace implements Trace {
         this(new CommitCRUD(db), new PatchCRUD(db));
     }
 
-    List<Edition> diff(byte[] aRaw, byte[] bRaw) throws IOException {
+    static List<Edition> diff(byte[] aRaw, byte[] bRaw) throws IOException {
         final RawText a = new RawText(aRaw);
         final RawText b = new RawText(bRaw);
         final EditList editList = diffAlgorithm.diff(RawTextComparator.DEFAULT, a, b);
@@ -167,10 +167,10 @@ public class GitTrace implements Trace {
         for (Edition ed : l) {
 
             if (merge) {
-                mergeSize += ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB();
+                mergeSize += ed.getSizeA() + ed.getSizeB();
             }
-            insertSize += ed.getEndB() - ed.getBeginB();
-            deleteSize += ed.getEndA() - ed.getBeginA();
+            insertSize += ed.getSizeA();
+            deleteSize += ed.getSizeB();
             switch (ed.getType()) {
                 case update:
                 case replace:
@@ -185,7 +185,49 @@ public class GitTrace implements Trace {
             }
         }
     }
+    
+    /**
+     * To check if state resulting from local operation correspond to git stored state.   
+     */
+    private static final class Check extends TraceOperation implements Serializable {
+        
+        transient Commit commit;
+        transient Walker walker;
+        transient PatchCRUD crud;
+        
+        private Check(int replica, VectorClock VC, Commit commit, Walker walker, PatchCRUD crud) {
+            super(replica, new VectorClock(VC));
+            getVectorClock().inc(replica);
+            this.commit = commit;
+            this.walker = walker;
+            this.crud = crud;
+        }
 
+        @Override
+        public LocalOperation getOperation() {
+            return new LocalOperation() { 
+                @Override
+                public LocalOperation adaptTo(CRDT replica) {
+                    Patch patch = crud.get(commit.patchContent());
+                    if (!Arrays.equals(((String)replica.lookup()).getBytes(), patch.getRaws().get(0))) {
+                        throw new RuntimeException("---- INCORRECT LOCAL OPERATION ---- FROM " + commit.getParents().get(0) + '\n' 
+                                + new String(crud.get(commit.getParentContent(0)).getRaws().get(0))
+                                + "---------- TO : \n" + commit.patchId() + '\n' + new String(patch.getRaws().get(0))
+                                + "==========\n" + replica.lookup());
+                    } else {
+                        walker.currentVC.inc(replica.getReplicaNumber());
+                        return SequenceOperation.noop();
+                    }
+                }
+                @Override
+                public Operation clone() {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+            };
+        }
+        
+    }
+    
     public static class MergeCorrection extends TraceOperation implements Serializable {
 
         transient Patch patch;
@@ -217,7 +259,7 @@ public class GitTrace implements Trace {
                         try {
 //System.out.println("----- REPLICA -----\n" + replica.lookup());                                
 //System.out.println("----- PATCH -----\n" + new String(patch.getRaws().get(0)));                                
-                            List<Edition> l = gitTrace.diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
+                            List<Edition> l = diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
                             gitTrace.stat(l, true);
 //for (Edition ed : l) { System.out.println("--- DIFF ---\n" + ed); }                                
                             if (l.isEmpty()) {
@@ -236,7 +278,7 @@ public class GitTrace implements Trace {
 
                 @Override
                 public Operation clone() {
-                    throw new UnsupportedOperationException("Not Yet fucked clone on trace");
+                    throw new UnsupportedOperationException("Not yet clone on trace");
                     //return first==null?(LocalOperation)super.clone():first;
                 }
             };
@@ -259,9 +301,9 @@ public class GitTrace implements Trace {
         private VectorClock currentVC;
         private HashMap<String, VectorClock> startVC = new HashMap<String, VectorClock>();
         private HashSet<String> treated = new HashSet<String>();
-        private boolean init = true;
         private TraceOperation next = null;
         private boolean finish = false;
+        private boolean check;
 
         public Walker() {
             startingCommit = new LinkedList<Commit>(initCommit);
@@ -275,14 +317,19 @@ public class GitTrace implements Trace {
                     Edition e = editions.pollFirst();
                     currentVC.inc(commit.getReplica());
                     op = new GitOperation(commit.getReplica(), currentVC, fileEdit, e);
+                    check = true;
                 } else if (files != null && !files.isEmpty()) {
                     fileEdit = files.pollFirst();
                     if (fileEdit.getType() == FileHeader.PatchType.UNIFIED) {
                         editions = new LinkedList<Edition>(fileEdit.getListDiff());
                     }
                     stat(editions, false);
-                } else {
-                    if (commit != null) { // not first one
+                } else { // Commit finished
+                    if (commit != null) { // Not first iteration
+                        if (DEBUG && check) { // Check commit state
+                            check = false;
+                            return new Check(commit.getReplica(), currentVC, commit, this, patchCRUD);
+                        }
                         ++nbCommit;
                         treated.add(commit.getId());
                         for (String cid : commit.getChildren()) {
@@ -316,13 +363,10 @@ public class GitTrace implements Trace {
                         currentVC = startVC.get(commit.getId());
                         if (commit.parentCount() > 1) {
                             ++nbMerge;
-                            op = new MergeCorrection(commit.getReplica(), currentVC, patchCRUD.get(commit.patchId()), this, GitTrace.this);
+                            op = new MergeCorrection(commit.getReplica(), currentVC, patchCRUD.get(commit.patchContent()), this, GitTrace.this);
                         } else {
                             Patch p = patchCRUD.get(commit.parentPatchId(0));
                             files = new LinkedList<FileEdition>(p.getEdits());
-                            if (DEBUG) {
-//                                op = new Check(commit.getReplica(), currentVC, getState(commit));
-                            }
                         }
                     } else {
                         finish = true;
@@ -382,14 +426,5 @@ public class GitTrace implements Trace {
         gitdir = d[d.length - 1];
         path = path.replaceAll("[^a-zA-Z0-9]", "");
         return gitdir + "_" + path;
-    }
-    
-    private static final class Check extends TraceOperation implements Serializable {
-
-        @Override
-        public LocalOperation getOperation() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-        
     }
 }

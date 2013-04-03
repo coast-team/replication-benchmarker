@@ -22,18 +22,11 @@
 package jbenchmarker.trace.git.model;
 
 import java.io.Serializable;
-import jbenchmarker.trace.git.model.FileEdition;
-import jbenchmarker.trace.git.model.Commit;
-import java.util.LinkedList;
 import java.util.List;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.patch.FileHeader;
-import org.eclipse.jgit.patch.FileHeader.PatchType;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.ektorp.support.TypeDiscriminator;
 
 /**
  *
@@ -42,7 +35,7 @@ import org.ektorp.support.TypeDiscriminator;
 
 @JsonIgnoreProperties({"id", "revision"})
 public class Patch implements Serializable{
-    public static final String content = "CONTENT";
+    public static final String CONTENT = "CONTENT";
     
     protected List<FileEdition> edits;
     protected List<String> paths;
@@ -69,7 +62,7 @@ public class Patch implements Serializable{
      */
     public Patch(Commit commit, List<FileEdition> listEdit) {
         this.edits = listEdit;
-        this.id = commit.getId() + content;
+        this.id = commit.getId();
     }
     
     /**
@@ -80,7 +73,7 @@ public class Patch implements Serializable{
     public Patch(Commit commit, List<String> paths, List<byte[]> raws) {       
         this.paths = paths;
         this.raws = raws;
-        this.id = commit.getId() + content;
+        this.id = commit.getId() + CONTENT;
     }
     
     @JsonProperty("_id")

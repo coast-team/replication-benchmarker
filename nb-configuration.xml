@@ -24,7 +24,7 @@ Any value defined here will override the pom.xml file value but is only applicab
             <configuration id="TreeSimFrom" profiles=""/>
             <configuration id="run ABT G1 " profiles=""/>
             <configuration id="treesim" profiles=""/>
-
+            <configuration id="GitMove" profiles=""/>
         </configurations>
     </config-data>
 </project-shared-configuration>

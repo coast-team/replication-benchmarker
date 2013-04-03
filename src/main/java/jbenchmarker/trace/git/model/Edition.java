@@ -36,7 +36,7 @@ import org.eclipse.jgit.diff.RawText;
  */
 public class Edition implements Serializable{    
 
-    protected int beginA, endA, beginB, endB;
+    protected int beginA, beginB, dest;
     protected List<String> ca;
     protected List<String> cb;
     protected OpType type;
@@ -60,6 +60,14 @@ public class Edition implements Serializable{
         this.beginB = beginB;
     }
 
+    public int getDestMove() {
+        return dest;
+    }
+
+    public void setDestMove(int destMove) {
+        this.dest = destMove;
+    }
+
     public List<String> getCa() {
         return ca;
     }
@@ -68,6 +76,10 @@ public class Edition implements Serializable{
         this.ca = ca;
     }
 
+    public int getSizeA() {
+        return ca == null ? 0 : ca.size();
+    }
+        
     public List<String> getCb() {
         return cb;
     }
@@ -76,22 +88,10 @@ public class Edition implements Serializable{
         this.cb = cb;
     }
 
-    public int getEndA() {
-        return endA;
+    public int getSizeB() {
+        return cb == null ? 0 : cb.size();
     }
-
-    public void setEndA(int endA) {
-        this.endA = endA;
-    }
-
-    public int getEndB() {
-        return endB;
-    }
-
-    public void setEndB(int endB) {
-        this.endB = endB;
-    }
-
+    
     public OpType getType() {
         return type;
     }
@@ -102,59 +102,60 @@ public class Edition implements Serializable{
 
     public Edition(Edit edit, RawText a, RawText b) {
         this.beginA = edit.getBeginA();
-        this.endA = edit.getEndA();
         this.beginB = edit.getBeginB();
-        this.endB = edit.getEndB();
         this.type = typeof(edit.getType());
         this.ca = new ArrayList<String>();
         this.cb = new ArrayList<String>();
-        for (int i = beginA; i < endA; ++i) {
-            ca.add(a.getString(i) + '\n');
+        for (int i = 0; i < a.size(); ++i) {
+            ca.add(a.getString(beginA + i) + '\n');
         }
-        for (int i = beginB; i < endB; ++i) {
-            cb.add(b.getString(i) + '\n');
+        for (int i = 0; i < b.size(); ++i) {
+            cb.add(b.getString(beginB + i) + '\n');
         }
     }
 
-    public Edition(OpType type, int beginA, int endA, int beginB, int endB, List<String> ca, List<String> cb) {
+    public Edition(OpType type, int beginA, int beginB, int dest, List<String> ca, List<String> cb) {
         this.beginA = beginA;
-        this.endA = endA;
         this.beginB = beginB;
-        this.endB = endB;
+        this.dest = dest;
         this.ca = ca;
         this.cb = cb;
         this.type = type;
     }
+
     /**
      * One line edition.
      */
-    public Edition(OpType type, int beginA, int beginB, String a, String b) {
+    public Edition(OpType type, int beginA, int beginB, int dest, String a, String b) {
+        this.type = type;
         this.beginA = beginA;
-        this.endA = beginA;
         this.beginB = beginB;
-        this.endB = beginB;
+        this.dest = dest;
         if (a != null) {
             this.ca = new LinkedList<String>();
             this.ca.add(a);
-            ++endA;
         }
         if (b != null) {
             this.cb = new LinkedList<String>();
             this.cb.add(b);
-            ++endB;
         }
-        this.type = type;
+    }
+    
+    /**
+     * One line edition.
+     */
+    public Edition(OpType type, int beginA, int beginB, String a, String b) {
+        this(type, beginA, beginB, 0, a, b);
     }
     
     @Override
     public String toString() {
         StringBuilder  s = new StringBuilder();
-        for (int i = this.getBeginA(); i < this.getEndA(); ++i) {
-            s.append("--- (").append(i).append(") ").append(ca.get(i-this.getBeginA()));
+        for (int i = 0; i < getSizeA(); ++i) {
+            s.append("--- (").append(i + beginA).append(") ").append(ca.get(i));
         }
-        for (int i = this.getBeginB(); i < this.getEndB(); ++i) {
-            s.append("+++ (").append(type == OpType.move ? i : i - this.getBeginB() + this.getBeginA()).
-                    append(") ").append(cb.get(i-this.getBeginB()));
+        for (int i = 0; i < getSizeB(); ++i) {
+            s.append("+++ (").append(i + (type == OpType.move ? dest : beginA)).append(") ").append(cb.get(i));
         }
         return s.toString();
     }
@@ -174,12 +175,13 @@ public class Edition implements Serializable{
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 37 * hash + this.beginA;
-        hash = 37 * hash + this.beginB;
-        hash = 37 * hash + (this.ca != null ? this.ca.hashCode() : 0);
-        hash = 37 * hash + (this.cb != null ? this.cb.hashCode() : 0);
-        hash = 37 * hash + (this.type != null ? this.type.hashCode() : 0);
+        int hash = 5;
+        hash = 53 * hash + this.beginA;
+        hash = 53 * hash + this.beginB;
+        hash = 53 * hash + this.dest;
+        hash = 53 * hash + (this.ca != null ? this.ca.hashCode() : 0);
+        hash = 53 * hash + (this.cb != null ? this.cb.hashCode() : 0);
+        hash = 53 * hash + (this.type != null ? this.type.hashCode() : 0);
         return hash;
     }
 
@@ -195,13 +197,10 @@ public class Edition implements Serializable{
         if (this.beginA != other.beginA) {
             return false;
         }
-        if (this.endA != other.endA) {
-            return false;
-        }
         if (this.beginB != other.beginB) {
             return false;
         }
-        if (this.endB != other.endB) {
+        if (this.dest != other.dest) {
             return false;
         }
         if (this.ca != other.ca && (this.ca == null || !this.ca.equals(other.ca))) {
