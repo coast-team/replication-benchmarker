@@ -32,6 +32,7 @@ import java.util.Map;
 import jbenchmarker.sim.TracesExample;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 
 /**
  *
@@ -134,6 +135,7 @@ public class TraceGeneratorTest {
 //        assertEquals(2,trace.get(7).getLenghOfADel());        
     }
     @Test
+    @Ignore //Ressource missing
     public void testTraceFromJson2() throws Exception {        
         //List<SequenceOperation> trace = it2list(TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald.db","corrections001"));
         List<TraceOperation> trace = it2list(TraceGenerator.traceFromJson(TracesExample.getExampleTraceMatch("dirtyCS.db")));
