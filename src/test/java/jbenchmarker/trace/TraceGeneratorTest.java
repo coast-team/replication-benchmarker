@@ -18,21 +18,21 @@
  */
 package jbenchmarker.trace;
 
-import jbenchmarker.core.SequenceOperation;
+import collect.VectorClock;
 import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.Trace;
 import crdt.simulator.TraceOperation;
-import java.util.Enumeration;
-import java.util.HashMap;
-import collect.VectorClock;
 import crdt.simulator.TraceOperationImpl;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.sim.TracesExample;
-import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  *
@@ -94,8 +94,8 @@ public class TraceGeneratorTest {
     
     @Test
     public void testTraceFromXML() throws Exception {
-        System.out.println("traceFromXML");
-        List<TraceOperation> trace = it2list(TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1));
+        
+        List<TraceOperation> trace = it2list(TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("exemple.xml"), 1));
         
         assertEquals(5, trace.size());
         assertEquals(SequenceOperation.OpType.insert, ((SequenceOperation) trace.get(0).getOperation()).getType());
@@ -109,6 +109,7 @@ public class TraceGeneratorTest {
     }
     
     @Test
+    @Ignore //Test is commented ...
     public void testTraceFromJson() throws Exception {        
         List<TraceOperation> trace = it2list(TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald3.db","notes003"));
 //        assertEquals(11, trace.size());
