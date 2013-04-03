@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,31 +59,31 @@ public abstract class AbstractIntegrationTest {
         
 	@Test
 	public void testExempleRun() throws Exception {
-		cd.run(TraceGenerator.traceFromXML(AbstractIntegrationTest.class.getResource("exemple.xml").getPath(), 1));
+		cd.run(TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("exemple.xml"), 1));
 		assertConsistentViews(cd);
 	}
 
 	@Test
 	public void testG1Run() throws Exception {
-		cd.run(TraceGenerator.traceFromXML(AbstractIntegrationTest.class.getResource("G1.xml").getPath(), 1));
+		cd.run(TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("G1.xml"), 1));
 		assertConsistentViews(cd);
 	}
 
 	@Test
 	public void testG2Run() throws Exception {
-		cd.run(TraceGenerator.traceFromXML(AbstractIntegrationTest.class.getResource("G2.xml").getPath(), 1, 16));
+		cd.run(TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("G2.xml"), 1, 16));
 		assertConsistentViews(cd);
 	}
 
 	@Test
 	public void testG3Run() throws Exception {
-		cd.run(TraceGenerator.traceFromXML(AbstractIntegrationTest.class.getResource("G3.xml").getPath(), 1));
+		cd.run(TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("G3.xml"), 1));
 		assertConsistentViews(cd);
 	}
 
 	@Test
 	public void testSerieRun() throws Exception {
-		cd.run(TraceGenerator.traceFromXML(AbstractIntegrationTest.class.getResource("Serie.xml").getPath(), 1));
+		cd.run(TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("Serie.xml"), 1));
 		assertConsistentViews(cd);
 	}
         

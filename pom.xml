@@ -143,9 +143,10 @@
                 <version>1.9.0</version>
                 <configuration>					
                     <properties>
-                        <year>2012</year>
+                        <year>2013</year>
                         <name>${project.name}</name>
                         <url>${project.url}</url>
+                        <strictCheck>true</strictCheck>
                         <organisation>${project.organization.name}</organisation>
                     </properties>					
                     <encoding>UTF-8</encoding>

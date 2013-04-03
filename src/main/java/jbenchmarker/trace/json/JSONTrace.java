@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package jbenchmarker.trace.json;
 
 import collect.VectorClock;
@@ -47,7 +46,7 @@ public class JSONTrace implements Trace{
         BufferedReader buf = new BufferedReader(f);
         String res = buf.readLine();
         
-        FileWriter fw = new FileWriter("/home/damien/test1.txt");  
+        //FileWriter fw = new FileWriter("/home/damien/test1.txt");  
                
         while (res != null) {
             StringReader s = new StringReader(res);
@@ -64,8 +63,8 @@ public class JSONTrace implements Trace{
             
             ElementCS ecs = new ElementCS(op,offset,str,pos,repli,v); 
             ElementJSON ejs = new ElementJSON(e.getKey(),ecs);
-            String sir = gson.toJson(ejs);
-            fw.write(sir+"\n");
+            //String sir = gson.toJson(ejs);
+            //fw.write(sir+"\n");
             
             TraceOperation so = TraceGenerator.oneJSON2OP(e, vectorClockMapper);
             ops.add(so);         
@@ -73,7 +72,7 @@ public class JSONTrace implements Trace{
             res = buf.readLine();
         }
         buf.close();
-        fw.close();
+        //fw.close();
         f.close();
     }
     
@@ -87,7 +86,7 @@ public class JSONTrace implements Trace{
         BufferedReader buf = new BufferedReader(f);
         String res = buf.readLine();
         
-        FileWriter fw = new FileWriter("/home/damien/test1.txt");  
+        //FileWriter fw = new FileWriter("/home/damien/test1.txt");  
   
         while (res != null) {
             StringReader s = new StringReader(res);
@@ -105,8 +104,8 @@ public class JSONTrace implements Trace{
             
                 ElementCS ecs = new ElementCS(op,offset,str,pos,repli,v); 
                 ElementJSON ejs = new ElementJSON(e.getKey(),ecs);
-                String sir = gson.toJson(ejs);
-                fw.write(sir+"\n");
+               //String sir = gson.toJson(ejs);
+                //fw.write(sir+"\n");
                 
                 TraceOperation so = TraceGenerator.oneJSON2OP(e, vectorClockMapper);
                 ops.add(so);                
@@ -115,7 +114,7 @@ public class JSONTrace implements Trace{
             res = buf.readLine();
         }
         buf.close();
-        fw.close();
+        //fw.close();
         f.close();
     }
     

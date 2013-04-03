@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ import crdt.simulator.TraceOperationImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import jbenchmarker.sim.TracesExample;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -135,7 +136,7 @@ public class TraceGeneratorTest {
     @Test
     public void testTraceFromJson2() throws Exception {        
         //List<SequenceOperation> trace = it2list(TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald.db","corrections001"));
-        List<TraceOperation> trace = it2list(TraceGenerator.traceFromJson("/home/damien/etherpad-lite/var/dirtyCS.db"));
+        List<TraceOperation> trace = it2list(TraceGenerator.traceFromJson(TracesExample.getExampleTraceMatch("dirtyCS.db")));
         //assertEquals(21, trace.size());
 
         assertEquals(SequenceOperation.OpType.insert,((SequenceOperation) trace.get(0).getOperation()).getType());
