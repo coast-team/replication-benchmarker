@@ -167,10 +167,10 @@ public class GitTrace implements Trace {
         for (Edition ed : l) {
 
             if (merge) {
-                mergeSize += ed.getSizeA() + ed.getSizeB();
+                mergeSize += ed.sizeA() + ed.sizeB();
             }
-            insertSize += ed.getSizeA();
-            deleteSize += ed.getSizeB();
+            insertSize += ed.sizeA();
+            deleteSize += ed.sizeB();
             switch (ed.getType()) {
                 case update:
                 case replace:

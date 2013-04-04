@@ -76,7 +76,7 @@ public class Edition implements Serializable{
         this.ca = ca;
     }
 
-    public int getSizeA() {
+    public int sizeA() {
         return ca == null ? 0 : ca.size();
     }
         
@@ -88,7 +88,7 @@ public class Edition implements Serializable{
         this.cb = cb;
     }
 
-    public int getSizeB() {
+    public int sizeB() {
         return cb == null ? 0 : cb.size();
     }
     
@@ -106,11 +106,11 @@ public class Edition implements Serializable{
         this.type = typeof(edit.getType());
         this.ca = new ArrayList<String>();
         this.cb = new ArrayList<String>();
-        for (int i = 0; i < a.size(); ++i) {
-            ca.add(a.getString(beginA + i) + '\n');
+        for (int i = beginA; i < edit.getEndA(); ++i) {
+            ca.add(a.getString(i) + '\n');
         }
-        for (int i = 0; i < b.size(); ++i) {
-            cb.add(b.getString(beginB + i) + '\n');
+        for (int i = beginB; i < edit.getEndB(); ++i) {
+            cb.add(b.getString(i) + '\n');
         }
     }
 
@@ -151,10 +151,10 @@ public class Edition implements Serializable{
     @Override
     public String toString() {
         StringBuilder  s = new StringBuilder();
-        for (int i = 0; i < getSizeA(); ++i) {
+        for (int i = 0; i < sizeA(); ++i) {
             s.append("--- (").append(i + beginA).append(") ").append(ca.get(i));
         }
-        for (int i = 0; i < getSizeB(); ++i) {
+        for (int i = 0; i < sizeB(); ++i) {
             s.append("+++ (").append(i + (type == OpType.move ? dest : beginA)).append(") ").append(cb.get(i));
         }
         return s.toString();
