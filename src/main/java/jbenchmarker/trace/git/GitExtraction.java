@@ -243,7 +243,7 @@ public class GitExtraction {
                 int pos = 0;
                 while (insit.hasNext()) {
                     Edition f = insit.next();
-                    if (f.getCb().size() > 1) {
+                    if (!(f instanceof GhostMove) && f.getCb().size() > 1) {
                         List<Edition> lines = lineMove(e, f);
                         if (lines != null && (move == null || lines.size() < move.size())) {
                             move = lines;
@@ -260,7 +260,7 @@ public class GitExtraction {
                     for (Edition ed : move) {
                         switch (ed.getType()) {
                             case move:
-                                edits.get(OpType.move).add(ed);
+                                insert(edits.get(OpType.move), ed);
                                 insit.add(new GhostMove(ed, f.getBeginA()));
                                 break;
                             case insert:
@@ -302,25 +302,47 @@ public class GitExtraction {
                     int j, shift = e.getCb().size();
                     for (j = i + 1; !(result.get(j) instanceof GhostMove) || ((GhostMove) result.get(j)).move != e; ++j) {
                         Edition f = result.get(j);
-                        f.setBeginA(f.getBeginA() + shift);
+                        if (!(f instanceof GhostMove) || f.getDestMove() < e.getBeginA()) {
+                            f.setBeginA(f.getBeginA() + shift);
+                        }
                     }
-                    result.remove(j);
                 } else {
                     int j, shift = -e.getCa().size();
                     for (j = i - 1; !(result.get(j) instanceof GhostMove) || ((GhostMove) result.get(j)).move != e; --j) {
                         Edition f = result.get(j);
-                        if (f.getType() == OpType.insert) {
+                        if (f.getType() == OpType.insert || (f instanceof GhostMove && f.getDestMove() > e.getBeginA())) {
                             shift += f.getCb().size();
-                        } else if (f.getType() == OpType.delete) {
+                        } else if (f.getType() == OpType.delete || f.getType() == OpType.move) {
                             shift -= f.getCa().size();
                         } 
                     }
-                    result.remove(j);
-                    e.setDestMove(e.getDestMove() + shift);
+                    Edition g = result.get(j);
+                    g.setBeginA(g.getBeginA() + shift); // shift move ?
                 }
             }
         }
+        Iterator<Edition> it = result.iterator();
+        while (it.hasNext()) {
+            Edition ed = it.next();
+            if (ed instanceof GhostMove) {
+                ((GhostMove) ed).move.setDestMove(ed.getBeginA());
+                it.remove();
+            }
+        }
+        
         return result;
+    }
+
+    private void insert(LinkedList<Edition> list, Edition ed) {
+        ListIterator<Edition> it = list.listIterator();
+        boolean cont = true;
+        while (it.hasNext() && cont) {
+            if (it.next().getBeginA() < ed.getBeginA()) {
+                cont = false;
+                it.previous();
+            }
+       }
+       it.add(ed);
     }
 
     /**
@@ -330,7 +352,7 @@ public class GitExtraction {
         Edition move;
         
         public GhostMove(Edition ed, int beginA) {
-            super(OpType.insert, beginA, 0, null, null);
+            super(OpType.insert, beginA, 0, ed.getBeginA(), null, ed.getCb());
             move = ed;
         }
     }

@@ -201,4 +201,22 @@ public class GitExtractionTest {
 
         assertEquals(toList(r0, r1, r2, r3, r4), result);
     }
+    
+    @Test 
+    public void detectCrossMove() {
+        GitExtraction ge = new GitExtraction(50, 20, 10);
+        Edition e = new Edition(OpType.replace, 75, 75, 0, toList(C, C, C), toList(X, X)),
+                f = new Edition(OpType.insert, 62, 60, 0, null, toList(Aa, A)),
+                g = new Edition(OpType.replace, 57, 55, 0, toList(X, X), toList(B, Ba)),
+                h = new Edition(OpType.replace, 42, 42, 0, toList(A, A, B, B), toList(C, C, C)),
+                
+                r0 = new Edition(OpType.move, 75, 42, 42, toList(C, C, C), toList(C, C, C)),
+                r1 = new Edition(OpType.move, 60, 75, 78, toList(X, X), toList(X, X)),
+                r2 = new Edition(OpType.move, 47, 55, 58, toList(B, B), toList(B, Ba)),
+                r3 = new Edition(OpType.move, 45, 60, 61, toList(A, A), toList(Aa, A));
+
+        List<Edition> result = ge.detectMovesAndUpdates(toList(e, f, g, h));
+
+        assertEquals(toList(r0, r1, r2, r3), result);
+    }
 }
