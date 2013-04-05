@@ -21,7 +21,7 @@ package jbenchmarker.logoot;
 import java.math.BigInteger;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import static jbenchmarker.logoot.LogootStrategy.*;
+import static jbenchmarker.logoot.RandomLogootStrategy.*;
 
 /**
  *
@@ -36,10 +36,10 @@ public class LogootStrategyTest {
         LogootIdentifier P = new LogootIdentifier(3);
         LogootIdentifier Q = new LogootIdentifier(3);
 
-        P.addComponent(new Component(6, 4, 110));
-        P.addComponent(new Component(8, 4, 110));
-        Q.addComponent(new Component(6, 4, 110));
-        Q.addComponent(new Component(9, 4, 110));
+        P.addComponent(new LogootComponent(6, 4, 110));
+        P.addComponent(new LogootComponent(8, 4, 110));
+        Q.addComponent(new LogootComponent(6, 4, 110));
+        Q.addComponent(new LogootComponent(9, 4, 110));
         
         LogootIdentifier R = constructIdentifier(plus(P.digits(2), 20L, base, max), P, Q, 2, 50);
 
@@ -55,10 +55,10 @@ public class LogootStrategyTest {
         LogootIdentifier P = new LogootIdentifier(3);
         LogootIdentifier Q = new LogootIdentifier(3);
 
-        P.addComponent(new Component(6, 4, 110));
-        P.addComponent(new Component(9, 3, 10));
-        Q.addComponent(new Component(6, 4, 110));
-        Q.addComponent(new Component(9, 4, 112));
+        P.addComponent(new LogootComponent(6, 4, 110));
+        P.addComponent(new LogootComponent(9, 3, 10));
+        Q.addComponent(new LogootComponent(6, 4, 110));
+        Q.addComponent(new LogootComponent(9, 4, 112));
 
         LogootIdentifier R = constructIdentifier(plus(P.digits(2), 42L, base, max), P, Q, 2, 50);
 
@@ -74,10 +74,10 @@ public class LogootStrategyTest {
         LogootIdentifier P = new LogootIdentifier(3);
         LogootIdentifier Q = new LogootIdentifier(3);
 
-        P.addComponent(new Component(61, 4, 110));
-        P.addComponent(new Component(95, 3, 10));
-        Q.addComponent(new Component(61, 5, 110));
-        Q.addComponent(new Component(42, 4, 112));
+        P.addComponent(new LogootComponent(61, 4, 110));
+        P.addComponent(new LogootComponent(95, 3, 10));
+        Q.addComponent(new LogootComponent(61, 5, 110));
+        Q.addComponent(new LogootComponent(42, 4, 112));
 
         LogootIdentifier R = constructIdentifier(plus(P.digits(1), 42L, base, max), P, Q, 2, 50);
 
@@ -92,12 +92,12 @@ public class LogootStrategyTest {
         LogootIdentifier P = new LogootIdentifier(3);
         LogootIdentifier Q = new LogootIdentifier(3);
 
-        P.addComponent(new Component(12, 2, 11));
-        P.addComponent(new Component(61, 4, 110));
-        P.addComponent(new Component(95, 3, 10));
-        Q.addComponent(new Component(12, 2, 11));
-        Q.addComponent(new Component(63, 5, 110));
-        Q.addComponent(new Component(42, 4, 112));
+        P.addComponent(new LogootComponent(12, 2, 11));
+        P.addComponent(new LogootComponent(61, 4, 110));
+        P.addComponent(new LogootComponent(95, 3, 10));
+        Q.addComponent(new LogootComponent(12, 2, 11));
+        Q.addComponent(new LogootComponent(63, 5, 110));
+        Q.addComponent(new LogootComponent(42, 4, 112));
 
         LogootIdentifier R = constructIdentifier(plus(P.digits(2), 72L, base, max), P, Q, 2, 50);
 
@@ -113,12 +113,12 @@ public class LogootStrategyTest {
         LogootIdentifier P = new LogootIdentifier(3);
         LogootIdentifier Q = new LogootIdentifier(3);
 
-        P.addComponent(new Component(12, 2, 11));
-        P.addComponent(new Component(61, 4, 110));
-        P.addComponent(new Component(95, 3, 10));
-        Q.addComponent(new Component(14, 2, 11));
-        Q.addComponent(new Component(75, 5, 110));
-        Q.addComponent(new Component(42, 4, 112));
+        P.addComponent(new LogootComponent(12, 2, 11));
+        P.addComponent(new LogootComponent(61, 4, 110));
+        P.addComponent(new LogootComponent(95, 3, 10));
+        Q.addComponent(new LogootComponent(14, 2, 11));
+        Q.addComponent(new LogootComponent(75, 5, 110));
+        Q.addComponent(new LogootComponent(42, 4, 112));
 
         LogootIdentifier R = constructIdentifier(plus(P.digits(2), 10000L, base, max), P, Q, 2, 50);
 
@@ -133,9 +133,9 @@ public class LogootStrategyTest {
         LogootIdentifier P = new LogootIdentifier(3);
         LogootIdentifier Q = new LogootIdentifier(3);
 
-        P.addComponent(new Component(64, 4, 110));
-        Q.addComponent(new Component(64, 4, 110));
-        Q.addComponent(new Component(9, 4, 112));
+        P.addComponent(new LogootComponent(64, 4, 110));
+        Q.addComponent(new LogootComponent(64, 4, 110));
+        Q.addComponent(new LogootComponent(9, 4, 112));
 
         LogootIdentifier R = constructIdentifier(plus(P.digits(1), 6L, base, max), P, Q, 2, 50);
 
@@ -150,10 +150,10 @@ public class LogootStrategyTest {
         LogootIdentifier P = new LogootIdentifier(3);
         LogootIdentifier Q = new LogootIdentifier(3);
 
-        P.addComponent(new Component(72, 4, 110));
-        Q.addComponent(new Component(72, 4, 110));
-        Q.addComponent(new Component(0, 0, 1));
-        Q.addComponent(new Component(97, 4, 111));
+        P.addComponent(new LogootComponent(72, 4, 110));
+        Q.addComponent(new LogootComponent(72, 4, 110));
+        Q.addComponent(new LogootComponent(0, 0, 1));
+        Q.addComponent(new LogootComponent(97, 4, 111));
 
         LogootIdentifier R = constructIdentifier(plus(P.digits(2), 57L, base, max), P, Q, 2, 50);
 

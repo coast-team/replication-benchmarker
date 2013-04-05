@@ -27,10 +27,10 @@ import static org.junit.Assert.*;
  */
 public class LogootIdentifierTest {
     
-    Component c42 = new Component(42, 4, 50);
-    Component c70 = new Component(70, 2, 100);
-    Component c42b = new Component(42, 4, 60);
-    Component c6 = new Component(6, 4, 110);
+    LogootComponent c42 = new LogootComponent(42, 4, 50);
+    LogootComponent c70 = new LogootComponent(70, 2, 100);
+    LogootComponent c42b = new LogootComponent(42, 4, 60);
+    LogootComponent c6 = new LogootComponent(6, 4, 110);
 
     @Test
     public void testIsLessThan2e2() {
@@ -127,8 +127,8 @@ public class LogootIdentifierTest {
         LogootIdentifier P = new LogootIdentifier(3);
         LogootIdentifier Q = new LogootIdentifier(3);
 
-        P.addComponent(new Component(6, 4, 110));
-        Q.addComponent(new Component(6, 4, 110));
+        P.addComponent(new LogootComponent(6, 4, 110));
+        Q.addComponent(new LogootComponent(6, 4, 110));
         
         assertSame(0, P.compareTo(Q));
         assertSame(0, Q.compareTo(P));
@@ -142,9 +142,9 @@ public class LogootIdentifierTest {
         LogootIdentifier P = new LogootIdentifier(3);
         LogootIdentifier Q = new LogootIdentifier(3);
 
-        P.addComponent(new Component(6, 4, 110));P.addComponent(new Component(8, 4, 110));
-        Q.addComponent(new Component(6, 4, 110));Q.addComponent(new Component(8, 4, 110));
-        Q.addComponent(new Component(20, 2, 50)); 
+        P.addComponent(new LogootComponent(6, 4, 110));P.addComponent(new LogootComponent(8, 4, 110));
+        Q.addComponent(new LogootComponent(6, 4, 110));Q.addComponent(new LogootComponent(8, 4, 110));
+        Q.addComponent(new LogootComponent(20, 2, 50)); 
         
         assertTrue(P.compareTo(Q)<0);
         assertTrue(Q.compareTo(P)>0);

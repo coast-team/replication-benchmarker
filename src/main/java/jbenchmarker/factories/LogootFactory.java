@@ -20,9 +20,7 @@ package jbenchmarker.factories;
 
 import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.logoot.BoundaryStrategy;
-import jbenchmarker.logoot.Component;
 import jbenchmarker.logoot.LogootDocument;
-import jbenchmarker.logoot.LogootIdentifier;
 import jbenchmarker.logoot.LogootMerge;
 import jbenchmarker.logoot.LogootStrategy;
 

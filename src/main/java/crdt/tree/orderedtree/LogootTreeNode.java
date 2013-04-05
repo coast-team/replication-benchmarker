@@ -23,7 +23,6 @@ import collect.SimpleNode;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
-import jbenchmarker.factories.LogootFactory;
 import jbenchmarker.logoot.LogootDocument;
 import jbenchmarker.logoot.LogootIdentifier;
 import jbenchmarker.logoot.LogootStrategy;
@@ -121,13 +120,8 @@ public class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> impleme
     }
 
     @Override
-    protected int getClock() {
-        return clock.value;
-    }
-
-    @Override
-    protected void incClock() {
-        ++clock.value;
+    protected int nextClock() {
+        return clock.value++;
     }
 
 /*    public boolean same(OrderedNode<T> other) {

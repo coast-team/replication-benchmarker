@@ -49,10 +49,10 @@ public class BoundaryStrategyTest {
         LogootIdentifier Q = new LogootIdentifier(2);
 
 
-        P.addComponent(new Component(100, 2, 105));
-        P.addComponent(new Component(980, 3, 107));
-        Q.addComponent(new Component(100, 4, 150));
-        Q.addComponent(new Component(990, 5, 152));
+        P.addComponent(new LogootComponent(100, 2, 105));
+        P.addComponent(new LogootComponent(980, 3, 107));
+        Q.addComponent(new LogootComponent(100, 4, 150));
+        Q.addComponent(new LogootComponent(990, 5, 152));
 
         ArrayList<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 100);
 
@@ -73,12 +73,12 @@ public class BoundaryStrategyTest {
         LogootIdentifier P = new LogootIdentifier(2);
         LogootIdentifier Q = new LogootIdentifier(2);
 
-        P.addComponent(new Component(20, 4, 50));
-        P.addComponent(new Component(30, 4, 60));
-        P.addComponent(new Component(40, 4, 70));
-        Q.addComponent(new Component(20, 6, 60));
-        Q.addComponent(new Component(30, 6, 60));
-        Q.addComponent(new Component(40, 6, 60));
+        P.addComponent(new LogootComponent(20, 4, 50));
+        P.addComponent(new LogootComponent(30, 4, 60));
+        P.addComponent(new LogootComponent(40, 4, 70));
+        Q.addComponent(new LogootComponent(20, 6, 60));
+        Q.addComponent(new LogootComponent(30, 6, 60));
+        Q.addComponent(new LogootComponent(40, 6, 60));
 
         ArrayList<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
 
@@ -99,11 +99,11 @@ public class BoundaryStrategyTest {
         LogootIdentifier P = new LogootIdentifier(2);
         LogootIdentifier Q = new LogootIdentifier(2);
 
-        P.addComponent(new Component(20, 4, 50));
-        P.addComponent(new Component(10, 6, 60));
-        Q.addComponent(new Component(20, 6, 60));
-        Q.addComponent(new Component(30, 4, 60));
-        Q.addComponent(new Component(40, 4, 70));
+        P.addComponent(new LogootComponent(20, 4, 50));
+        P.addComponent(new LogootComponent(10, 6, 60));
+        Q.addComponent(new LogootComponent(20, 6, 60));
+        Q.addComponent(new LogootComponent(30, 4, 60));
+        Q.addComponent(new LogootComponent(40, 4, 70));
 
         ArrayList<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
 
@@ -125,14 +125,14 @@ public class BoundaryStrategyTest {
         LogootIdentifier Q = new LogootIdentifier(3);
 
 
-        P.addComponent(new Component(31256, 4, 50));
-        P.addComponent(new Component(31256, 6, 60));
-        P.addComponent(new Component(31256, 6, 60));
+        P.addComponent(new LogootComponent(31256, 4, 50));
+        P.addComponent(new LogootComponent(31256, 6, 60));
+        P.addComponent(new LogootComponent(31256, 6, 60));
         
-        Q.addComponent(new Component(31256, 4, 50));
-        Q.addComponent(new Component(31256, 6, 60));
-        Q.addComponent(new Component(31257, 6, 60));
-        Q.addComponent(new Component(31256, 6, 60));
+        Q.addComponent(new LogootComponent(31256, 4, 50));
+        Q.addComponent(new LogootComponent(31256, 6, 60));
+        Q.addComponent(new LogootComponent(31257, 6, 60));
+        Q.addComponent(new LogootComponent(31256, 6, 60));
 
         ArrayList<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
 
@@ -154,15 +154,15 @@ public class BoundaryStrategyTest {
         LogootIdentifier Q = new LogootIdentifier(3);
 
 
-        P.addComponent(new Component(31256, 4, 50));
-        P.addComponent(new Component(31256, 6, 60));
-        P.addComponent(new Component(31256, 6, 60));
-        P.addComponent(new Component(31256, 6, 60));
+        P.addComponent(new LogootComponent(31256, 4, 50));
+        P.addComponent(new LogootComponent(31256, 6, 60));
+        P.addComponent(new LogootComponent(31256, 6, 60));
+        P.addComponent(new LogootComponent(31256, 6, 60));
         
-        Q.addComponent(new Component(31256, 4, 50));
-        Q.addComponent(new Component(31256, 6, 60));
-        Q.addComponent(new Component(31256, 6, 60));
-        Q.addComponent(new Component(31256, 7, 60));
+        Q.addComponent(new LogootComponent(31256, 4, 50));
+        Q.addComponent(new LogootComponent(31256, 6, 60));
+        Q.addComponent(new LogootComponent(31256, 6, 60));
+        Q.addComponent(new LogootComponent(31256, 7, 60));
 
         ArrayList<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
 
@@ -183,15 +183,15 @@ public class BoundaryStrategyTest {
         LogootIdentifier Q = new LogootIdentifier(3);
 
 
-        P.addComponent(new Component(31256, 4, 50));
-        P.addComponent(new Component(31256, 6, 60));
-        P.addComponent(new Component(31256, 6, 60));
-        P.addComponent(new Component(31255, 8, 60));
+        P.addComponent(new LogootComponent(31256, 4, 50));
+        P.addComponent(new LogootComponent(31256, 6, 60));
+        P.addComponent(new LogootComponent(31256, 6, 60));
+        P.addComponent(new LogootComponent(31255, 8, 60));
         
-        Q.addComponent(new Component(31256, 4, 50));
-        Q.addComponent(new Component(31256, 6, 60));
-        Q.addComponent(new Component(31256, 6, 60));
-        Q.addComponent(new Component(31256, 7, 60));
+        Q.addComponent(new LogootComponent(31256, 4, 50));
+        Q.addComponent(new LogootComponent(31256, 6, 60));
+        Q.addComponent(new LogootComponent(31256, 6, 60));
+        Q.addComponent(new LogootComponent(31256, 7, 60));
 
         ArrayList<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 200);
 
@@ -213,16 +213,16 @@ public class BoundaryStrategyTest {
 
         
         LD.setClock(101);
-        P.addComponent(new Component(12, 8, 60));
-        P.addComponent(new Component(7, 8, 60));
-        P.addComponent(new Component(22, 8, 60));
+        P.addComponent(new LogootComponent(12, 8, 60));
+        P.addComponent(new LogootComponent(7, 8, 60));
+        P.addComponent(new LogootComponent(22, 8, 60));
         
-        Q.addComponent(new Component(12, 8, 60));
-        Q.addComponent(new Component(7, 8, 60));
-        Q.addComponent(new Component(22, 8, 60));
-        Q.addComponent(new Component(0, 1, 2));
-        Q.addComponent(new Component(0, 2, 10));
-        Q.addComponent(new Component(15, 11, 100));
+        Q.addComponent(new LogootComponent(12, 8, 60));
+        Q.addComponent(new LogootComponent(7, 8, 60));
+        Q.addComponent(new LogootComponent(22, 8, 60));
+        Q.addComponent(new LogootComponent(0, 1, 2));
+        Q.addComponent(new LogootComponent(0, 2, 10));
+        Q.addComponent(new LogootComponent(15, 11, 100));
 
         ArrayList<ListIdentifier> patch = BS.generateLineIdentifiers(LD, P, Q, 2);
 

@@ -44,7 +44,7 @@ import java.util.List;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.factories.LogootFactory;
 import jbenchmarker.logoot.BoundaryStrategy;
-import jbenchmarker.logoot.LogootStrategy;
+import jbenchmarker.logoot.RandomLogootStrategy;
 import jbenchmarker.ot.ottree.OTTree;
 import jbenchmarker.ot.ottree.OTTreeTranformation;
 import jbenchmarker.ot.ottree.TreeOPT;
@@ -161,14 +161,14 @@ public class OrderedTreeTest {
     
     @Test 
     public void testLogootTree() throws PreconditionException {
-        LogootStrategy st = new BoundaryStrategy(32, 100);
+        RandomLogootStrategy st = new BoundaryStrategy(32, 100);
         OrderedNode root = new LogootTreeNode(null, 0, st);
         testSetSkips(root);
     }
         
     @Test 
     public void testLogootTreeBoundary() throws PreconditionException {
-        LogootStrategy st = new BoundaryStrategy(2, 1);
+        RandomLogootStrategy st = new BoundaryStrategy(2, 1);
         OrderedNode root = new LogootTreeNode(null, 0, st);
         testSetSkips(root);
     }

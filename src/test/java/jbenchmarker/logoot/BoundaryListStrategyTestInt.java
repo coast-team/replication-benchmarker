@@ -43,14 +43,14 @@ public class BoundaryListStrategyTestInt {
     @Before
     public void setUp() throws Exception {
         LD = LogootListFactory.createDoc(1, 32);
-        LD.incClock();
+        LD.setClock(1);
     }
 
     @Test
     public void testgenerateLineIdentifiersCas1() {
         System.out.println("Test Boundary Strategy...");
 
-        LogootStrategy BS = new BoundaryListStrategy(32);
+        RandomLogootStrategy BS = new BoundaryListStrategy(32);
 
         LogootListPosition P = newPos(-54);
         LogootListPosition Q = newPos(105);
@@ -69,7 +69,7 @@ public class BoundaryListStrategyTestInt {
     
     @Test
     public void testgenerateLineIdentifiersCas2() {
-        LogootStrategy BS = new BoundaryListStrategy(32);
+        RandomLogootStrategy BS = new BoundaryListStrategy(32);
  
         LogootListPosition P = newPos(-54);
         LogootListPosition Q = newPos(105);
@@ -88,7 +88,7 @@ public class BoundaryListStrategyTestInt {
     
     @Test
     public void testgenerateLineIdentifiersCas3() {
-        LogootStrategy BS = new BoundaryListStrategy(32);
+        RandomLogootStrategy BS = new BoundaryListStrategy(32);
 
         LogootListPosition P = newPos(new int[] { 42, 123, -12 });
         LogootListPosition Q = newPos(new int[] { 42, 123, 1 });
@@ -107,7 +107,7 @@ public class BoundaryListStrategyTestInt {
     
     @Test
     public void testgenerateLineIdentifiersCas4() {
-        LogootStrategy BS = new BoundaryListStrategy(32);
+        RandomLogootStrategy BS = new BoundaryListStrategy(32);
 
         LogootListPosition P = newPos(42);
         LogootListPosition Q = newPos(new int[] { 42, -13 });
@@ -126,7 +126,7 @@ public class BoundaryListStrategyTestInt {
         
     @Test
     public void testgenerateLineIdentifiersCas5() {
-        LogootStrategy BS = new BoundaryListStrategy(32);
+        RandomLogootStrategy BS = new BoundaryListStrategy(32);
 
         LogootListPosition P = newPos(42);
         LogootListPosition Q = newPos(new int[] { 42, Integer.MIN_VALUE + 78});
@@ -147,7 +147,7 @@ public class BoundaryListStrategyTestInt {
     public void testgenerateLineIdentifiersCas6() {
         System.out.println("Test Boundary Strategy...");
 
-        LogootStrategy BS = new BoundaryListStrategy(32);
+        RandomLogootStrategy BS = new BoundaryListStrategy(32);
 
         LogootListPosition P = newPos(-54);
         LogootListPosition Q = newPos(-53);
@@ -166,7 +166,7 @@ public class BoundaryListStrategyTestInt {
     
     @Test
     public void testgenerateLineIdentifiersCas7() {
-        LogootStrategy BS = new BoundaryListStrategy(32);
+        RandomLogootStrategy BS = new BoundaryListStrategy(32);
 
         LogootListPosition P = newPos(42);
         LogootListPosition Q = newPos(new int[] { 43, -13 });
@@ -185,7 +185,7 @@ public class BoundaryListStrategyTestInt {
     
     @Test
     public void testgenerateLineIdentifiersCas16() {
-        LogootStrategy BS = new BoundaryListStrategy(32);
+        RandomLogootStrategy BS = new BoundaryListStrategy(32);
 
         LogootListPosition P = newPos(new int[] { 42, 12 });
         LogootListPosition Q = newPos(new int[] { 43 });
@@ -204,7 +204,7 @@ public class BoundaryListStrategyTestInt {
         
     @Test
     public void testgenerateLineIdentifiersCas9() {
-        LogootStrategy BS = new BoundaryListStrategy(32);
+        RandomLogootStrategy BS = new BoundaryListStrategy(32);
 
         LogootListPosition P = newPos(new int[] { 42, 120 });
         LogootListPosition Q = newPos(new int[] { 43, -32 });
@@ -220,7 +220,7 @@ public class BoundaryListStrategyTestInt {
     
     @Test
     public void testgenerateLineIdentifiersCas10() {
-        LogootStrategy BS = new BoundaryListStrategy(32);
+        RandomLogootStrategy BS = new BoundaryListStrategy(32);
 
         LogootListPosition P = newPos(new int[] { 42, Integer.MAX_VALUE });
         LogootListPosition Q = newPos(new int[] { 43, Integer.MIN_VALUE });

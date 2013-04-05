@@ -51,19 +51,19 @@ public class LogootDocumentTest {
         LogootIdentifier B = new LogootIdentifier(1);
         LogootIdentifier C = new LogootIdentifier(1);
 
-        P.addComponent(new Component(20, 4, 50));
-        Q.addComponent(new Component(21, 4, 50));
+        P.addComponent(new LogootComponent(20, 4, 50));
+        Q.addComponent(new LogootComponent(21, 4, 50));
         LD.apply(ins(P, 'e'));
         LD.apply(ins(Q, 'c'));
         assertEquals("ec", LD.view());
         //-----------   
-        A.addComponent(new Component(19, 2, 100));
-        B.addComponent(new Component(23, 4, 50));
+        A.addComponent(new LogootComponent(19, 2, 100));
+        B.addComponent(new LogootComponent(23, 4, 50));
         LD.apply(ins(A, 'K'));
         LD.apply(ins(B, 'L'));
         assertEquals("KecL", LD.view());
         //----------
-        C.addComponent(new Component(24, 4, 50));
+        C.addComponent(new LogootComponent(24, 4, 50));
         LD.apply(ins(C, 'd'));
         assertEquals("KecLd", LD.view());
         //-----------
@@ -80,11 +80,11 @@ public class LogootDocumentTest {
         LogootIdentifier C = new LogootIdentifier(1);
         LogootIdentifier D = new LogootIdentifier(1);
 
-        P.addComponent(new Component(20, 4, 50));
-        Q.addComponent(new Component(21, 4, 50));
-        A.addComponent(new Component(22, 2, 100));
-        B.addComponent(new Component(23, 4, 50));
-        C.addComponent(new Component(24, 4, 50));
+        P.addComponent(new LogootComponent(20, 4, 50));
+        Q.addComponent(new LogootComponent(21, 4, 50));
+        A.addComponent(new LogootComponent(22, 2, 100));
+        B.addComponent(new LogootComponent(23, 4, 50));
+        C.addComponent(new LogootComponent(24, 4, 50));
 
         LD.apply(ins(P, 'e'));
         LD.apply(ins(Q, 'c'));
@@ -92,7 +92,7 @@ public class LogootDocumentTest {
         LD.apply(ins(B, 'c'));
         LD.apply(ins(C, 'c'));
 
-        D.addComponent(new Component(22, 2, 100));
+        D.addComponent(new LogootComponent(22, 2, 100));
 
         assertEquals(3, LD.dicho(D));
     }

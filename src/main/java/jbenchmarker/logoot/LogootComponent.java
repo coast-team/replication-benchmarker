@@ -20,13 +20,18 @@ package jbenchmarker.logoot;
 
 import java.io.Serializable;
 
-public class Component implements Comparable<Component>,Serializable {
+/**
+ * Element of a standard logoot identifier 
+ * TODO : move as inner class of LogootIdentifier. 
+ * @author urso
+ */
+public class LogootComponent implements Comparable<LogootComponent>,Serializable {
 
     final private long digit;
     final private int peerID;
     final private int clock;
 
-    public Component(long d, int pid, int c) {
+    public LogootComponent(long d, int pid, int c) {
         this.digit = d;
         this.peerID = pid;
         this.clock = c;
@@ -52,7 +57,7 @@ public class Component implements Comparable<Component>,Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Component other = (Component) obj;
+        final LogootComponent other = (LogootComponent) obj;
         if (this.digit != other.digit) {
             return false;
         }
@@ -79,7 +84,7 @@ public class Component implements Comparable<Component>,Serializable {
         return "<" + digit + ',' + peerID + ',' + clock + '>';
     }
 
-    public int compareTo(Component t) {
+    public int compareTo(LogootComponent t) {
         if (this.digit == t.digit) {
             return (this.peerID == t.peerID) ? this.clock - t.clock : this.peerID - t.peerID;
         } else {
@@ -87,7 +92,7 @@ public class Component implements Comparable<Component>,Serializable {
         }
     }
 
-    public Component clone() {
-        return new Component(digit, peerID, clock);
+    public LogootComponent clone() {
+        return new LogootComponent(digit, peerID, clock);
     }
 }

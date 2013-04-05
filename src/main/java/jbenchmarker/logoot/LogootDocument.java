@@ -101,6 +101,9 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         document.removeRangeOffset(position + 1, offset);
     }
     
+    /**
+     * Get the ith identifier in the table. O means begin marker.
+     */
     public ListIdentifier getId(int pos) {
         return idTable.get(pos);
     }
@@ -115,13 +118,9 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
     public LogootDocument<T> create() {
         return new LogootDocument<T>(replicaNumber, strategy);
     }
-    
-    protected void incClock() {
-        this.myClock++;
-    }
 
-    protected int getClock() {
-        return this.myClock;
+    protected int nextClock() {
+        return this.myClock++;
     }
 
     void setClock(int c) {
@@ -136,9 +135,12 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         return replicaNumber;
     }
     
-    public ListIdentifier getNewId(int p) {
-        return strategy.generateLineIdentifiers(this, idTable.get(p),
-                    idTable.get(p + 1), 1).get(0);
+    /**
+     * Produce one new identifier after this position.
+     */
+    public ListIdentifier getNewId(int postion) {
+        return strategy.generateLineIdentifiers(this, idTable.get(postion),
+                    idTable.get(postion + 1), 1).get(0);
     }
         
     List<ListIdentifier> generateIdentifiers(int position, int N) {

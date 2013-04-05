@@ -21,11 +21,10 @@ package jbenchmarker.logoot;
 import java.io.Serializable;
 import java.util.Arrays;
 
-
-
-
 /**
- *
+ * Logoot identifier as a list of numbers.
+ * Numbers can be defined in base 2^8 (byte), 2^16 (short) or 2^32 (int). 
+ * Last element of the list represent the replica identifier and its clock.
  * @author urso Stephane Martin <stephane.martin@loria.fr>
  */
 public class LogootListPosition implements ListIdentifier<LogootListPosition> {
@@ -208,8 +207,6 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
 }
 
 
-
-
 interface Content extends Cloneable {
 
     int get(int i);
@@ -226,8 +223,6 @@ interface Content extends Cloneable {
 
     public int mask();
 }
-
-
 
 
 class ByteContent implements Content, Serializable{
@@ -299,8 +294,6 @@ class ByteContent implements Content, Serializable{
         return 0xFF;
     }
 }
-
-
 
 
 class ShortContent implements Content, Serializable {

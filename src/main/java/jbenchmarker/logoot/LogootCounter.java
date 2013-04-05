@@ -35,7 +35,7 @@ public class LogootCounter extends LogootDocument {
     
     public static int count = 0;
 
-    public LogootCounter(int r, LogootStrategy strategy) {
+    public LogootCounter(int r, RandomLogootStrategy strategy) {
         super(r, strategy);
     }
     
