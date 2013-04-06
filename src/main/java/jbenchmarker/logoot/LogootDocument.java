@@ -173,4 +173,19 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         hash = 97 * hash + (this.document != null ? this.document.hashCode() : 0);
         return hash;
     }
+    
+    // Test & Debug purpose
+    boolean isSorted() {
+        Comparable p = null;
+        for (Comparable c : this.idTable) {
+            if (p != null) {
+                int comp = p.compareTo(c);
+                if (comp >= 0) {
+                    return false;
+                } 
+            }
+            p = c;
+        }
+        return true;
+    }
 }

@@ -19,16 +19,17 @@
 package jbenchmarker.factories;
 
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.logootOneId.*;
+import jbenchmarker.logoot.LogootDocument;
+import jbenchmarker.logoot.LogootMerge;
+import jbenchmarker.logoot.TreedocStrategy;
+
 /**
  *
- * @author score
+ * @author urso
  */
-public class LogootOneIdFactory<T>  extends ReplicaFactory {
-    
-     @Override
-    public LogootOneIdMerge<T> create(int r) {
-        return new LogootOneIdMerge<T>(new LogootOneIdDocument(r, new BoundaryStrategy(1000000000)), r);
+public class LogootBinaryFactory<T> extends ReplicaFactory {
+    @Override
+    public LogootMerge<T> create(int r) {
+        return new LogootMerge<T>(new LogootDocument<T>(r, new TreedocStrategy()), r);
     }
-    
 }

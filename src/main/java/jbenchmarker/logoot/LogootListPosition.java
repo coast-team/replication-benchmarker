@@ -171,7 +171,7 @@ public class LogootListPosition implements ListIdentifier<LogootListPosition> {
     public int compareTo(LogootListPosition o) {
         int i = 0;
         while (i < this.position.length() && i < o.position.length()) {
-            int d = this.position.get(i) - o.position.get(i);
+            int d = Integer.compare(this.position.get(i), o.position.get(i));
             if (d != 0) {
                 return d;
             }

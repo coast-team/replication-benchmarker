@@ -19,6 +19,7 @@
 package jbenchmarker.trace.git;
 
 import collect.HashMapSet;
+import com.sun.media.sound.DirectAudioDeviceProvider;
 import java.io.IOException;
 import java.util.*;
 import jbenchmarker.core.SequenceOperation.OpType;
@@ -298,11 +299,12 @@ public class GitExtraction {
         for (int i = 0; i < result.size(); ++i) {
             Edition e = result.get(i);
             if (e.getType() == OpType.move) {
-                if (e.getBeginA() > e.getDestMove()) {
+                if (((Move) e).down()) {
                     int j, shift = e.getCb().size();
                     for (j = i + 1; !(result.get(j) instanceof GhostMove) || ((GhostMove) result.get(j)).move != e; ++j) {
                         Edition f = result.get(j);
-                        if (!(f instanceof GhostMove) || f.getDestMove() < e.getBeginA()) {
+                        if (!(f instanceof GhostMove && (((GhostMove) f).move.orig < e.getDestMove() || 
+                               ((GhostMove) f).move.orig > ((Move) e).orig))) {
                             f.setBeginA(f.getBeginA() + shift);
                         }
                     }
@@ -310,23 +312,32 @@ public class GitExtraction {
                     int j, shift = -e.getCa().size();
                     for (j = i - 1; !(result.get(j) instanceof GhostMove) || ((GhostMove) result.get(j)).move != e; --j) {
                         Edition f = result.get(j);
-                        if (f.getType() == OpType.insert || (f instanceof GhostMove && f.getDestMove() > e.getBeginA())) {
+                        if (f.getType() == OpType.insert && 
+                                !(f instanceof GhostMove && ((GhostMove) f).move.orig < ((Move) e).orig)) {
                             shift += f.getCb().size();
-                        } else if (f.getType() == OpType.delete || f.getType() == OpType.move) {
+                        } else if (f.getType() == OpType.delete || 
+                                (f.getType() == OpType.move && !(f.getDestMove() <= ((Move) e).orig))) {
                             shift -= f.getCa().size();
                         } 
                     }
                     Edition g = result.get(j);
-                    g.setBeginA(g.getBeginA() + shift); // shift move ?
+                    g.setBeginA(g.getBeginA() + shift); // shift ghost move
                 }
             }
         }
-        Iterator<Edition> it = result.iterator();
+        ListIterator<Edition> it = result.listIterator();
         while (it.hasNext()) {
             Edition ed = it.next();
             if (ed instanceof GhostMove) {
                 ((GhostMove) ed).move.setDestMove(ed.getBeginA());
                 it.remove();
+            }
+        }
+        it = result.listIterator();
+        while (it.hasNext()) {
+            Edition ed = it.next();
+            if (ed instanceof Move) {
+                it.set(new Edition(OpType.move, ed.getBeginA(), ed.getBeginB(), ed.getDestMove(), ed.getCa(), ed.getCb()));
             }
         }
         
@@ -346,14 +357,30 @@ public class GitExtraction {
     }
 
     /**
+     * Move operation with supplementary information to manage shift.
+     */
+    private static class Move extends Edition {
+        int orig;
+        
+        private Move(int beginA, int beginB, int dest, String sa, String sb) {
+            super(OpType.move, beginA, beginB, dest, sa, sb);
+            orig = beginA;
+        }
+
+        private boolean down() {
+            return orig >= dest;
+        }
+    }
+    
+    /**
      * pseudo insert operation to mark end of move shift.
      */
     private static class GhostMove extends Edition {
-        Edition move;
+        Move move;
         
         public GhostMove(Edition ed, int beginA) {
             super(OpType.insert, beginA, 0, ed.getBeginA(), null, ed.getCb());
-            move = ed;
+            move = (Move) ed;
         }
     }
     
@@ -476,7 +503,7 @@ public class GitExtraction {
                     last.getCb().add(0, listInsert.get(j));
                     two = true; // 2 consecutive lines
                 } else {
-                    editList.add(new Edition(OpType.move, orig + i, insert.getBeginB(), dest, listDelete.get(i), listInsert.get(j)));
+                    editList.add(new Move(orig + i, insert.getBeginB(), dest, listDelete.get(i), listInsert.get(j)));
                 }
             } else if (mat[i][j] == mat[i - 1][j] + 100) {
                 --i;
@@ -510,17 +537,6 @@ public class GitExtraction {
      */
     private int dist(String a, String b) {
         return neil.diff_levenshtein(neil.diff_main(a, b)) * 100 / a.length();
-    }
-
-    /*
-     * A list of string to a string.
-     */
-    private String stringer(List<String> list) {
-        StringBuilder b = new StringBuilder();
-        for (String s : list) {
-            b.append(s);
-        }
-        return b.toString();
     }
 
     /*
