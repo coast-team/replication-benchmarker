@@ -19,7 +19,6 @@
 package jbenchmarker.trace.git;
 
 import collect.HashMapSet;
-import com.sun.media.sound.DirectAudioDeviceProvider;
 import java.io.IOException;
 import java.util.*;
 import jbenchmarker.core.SequenceOperation.OpType;

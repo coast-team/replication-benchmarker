@@ -146,14 +146,13 @@
                         <year>2013</year>
                         <name>${project.name}</name>
                         <url>${project.url}</url>
-                        <strictCheck>true</strictCheck>
                         <organisation>${project.organization.name}</organisation>
-                    </properties>					
+                    </properties>		    			
                     <encoding>UTF-8</encoding>
                     <basedir>${basedir}</basedir>
                     <header>${basedir}/src/etc/header.txt</header>
                     <quiet>false</quiet>
-                    <failIfMissing>true</failIfMissing>
+                    <failIfMissing>false</failIfMissing>
                     <aggregate>false</aggregate>
                     <includes>
                         <include>src/**</include>
