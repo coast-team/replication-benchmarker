@@ -424,7 +424,7 @@ public class GitTrace implements Trace {
     public static String clearName(String gitdir, String path) {
         String[] d = gitdir.split("/");
         gitdir = d[d.length - 1];
-        path = path.replaceAll("[^a-zA-Z0-9]", "");
+        path = path.toLowerCase().replaceAll("[^a-z0-9]", "\\$");
         return gitdir + "_" + path;
     }
 }

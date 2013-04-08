@@ -19,6 +19,7 @@
 package jbenchmarker.trace.git;
 
 import collect.VectorClock;
+import crdt.CRDT;
 import crdt.simulator.TraceOperation;
 import jbenchmarker.core.LocalOperation;
 import jbenchmarker.core.SequenceOperation;
@@ -46,7 +47,12 @@ public class GitOperation extends TraceOperation {
                 arg = e.getDestMove();
                 break;
         }
-        sop = new SequenceOperation<String>(e.getType(), e.getBeginA(), arg, e.getCb());
+        sop = new SequenceOperation<String>(e.getType(), e.getBeginA(), arg, e.getCb()) {
+            @Override // Must always be ok
+            public LocalOperation adaptTo(CRDT replica) {
+                return this;
+            }
+        };
     }
 
     @Override

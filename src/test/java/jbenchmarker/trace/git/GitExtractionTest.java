@@ -232,6 +232,37 @@ public class GitExtractionTest {
         assertEquals(toList(r0, r1), result);
     }
         
+
+    @Test 
+    public void detectCrossMoveDown() {
+        GitExtraction ge = new GitExtraction(50, 20, 10);
+        Edition e = new Edition(OpType.delete, 6, 9, 0, toList(B, B, Ba), null),
+                f = new Edition(OpType.delete, 3, 8, 0, toList(A, A), null),
+                g = new Edition(OpType.insert, 2, 4, 0, null, toList(Ba, B, B)),
+                h = new Edition(OpType.insert, 1, 1, 0, null, toList(Aa, A)),
+                
+                r0 = new Edition(OpType.move, 6, 4, 2, toList(B, B, Ba), toList(Ba, B, B)),
+                r1 = new Edition(OpType.move, 6, 1, 1, toList(A, A), toList(Aa, A));
+        List<Edition> result = ge.detectMovesAndUpdates(toList(e, f, g, h));
+
+        assertEquals(toList(r0, r1), result);
+    }
+    
+    @Test 
+    public void detectCrossMoveUp() {
+        GitExtraction ge = new GitExtraction(50, 20, 10);
+        Edition e = new Edition(OpType.insert, 9, 6, 0, null, toList(Ba, B, B)),
+                f = new Edition(OpType.insert, 8, 3, 0, null, toList(Aa, A)),
+                g = new Edition(OpType.delete, 4, 2, 0, toList(B, B, Ba), null),
+                h = new Edition(OpType.delete, 1, 1, 0, toList(A, A), null),
+                
+                r0 = new Edition(OpType.move, 4, 6, 6, toList(B, B, Ba), toList(Ba, B, B)),
+                r1 = new Edition(OpType.move, 1, 3, 3, toList(A, A), toList(Aa, A));
+        List<Edition> result = ge.detectMovesAndUpdates(toList(e, f, g, h));
+
+        assertEquals(toList(r0, r1), result);
+    }
+    
     @Test 
     public void detectCrossMove() {
         GitExtraction ge = new GitExtraction(50, 20, 10);
