@@ -60,7 +60,12 @@ public class MuMerge<T> extends MergeAlgorithm {
     protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
         return getDoc().insert(opt.getPosition(), opt.getContent(), opt);
     }
-
+    
+    @Override
+    protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
+        return getDoc().update(opt.getPosition(), opt.getContent(), opt);
+    }
+    
     @Override
     public CRDT<String> create() {
         return new MuMerge(getDoc().create(), 0);

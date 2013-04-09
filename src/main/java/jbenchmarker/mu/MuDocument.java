@@ -18,6 +18,7 @@
  */
 package jbenchmarker.mu;
 
+import collect.Tree;
 import crdt.Factory;
 import java.util.*;
 import java.util.Map.Entry;
@@ -26,6 +27,7 @@ import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.logoot.*;
+
 
 
 
@@ -109,14 +111,27 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
         return patch;
     }
 
-
     public List<SequenceMessage> delete(int position, int length, SequenceOperation opt) {
         List<Entry<ListIdentifier, Timestamp>> elems 
                 = new ArrayList<Entry<ListIdentifier, Timestamp>>(positions.entrySet()).subList(position, position + length);
         List<SequenceMessage> patch = new LinkedList<SequenceMessage>();
         for (Entry<ListIdentifier, Timestamp> e : elems) {
             Cell<T> c = elements.get(e.getValue());
-            MuOperation op = new MuOperation(e.getKey(), null, c.contents.keySet(), null, e.getValue(), null, OpType.delete, opt);
+            MuOperation op = new MuOperation(e.getKey(), null, new TreeSet(c.contents.keySet()), null, e.getValue(), null, OpType.delete, opt);
+            apply(op);
+            patch.add(op);
+        }
+        return patch;
+    }
+
+    List<SequenceMessage> update(int position, List<T> content, SequenceOperation opt) {
+        List<Entry<ListIdentifier, Timestamp>> elems 
+                = new ArrayList<Entry<ListIdentifier, Timestamp>>(positions.entrySet()).subList(position, position + content.size());
+        List<SequenceMessage> patch = new LinkedList<SequenceMessage>();
+        Iterator<T> itc = content.iterator();
+        for (Entry<ListIdentifier, Timestamp> e : elems) {
+            Cell<T> c = elements.get(e.getValue());
+            MuOperation op = new MuOperation(e.getKey(), null, new TreeSet(c.contents.keySet()), nextTimestamp(), e.getValue(), itc.next(), OpType.update, opt);
             apply(op);
             patch.add(op);
         }
@@ -144,6 +159,10 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
     @Override
     public int getReplicaNumber() {
         return replicaNumber;
+    }
+    
+    private Timestamp nextTimestamp() {
+        return new Timestamp(nextClock(), replicaNumber);
     }
     
     // TODO Should be more efficient
@@ -174,6 +193,8 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
         throw new UnsupportedOperationException("Not yet implemented");
     }
 }
+
+
 class Cell<T> {
     Set<ListIdentifier> places;
     NavigableMap<Timestamp, T> contents;
@@ -206,5 +227,10 @@ class Timestamp implements Comparable<Timestamp> {
             return Integer.compare(this.replica, o.replica);
         }
         return this.clock - o.clock;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + clock + ", " + replica + '>';
     }
 }

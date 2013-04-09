@@ -90,6 +90,7 @@ public class CausalDispatcherSequenceTest {
     }
 
     static final int vocabularySize = 100;
+    static final OperationProfile diffopp = new StandardDiffProfile(0.7, 0.75, 0.90, 30, 20.0, 30, 10.0); 
     static final OperationProfile seqopp = new StandardSeqOpProfile(0.8, 0.1, 40, 5.0);
     static final OperationProfile uopp = new StandardSeqOpProfile(0.8, 0, 1, 0);
     
@@ -114,6 +115,14 @@ public class CausalDispatcherSequenceTest {
         
         for (Factory<CRDT> sf : s) {
             CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
+        }
+    }
+    
+    @Test
+    public void testRunDiffs() throws IncorrectTraceException, PreconditionException, IOException {
+        
+        for (Factory<CRDT> sf : s) {
+            CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, diffopp);
         }
     }
     
