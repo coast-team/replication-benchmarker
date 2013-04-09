@@ -53,9 +53,10 @@ public class CausalDispatcherSequenceTest {
 //        new LogootListFactory.ByteList(), 
 //        new LogootListFactory.ShortList(), 
 //        new LogootListFactory.IntList(), 
-        new LogootBinaryFactory(), 
+//        new LogootBinaryFactory(), 
 //        new NCBLogootFactory(), 
-//        new TreedocFactory(), 
+        new MuFactory(), 
+        //        new TreedocFactory(), 
 //        new jbenchmarker.treedoc.list.TreedocFactory(),
 //        new WootFactory(), 
 //        new WootOFactory(), 
@@ -96,7 +97,7 @@ public class CausalDispatcherSequenceTest {
     @Test
     public void stress() throws PreconditionException, IncorrectTraceException, IOException {
 //        Factory f = new TTFFactories.WithGC3();
-        Factory f = new LogootBinaryFactory();
+        Factory f = new MuFactory();
         CausalDispatcherSetsAndTreesTest.testRunX(f, 200, 200, 5, seqopp);           
     }
     

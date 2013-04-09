@@ -120,7 +120,7 @@ public class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> impleme
     }
 
     @Override
-    protected int nextClock() {
+    public int nextClock() {
         return clock.value++;
     }
 

@@ -50,7 +50,7 @@ public class BoundaryListStrategy extends RandomLogootStrategy {
      * Generate N identifier between P and Q;
      */
     @Override
-    public List<ListIdentifier> generateLineIdentifiers(LogootDocument doc, ListIdentifier P, ListIdentifier Q, int n) {
+    public List<ListIdentifier> generateLineIdentifiers(TimestampedDocument doc, ListIdentifier P, ListIdentifier Q, int n) {
 //        assert P.compareTo(Q) < 0;
         
         LogootListPosition PP = (LogootListPosition) P;

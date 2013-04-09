@@ -18,26 +18,16 @@
  */
 package jbenchmarker.logoot;
 
-import java.util.List;
+import jbenchmarker.core.Document;
 
 /**
  *
  * @author urso
  */
-public interface LogootStrategy {
+public interface TimestampedDocument extends Document {
 
-    /**
-     * Begin indentifier.
-     */
-    ListIdentifier begin();
+    int getReplicaNumber();
 
-    /**
-     * End indentifier.
-     */
-    ListIdentifier end();
-
-    /**
-     * Generate N identifier between P and Q;
-     */
-    List<ListIdentifier> generateLineIdentifiers(TimestampedDocument replica, ListIdentifier P, ListIdentifier Q, int n);
+    int nextClock();
+    
 }

@@ -29,7 +29,7 @@ import jbenchmarker.core.SequenceMessage;
  * A Logoot document. Contains a list of Charater and the corresponding list of LogootIndentitifer.
  * @author urso mehdi
  */
-public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
+public class LogootDocument<T> implements  Factory<LogootDocument<T>>, TimestampedDocument {
     private int myClock;
     protected int replicaNumber;
     
@@ -119,7 +119,8 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         return new LogootDocument<T>(replicaNumber, strategy);
     }
 
-    protected int nextClock() {
+    @Override
+    public int nextClock() {
         return this.myClock++;
     }
 
@@ -131,7 +132,8 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         this.replicaNumber = replicaNumber;
     }
 
-    int getReplicaNumber() {
+    @Override
+    public int getReplicaNumber() {
         return replicaNumber;
     }
     

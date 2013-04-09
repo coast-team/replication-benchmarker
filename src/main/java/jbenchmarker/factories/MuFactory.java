@@ -16,28 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.logoot;
+package jbenchmarker.factories;
 
-import java.util.List;
+import jbenchmarker.core.ReplicaFactory;
+import jbenchmarker.logoot.TreedocStrategy;
+import jbenchmarker.mu.MuDocument;
+import jbenchmarker.mu.MuMerge;
 
 /**
  *
  * @author urso
  */
-public interface LogootStrategy {
-
-    /**
-     * Begin indentifier.
-     */
-    ListIdentifier begin();
-
-    /**
-     * End indentifier.
-     */
-    ListIdentifier end();
-
-    /**
-     * Generate N identifier between P and Q;
-     */
-    List<ListIdentifier> generateLineIdentifiers(TimestampedDocument replica, ListIdentifier P, ListIdentifier Q, int n);
+public class MuFactory<T> extends ReplicaFactory {
+    @Override
+    public MuMerge<T> create(int r) {
+        return new MuMerge<T>(new MuDocument<T>(r, new TreedocStrategy()), r);
+    }
 }

@@ -59,7 +59,7 @@ public class BoundaryStrategy extends RandomLogootStrategy {
      * Generate N identifier between P and Q;
      */
     @Override
-    public ArrayList<ListIdentifier> generateLineIdentifiers(LogootDocument doc, ListIdentifier lP, ListIdentifier lQ, int n) {
+    public ArrayList<ListIdentifier> generateLineIdentifiers(TimestampedDocument doc, ListIdentifier lP, ListIdentifier lQ, int n) {
         LogootIdentifier P = (LogootIdentifier) lP, Q = (LogootIdentifier) lQ;
         int index = 0, tMin = Math.min(P.length(), Q.length());
         

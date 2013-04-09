@@ -44,7 +44,7 @@ public class TreedocStrategy implements LogootStrategy {
      * a right son of P then at the left of Q
      */
     @Override
-    public List<ListIdentifier> generateLineIdentifiers(LogootDocument replica, ListIdentifier P, ListIdentifier Q, int n) {
+    public List<ListIdentifier> generateLineIdentifiers(TimestampedDocument replica, ListIdentifier P, ListIdentifier Q, int n) {
         LogootBinaryPosition start;
         if (P.equals(begin()) && Q.equals(end())) {
             start = new LogootBinaryPosition(0);
@@ -63,7 +63,7 @@ public class TreedocStrategy implements LogootStrategy {
      * Balanced tree of identifiers.
      */
     // TODO : should be optimized using vector and tree positions.
-    private List<ListIdentifier> balance(Direction direction, LogootBinaryPosition start, int n, LogootDocument replica) {
+    private List<ListIdentifier> balance(Direction direction, LogootBinaryPosition start, int n, TimestampedDocument replica) {
         if (n == 0) {
             return new ArrayList<ListIdentifier>();
         }
