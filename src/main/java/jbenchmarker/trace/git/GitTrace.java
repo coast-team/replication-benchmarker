@@ -209,7 +209,12 @@ public class GitTrace implements Trace {
                 @Override
                 public LocalOperation adaptTo(CRDT replica) {
                     Patch patch = crud.get(commit.patchContent());
-                    if (!Arrays.equals(((String)replica.lookup()).getBytes(), patch.getRaws().get(0))) {
+//add new line at the end of the document
+String s1=(String)replica.lookup(),s2=new String(patch.getRaws().get(0));
+if(s1.endsWith("\n") && !s2.endsWith("\n"))
+    s2=s2.concat("\n");
+
+                    if (!Arrays.equals(s1.getBytes(), s2.getBytes())) {
                         throw new RuntimeException("---- INCORRECT LOCAL OPERATION ---- FROM " + commit.getParents().get(0) + '\n' 
                                 + new String(crud.get(commit.getParentContent(0)).getRaws().get(0))
                                 + "---------- TO : \n" + commit.patchId() + '\n' + new String(patch.getRaws().get(0))

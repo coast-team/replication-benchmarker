@@ -57,9 +57,9 @@ import org.ektorp.support.GenericRepository;
 public class GitExtraction {
 
     private boolean MIN_TWO_LINES_MOVE = true;
-    private static final int DEFAULT_LINE_UPDATE_THRESHOLD = 50;
-    private static final int DEFAULT_UPDATE_THRESHOLD = 20;
-    private static final int DEFAULT_MOVE_THRESHOLD = 10;
+    private static final int DEFAULT_LINE_UPDATE_THRESHOLD = 50; // add a line to an update
+    private static final int DEFAULT_UPDATE_THRESHOLD = 20;  // detection of an update
+    private static final int DEFAULT_MOVE_THRESHOLD = 10;   // detection of a move
     private static final int binaryFileThreshold = PackConfig.DEFAULT_BIG_FILE_THRESHOLD;
     /**
      * Magic return content indicating it is empty or no content present.
