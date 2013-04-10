@@ -31,7 +31,7 @@ import jbenchmarker.logoot.*;
  */
 public class MuOperation<T> extends SequenceMessage {
     
-    final private ListIdentifier position;
+    final private ListIdentifier origin;
     final private ListIdentifier destination;
     final private Collection<Timestamp> oldVersions;
     final private Timestamp timestamp;   
@@ -39,11 +39,9 @@ public class MuOperation<T> extends SequenceMessage {
     final private T content;
     final private OpType type; 
 
-    public MuOperation(ListIdentifier positions, ListIdentifier destination, 
-            Collection<Timestamp> oldVersions, Timestamp timestamp, Timestamp target, T content, 
-            OpType type, SequenceOperation originalOp) {
+    public MuOperation(Timestamp target, ListIdentifier position, ListIdentifier destination, Collection<Timestamp> oldVersions, Timestamp timestamp, T content, OpType type, SequenceOperation originalOp) {
         super(originalOp);
-        this.position = positions;
+        this.origin = position;
         this.destination = destination;
         this.oldVersions = oldVersions;
         this.timestamp = timestamp;
@@ -53,8 +51,8 @@ public class MuOperation<T> extends SequenceMessage {
     }
 
 
-    ListIdentifier getPosition() {
-        return position;
+    ListIdentifier getOrigin() {
+        return origin;
     }
 
     public ListIdentifier getDestination() {
@@ -84,7 +82,7 @@ public class MuOperation<T> extends SequenceMessage {
     // FIXME: shoud clone the operation and its parameters
     @Override
     public SequenceMessage clone() {
-        return new MuOperation(position, destination, oldVersions, timestamp, target, content, type, getOriginalOp());
+        return new MuOperation(target, origin, destination, oldVersions, timestamp, content, type, getOriginalOp());
     }
 
 

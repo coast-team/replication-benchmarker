@@ -205,7 +205,7 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
      */
     protected List<SequenceMessage> localMove(SequenceOperation opt) throws IncorrectTraceException {
         SequenceOperation del = new SequenceOperation(OpType.delete, opt.getPosition(), opt.getContent().size(), null),
-                ins = new SequenceOperation(OpType.insert, opt.getMovePosition(), 0, opt.getContent());
+                ins = new SequenceOperation(OpType.insert, opt.getDestination(), 0, opt.getContent());
         List<SequenceMessage> lop = localDelete(del);
         lop.addAll(localInsert(ins));
         return lop;        

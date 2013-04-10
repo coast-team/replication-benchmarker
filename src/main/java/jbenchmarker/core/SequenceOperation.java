@@ -91,7 +91,7 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
         return position;
     }
 
-    public int getMovePosition() {
+    public int getDestination() {
         return argument;
     }
 
@@ -212,6 +212,6 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
 
     @Override
     public String toString() {
-        return "SequenceOperation{" + "type=" + type + ", position=" + position + ", numberOf=" + argument + ", content=" + content + '}';
+        return "SequenceOperation{" + "type=" + type + ", position=" + position + ", arg=" + argument + ", content=" + content + '}';
     }
 }

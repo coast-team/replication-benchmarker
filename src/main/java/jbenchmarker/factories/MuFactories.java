@@ -24,12 +24,21 @@ import jbenchmarker.mu.MuDocument;
 import jbenchmarker.mu.MuMerge;
 
 /**
- *
+ * Factories for replica that manages moves and updates
  * @author urso
  */
-public class MuFactory<T> extends ReplicaFactory {
-    @Override
-    public MuMerge<T> create(int r) {
-        return new MuMerge<T>(new MuDocument<T>(r, new TreedocStrategy()), r);
+public class MuFactories {
+    public static class UpdateFactory<T> extends ReplicaFactory {
+        @Override
+        public MuMerge<T> create(int r) {
+            return new MuMerge<T>(new MuDocument<T>(r, new TreedocStrategy()), r, false);
+        }
     }
+    
+    public static class MoveFactory<T> extends ReplicaFactory {
+        @Override
+        public MuMerge<T> create(int r) {
+            return new MuMerge<T>(new MuDocument<T>(r, new TreedocStrategy()), r, true);
+        }
+    }    
 }

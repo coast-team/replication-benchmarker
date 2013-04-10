@@ -28,18 +28,12 @@ import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.logoot.*;
 
-
-
-
-
-
-
 /**
- * A Move and Update document. Each element is uniquely identified. 
- * It is associated to a set of unique CRDT position, and a map unique timestamp to content value. 
- * Only one value appear in document view (LWW). 
- * 
- * @author urso 
+ * A Move and Update document. Each element is uniquely identified. It is
+ * associated to a set of unique CRDT position, and a map unique timestamp to
+ * content value. Only one value appear in document view (LWW).
+ *
+ * @author urso
  */
 public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>> {
 
@@ -62,7 +56,7 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
     public String view() {
         StringBuilder s = new StringBuilder();
         for (Timestamp ts : positions.values()) {
-            s.append(elements.get(ts).contents.lastEntry().getValue());
+            s.append(elements.get(ts).value());
         }
         return s.toString();
     }
@@ -72,39 +66,45 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
         MuOperation<T> lg = (MuOperation<T>) op;
         Timestamp target = lg.getTarget();
         Cell<T> c = elements.get(target);
-        switch (lg.getType()) {
-            case insert:
-                elements.put(target, new Cell(lg.getPosition(), lg.getTimestamp(), lg.getContent()));
-                positions.put(lg.getPosition(), target);               
-                break;
-            case move:
-                c.places.remove(lg.getPosition());
-                positions.remove(lg.getPosition());
+        if (lg.getType() == OpType.replace) { // hack replace
+            c.places.remove(lg.getOrigin());
+            positions.remove(lg.getOrigin());
+            elements.put(lg.getTimestamp(), new Cell(lg.getDestination(), lg.getTimestamp(), lg.getContent()));
+            positions.put(lg.getDestination(), lg.getTimestamp());
+        } else {
+            if (c == null) {
+                elements.put(target, c = new Cell());
+            }
+            if (lg.getOrigin() != null) {
+                c.places.remove(lg.getOrigin());
+                positions.remove(lg.getOrigin());
+            }
+            if (lg.getDestination() != null) {
                 c.places.add(lg.getDestination());
                 positions.put(lg.getDestination(), target);
-                break;
-            case delete:
-                c.places.remove(lg.getPosition());
+            }
+            if (lg.getOldVersions() != null) {
                 c.contents.keySet().removeAll(lg.getOldVersions());
-                positions.remove(lg.getPosition());
-                break;
-            case update:
-                c.contents.keySet().removeAll(lg.getOldVersions());
+            }
+            if (lg.getContent() != null) {
                 c.contents.put(lg.getTimestamp(), lg.getContent());
-                break;
+            }
+            if (!c.places.isEmpty() && c.contents.isEmpty()) { // remove tombstone from view
+                positions.keySet().removeAll(c.places);
+            }
         }
     }
 
     public List<SequenceMessage> insert(int position, List<T> lc, SequenceOperation opt) {
-        List<ListIdentifier> pos = generateIdentifiers(position, lc.size());        
+        List<ListIdentifier> pos = generateIdentifiers(position, lc.size());
         Iterator<ListIdentifier> itp = pos.iterator();
         List<SequenceMessage> patch = new LinkedList<SequenceMessage>();
         Iterator<T> itc = lc.iterator();
         while (itp.hasNext()) {
             ListIdentifier p = itp.next();
             T value = itc.next();
-            Timestamp ts = new Timestamp(p.clock(), p.replica()); 
-            MuOperation op = new MuOperation(p, null, null, ts, ts, value, OpType.insert, opt);
+            Timestamp ts = new Timestamp(p.clock(), p.replica());
+            MuOperation op = new MuOperation(ts, null, p, null, ts, value, OpType.insert, opt);
             apply(op);
             patch.add(op);
         }
@@ -112,12 +112,11 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
     }
 
     public List<SequenceMessage> delete(int position, int length, SequenceOperation opt) {
-        List<Entry<ListIdentifier, Timestamp>> elems 
-                = new ArrayList<Entry<ListIdentifier, Timestamp>>(positions.entrySet()).subList(position, position + length);
+        List<Entry<ListIdentifier, Timestamp>> elems = new ArrayList<Entry<ListIdentifier, Timestamp>>(positions.entrySet()).subList(position, position + length);
         List<SequenceMessage> patch = new LinkedList<SequenceMessage>();
         for (Entry<ListIdentifier, Timestamp> e : elems) {
             Cell<T> c = elements.get(e.getValue());
-            MuOperation op = new MuOperation(e.getKey(), null, new TreeSet(c.contents.keySet()), null, e.getValue(), null, OpType.delete, opt);
+            MuOperation op = new MuOperation(e.getValue(), e.getKey(), null, new TreeSet(c.contents.keySet()), null, null, OpType.delete, opt);
             apply(op);
             patch.add(op);
         }
@@ -125,19 +124,44 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
     }
 
     List<SequenceMessage> update(int position, List<T> content, SequenceOperation opt) {
-        List<Entry<ListIdentifier, Timestamp>> elems 
-                = new ArrayList<Entry<ListIdentifier, Timestamp>>(positions.entrySet()).subList(position, position + content.size());
+        List<Entry<ListIdentifier, Timestamp>> elems = new ArrayList<Entry<ListIdentifier, Timestamp>>(positions.entrySet()).subList(position, position + content.size());
         List<SequenceMessage> patch = new LinkedList<SequenceMessage>();
         Iterator<T> itc = content.iterator();
         for (Entry<ListIdentifier, Timestamp> e : elems) {
             Cell<T> c = elements.get(e.getValue());
-            MuOperation op = new MuOperation(e.getKey(), null, new TreeSet(c.contents.keySet()), nextTimestamp(), e.getValue(), itc.next(), OpType.update, opt);
+            MuOperation op;
+            if (c.places.size() > 1) { // move clones hack : treat as replace
+                ListIdentifier pos = generateAfter(e.getKey());
+                op = new MuOperation(e.getValue(), e.getKey(), pos, null, Timestamp.of(pos), itc.next(), OpType.replace, opt);
+            } else {
+                op = new MuOperation(e.getValue(), null, null, new TreeSet(c.contents.keySet()), nextTimestamp(), itc.next(), OpType.update, opt);
+            }
             apply(op);
             patch.add(op);
         }
         return patch;
     }
-    
+
+    List<SequenceMessage> move(int position, int destination, List<T> content, SequenceOperation opt) {
+        List<Entry<ListIdentifier, Timestamp>> elems = new ArrayList<Entry<ListIdentifier, Timestamp>>(positions.entrySet()).subList(position, position + content.size());
+        List<SequenceMessage> patch = new LinkedList<SequenceMessage>();
+        Iterator<ListIdentifier> itpos = generateIdentifiers(destination < position ? destination : destination + content.size(), content.size()).iterator();
+        Iterator<T> itc = content.iterator();
+        for (Entry<ListIdentifier, Timestamp> e : elems) {
+            Cell<T> c = elements.get(e.getValue());
+            ListIdentifier d = itpos.next();
+            T t = itc.next();
+            MuOperation op = c.places.size() > 1 // move clones hack : treat as replace
+                    ? new MuOperation(e.getValue(), e.getKey(), d, null, Timestamp.of(d), t, OpType.replace, opt)
+                    : c.value().equals(t)
+                    ? new MuOperation(e.getValue(), e.getKey(), d, null, null, null, OpType.move, opt) // Pure move
+                    : new MuOperation(e.getValue(), e.getKey(), d, new TreeSet(c.contents.keySet()), nextTimestamp(), t, OpType.move, opt);
+            apply(op);
+            patch.add(op);
+        }
+        return patch;
+    }
+
     @Override
     public int viewLength() {
         return positions.size();
@@ -160,11 +184,11 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
     public int getReplicaNumber() {
         return replicaNumber;
     }
-    
+
     private Timestamp nextTimestamp() {
         return new Timestamp(nextClock(), replicaNumber);
     }
-    
+
     // TODO Should be more efficient
     Iterator<Entry<ListIdentifier, Timestamp>> ith(int i) {
         Iterator<Entry<ListIdentifier, Timestamp>> it = positions.entrySet().iterator();
@@ -173,15 +197,23 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
         }
         return it;
     }
-    
+
     /**
      * Produce n new identifiers after this position.
      */
     List<ListIdentifier> generateIdentifiers(int position, int N) {
         Iterator<Entry<ListIdentifier, Timestamp>> it = ith(position);
         ListIdentifier previous = position == 0 ? strategy.begin() : it.next().getKey(),
-                next = position == viewLength() ? strategy.end() : it.next().getKey();        
+                next = position == viewLength() ? strategy.end() : it.next().getKey();
         return strategy.generateLineIdentifiers(this, previous, next, N);
+    }
+
+    private ListIdentifier generateAfter(ListIdentifier posid) {
+        ListIdentifier next = positions.higherKey(posid);
+        if (next == null) {
+            next = strategy.end();
+        }
+        return strategy.generateLineIdentifiers(this, posid, next, 1).get(0);
     }
 
     @Override
@@ -194,8 +226,14 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
     }
 }
 
-
+/**
+ * Elements
+ *
+ * @author urso
+ * @param <T> Elemen
+ */
 class Cell<T> {
+
     Set<ListIdentifier> places;
     NavigableMap<Timestamp, T> contents;
 
@@ -209,10 +247,17 @@ class Cell<T> {
         places.add(pos);
         contents.put(ts, value);
     }
+
+    T value() {
+        return contents.isEmpty() ? null : contents.lastEntry().getValue();
+    }
 }
 
 class Timestamp implements Comparable<Timestamp> {
 
+    static Timestamp of(ListIdentifier pos) {
+        return new Timestamp(pos.clock(), pos.replica());
+    }
     final int clock;
     final int replica;
 

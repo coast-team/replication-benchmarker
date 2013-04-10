@@ -20,25 +20,23 @@ package jbenchmarker.mu;
 
 import crdt.CRDT;
 import crdt.simulator.IncorrectTraceException;
-import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.core.SequenceOperation.OpType;
-import jbenchmarker.logoot.*;
 
 /**
  *
  * @author mehdi urso
  */
 public class MuMerge<T> extends MergeAlgorithm {
+    private final boolean handleMoves;
 
     // nbBit <= 64
-    public MuMerge(Document doc, int r) {
+    public MuMerge(Document doc, int r, boolean handleMoves) {
         super(doc, r);
-
+        this.handleMoves = handleMoves;
     }
 
     @Override
@@ -67,8 +65,13 @@ public class MuMerge<T> extends MergeAlgorithm {
     }
     
     @Override
+    protected List<SequenceMessage> localMove(SequenceOperation opt) throws IncorrectTraceException {
+        return handleMoves ? super.localMove(opt) : getDoc().move(opt.getPosition(), opt.getDestination(), opt.getContent(), opt);
+    }
+    
+    @Override
     public CRDT<String> create() {
-        return new MuMerge(getDoc().create(), 0);
+        return new MuMerge(getDoc().create(), 0, handleMoves);
     }
 
     @Override
