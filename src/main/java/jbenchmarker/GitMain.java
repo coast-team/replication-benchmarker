@@ -47,7 +47,7 @@ public final class GitMain extends Experience {
             System.err.println("- --save Store traces");
             System.err.println("- --clean [optional] clean DB");
             System.err.println("- --stat [optional] compute execution time and memory");
-            System.err.println("- --dmau [optional] detect moves and updates");
+            System.err.println("- --dmau X,Y,Z [optional] detect moves and updates");
             System.err.println("- Number of serialization");
             System.err.println("- i :  number of file [To begin]");
             System.err.println("- Number of execution");
@@ -111,7 +111,13 @@ public final class GitMain extends Experience {
 
         int nbrExec = Integer.parseInt(args[args.length - 2]);
         Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[args.length - 1]).newInstance();
-
+        int lineUpdateThresold = 50, updateThresold=20, moveThresold=10;
+        if(dmau)
+        {       String[] Thresold=args[args.length - 5].split(",");
+                lineUpdateThresold = Integer.parseInt(Thresold[0]);
+                updateThresold = Integer.parseInt(Thresold[1]);
+                moveThresold = Integer.parseInt(Thresold[2]);
+         }
         int nb = (nbrExec > 1) ? nbrExec + 1 : nbrExec;
 
         int i = Integer.parseInt(args[args.length - 3]);
@@ -131,7 +137,7 @@ public final class GitMain extends Experience {
             int sizeMsg = 0;
             boolean oneclean = clean;
             for (int k = 0; k < nbrExec; k++) {
-                GitTrace trace = dmau ? GitTrace.createWithMoves(gitdir, cc, path, oneclean, 50, 20, 10) 
+                GitTrace trace = dmau ? GitTrace.createWithMoves(gitdir, cc, path, oneclean, lineUpdateThresold, updateThresold, moveThresold) 
                         : GitTrace.create(gitdir, cc, path, oneclean);
                 oneclean = false;
                 CausalSimulator cd = new CausalSimulator(rf, stat, stat ? nbserializ : 0, stat);

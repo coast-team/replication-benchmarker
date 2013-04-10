@@ -1,20 +1,20 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2013 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2013
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.trace.git;
 
@@ -69,12 +69,11 @@ public class GitTrace implements Trace {
     private PatchCRUD patchCRUD;
     private List<Commit> initCommit;
     private static final DiffAlgorithm diffAlgorithm = GitExtraction.defaultDiffAlgorithm;
-
     static final boolean DEBUG = true;
-    
+
     /**
-     * Produces a git trace using a git directory a couch db URL and a file path.
-     * Operations are insert, delete, and replace (block of lines).
+     * Produces a git trace using a git directory a couch db URL and a file
+     * path. Operations are insert, delete, and replace (block of lines).
      *
      * @param gitdir directory that contains ".git"
      * @param couchURL URL of couch BD
@@ -83,7 +82,7 @@ public class GitTrace implements Trace {
      * @return a new git extractor
      * @throws IOException if git directory not accessible
      */
-     public static GitTrace create(String gitdir, CouchConnector cc, String path, boolean cleanDB) throws IOException {
+    public static GitTrace create(String gitdir, CouchConnector cc, String path, boolean cleanDB) throws IOException {
         return create(gitdir, cc, path, cleanDB, false, 0, 0, 0);
     }
 
@@ -96,9 +95,10 @@ public class GitTrace implements Trace {
      * @param couchURL URL of couch BD
      * @param path a path in the gir repository
      * @param clean if true recreates db
-     * @param lineUpdateThresold difference percentage thresold to integrate a line in an update 
-     * @param updateThresold difference percentage thresold to detect an update 
-     * @param moveThresold difference percentage thresold to detect a move 
+     * @param lineUpdateThresold difference percentage thresold to integrate a
+     * line in an update
+     * @param updateThresold difference percentage thresold to detect an update
+     * @param moveThresold difference percentage thresold to detect a move
      * @return a new git extractor
      * @throws IOException if git directory not accessible
      */
@@ -185,16 +185,17 @@ public class GitTrace implements Trace {
             }
         }
     }
-    
+
     /**
-     * To check if state resulting from local operation correspond to git stored state.   
+     * To check if state resulting from local operation correspond to git stored
+     * state.
      */
     private static final class Check extends TraceOperation implements Serializable {
-        
+
         transient Commit commit;
         transient Walker walker;
         transient PatchCRUD crud;
-        
+
         private Check(int replica, VectorClock VC, Commit commit, Walker walker, PatchCRUD crud) {
             super(replica, new VectorClock(VC));
             getVectorClock().inc(replica);
@@ -205,34 +206,40 @@ public class GitTrace implements Trace {
 
         @Override
         public LocalOperation getOperation() {
-            return new LocalOperation() { 
+            return new LocalOperation() {
                 @Override
                 public LocalOperation adaptTo(CRDT replica) {
                     Patch patch = crud.get(commit.patchContent());
 //add new line at the end of the document
-String s1=(String)replica.lookup(),s2=new String(patch.getRaws().get(0));
-if(s1.endsWith("\n") && !s2.endsWith("\n"))
-    s2=s2.concat("\n");
-
-                    if (!Arrays.equals(s1.getBytes(), s2.getBytes())) {
-                        throw new RuntimeException("---- INCORRECT LOCAL OPERATION ---- FROM " + commit.getParents().get(0) + '\n' 
-                                + new String(crud.get(commit.getParentContent(0)).getRaws().get(0))
-                                + "---------- TO : \n" + commit.patchId() + '\n' + new String(patch.getRaws().get(0))
-                                + "==========\n" + replica.lookup());
+                    if (!patch.getRaws().isEmpty()) {
+                        String s1 = (String) replica.lookup();
+                        String s2 = new String(patch.getRaws().get(0));
+                        if (s1.endsWith("\n") && !s2.endsWith("\n")) {
+                            s2 = s2.concat("\n");
+                        }
+                        if (Arrays.equals(s2.getBytes(), s2.getBytes())) {
+                            walker.currentVC.inc(replica.getReplicaNumber());
+                            return SequenceOperation.noop();
+                        } else {
+                            throw new RuntimeException("---- INCORRECT LOCAL OPERATION ---- FROM " + commit.getParents().get(0) + '\n'
+                                    + new String(crud.get(commit.getParentContent(0)).getRaws().get(0))
+                                    + "---------- TO : \n" + commit.patchId() + '\n' + new String(patch.getRaws().get(0))
+                                    + "==========\n" + replica.lookup());
+                        }
                     } else {
                         walker.currentVC.inc(replica.getReplicaNumber());
                         return SequenceOperation.noop();
                     }
                 }
+
                 @Override
                 public Operation clone() {
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
             };
         }
-        
     }
-    
+
     public static class MergeCorrection extends TraceOperation implements Serializable {
 
         transient Patch patch;
