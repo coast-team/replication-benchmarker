@@ -46,7 +46,7 @@ public class FileEdition implements Serializable{
      */
     public FileEdition(DiffEntry entry, PatchType type, List<Edition> listEdit) {
         this.entry = new Entry(entry);
-        this.path = null;
+        this.path = entry.getNewPath() == null ? entry.getOldPath() : entry.getNewPath();
         this.listDiff = listEdit;
         this.type = type;
     }

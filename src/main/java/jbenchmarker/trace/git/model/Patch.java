@@ -22,6 +22,7 @@
 package jbenchmarker.trace.git.model;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -39,7 +40,7 @@ public class Patch implements Serializable{
     
     protected List<FileEdition> edits;
     protected List<String> paths;
-    protected List<byte[]> raws;
+    protected List<String> contents;
     
     public Patch() {
     }
@@ -66,13 +67,17 @@ public class Patch implements Serializable{
     }
     
     /**
-     * Merge commit patch constuctor
+     * Content commit patch constuctor
      * @param commit
      * @param listEdit 
      */
     public Patch(Commit commit, List<String> paths, List<byte[]> raws) {       
         this.paths = paths;
-        this.raws = raws;
+        this.contents = new LinkedList<String>();
+        for (byte[] b : raws) {
+            String c = new String(b);
+            this.contents.add(c.endsWith("\n") ? c : c.concat("\n"));
+        }
         this.id = commit.getId() + CONTENT;
     }
     
@@ -110,14 +115,19 @@ public class Patch implements Serializable{
         this.paths = paths;
     }
 
-    public List<byte[]> getRaws() {
-        return raws;
+    public List<String> getContents() {
+        return contents;
     }
 
-    public void setRaws(List<byte[]> raws) {
-        this.raws = raws;
+    public void setContents(List<String> contents) {
+        this.contents = contents;
     }
 
+    public String getContentOf(String path) {
+        int i = paths.indexOf(path);
+        return i == -1 ? "" : contents.get(i);
+    }
+    
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();

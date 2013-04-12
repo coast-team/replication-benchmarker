@@ -31,13 +31,11 @@ import java.util.logging.Logger;
 import jbenchmarker.core.LocalOperation;
 import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.trace.git.model.Commit;
 import jbenchmarker.trace.git.model.Edition;
 import jbenchmarker.trace.git.model.FileEdition;
 import jbenchmarker.trace.git.model.Patch;
 import org.eclipse.jgit.diff.DiffAlgorithm;
-import org.eclipse.jgit.diff.Edit.Type;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.diff.RawTextComparator;
@@ -159,6 +157,10 @@ public class GitTrace implements Trace {
         return GitExtraction.edits(editList, a, b);
     }
 
+    static List<Edition> diff(String a, String b) throws IOException {
+        return diff(a.getBytes(), b.getBytes());
+    }
+
     private void stat(List<Edition> l, boolean merge) {
 
         if (merge) {
@@ -194,14 +196,14 @@ public class GitTrace implements Trace {
 
         transient Commit commit;
         transient Walker walker;
-        transient PatchCRUD crud;
+        transient String target;
 
-        private Check(int replica, VectorClock VC, Commit commit, Walker walker, PatchCRUD crud) {
+        private Check(int replica, VectorClock VC, Commit commit, Walker walker, String target) {
             super(replica, new VectorClock(VC));
             getVectorClock().inc(replica);
             this.commit = commit;
             this.walker = walker;
-            this.crud = crud;
+            this.target = target;
         }
 
         @Override
@@ -209,26 +211,13 @@ public class GitTrace implements Trace {
             return new LocalOperation() {
                 @Override
                 public LocalOperation adaptTo(CRDT replica) {
-                    Patch patch = crud.get(commit.patchContent());
 //add new line at the end of the document
-                    if (!patch.getRaws().isEmpty()) {
-                        String s1 = (String) replica.lookup();
-                        String s2 = new String(patch.getRaws().get(0));
-                        if (s1.endsWith("\n") && !s2.endsWith("\n")) {
-                            s2 = s2.concat("\n");
-                        }
-                        if (Arrays.equals(s2.getBytes(), s2.getBytes())) {
-                            walker.currentVC.inc(replica.getReplicaNumber());
-                            return SequenceOperation.noop();
-                        } else {
-                            throw new RuntimeException("---- INCORRECT LOCAL OPERATION ---- FROM " + commit.getParents().get(0) + '\n'
-                                    + new String(crud.get(commit.getParentContent(0)).getRaws().get(0))
-                                    + "---------- TO : \n" + commit.patchId() + '\n' + new String(patch.getRaws().get(0))
-                                    + "==========\n" + replica.lookup());
-                        }
-                    } else {
+                    if (replica.lookup().equals(target)) {
                         walker.currentVC.inc(replica.getReplicaNumber());
                         return SequenceOperation.noop();
+                    } else {
+                        throw new RuntimeException("=== INCORRECT LOCAL OPERATION ---- FROM " + commit.getParents()
+                                + "--- TO : " + commit.patchId() + "===\n" + replica.lookup());
                     }
                 }
 
@@ -246,11 +235,12 @@ public class GitTrace implements Trace {
         transient Walker walker;
         transient GitTrace gitTrace;
         LocalOperation first;
+        transient final String target;
 
-        MergeCorrection(int replica, VectorClock VC, Patch merge, Walker walker, GitTrace gitTrace) {
+        MergeCorrection(int replica, VectorClock VC, String target, Walker walker, GitTrace gitTrace) {
             super(replica, new VectorClock(VC));
             getVectorClock().inc(replica);
-            this.patch = merge;
+            this.target = target;
             this.walker = walker;
             this.gitTrace = gitTrace;
         }
@@ -271,12 +261,12 @@ public class GitTrace implements Trace {
                         try {
 //System.out.println("----- REPLICA -----\n" + replica.lookup());                                
 //System.out.println("----- PATCH -----\n" + new String(patch.getRaws().get(0)));                                
-                            List<Edition> l = diff(((String) replica.lookup()).getBytes(), patch.getRaws().get(0));
+                            List<Edition> l = diff(replica.lookup().toString(), target);
                             gitTrace.stat(l, true);
 //for (Edition ed : l) { System.out.println("--- DIFF ---\n" + ed); }                                
                             if (l.isEmpty()) {
                                 walker.currentVC.inc(replica.getReplicaNumber());
-                                first = SequenceOperation.noop(/*replica.getReplicaNumber(), getVectorClock()*/);
+                                first = SequenceOperation.noop();
                             } else {
                                 walker.editions.addAll(l);
                                 first = walker.nextElement().getOperation().adaptTo(replica);
@@ -340,7 +330,7 @@ public class GitTrace implements Trace {
                     if (commit != null) { // Not first iteration
                         if (DEBUG && check) { // Check commit state
                             check = false;
-                            return new Check(commit.getReplica(), currentVC, commit, this, patchCRUD);
+                            return new Check(commit.getReplica(), currentVC, commit, this, patchCRUD.get(commit.patchContent()).getContentOf(fileEdit.getPath()));
                         }
                         ++nbCommit;
                         treated.add(commit.getId());
@@ -375,7 +365,8 @@ public class GitTrace implements Trace {
                         currentVC = startVC.get(commit.getId());
                         if (commit.parentCount() > 1) {
                             ++nbMerge;
-                            op = new MergeCorrection(commit.getReplica(), currentVC, patchCRUD.get(commit.patchContent()), this, GitTrace.this);
+                            // TODO : treat several files 
+                            op = new MergeCorrection(commit.getReplica(), currentVC, patchCRUD.get(commit.patchContent()).getContents().get(0), this, GitTrace.this);
                         } else {
                             Patch p = patchCRUD.get(commit.parentPatchId(0));
                             files = new LinkedList<FileEdition>(p.getEdits());
