@@ -1,22 +1,21 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2013 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2013
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
- 
 package jbenchmarker.trace.git;
 
 import collect.HashMapSet;
@@ -28,7 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.ContentSource;
@@ -78,9 +79,10 @@ public class GitWalker2 {
     private int fileNumber;
     private double filePercent;
     private int numberOfWorker = Runtime.getRuntime().availableProcessors();
+    private int timeOut = 60000;
     /*results*/
     HashMap<String, BlockLine> files;
-    HashMapSet<String, Couple> idCommitToFiles;
+    HashMapSet<String, Couple> idCommitParentsToFiles;
     HashMapSet<String, String> commitParent;
 
     /**
@@ -124,15 +126,19 @@ public class GitWalker2 {
         if (argList.contains("-p")) {
             progressBar = true;
         }
+        
+        Level level=Level.SEVERE;
         if (argList.contains("-d")) {
-            logger.setLevel(Level.ALL);
+            level=Level.ALL;
         } else if (argList.contains("-w")) {
-            logger.setLevel(Level.WARNING);
-        } else {
-            logger.setLevel(Level.SEVERE);
-        }
-
-
+            level=Level.WARNING;
+        } 
+        //logger.setLevel(level);
+        //Logger.getGlobal().setLevel(level);
+        //LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME).setLevel(level);
+        Logger.getLogger("").setLevel(level);
+        
+        
         GitWalker2 gw = new GitWalker2(arg[0], fromCommit);
 
 
@@ -208,57 +214,7 @@ public class GitWalker2 {
         return revWalk;
     }
 
-    /**
-     * Print all element in stream in p
-     *
-     * @param s Stream
-     * @param p Printer
-     * @throws IOException
-     */
-    public static void printStream(InputStream s, PrintStream p) throws IOException {
-        int c;
-        while ((c = s.read()) > -1) {
-            p.print((char) c);
-        }
-    }
-
-    /**
-     * Convert all element in stream in String
-     *
-     * @param s Stream
-     * @return the result String
-     * @throws IOException
-     */
-    public static String stream2Str(InputStream s) throws IOException {
-        StringBuilder str = new StringBuilder();
-        int c;
-        while ((c = s.read()) > -1) {
-            str.append((char) c);
-        }
-        return str.toString();
-
-    }
-
-    /**
-     * Launch a command and wait the terminaison. If the return number of
-     * command is not 0 then display all stream in warning logger.
-     *
-     * @param command the command to be launch
-     * @param currentDirectory Current working directory for the command
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public static void launchAndWait(String command, String currentDirectory) throws IOException, InterruptedException {
-        logger.log(Level.INFO, "command line : {0}", command);
-        Process p = Runtime.getRuntime().exec(command, new String[0], new File(currentDirectory));
-        p.waitFor();
-        if (p.exitValue() != 0) {
-            logger.log(Level.WARNING, "command existed with error code : {0}", p.exitValue());
-            logger.log(Level.WARNING, "error : {0}", stream2Str(p.getErrorStream()));
-            logger.log(Level.WARNING, "output : {0}", stream2Str(p.getInputStream()));
-        }
-
-    }
+   
 
     /**
      * Launch a command and wait the terminaison. If the return number of
@@ -269,8 +225,8 @@ public class GitWalker2 {
      * @throws IOException
      * @throws InterruptedException
      */
-    public void launchAndWait(String command) throws IOException, InterruptedException {
-        launchAndWait(command, gitDir);
+    public void launchAndWait(String command) throws IOException, InterruptedException, TimeoutException {
+        ExecTools.launchAndWait(command, gitDir, timeOut);
     }
 
     /**
@@ -280,32 +236,43 @@ public class GitWalker2 {
      * @throws IOException
      * @throws InterruptedException
      */
-    void gitPositionMerge(RevCommit revCom) throws IOException, InterruptedException {
-        gitPositionMerge(revCom.getParents());
-    }
+    /* void gitPositionMerge(RevCommit revCom) throws IOException, InterruptedException {
+     gitPositionMerge(revCom.getParents());
+     }*/
 
-    void gitPositionMerge(RevCommit[] parents) throws IOException, InterruptedException {
-        launchAndWait("git reset --hard " + parents[0].getName());
-        StringBuilder ids = new StringBuilder();
-        for (int i = 1; parents.length > i; i++) {
-            ids.append(parents[i].getName());
-            ids.append(" ");
-        }
-        launchAndWait("git merge --no-commit " + ids.toString());
-    }
-
+    /*void gitPositionMerge(RevCommit[] parents) throws IOException, InterruptedException {
+     launchAndWait("git reset --hard " + parents[0].getName());
+     StringBuilder ids = new StringBuilder();
+     for (int i = 1; parents.length > i; i++) {
+     ids.append(parents[i].getName());
+     ids.append(" ");
+     }
+     launchAndWait("git merge --no-commit " + ids.toString());
+     }*/
     void gitPositionMerge(Set<String> parents) throws IOException, InterruptedException {
-        Iterator<String> it = parents.iterator();
+        do {
+            try {
+                Iterator<String> it = parents.iterator();
+                launchAndWait("git reset --hard " + it.next());
+                StringBuilder ids = new StringBuilder();
+                //for (int i = 1; parents.length > i; i++) {
+                while (it.hasNext()) {
+                    ids.append(it.next());
+                    ids.append(" ");
+                }
 
-        launchAndWait("git reset --hard " + it.next());
-        StringBuilder ids = new StringBuilder();
-        //for (int i = 1; parents.length > i; i++) {
-        while (it.hasNext()) {
-            ids.append(it.next());
-            ids.append(" ");
-        }
-
-        launchAndWait("git merge --no-commit " + ids.toString());
+                launchAndWait("git merge --no-commit " + ids.toString());
+                return;
+            } catch (TimeoutException ex) {
+                //Thread.sleep(1000);
+                if (progressBar) {
+                    System.out.print("X");
+                    System.out.flush();
+                }
+                logger.log(Level.WARNING, "Process timed out retrying {0}", ex);
+                Thread.sleep(1000);
+            }
+        } while (true);
     }
 
     public void extractFiles() throws MissingObjectException, IncorrectObjectTypeException, IOException {
@@ -333,26 +300,52 @@ public class GitWalker2 {
             logger.log(Level.INFO, "Get file {0}.", filename);
         }
         tw.release();
+        revWalk.release();
+        //files.put("t/t6050-replace.sh", new BlockLine("t/t6050-replace.sh"));
         this.fileNumber = files.size();
         this.filePercent = fileNumber / 100.0;
 
         // return ret;
     }
 
-    void addParrent(String idCommit, RevCommit revCom) {
-        Set<String> parent = this.commitParent.getAll(idCommit);
+    /**
+     *
+     * @param idCommit
+     * @param revCom
+     * @param filename
+     * @return Newid composed by idcommit and idparent
+     *
+     */
+    String addParrent(RevCommit revCom) {
+        int parentnb = revCom.getParentCount();
+        StringBuilder newIDB = new StringBuilder();
+
+        for (int i = 0; i < parentnb; i++) {
+            newIDB.append(revCom.getParent(i).getName());
+            newIDB.append(' ');
+        }
+        String newID = newIDB.toString();
+        Set<String> parent = this.commitParent.getAll(newID);
+        /*create the entry is not existing*/
         if (parent == null) {
             logger.info("Commit parent is created");
-            RevCommit[] revParent = revCom.getParents();
-            for (int i = 0; i < revParent.length; i++) {
-                commitParent.put(idCommit, revParent[i].getName());
+            for (int i = 0; i < parentnb; i++) {
+                commitParent.put(newID, revCom.getParent(i).getName());
             }
+            /*RevCommit[] revParent = revCom.getParents();
+             for (int i = 0; i < revParent.length; i++) {
+             System.out.println(""+idCommit+" "+revCom.getName()+" adds "+revParent[i].getName());
+             commitParent.put(idCommit, revParent[i].getName());
+             }*/
 
-        } else {
-            if (commitParent.getAll(idCommit).size() != revCom.getParentCount()) {
-                logger.log(Level.WARNING, "Number of parrent of commit {0} id is different !", idCommit);
-            }
-        }
+        }/* else {
+            
+            
+         if (commitParent.getAll(idCommit).size() != revCom.getParentCount()) {
+         logger.log(Level.SEVERE, "Number of parrent of commit {0} id is different !", idCommit);
+         }
+         }*/
+        return newID;
     }
 
     public void treatFileEntry(Entry<String, BlockLine> file) throws Exception {
@@ -365,8 +358,8 @@ public class GitWalker2 {
             String idCommit = revCom.getName();
             logger.log(Level.INFO, "Commit <{0}>", idCommit);
             if (revCom.getParentCount() > 1) {// this is a merge
-                addParrent(idCommit, revCom);
-                stats.incrementMerge(idCommit);
+                String newId = addParrent(revCom);
+                stats.incrementMerge(newId);
                 logger.log(Level.INFO, "is a merge");
                 TreeWalk tw = new TreeWalk(repository);
                 tw.addTree(revCom.getTree());
@@ -375,7 +368,7 @@ public class GitWalker2 {
                 while (tw.next()) {
                     String f = tw.getPathString();
                     if (f.equals(fileName)) {
-                        this.idCommitToFiles.put(idCommit, new Couple(tw.getObjectId(0), f));
+                        this.idCommitParentsToFiles.put(newId, new Couple(tw.getObjectId(0), f));
                     } else {
                         logger.log(Level.SEVERE, "Filefilter doesn''t work {0}!={1}", new Object[]{f, fileName});
                     }
@@ -384,13 +377,15 @@ public class GitWalker2 {
             }
             stats.incrementCommitCount();
         }
+        //revWalk.release();
+        revWalk.dispose();
     }
 
     public void extractIDCommit() throws Exception {
         int fileThreated = 0;
 
         commitParent = new HashMapSet<String, String>();
-        idCommitToFiles = new HashMapSet<String, Couple>();
+        idCommitParentsToFiles = new HashMapSet<String, Couple>();
         TryMultiThreaded tmt = new TryMultiThreaded(files.size(), this.numberOfWorker);
         tmt.start();
         for (Entry<String, BlockLine> file : files.entrySet()) {
@@ -403,15 +398,15 @@ public class GitWalker2 {
 
     public void mesuresDiff() throws Exception {
         int commit = 0;
-        double commitPercent = idCommitToFiles.keySet().size() / 100.0;
+        double commitPercent = idCommitParentsToFiles.keySet().size() / 100.0;
         double nextStep = commitPercent;
 
 
-        for (String idcommit : idCommitToFiles.keySet()) {
+        for (String idcommit : idCommitParentsToFiles.keySet()) {
 
             logger.log(Level.INFO, "Treat Commit {0}", idcommit);
             gitPositionMerge(commitParent.getAll(idcommit));
-            for (Couple c : idCommitToFiles.getAll(idcommit)) {
+            for (Couple c : idCommitParentsToFiles.getAll(idcommit)) {
                 RawText stateAfterMerge = EmptyFile;
                 RawText stateAfterCommit = EmptyFile;
 
@@ -441,13 +436,20 @@ public class GitWalker2 {
                 BlockLine editCount = files.get(c.fileName);
                 editCount.incrementPass();
 
+
                 for (Edit ed : editList) {// Count line replace is two time counted
                     editCount.addLine(ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB());
                 }
                 //Count the block size
                 editCount.addBlock(editList.size());
+               /* if (c.fileName.contains("t6050-replace.sh")) {
+                    System.out.println("commit : " + idcommit);
+                    System.out.println("Merge : " + commitParent.getAll(idcommit));
+                    System.out.println("" + editCount);
+                }*/
 
             }
+            logger.info("Next");
             commit++;
             if (progressBar) {
                 while (commit > nextStep) {

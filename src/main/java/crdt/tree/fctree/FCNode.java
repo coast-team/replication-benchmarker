@@ -18,23 +18,20 @@
  */
 package crdt.tree.fctree;
 
-import collect.Node;
 import collect.OrderedNode;
 import collect.SimpleNode;
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeSet;
 
 /**
  *
  * @param <T>
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class FCNode<T> implements OrderedNode<T> {
+public class FCNode<T> implements OrderedNode<T> , Serializable {
 
     // private ArrayList<FCNode<T>> childrens;
     private ArrayList<FCNode<T>> childrens;
