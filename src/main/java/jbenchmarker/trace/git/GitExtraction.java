@@ -480,7 +480,7 @@ public class GitExtraction {
     private LinkedList<Edition> lineMove(Edition delete, Edition insert) {
         List<String> listDelete = delete.getCa(), listInsert = insert.getCb();
         int[][] md = distMat(listDelete, listInsert);
-        int[][] mat = editMat(listDelete, listInsert, md, updateThresold);
+        int[][] mat = editMat(listDelete, listInsert, md, moveThresold);
 
         if (mat == null) {
             return null;
