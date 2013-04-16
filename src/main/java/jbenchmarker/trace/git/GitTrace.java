@@ -61,14 +61,16 @@ public class GitTrace implements Trace {
     public int nbInsBlock = 0;
     public int nbDelBlock = 0;
     public int nbUpdBlock = 0;
+    public int nbReplace = 0;
+    public int nbMove = 0;
     public int insertSize = 0;
     public int deleteSize = 0;
     private CommitCRUD commitCRUD;
     private PatchCRUD patchCRUD;
     private List<Commit> initCommit;
     private static final DiffAlgorithm diffAlgorithm = GitExtraction.defaultDiffAlgorithm;
-    static final boolean DEBUG = true;
-
+    static final boolean DEBUG = false;
+    static public int UpdBefore=0,MoveBefore=0;
     /**
      * Produces a git trace using a git directory a couch db URL and a file
      * path. Operations are insert, delete, and replace (block of lines).
@@ -126,10 +128,13 @@ public class GitTrace implements Trace {
             patchCRUD = new PatchCRUD(dbcp);
             GitExtraction ge = new GitExtraction(repo, commitCRUD, patchCRUD, GitExtraction.defaultDiffAlgorithm, path, detectMaU, lut, ut, mt);
             ge.parseRepository();
+            UpdBefore = ge.nbUpdBlockBefore;
+            MoveBefore = ge.nbMoveBefore;
         } else {
             commitCRUD = new CommitCRUD(dbcc);
             patchCRUD = new PatchCRUD(dbcp);
         }
+       
         return new GitTrace(commitCRUD, patchCRUD);
     }
 
@@ -175,8 +180,13 @@ public class GitTrace implements Trace {
             deleteSize += ed.sizeB();
             switch (ed.getType()) {
                 case update:
-                case replace:
                     ++nbUpdBlock;
+                    break;
+                case move:
+                    ++nbMove;
+                    break;
+                case replace:
+                    ++nbReplace;
                     break;
                 case insert:
                     ++nbInsBlock;

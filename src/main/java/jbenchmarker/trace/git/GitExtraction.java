@@ -84,6 +84,7 @@ public class GitExtraction {
     private int lineUpdateThresold = 50;
     private int updateThresold = 20;
     private int moveThresold = 10;
+    public int nbUpdBlockBefore=0,nbMoveBefore=0;
 
     /**
      * Test constructor. Do not use outside test.
@@ -557,6 +558,18 @@ public class GitExtraction {
         // Detect move and update
         if (detectMoveAndUpdate) {
             elist = detectMovesAndUpdates(elist);
+            //Diff sans correction
+            for (Edition ed : elist) {
+                  switch (ed.getType()) {
+                case update:
+                    ++nbUpdBlockBefore;
+                    break;
+                case move:
+                    ++nbMoveBefore;
+                    break;
+                  }
+            }
+            
         }
 
         return new FileEdition(ent, type, elist);

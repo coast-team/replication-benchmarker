@@ -112,8 +112,8 @@ public final class GitMain extends Experience {
             for (String s : args) {
                 System.out.print(s + " ");
             }
-            System.out.println("\nPath;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
-            result.add("Path;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
+            System.out.println("\nPath;Num;Replicas;UpdateBefore;MoveBefore;UpdateAfter;MoveAfter;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
+            result.add("Path;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Replace;Ins Size;Del Size");
         }
 
         int nbrExec = Integer.parseInt(args[args.length - 2]);
@@ -174,6 +174,8 @@ public final class GitMain extends Experience {
 
                     if (!stat) {
                         statr = "" + cd.replicas.keySet().size()
+                                +';'+trace.UpdBefore+';'+trace.MoveBefore
+                                +';'+trace.nbUpdBlock+';'+trace.nbMove
                                 + ';' + trace.nbMerge + ';' + trace.nbBlockMerge
                                 + ';' + trace.mergeSize
                                 + ';' + trace.nbCommit + ';'
