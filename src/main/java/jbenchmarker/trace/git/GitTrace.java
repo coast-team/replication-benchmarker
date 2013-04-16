@@ -69,7 +69,7 @@ public class GitTrace implements Trace {
     private PatchCRUD patchCRUD;
     private List<Commit> initCommit;
     private static final DiffAlgorithm diffAlgorithm = GitExtraction.defaultDiffAlgorithm;
-    static final boolean DEBUG = false;
+    static final boolean DEBUG = true;
     static public int UpdBefore=0,MoveBefore=0;
     /**
      * Produces a git trace using a git directory a couch db URL and a file
@@ -222,12 +222,18 @@ public class GitTrace implements Trace {
                 @Override
                 public LocalOperation adaptTo(CRDT replica) {
 //add new line at the end of the document
+                        //System.out.println("Lookup : "+replica.lookup().toString().length()+", target : "+target.length());
                     if (replica.lookup().equals(target)) {
                         walker.currentVC.inc(replica.getReplicaNumber());
                         return SequenceOperation.noop();
                     } else {
+                            try {
+                                List l = diff(replica.lookup().toString(), target);
+                            } catch (IOException ex) {
+                                Logger.getLogger(GitTrace.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         throw new RuntimeException("=== INCORRECT LOCAL OPERATION ---- FROM " + commit.getParents()
-                                + "--- TO : " + commit.patchId() + "===\n" + replica.lookup());
+                                + "--- TO : " + commit.patchId() + "=== Lookup\n" + replica.lookup()+ "\n\n=== Target\n" + target);
                     }
                 }
 

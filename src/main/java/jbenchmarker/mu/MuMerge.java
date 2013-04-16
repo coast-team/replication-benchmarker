@@ -66,7 +66,7 @@ public class MuMerge<T> extends MergeAlgorithm {
     
     @Override
     protected List<SequenceMessage> localMove(SequenceOperation opt) throws IncorrectTraceException {
-        return handleMoves ? super.localMove(opt) : getDoc().move(opt.getPosition(), opt.getDestination(), opt.getContent(), opt);
+        return handleMoves ? getDoc().move(opt.getPosition(), opt.getDestination(), opt.getContent(), opt) : super.localMove(opt);
     }
     
     @Override

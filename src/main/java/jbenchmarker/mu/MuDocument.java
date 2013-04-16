@@ -116,7 +116,12 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
         List<SequenceMessage> patch = new LinkedList<SequenceMessage>();
         for (Entry<ListIdentifier, Timestamp> e : elems) {
             Cell<T> c = elements.get(e.getValue());
-            MuOperation op = new MuOperation(e.getValue(), e.getKey(), null, new TreeSet(c.contents.keySet()), null, null, OpType.delete, opt);
+            MuOperation op;
+            if (c.places.size() > 1) { // move clones hack : treat as single delete
+                op = new MuOperation(e.getValue(), e.getKey(), null, null, null, null, OpType.delete, opt);
+            } else {
+                op = new MuOperation(e.getValue(), e.getKey(), null, new TreeSet(c.contents.keySet()), null, null, OpType.delete, opt);
+            }
             apply(op);
             patch.add(op);
         }
@@ -191,6 +196,7 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
 
     // TODO Should be more efficient
     Iterator<Entry<ListIdentifier, Timestamp>> ith(int i) {
+        int k = i;
         Iterator<Entry<ListIdentifier, Timestamp>> it = positions.entrySet().iterator();
         while (--i > 0) {
             it.next();
