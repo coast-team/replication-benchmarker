@@ -69,8 +69,13 @@ public class GitTrace implements Trace {
     private PatchCRUD patchCRUD;
     private List<Commit> initCommit;
     private static final DiffAlgorithm diffAlgorithm = GitExtraction.defaultDiffAlgorithm;
-    static final boolean DEBUG = true;
-    static public int UpdBefore=0,MoveBefore=0;
+    static final boolean DEBUG = false;
+    static public int UpdBefore = 0, MoveBefore = 0;
+    private final boolean detectMoveAndUpdate;
+    private final int lineUpdateThresold;
+    private final int updateThresold;
+    private final int moveThresold;
+
     /**
      * Produces a git trace using a git directory a couch db URL and a file
      * path. Operations are insert, delete, and replace (block of lines).
@@ -134,12 +139,16 @@ public class GitTrace implements Trace {
             commitCRUD = new CommitCRUD(dbcc);
             patchCRUD = new PatchCRUD(dbcp);
         }
-       
-        return new GitTrace(commitCRUD, patchCRUD);
+
+        return new GitTrace(commitCRUD, patchCRUD, detectMaU, lut, ut, mt);
     }
 
     // TODO : Working view
-    public GitTrace(CommitCRUD dbc, PatchCRUD dbp) {
+    public GitTrace(CommitCRUD dbc, PatchCRUD dbp, boolean detectMovesAndUpdates, int lineUpdateThresold, int updateThresold, int moveThresold) {
+        this.detectMoveAndUpdate = detectMovesAndUpdates;
+        this.lineUpdateThresold = lineUpdateThresold;
+        this.updateThresold = updateThresold;
+        this.moveThresold = moveThresold;
         commitCRUD = dbc;
         patchCRUD = dbp;
         initCommit = commitCRUD.getAll();
@@ -151,18 +160,14 @@ public class GitTrace implements Trace {
         }
     }
 
-    public GitTrace(CouchDbConnector db) {
-        this(new CommitCRUD(db), new PatchCRUD(db));
-    }
-
-    static List<Edition> diff(byte[] aRaw, byte[] bRaw) throws IOException {
+    static List<Edition> diff(byte[] aRaw, byte[] bRaw) {
         final RawText a = new RawText(aRaw);
         final RawText b = new RawText(bRaw);
         final EditList editList = diffAlgorithm.diff(RawTextComparator.DEFAULT, a, b);
         return GitExtraction.edits(editList, a, b);
     }
 
-    static List<Edition> diff(String a, String b) throws IOException {
+    static List<Edition> diff(String a, String b) {
         return diff(a.getBytes(), b.getBytes());
     }
 
@@ -172,7 +177,6 @@ public class GitTrace implements Trace {
             nbBlockMerge += l.size();
         }
         for (Edition ed : l) {
-
             if (merge) {
                 mergeSize += ed.sizeA() + ed.sizeB();
             }
@@ -222,18 +226,14 @@ public class GitTrace implements Trace {
                 @Override
                 public LocalOperation adaptTo(CRDT replica) {
 //add new line at the end of the document
-                        //System.out.println("Lookup : "+replica.lookup().toString().length()+", target : "+target.length());
+                    //System.out.println("Lookup : "+replica.lookup().toString().length()+", target : "+target.length());
                     if (replica.lookup().equals(target)) {
                         walker.currentVC.inc(replica.getReplicaNumber());
                         return SequenceOperation.noop();
                     } else {
-                            try {
-                                List l = diff(replica.lookup().toString(), target);
-                            } catch (IOException ex) {
-                                Logger.getLogger(GitTrace.class.getName()).log(Level.SEVERE, null, ex);
-                            }
                         throw new RuntimeException("=== INCORRECT LOCAL OPERATION ---- FROM " + commit.getParents()
-                                + "--- TO : " + commit.patchId() + "=== Lookup\n" + replica.lookup()+ "\n\n=== Target\n" + target);
+                                + "--- TO : " + commit.patchId() + "=== Lookup\n" + replica.lookup() + "\n\n=== Target\n" + target
+                                + "=== DIFF\n" + diff(replica.lookup().toString(), target));
                     }
                 }
 
@@ -274,21 +274,20 @@ public class GitTrace implements Trace {
                 @Override
                 public LocalOperation adaptTo(CRDT replica) {
                     if (first == null) {
-                        try {
 //System.out.println("----- REPLICA -----\n" + replica.lookup());                                
 //System.out.println("----- PATCH -----\n" + new String(patch.getRaws().get(0)));                                
-                            List<Edition> l = diff(replica.lookup().toString(), target);
-                            gitTrace.stat(l, true);
+                        List<Edition> l = diff(replica.lookup().toString(), target);
+                        if (gitTrace.detectMoveAndUpdate) {
+                            l = GitExtraction.detectMovesAndUpdates(l, gitTrace.lineUpdateThresold, gitTrace.updateThresold, gitTrace.moveThresold);
+                        }
+                        gitTrace.stat(l, true);
 //for (Edition ed : l) { System.out.println("--- DIFF ---\n" + ed); }                                
-                            if (l.isEmpty()) {
-                                walker.currentVC.inc(replica.getReplicaNumber());
-                                first = SequenceOperation.noop();
-                            } else {
-                                walker.editions.addAll(l);
-                                first = walker.nextElement().getOperation().adaptTo(replica);
-                            }
-                        } catch (IOException ex) {
-                            Logger.getLogger(GitTrace.class.getName()).log(Level.SEVERE, "During merge correction computation", ex);
+                        if (l.isEmpty()) {
+                            walker.currentVC.inc(replica.getReplicaNumber());
+                            first = SequenceOperation.noop();
+                        } else {
+                            walker.editions.addAll(l);
+                            first = walker.nextElement().getOperation().adaptTo(replica);
                         }
                     }
                     return first;
