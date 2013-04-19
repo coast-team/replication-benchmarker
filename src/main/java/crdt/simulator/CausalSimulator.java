@@ -270,6 +270,9 @@ public class CausalSimulator extends Simulator {
             if (!vc.readyFor(r, opt.getVectorClock())) { // Check causal readiness 
                 throw new IncorrectTraceException("replica " + r + " with vc " + vc + " not ready for " + opt.getVectorClock());
             }
+            
+//System.out.println("Before Generation --- Replica: "+opt.getReplica()+", VC : "+opt.getVectorClock()+"LocalOperation : "+op+"\n Observe : "+localReplica.lookup());
+
             tmp = System.nanoTime();
 
             final CRDTMessage m = localReplica.applyLocal(op);
@@ -282,6 +285,7 @@ public class CausalSimulator extends Simulator {
                 genSize.add(m.size());
                 remoteTime.add(0L);
             }
+//System.out.println("After Generation --- Replica: "+opt.getReplica()+", VC : "+opt.getVectorClock()+"LocalOperation : "+op+"\n Observe : "+localReplica.lookup());
 
             nbLocal++;
             final CRDTMessage msg = m.clone();
@@ -339,10 +343,12 @@ public class CausalSimulator extends Simulator {
             if (!vc.readyFor(e, t.getVectorClock())) {
                 throw new IncorrectTraceException("replica " + r.getReplicaNumber() + " with vc " + vc + " not ready for " + t.getVectorClock());
             }
+//System.out.println("Before Integration --- Replica: "+r.getReplicaNumber()+"With VC : "+vc+", Receive : "+t.toString()+" From replica : "+e+"\n Observe : "+r.lookup());
 
             long before = System.nanoTime();
             r.applyRemote(optime);
             long after = System.nanoTime();
+//System.out.println("After Integration --- Replica: "+r.getReplicaNumber()+"With VC : "+vc+", Receive : "+t.toString()+" From replica : "+e+"\n Observe : "+r.lookup());
 
             remoteSum += (after - before);
             if (detail) {

@@ -69,8 +69,8 @@ public class GitTrace implements Trace {
     private PatchCRUD patchCRUD;
     private List<Commit> initCommit;
     private static final DiffAlgorithm diffAlgorithm = GitExtraction.defaultDiffAlgorithm;
-    static final boolean DEBUG = false;
-    static public int UpdBefore = 0, MoveBefore = 0;
+    static final boolean DEBUG = true;
+    static public int UpdBefore = 0, MoveBefore = 0, MergeBefore=0;
     private final boolean detectMoveAndUpdate;
     private final int lineUpdateThresold;
     private final int updateThresold;
@@ -135,6 +135,7 @@ public class GitTrace implements Trace {
             ge.parseRepository();
             UpdBefore = ge.nbUpdBlockBefore;
             MoveBefore = ge.nbMoveBefore;
+            MergeBefore= ge.nbrMergeBefore;
         } else {
             commitCRUD = new CommitCRUD(dbcc);
             patchCRUD = new PatchCRUD(dbcp);

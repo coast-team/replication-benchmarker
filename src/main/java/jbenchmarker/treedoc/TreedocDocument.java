@@ -41,9 +41,12 @@ public class TreedocDocument extends TreedocRoot implements Document {
 		final TreedocOperation treedocOp = (TreedocOperation) op;
 		switch (treedocOp.getType()) {
 		case insert:
+//System.out.println("--- Remote Add ---"+treedocOp.getId()+", Content: "+treedocOp.getContent());
 			insertAt(treedocOp.getId(), treedocOp.getContent());
 			break;
 		case delete:
+//System.out.println("--- Remote Remove ---"+treedocOp.getId());
+
 			deleteAt(treedocOp.getId());
 			break;
 		default:

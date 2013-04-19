@@ -50,6 +50,8 @@ public class TreedocMerge extends MergeAlgorithm {
                 final TreedocIdentifier id = doc.insertAt(
                     restrictedIndex(opt.getPosition(), true), opt.getContent(), getReplicaNumber());
                 ops.add(new TreedocOperation(opt, id, opt.getContent()));
+//System.out.println("--- localInsert ---"+id);
+
                 return ops;
         }
 
@@ -66,7 +68,9 @@ public class TreedocMerge extends MergeAlgorithm {
 			final TreedocIdentifier deletedId = doc
 						.deleteAt(restrictedIndex(opt.getPosition(), false));
 			ops.add(new TreedocOperation(opt, deletedId));
+//System.out.println("---- localDelete --- "+deletedId);
 		}
+                
                 return ops;
 	}
 

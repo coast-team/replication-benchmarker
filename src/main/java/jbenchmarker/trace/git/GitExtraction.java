@@ -84,7 +84,7 @@ public class GitExtraction {
     private int lineUpdateThresold = 50;
     private int updateThresold = 20;
     private int moveThresold = 10;
-    public int nbUpdBlockBefore=0,nbMoveBefore=0;
+    public int nbUpdBlockBefore=0,nbMoveBefore=0, nbrMergeBefore;
 
     /**
      * Test constructor. Do not use outside test.
@@ -624,6 +624,10 @@ public class GitExtraction {
                     mraws.add(open(twalk.getPathString(), id));
                 }
                 patchCrud.add(new Patch(co, mpaths, mraws));
+            }
+            
+            if (commit.getParentCount() > 1) {
+                ++nbrMergeBefore;
             }
 
             if (commit.getParentCount() == 0) {

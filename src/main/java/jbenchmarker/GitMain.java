@@ -24,6 +24,7 @@ import crdt.simulator.CausalSimulator;
 import crdt.simulator.TraceObjectWriter;
 import crdt.simulator.sizecalculator.StandardSizeCalculator;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -62,6 +63,7 @@ public final class GitMain extends Experience {
         }
 
         List<String> result = new LinkedList<String>();
+        ArrayList<String> fileCrashed = new ArrayList<String>();
         String gitdir = args[1];
         int end;
         List<String> paths = new LinkedList<String>();
@@ -112,8 +114,8 @@ public final class GitMain extends Experience {
             for (String s : args) {
                 System.out.print(s + " ");
             }
-            System.out.println("\nPath;Num;Replicas;UpdateBefore;MoveBefore;UpdateAfter;MoveAfter;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
-            result.add("Path;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Replace;Ins Size;Del Size");
+            System.out.println("\nPath;Num;Replicas;UpdateBefore;MoveBefore;MergeBefore;UpdateAfter;MoveAfter;MergesAfter;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
+            result.add("Path;Num;Replicas;UpdateBefore;MoveBefore;MergeBefore;UpdateAfter;MoveAfter;MergesAfter;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
         }
 
         int nbrExec = Integer.parseInt(args[args.length - 2]);
@@ -131,148 +133,159 @@ public final class GitMain extends Experience {
         int nbserializ = Integer.parseInt(args[args.length - 4]);
         CouchConnector cc = new CouchConnector(dbURL);
         for (String path : paths.subList(i, end)) {
-            if (!onlyMerge || gotMerge(gitdir, path)) {
-                System.out.print(path + ';' + ++i + ';');
-                long ltime[][] = null, mem[][] = null, rtime[][] = null;
-                int cop = 0, uop = 0, nbReplica = 0, mop = 0;
-                int minCop = 0, minUop = 0, minMop = 0;
+                if (!onlyMerge || gotMerge(gitdir, path)) {
+                    System.out.print(path + ';' + ++i + ';');
+                    long ltime[][] = null, mem[][] = null, rtime[][] = null;
+                    int cop = 0, uop = 0, nbReplica = 0, mop = 0;
+                    int minCop = 0, minUop = 0, minMop = 0;
 
-                int nbBlockMerge = 0, mergeSize = 0, nbInsBlock = 0,
-                        nbDelBlock = 0, insertSize = 0, deleteSize = 0,
-                        nbUpdBlock = 0, nbMerge = 0, nbCommit = 0;
+                    int nbBlockMerge = 0, mergeSize = 0, nbInsBlock = 0,
+                            nbDelBlock = 0, insertSize = 0, deleteSize = 0,
+                            nbUpdBlock = 0, nbMerge = 0, nbCommit = 0;
 
-                int nbrIns = 0, nbrDel = 0;
-                int sizeMsg = 0;
-                boolean oneclean = clean;
-                for (int k = 0; k < nbrExec; k++) {
-                    GitTrace trace = dmau ? GitTrace.createWithMoves(gitdir, cc, path, oneclean, lineUpdateThresold, updateThresold, moveThresold)
-                            : GitTrace.create(gitdir, cc, path, oneclean);
-                    oneclean = false;
-                    CausalSimulator cd = new CausalSimulator(rf, stat, stat ? nbserializ : 0, stat);
-                    cd.setWriter(save ? new TraceObjectWriter("trace") : null);
+                    int nbrIns = 0, nbrDel = 0;
+                    int sizeMsg = 0;
+                    boolean oneclean = clean;
+                    for (int k = 0; k < nbrExec; k++) {
+                        GitTrace trace = dmau ? GitTrace.createWithMoves(gitdir, cc, path, oneclean, lineUpdateThresold, updateThresold, moveThresold)
+                                : GitTrace.create(gitdir, cc, path, oneclean);
+                        oneclean = false;
+                        CausalSimulator cd = new CausalSimulator(rf, stat, stat ? nbserializ : 0, stat);
+                        cd.setWriter(save ? new TraceObjectWriter("trace") : null);
+                        
+                        try {
+                            cd.run(trace);
+                        } catch (RuntimeException e) {
+                            fileCrashed.add(path);
+                        }
 
-                    cd.run(trace);
+                        if (k == 0 && stat) {
+                            cop = cd.getRemoteTimes().size();
+                            uop = cd.getGenerationTimes().size();
+                            mop = cd.getMemUsed().size();
+                            nbReplica = cd.replicas.keySet().size();
+                            ltime = new long[nb][uop];
+                            rtime = new long[nb][cop];
+                            mem = new long[nb][mop];
+                            minCop = cop;
+                            minUop = uop;
+                            minMop = mop;
+                            nbMerge = trace.nbMerge;
+                            nbCommit = trace.nbCommit;
+                        }
 
-                    if (k == 0 && stat) {
-                        cop = cd.getRemoteTimes().size();
-                        uop = cd.getGenerationTimes().size();
-                        mop = cd.getMemUsed().size();
-                        nbReplica = cd.replicas.keySet().size();
-                        ltime = new long[nb][uop];
-                        rtime = new long[nb][cop];
-                        mem = new long[nb][mop];
-                        minCop = cop;
-                        minUop = uop;
-                        minMop = mop;
-                        nbMerge = trace.nbMerge;
-                        nbCommit = trace.nbCommit;
+                        if (cd.replicas.keySet().isEmpty()) {
+                            break;
+                        }
+
+                        if (!stat) {
+                            statr = "" + cd.replicas.keySet().size()
+                                    + ';' + trace.UpdBefore + ';' + trace.MoveBefore + ';' + trace.MergeBefore
+                                    + ';' + trace.nbUpdBlock + ';' + trace.nbMove
+                                    + ';' + trace.nbMerge + ';' + trace.nbBlockMerge
+                                    + ';' + trace.mergeSize
+                                    + ';' + trace.nbCommit + ';'
+                                    + trace.nbInsBlock + ';' + trace.nbDelBlock
+                                    + ';' + trace.nbUpdBlock + ';'
+                                    + trace.insertSize + ';' + trace.deleteSize;
+
+                            System.out.println(statr);
+                            result.add(path + ';' + i + ';' + statr);
+                        }
+
+
+                        if (nbReplica == 0) {
+                            break;
+                        }
+
+                        if (stat) {
+                            nbBlockMerge += trace.nbBlockMerge;
+                            mergeSize += trace.mergeSize;
+                            nbInsBlock += trace.nbInsBlock;
+                            nbDelBlock += trace.nbDelBlock;
+                            nbUpdBlock += trace.nbUpdBlock;
+                            insertSize += trace.insertSize;
+                            deleteSize += trace.deleteSize;
+                            /*nbrIns += cd.getnbrIns();
+                             nbrDel += cd.getnbrDel();*/
+                            sizeMsg += this.serializ(cd.getGenHistory());
+
+                            minCop = minCop > cd.getRemoteTimes().size() ? cd.getRemoteTimes().size() : minCop;
+                            minUop = minUop > cd.getGenerationTimes().size() ? cd.getGenerationTimes().size() : minUop;
+                            minMop = minMop > cd.getMemUsed().size() ? cd.getMemUsed().size() : minMop;
+
+                            toArrayLong(ltime[k], cd.getGenerationTimes());
+                            toArrayLong(rtime[k], cd.getRemoteTimes());
+
+                            if (k == 0 || args[args.length - 1].contains("Logoot")) {
+                                toArrayLong(mem[k], cd.getMemUsed());
+                            }
+
+                            for (int j = 0; j < minCop - 1; j++) {
+                                if (nbReplica > 1) {
+                                    rtime[k][j] /= nbReplica - 1;
+                                }
+                            }
+                        }
+
+                        Iterator<Integer> a = cd.replicas.keySet().iterator();
+                        if (a.hasNext()) {
+                            int r = a.next();
+                            serMem += StandardSizeCalculator.sizeOf(cd.replicas.get(r));
+                            memOk = true;
+                        }
+
+                        trace = null;
+                        cd = null;
                     }
 
-                    if (cd.replicas.keySet().isEmpty()) {
-                        break;
-                    }
-
-                    if (!stat) {
-                        statr = "" + cd.replicas.keySet().size()
-                                +';'+trace.UpdBefore+';'+trace.MoveBefore
-                                +';'+trace.nbUpdBlock+';'+trace.nbMove
-                                + ';' + trace.nbMerge + ';' + trace.nbBlockMerge
-                                + ';' + trace.mergeSize
-                                + ';' + trace.nbCommit + ';'
-                                + trace.nbInsBlock + ';' + trace.nbDelBlock
-                                + ';' + trace.nbUpdBlock + ';'
-                                + trace.insertSize + ';' + trace.deleteSize;
-
-                        System.out.println(statr);
-                        result.add(path + ';' + i + ';' + statr);
-                    }
-
-
-                    if (nbReplica == 0) {
-                        break;
+                    if (memOk) {
+                        memory[m] = serMem / nbrExec;
+                        serMem = 0;
+                        m++;
+                        memOk = false;
                     }
 
                     if (stat) {
-                        nbBlockMerge += trace.nbBlockMerge;
-                        mergeSize += trace.mergeSize;
-                        nbInsBlock += trace.nbInsBlock;
-                        nbDelBlock += trace.nbDelBlock;
-                        nbUpdBlock += trace.nbUpdBlock;
-                        insertSize += trace.insertSize;
-                        deleteSize += trace.deleteSize;
-                        /*nbrIns += cd.getnbrIns();
-                         nbrDel += cd.getnbrDel();*/
-                        sizeMsg += this.serializ(cd.getGenHistory());
+                        statr = "" + nbReplica + ';' + nbMerge + ';' + nbBlockMerge / nbrExec
+                                + ';' + mergeSize / nbrExec + ';' + nbCommit + ';'
+                                + nbInsBlock / nbrExec + ';' + nbDelBlock / nbrExec
+                                + ';' + nbUpdBlock / nbrExec + ';'
+                                + insertSize / nbrExec + ';' + deleteSize / nbrExec + ';'
+                                + nbrIns / nbrExec + ';' + nbrDel / nbrExec;
 
-                        minCop = minCop > cd.getRemoteTimes().size() ? cd.getRemoteTimes().size() : minCop;
-                        minUop = minUop > cd.getGenerationTimes().size() ? cd.getGenerationTimes().size() : minUop;
-                        minMop = minMop > cd.getMemUsed().size() ? cd.getMemUsed().size() : minMop;
 
-                        toArrayLong(ltime[k], cd.getGenerationTimes());
-                        toArrayLong(rtime[k], cd.getRemoteTimes());
-
-                        if (k == 0 || args[args.length - 1].contains("Logoot")) {
-                            toArrayLong(mem[k], cd.getMemUsed());
-                        }
-
-                        for (int j = 0; j < minCop - 1; j++) {
-                            if (nbReplica > 1) {
-                                rtime[k][j] /= nbReplica - 1;
+                        double thresold = 2.0;
+                        if (nbrExec > 1) {
+                            computeAverage(ltime, thresold, minUop);
+                            computeAverage(rtime, thresold, minCop);
+                            if (args[args.length - 1].contains("Logoot")) {
+                                computeAverage(mem, thresold, minMop);
                             }
                         }
+
+                        int nbrLigne = (insertSize + deleteSize) / nbrExec;
+
+                        long avgGen = calcul(ltime, minUop, "gen", file, "avg");
+                        long somGen = calcul(ltime, minUop, "gen", file, "sum");
+                        long avgUsr = calcul(rtime, minCop, "usr", file, "avg");
+                        long somUsr = calcul(rtime, minCop, "usr", file, "sum");
+                        long avgMem = calcul(mem, minMop, "mem", file, "avg");
+                        long sumMem = calcul(mem, minMop, "mem", file, "sum");
+
+                        statr = statr + ';' + nbrLigne + ';' + minCop + ';' + somGen + ';' + avgGen
+                                + ';' + somUsr + ';' + avgUsr + ';' + sumMem + ';' + avgMem + ';' + sizeMsg / nbrExec;
+
+                        result.add(path + ';' + i + ';' + statr);
+                        System.out.println(statr);
                     }
-
-                    Iterator<Integer> a = cd.replicas.keySet().iterator();
-                    if (a.hasNext()) {
-                        int r = a.next();
-                        serMem += StandardSizeCalculator.sizeOf(cd.replicas.get(r));
-                        memOk = true;
-                    }
-
-                    trace = null;
-                    cd = null;
                 }
-
-                if (memOk) {
-                    memory[m] = serMem / nbrExec;
-                    serMem = 0;
-                    m++;
-                    memOk = false;
-                }
-
-                if (stat) {
-                    statr = "" + nbReplica + ';' + nbMerge + ';' + nbBlockMerge / nbrExec
-                            + ';' + mergeSize / nbrExec + ';' + nbCommit + ';'
-                            + nbInsBlock / nbrExec + ';' + nbDelBlock / nbrExec
-                            + ';' + nbUpdBlock / nbrExec + ';'
-                            + insertSize / nbrExec + ';' + deleteSize / nbrExec + ';'
-                            + nbrIns / nbrExec + ';' + nbrDel / nbrExec;
-
-
-                    double thresold = 2.0;
-                    if (nbrExec > 1) {
-                        computeAverage(ltime, thresold, minUop);
-                        computeAverage(rtime, thresold, minCop);
-                        if (args[args.length - 1].contains("Logoot")) {
-                            computeAverage(mem, thresold, minMop);
-                        }
-                    }
-
-                    int nbrLigne = (insertSize + deleteSize) / nbrExec;
-
-                    long avgGen = calcul(ltime, minUop, "gen", file, "avg");
-                    long somGen = calcul(ltime, minUop, "gen", file, "sum");
-                    long avgUsr = calcul(rtime, minCop, "usr", file, "avg");
-                    long somUsr = calcul(rtime, minCop, "usr", file, "sum");
-                    long avgMem = calcul(mem, minMop, "mem", file, "avg");
-                    long sumMem = calcul(mem, minMop, "mem", file, "sum");
-
-                    statr = statr + ';' + nbrLigne + ';' + minCop + ';' + somGen + ';' + avgGen
-                            + ';' + somUsr + ';' + avgUsr + ';' + sumMem + ';' + avgMem + ';' + sizeMsg / nbrExec;
-
-                    result.add(path + ';' + i + ';' + statr);
-                    System.out.println(statr);
-                }
+        }
+        
+        if (fileCrashed.size() > 0) {
+            System.out.println("\n\nNumber of file crashed :" + fileCrashed.size());
+            for (String f : fileCrashed) {
+                System.out.println("-" + f);
             }
         }
 
@@ -312,7 +325,7 @@ public final class GitMain extends Experience {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         Repository repo = builder.setGitDir(new File(gitdir + "/.git")).readEnvironment()
                 .findGitDir().build();
-        RevWalk revwalk = new RevWalk(repo);        
+        RevWalk revwalk = new RevWalk(repo);
         revwalk.setTreeFilter(AndTreeFilter.create(PathFilter.create(path), TreeFilter.ANY_DIFF));
         revwalk.markStart(revwalk.parseCommit(repo.resolve("HEAD")));
         Iterator<RevCommit> it = revwalk.iterator();
@@ -321,6 +334,6 @@ public final class GitMain extends Experience {
                 return true;
             }
         }
-        return false;        
+        return false;
     }
 }
