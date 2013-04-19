@@ -549,17 +549,17 @@ public class GitWalker {
                  */
                 EditList editList = diffAlgorithm.diff(RawTextComparator.DEFAULT, stateAfterMerge, stateAfterCommit);
                 
-if(editList.size()>0)
+/*if(editList.size()>0)
 {
     System.out.println("---Patch---");for(int i=0;i<stateAfterCommit.size();i++)System.out.println(stateAfterCommit.getString(i));
     System.out.println("---Lookup---");for(int i=0;i<stateAfterMerge.size();i++)System.out.println(stateAfterMerge.getString(i));
-}
+}*/
                 BlockLine editCount = files.get(c.fileName);
                 editCount.incrementPass();
 
 
                 for (Edit ed : editList) {// Count line replace is two time counted
-System.out.println("--- Edition -- "+ed.toString()); 
+//System.out.println("--- Edition -- "+ed.toString()); 
                     editCount.addLine(ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB());
                 }
                 //Count the block size
