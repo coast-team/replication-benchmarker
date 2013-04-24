@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.treedoc;
+package jbenchmarker.treedocReplace;
 
 import crdt.PreconditionException;
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.factories.TreedocFactory;
+import jbenchmarker.factories.TreedocReplaceFactory;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
@@ -33,14 +33,14 @@ import org.junit.Test;
  *
  * @author urso
  */
-public class TreedocMergeTest {
+public class TreedocReplaceMergeTest {
 
     private static final int REPLICA_ID = 7;
-    private TreedocMerge replica;
+    private TreedocRepMerge replica;
 
     @Before
     public void setUp() throws Exception {
-        replica = (TreedocMerge) new TreedocFactory().create(REPLICA_ID);
+        replica = (TreedocRepMerge) new TreedocReplaceFactory().create(REPLICA_ID);
     }
 
     @Test
@@ -78,5 +78,19 @@ public class TreedocMergeTest {
         assertEquals(content.substring(0, pos) + upd + content.substring(pos+off), replica.lookup());        
     }
     
-
+         @Test
+    public void testUpdate2() throws PreconditionException {
+        String ligne1 = "aaa",ligne2="bbb",ligne3="ccc", upd1 = "xxx",upd2 = "yyy";
+        replica.applyLocal(SequenceOperation.insert(0, ligne1));
+        replica.applyLocal(SequenceOperation.insert(replica.lookup().length(), ligne3));
+        replica.applyLocal(SequenceOperation.insert(3, ligne2));
+        assertEquals("aaabbbccc", replica.lookup());
+        int pos = 3;       
+        List<String> list = new ArrayList();
+        list.add(upd1);
+        SequenceOperation opt= SequenceOperation.replace(pos, list.size(), list);
+        //SequenceOperation opt= SequenceOperation.replace(pos, 3, upd1);
+        replica.applyLocal(opt);
+        assertEquals("aaaxxxccc", replica.lookup());
+    }
 }

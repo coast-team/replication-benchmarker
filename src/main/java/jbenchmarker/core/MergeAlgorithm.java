@@ -1,20 +1,20 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2013 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2013
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.core;
 
@@ -79,11 +79,13 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
      */
     public void reset() {
     }
+
     /**
      * Old school function need to be refactored in directly CRDT Message
+     *
      * @param opt Sequence Operation
      * @return List of message for sequence
-     * @throws IncorrectTraceException 
+     * @throws IncorrectTraceException
      */
     private List<SequenceMessage> oldApplyLocal(SequenceOperation opt) throws IncorrectTraceException {
         switch (opt.getType()) {
@@ -123,7 +125,7 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
         if (l == null || l.isEmpty()) {
             return CRDTMessage.emptyMessage;
         }
-        
+
         CRDTMessage m = null;
         for (SequenceMessage n : l) {
             if (m == null) {
@@ -192,12 +194,12 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
     abstract protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException;
 
     abstract protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException;
-
+    
     /**
      * Default behavior of update is to delete and insert
      */
-    protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
-        return localReplace(opt);
+    protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException{
+         return localReplace(opt);
     }
 
     /**
@@ -208,15 +210,26 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
                 ins = new SequenceOperation(OpType.insert, opt.getDestination(), 0, opt.getContent());
         List<SequenceMessage> lop = localDelete(del);
         lop.addAll(localInsert(ins));
-        return lop;        
+        return lop;
     }
 
     /**
      * Default behavior of replace is to delele plus insert
      */
-    private List<SequenceMessage> localReplace(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<SequenceMessage> localReplace(SequenceOperation opt) throws IncorrectTraceException {
         List<SequenceMessage> lop = localDelete(opt);
         lop.addAll(localInsert(opt));
         return lop;
+
     }
+
+    /*protected List<SequenceMessage> localReplaceCorrecteId(SequenceOperation opt) throws IncorrectTraceException {
+        System.out.println("--- localReplaceCorrecteId ---");
+        List<SequenceMessage> lop = localInsert(opt);
+        int newPos = opt.getPosition()+opt.getContent().size();
+        opt.setPosition(newPos);
+        lop.addAll(localDelete(opt));
+        return lop;
+
+    }*/
 }

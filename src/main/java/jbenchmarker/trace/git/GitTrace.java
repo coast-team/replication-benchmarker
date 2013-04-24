@@ -276,7 +276,7 @@ public class GitTrace implements Trace {
                 public LocalOperation adaptTo(CRDT replica) {
                     if (first == null) {
 //System.out.println("----- REPLICA -----\n" + replica.lookup());                                
-//System.out.println("----- PATCH -----\n" + new String(patch.getRaws().get(0)));                                
+//System.out.println("----- PATCH -----\n" + target);                                
                         List<Edition> l = diff(replica.lookup().toString(), target);
                         if (gitTrace.detectMoveAndUpdate) {
                             l = GitExtraction.detectMovesAndUpdates(l, gitTrace.lineUpdateThresold, gitTrace.updateThresold, gitTrace.moveThresold);

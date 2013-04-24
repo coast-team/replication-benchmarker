@@ -1,20 +1,20 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2013 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2013
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.logoot;
 
@@ -43,7 +43,7 @@ public class LogootMerge<T> extends MergeAlgorithm {
     public LogootDocument<T> getDoc() {
         return (LogootDocument<T>) super.getDoc();
     }
-   
+
     @Override
     protected void integrateRemote(SequenceMessage op) {
         getDoc().apply(op);
@@ -53,7 +53,7 @@ public class LogootMerge<T> extends MergeAlgorithm {
     protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
         int offset = opt.getLenghOfADel(), position = opt.getPosition();
-        
+
         for (int k = 1; k <= offset; k++) {
             LogootOperation<T> wop = LogootOperation.Delete(opt, getDoc().getId(position + k));
             lop.add(wop);
@@ -66,7 +66,7 @@ public class LogootMerge<T> extends MergeAlgorithm {
     protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
         int N = opt.getContent().size(), position = opt.getPosition();
-        
+
         List<T> content = opt.getContent();
         List<ListIdentifier> patch = getDoc().generateIdentifiers(position, N);
 
@@ -77,7 +77,7 @@ public class LogootMerge<T> extends MergeAlgorithm {
             lop.add(log);
             lc.add(c);
         }
-        
+
         getDoc().insert(position, patch, lc);
         return lop;
     }

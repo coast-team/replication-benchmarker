@@ -90,6 +90,10 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
     public int getPosition() {
         return position;
     }
+    
+    public void setPosition(int p) {
+        position = p;
+    }
 
     public int getDestination() {
         return argument;

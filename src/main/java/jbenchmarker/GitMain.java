@@ -153,11 +153,11 @@ public final class GitMain extends Experience {
                         CausalSimulator cd = new CausalSimulator(rf, stat, stat ? nbserializ : 0, stat);
                         cd.setWriter(save ? new TraceObjectWriter("trace") : null);
                         
-                        try {
+                  //      try {
                             cd.run(trace);
-                        } catch (RuntimeException e) {
-                            fileCrashed.add(path);
-                        }
+                  //      } catch (RuntimeException e) {
+                   //       fileCrashed.add(path);
+                  //      }
 
                         if (k == 0 && stat) {
                             cop = cd.getRemoteTimes().size();

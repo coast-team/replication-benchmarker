@@ -36,7 +36,7 @@ import java.util.NoSuchElementException;
  * @author mzawirski
  */
 public class TreedocIdentifier implements Serializable {
-	enum EdgeDirection {
+	public enum EdgeDirection {
 		LEFT, RIGHT
 	};
 
@@ -45,7 +45,7 @@ public class TreedocIdentifier implements Serializable {
 	 * 
 	 * @author mzawirski
 	 */
-	static class Recorder {
+	public static class Recorder {
 		private BitSet path = new BitSet();
 		private ArrayList<Integer> tagChanges = new ArrayList<Integer>();
 		private int index;
@@ -90,7 +90,7 @@ public class TreedocIdentifier implements Serializable {
 		}
 	}
 
-	static class ComponentScanner {
+	public static class ComponentScanner {
 		private EdgeDirection direction;
 		private UniqueTag tag;
 

@@ -34,7 +34,7 @@ import jbenchmarker.treedoc.TreedocIdentifier.Recorder;
  * 
  * @author mzawirski
  */
-class TreedocNode<T> implements Serializable{
+public class TreedocNode<T> implements Serializable{
 	// TODO: export as a setting
 	static final boolean USE_DISAMBIGUATORS_TRICK = true;
 
