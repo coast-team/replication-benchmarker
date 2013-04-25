@@ -32,12 +32,15 @@ import crdt.simulator.random.OperationProfile;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardOrderedTreeOpProfile;
 import crdt.simulator.random.StandardOrderedTreeOperationProfileWithMoveRename;
+import crdt.simulator.sizecalculator.SizeCalculator;
 import crdt.tree.fctree.FCTree;
 import crdt.tree.fctree.policy.FastCycleBreaking;
 import crdt.tree.orderedtree.LogootTreeNode;
 import crdt.tree.orderedtree.PositionIdentifierTree;
 import crdt.tree.orderedtree.PositionnedNode;
 import crdt.tree.orderedtree.WootHashTreeNode;
+import crdt.tree.orderedtree.renderer.SizeJSonDoc;
+import crdt.tree.orderedtree.renderer.SizeJSonStyleDoc;
 import crdt.tree.orderedtree.renderer.SizeXMLDoc;
 import crdt.tree.wordtree.WordConnectionPolicy;
 import crdt.tree.wordtree.WordTree;
@@ -264,9 +267,17 @@ public class TreeSimulation {
              */
             CausalSimulator cd;
             if (j < args.length) {
-                cd = new CausalSimulator(rf, true, scaleMemory, new SizeXMLDoc());
-
                 fileRes = args[j++];
+                SizeCalculator size;
+                if(fileRes.contains("json")){
+                    size=new SizeJSonStyleDoc();
+                }else{
+                    size=  new SizeXMLDoc();
+                }
+                
+                cd = new CausalSimulator(rf, true, scaleMemory,size);
+
+                
             } else {
                 cd = new CausalSimulator(rf, true, scaleMemory, true);
             }

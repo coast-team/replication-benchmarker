@@ -7,7 +7,6 @@ package jbenchmarker.trace.git;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,8 +27,9 @@ public class ExecTools {
      * @param currentDirectory Current working directory for the command
      * @throws IOException
      * @throws InterruptedException
+     * @return The return value of process
      */
-    public static void launchAndWait(String command, String currentDirectory, int timeout) throws IOException, TimeoutException {
+    public static int launchAndWait(String command, String currentDirectory, int timeout) throws IOException, TimeoutException {
         
         LOG.log(Level.INFO, "command line : {0}", command);
         Process p = Runtime.getRuntime().exec(command, new String[0], new File(currentDirectory));
@@ -53,53 +53,32 @@ public class ExecTools {
             LOG.log(Level.INFO, "output : {0}", output);
             LOG.log(Level.INFO, "{0} finished ", command);
         }
-
+        return p.exitValue();
     }
-
+    
     /**
-     * Print all element in stream in p
-     *
-     * @param s Stream
-     * @param p Printer
-     * @throws IOException
+     * This class read an InputStream in separated thread
+     * The thread termine when the inputstream is closed
+     * It can be read with to string function.
      */
-    public static void printStream(InputStream s, PrintStream p) throws IOException {
-        int c;
-        while ((c = s.read()) > -1) {
-            p.print((char) c);
-        }
-    }
-
-    /**
-     * Convert all element in stream in String
-     *
-     * @param s Stream
-     * @return the result String
-     * @throws IOException
-     */
-    public static String stream2Str(InputStream s) throws IOException {
-        StringBuilder str = new StringBuilder();
-        int c;
-        while ((c = s.read()) > -1) {
-            str.append((char) c);
-        }
-        return str.toString();
-
-    }
-
     static class ThreadReader implements Runnable {
         StringBuilder str = new StringBuilder();
         InputStream s;
         Thread th;
-
+        
+        
         public ThreadReader(InputStream s) {
             this.s = s;
             lauch();
         }
+        
         private void lauch(){
             th=new Thread(this);
             th.start();
         }
+        /**
+         * reads the stream and appens the string.
+         */
         @Override
         public void run() {
             try {
@@ -111,12 +90,23 @@ public class ExecTools {
                 Logger.getLogger(ExecTools.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        /**
+         * 
+         * @return Stream in String format
+         */
         @Override
         public String toString(){
             return this.str.toString();
         } 
     }
 
+    /**
+     * This class wait the end of process or the end of a time out.
+     * It create a thread with waitfor to wait end of process 
+     * and join this thread with timout.
+     * And check what is the first
+     */
+    
     static class WaitForProcess implements Runnable {
 
         private Process process;
@@ -124,16 +114,27 @@ public class ExecTools {
         private boolean finished = false;
         private Thread thread;
 
+        /**
+         * 
+         * @param process to wait
+         */
         public WaitForProcess(Process process) {
             this.process = process;
 
         }
-
-        int waitFor(long mili) throws InterruptedException, TimeoutException {
-            LOG.log(Level.INFO, "Waitfor {0}ms", mili);
+        /**
+         * Wait the process with mili of time out.
+         * 
+         * @param milliS is waiting time in millisecond 0 is infinite
+         * @return the return of processus if no timeoutException was throwed
+         * @throws InterruptedException If any thread was interupted
+         * @throws TimeoutException If the processus time has depassed the time
+         */
+        int waitFor(long milliS) throws InterruptedException, TimeoutException {
+            LOG.log(Level.INFO, "Waitfor {0}ms", milliS);
             thread = new Thread(this);
             thread.start();
-            thread.join(mili);
+            thread.join(milliS);
             synchronized (this) {
                 if (!this.finished) {
                     LOG.info("processus timeout");
@@ -144,6 +145,9 @@ public class ExecTools {
             }
         }
 
+        /**
+         * Wait the processus end inform that is ended.
+         */
         @Override
         public void run() {
             try {
@@ -155,10 +159,17 @@ public class ExecTools {
             }
         }
 
+        /**
+         * 
+         * @return the return value of processus.
+         */
         public int getReturnValue() {
             return returnValue;
         }
-
+        /**
+         * 
+         * @return if processus is not timed out
+         */
         public boolean isFinished() {
             return finished;
         }

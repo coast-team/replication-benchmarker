@@ -103,7 +103,7 @@ public class GitWalker {
          */
         Options opt = new Options();
         opt.addOption("p", false, "Display the progress bar");
-        opt.addOption("h", "help",false, "Display this message");
+        opt.addOption("h", "help", false, "Display this message");
         opt.addOption("d", false, "Display debug informations");
         opt.addOption("w", false, "Display warning informations");
         //opt.addOption("l","CommitID",true,"id of the begin commit defaut is origin/master");
@@ -142,17 +142,17 @@ public class GitWalker {
         boolean displayHeadOutput = true;
         String fileFilter = null;
         Level level = Level.SEVERE;
-        List<String> gitRepositoryPath=null;
+        List<String> gitRepositoryPath = null;
         /*
          * Parse the command line
          */
 
         try {
             CommandLine cmd = parser.parse(opt, arg);
-            if(cmd.hasOption("h")){
+            if (cmd.hasOption("h")) {
                 help(0, opt);
             }
-            
+
             if (cmd.hasOption("l")) {
                 fromCommit = cmd.getOptionValue("l");
             }
@@ -180,11 +180,11 @@ public class GitWalker {
             }
 
             Logger.getLogger("").setLevel(level);
-            gitRepositoryPath=cmd.getArgList();
-            if(gitRepositoryPath.isEmpty()){
+            gitRepositoryPath = cmd.getArgList();
+            if (gitRepositoryPath.isEmpty()) {
                 throw new ParseException("Git repository missing");
             }
-                    
+
             /*
              * Start the process
              */
@@ -222,20 +222,22 @@ public class GitWalker {
 
         } catch (ParseException ex) {
             System.err.println("Parsing failed reason: " + ex.getMessage());
-            help(-1,opt);
+            help(-1, opt);
         }
     }
 
     /**
      * Display the help and exit with i value
+     *
      * @param i exit value
      * @param opt Options defined for cli-command
      */
-    static void help(int i,Options opt){
+    static void help(int i, Options opt) {
         HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("GitTalker2 [option] <gitRepositoryPath>", opt);
-            System.exit(i);
+        formatter.printHelp("GitWalker [option] <gitRepositoryPath>", opt);
+        System.exit(i);
     }
+
     /**
      *
      * @param gitDir
@@ -564,7 +566,7 @@ public class GitWalker {
                 }
                 //Count the block size
                 editCount.addBlock(editList.size());
-                
+
 
             }
             logger.info("Next");
@@ -581,6 +583,7 @@ public class GitWalker {
 
     /**
      * accessor
+     *
      * @return from commit parameter
      */
     public AnyObjectId getFromCommit() {
@@ -638,7 +641,7 @@ public class GitWalker {
         private LinkedList<String> merges = new LinkedList(); //merges id phase 2
         private String fileName; //path of file
         private int pass;        //number of pass made in phase 3, 
-                                 //must be equals to number of merge
+        //must be equals to number of merge
 
         /**
          * empty constructor
@@ -723,6 +726,7 @@ public class GitWalker {
             return merges.size();
         }
     }
+
     /**
      * link filename with id.
      */
@@ -744,6 +748,7 @@ public class GitWalker {
             return fileName;
         }
     }
+
     /**
      * Multi-Thread jobs
      */
@@ -757,7 +762,8 @@ public class GitWalker {
         Thread[] threads;
 
         /**
-         * Constructor 
+         * Constructor
+         *
          * @param fileTotal total file will be computed
          * @param nbThread total of thread generated
          */
@@ -766,7 +772,7 @@ public class GitWalker {
             threads = new Thread[nbThread];
 
         }
-        
+
         /**
          * Generate all threads and start it
          */
@@ -776,18 +782,22 @@ public class GitWalker {
                 threads[i].start();
             }
         }
+
         /**
          * Wait all threads are finished
-         * @throws InterruptedException 
+         *
+         * @throws InterruptedException
          */
         void waitAll() throws InterruptedException {
             for (int i = 0; i < threads.length; i++) {
                 threads[i].join();
             }
         }
+
         /**
-         * Take next job and return null if all is taked
-         * Wait if job is remaining and not added yet
+         * Take next job and return null if all is taked Wait if job is
+         * remaining and not added yet
+         *
          * @return job or null if no more jobs remaining
          */
         synchronized Entry<String, BlockLine> getJobFileTaked() {
@@ -808,8 +818,8 @@ public class GitWalker {
         }
 
         /**
-         * this counts number of computed jobs
-         * and displays the progress bar if needed
+         * this counts number of computed jobs and displays the progress bar if
+         * needed
          */
         synchronized void incFileThreated() {
             fileThreated++;
@@ -821,14 +831,17 @@ public class GitWalker {
                 }
             }
         }
+
         /**
          * pull a new jobs in waiting list and wakeup sleeped threads
+         *
          * @param entry job
          */
         synchronized void addJob(Entry<String, BlockLine> entry) {
             jobs.addLast(entry);
             notifyAll();
         }
+
         /**
          * thread code
          */

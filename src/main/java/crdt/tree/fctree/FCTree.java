@@ -19,13 +19,13 @@
 package crdt.tree.fctree;
 
 import collect.OrderedNode;
-import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.OperationBasedOneMessage;
 import crdt.PreconditionException;
 import crdt.tree.fctree.Operations.Add;
 import crdt.tree.fctree.Operations.ChX;
 import crdt.tree.fctree.Operations.Del;
+import crdt.tree.fctree.Operations.Nop;
 import crdt.tree.fctree.policy.PostAction;
 import crdt.tree.orderedtree.CRDTOrderedTree;
 import java.util.HashMap;
@@ -75,11 +75,15 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
     @Override
     public CRDTMessage remove(List<Integer> path) throws PreconditionException {
         FCNode node = root.getNodeFromPath(path);
+        if(node.getId().getReplicaNumber()<0){
+            return new OperationBasedOneMessage(new Nop(this.idFactory.createId()));
+        }
         Del del = new Del(this.idFactory.createId(), node.getId());
         del.apply(node, this);
         return new OperationBasedOneMessage(del);
     }
 
+    @Override
     public CRDTMessage rename(List<Integer> path, T newValue) {
         FCNode node = root.getNodeFromPath(path);
         ChX operation = new ChX(this.idFactory.createId(), node, newValue, FCNode.FcLabels.contain);
@@ -87,8 +91,12 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
         return new OperationBasedOneMessage(operation);
     }
 
+    @Override
     public CRDTMessage move(List<Integer> from, List<Integer> to, int p) {
         FCNode node = root.getNodeFromPath(from);
+        if(node.getId().getReplicaNumber()<0){
+            return new OperationBasedOneMessage(new Nop(this.idFactory.createId()));
+        }
         FCNode nFather;
         if (to.isEmpty()) {
             nFather = getRoot();
