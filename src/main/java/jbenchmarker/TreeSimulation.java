@@ -202,7 +202,7 @@ public class TreeSimulation {
             int duration = Integer.parseInt(params[2]);
 
             totalDuration += duration;
-            System.out.println("Generation Add/Del Trace \n"+duration+" ops with:\n"+perIns+"prob insert and \n"+perChild+"prob use child");
+            //System.out.println("Generation Add/Del Trace \n"+duration+" ops with:\n"+perIns+"prob insert and \n"+perChild+"prob use child");
             OperationProfile opprof = new StandardOrderedTreeOpProfile(perIns, perChild);
             randomTrace.add(traceP.makeRandomTrace(duration, opprof));
         } catch (Exception ex) {
@@ -224,7 +224,7 @@ public class TreeSimulation {
             int duration = Integer.parseInt(params[4]);
 
             totalDuration += duration;
-            System.out.println("Generation Add/Del/Ren/Mv Trace \n"+duration+" ops with:\n"+perIns+"prob insert, \n"+perChild+"prob use child\n"+perMv+"Prob move\n"+perRen+"prob ren");
+           // System.out.println("Generation Add/Del/Ren/Mv Trace \n"+duration+" ops with:\n"+perIns+"prob insert, \n"+perChild+"prob use child\n"+perMv+"Prob move\n"+perRen+"prob ren");
             OperationProfile opprof = new StandardOrderedTreeOperationProfileWithMoveRename(perIns, perMv, perRen, perChild);
             randomTrace.add(traceP.makeRandomTrace(duration, opprof));
         } catch (Exception ex) {
@@ -300,6 +300,7 @@ public class TreeSimulation {
                 System.out.println("-Trace to File : " + traceFile);
                 writer = new TraceObjectWriter(traceFile);
                 cd.setWriter(writer);
+                System.out.println(randomTrace);
                 cd.run(new ProgressTrace(new NTrace(randomTrace), totalDuration));
                 writer.close();
             }
@@ -450,7 +451,7 @@ public class TreeSimulation {
         }
 
         public NTrace.RandomParameters makeRandomTrace(int duration, OperationProfile opprof) {
-            System.out.println("setup: \n"+probability+" prob to gen op\n"+delay+" delay of op\n"+sdv+" of deviation\n"+replicas+" replicas");
+//            System.out.println("setup: \n"+probability+" prob to gen op\n"+delay+" delay of op\n"+sdv+" of deviation\n"+replicas+" replicas");
             return new NTrace.RandomParameters(duration, RandomTrace.FLAT, opprof, probability, delay, sdv, replicas);
         }
 

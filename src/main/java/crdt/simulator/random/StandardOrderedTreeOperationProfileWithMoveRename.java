@@ -71,4 +71,10 @@ public class StandardOrderedTreeOperationProfileWithMoveRename extends StandardO
         }
 
     }
+
+    @Override
+    public String toString() {
+        return "StandardOrderedTreeOperationProfileWithMoveRename{\n" + "perAdd=" + this.getPerAdd() +  "\nperMove=" + perMove + ",\nperRename=" + perRename +",\nperChild=" + this.getPerChild()+ '}';
+    }
+    
 }

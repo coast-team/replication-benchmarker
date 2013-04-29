@@ -94,4 +94,10 @@ public abstract class OrderedTreeOperationProfile<T> implements OperationProfile
     public RandomGauss getRandomGauss() {
         return r;
     }
+
+    @Override
+    public String toString() {
+        return "OrderedTreeOperationProfile{" + "\nperAdd=" + perAdd + ", \nperChild=" + perChild + '}';
+    }
+    
 }

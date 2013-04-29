@@ -121,5 +121,11 @@ public class NTrace implements Trace {
         public OperationProfile getOp() {
             return op;
         }
+
+        @Override
+        public String toString() {
+            return "RandomParameters{" + "\nduration=" + duration + ", \ndelay=" + delay + ", \nprobability=" + probability + ", \nsdv=" + sdv + ", \nreplicas=" + replicas + ", \nrp=" + rp + ", \nop=" + op + '}';
+        }
+        
     }
 }
