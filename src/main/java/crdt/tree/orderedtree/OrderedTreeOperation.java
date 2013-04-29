@@ -75,7 +75,12 @@ public class OrderedTreeOperation<T> implements LocalOperation {
                 }
                 return new OrderedTreeOperation(nPath, nPos, this.content);
             case del:
-                return new OrderedTreeOperation(nPath);
+                //whishme: bug of causal delivery or conflict ?
+                if(nPath.isEmpty()){
+                    return new OrderedTreeOperation(nPath, nPos, root.getValue());
+                }else{
+                    return new OrderedTreeOperation(nPath);
+                }
             case move:
                 List<Integer> nPathDst = new LinkedList();
                 OrderedNode nodedst = adaptPath(this.dstPath, root, nPathDst);

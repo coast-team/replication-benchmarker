@@ -62,6 +62,12 @@ public class RandomTrace implements Trace {
         public boolean willGenerate(int replica, long time, long duration, double probability) {
             return r.nextDouble() < probability;
         }
+
+        @Override
+        public String toString() {
+            return "Flat";
+        }
+        
     };
 
     /**
