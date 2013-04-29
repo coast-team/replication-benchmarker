@@ -265,7 +265,7 @@ public class TreeSimulation {
          * setup
          */
         Factory<CRDT> rf = fact.get(this.numFacotory);
-
+        System.out.println("-"+factstr.get(this.numFacotory));
         SizeCalculator size;
         switch (serialization) {
             case JSon:
