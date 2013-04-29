@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
 public class NTraceTest {
-   
+   /*
     class TraceMock implements Trace {
 
         String title;
@@ -94,5 +94,5 @@ public class NTraceTest {
         }
         assertEquals("troistroistroisdeuxdeuxun",output);
 
-    }
+    }/*/
 }

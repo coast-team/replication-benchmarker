@@ -72,18 +72,18 @@ public class TraceFromFile implements Trace {
     @Override
     public Enumeration<TraceOperation> enumeration() {
         return new Enumeration<TraceOperation>() {
-            TraceOperation nextElement;
+            TraceOperation nextElement= readOperation();
 
             @Override
             public boolean hasMoreElements() {
-                nextElement = readOperation();
                 return nextElement != null;
             }
 
             @Override
             public TraceOperation nextElement() {
-
-                return nextElement;
+                TraceOperation ret=nextElement;
+                nextElement = readOperation();
+                return ret;
 
             }
 

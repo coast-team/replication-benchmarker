@@ -18,9 +18,9 @@
  */
 package jbenchmarker.trace.git;
 
+import Tools.ExecTools;
 import collect.HashMapSet;
 import java.io.*;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -128,7 +128,6 @@ public class GitWalker {
 
         opt.addOption(csv);
         opt.addOption(last);
-        opt.addOption(csv);
         opt.addOption(csvc);
         opt.addOption(fFilter);
 

@@ -19,6 +19,7 @@
 
 package crdt.simulator;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -36,7 +37,9 @@ public class TraceObjectWriter implements TraceStore {
         writer=new ObjectOutputStream(new FileOutputStream(filename));
     }
     
-    
+    public TraceObjectWriter(File filename) throws IOException {
+        writer=new ObjectOutputStream(new FileOutputStream(filename));
+    }
     
     @Override
     public void storeOp(TraceOperation op) {

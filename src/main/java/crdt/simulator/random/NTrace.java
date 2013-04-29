@@ -16,58 +16,110 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 package crdt.simulator.random;
 
 import crdt.simulator.Trace;
 import crdt.simulator.TraceOperation;
 import java.util.Enumeration;
+import java.util.List;
 
 /**
- *  Special Trace with is concatenation with many traces given in constructor.
- * 
+ * Special Trace with is concatenation with many traces given in constructor.
+ *
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
 public class NTrace implements Trace {
 
-    Trace[] listRandomTrace;
-    
+    RandomParameters[] listRandomTrace;
+
     /**
      * @param traces many traces
      */
-    public NTrace(Trace... traces) {
+    public NTrace(RandomParameters... traces) {
         this.listRandomTrace = traces;
+    }
+
+    public NTrace(List<RandomParameters> traces) {
+        this.listRandomTrace = traces.toArray(new RandomParameters[traces.size()]);
     }
 
     @Override
     public Enumeration<TraceOperation> enumeration() {
 
         return new Enumeration<TraceOperation>() {
-            Enumeration<TraceOperation> currentTrace=listRandomTrace.length>0?listRandomTrace[0].enumeration():null;
+            RandomTrace currentTrace=listRandomTrace.length > 0 ? new RandomTrace(null,listRandomTrace[0]):null;
+            Enumeration<TraceOperation> currentTraceEnum = currentTrace!=null ? currentTrace.enumeration() : null;
             int currentPlace = 0;
-            
+
             /**
-             * Place check if no more operation existing
-             * If it is existing it set currentTrace to non empty trace.
+             * Place check if no more operation existing If it is existing it
+             * set currentTraceEnum to non empty trace.
              */
             private void setCurrent() {
-                while (currentTrace!=null && !currentTrace.hasMoreElements() && currentPlace < listRandomTrace.length-1) {
-                    currentTrace = listRandomTrace[++currentPlace].enumeration();
+                while (currentTraceEnum != null && !currentTraceEnum.hasMoreElements() && currentPlace < listRandomTrace.length - 1) {
+                    currentTrace = new RandomTrace(currentTrace, listRandomTrace[++currentPlace]);
+                    currentTraceEnum=currentTrace.enumeration();
                 }
             }
 
             @Override
             public boolean hasMoreElements() {
                 setCurrent();
-                return currentTrace!=null?currentTrace.hasMoreElements():false;
+                return currentTraceEnum != null ? currentTraceEnum.hasMoreElements() : false;
             }
 
             @Override
             public TraceOperation nextElement() {
                 setCurrent();
-                return currentTrace.nextElement();
+                return currentTraceEnum.nextElement();
             }
         };
+    }
+
+    public static class RandomParameters {
+
+        final long duration, delay;
+        final double probability, sdv;
+        final int replicas;
+        final RandomTrace.ReplicaProfile rp;
+        final OperationProfile op;
+
+        public RandomParameters(long duration, RandomTrace.ReplicaProfile rp, OperationProfile op, double probability, long delay, double sdv, int replicas) {
+            this.duration = duration;
+            this.delay = delay;
+            this.probability = probability;
+            this.sdv = sdv;
+            this.replicas = replicas;
+            this.rp = rp;
+            this.op = op;
+        }
+
+        public long getDuration() {
+            return duration;
+        }
+
+        public long getDelay() {
+            return delay;
+        }
+
+        public double getProbability() {
+            return probability;
+        }
+
+        public double getSdv() {
+            return sdv;
+        }
+
+        public int getReplicas() {
+            return replicas;
+        }
+
+        public RandomTrace.ReplicaProfile getRp() {
+            return rp;
+        }
+
+        public OperationProfile getOp() {
+            return op;
+        }
     }
 }
