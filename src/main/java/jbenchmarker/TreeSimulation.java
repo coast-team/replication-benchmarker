@@ -51,8 +51,6 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jbenchmarker.logoot.BoundaryStrategy;
 import jbenchmarker.ot.ottree.OTTree;
 import jbenchmarker.ot.ottree.OTTreeTranformation;
@@ -171,6 +169,8 @@ public class TreeSimulation {
     boolean help = false;
     @Option(name = "--pass", usage = "set passive replicas number (default is 0)")
     int passiveReplicats = 0;
+    @Option(name = "-J", usage = "Ignore the first run")
+    boolean justInTime = false;
 
     final void help(int exit) {
         parser.printUsage(System.out);
@@ -307,22 +307,25 @@ public class TreeSimulation {
             /*
              * Store the result
              */
-            resultsTimesDist.add(cd.getAvgPerRemoteMessage());
-            resultsTimesLoc.add(castDoubleList(cd.getGenerationTimes()));
-            resultsMem.add(castDoubleList(cd.getMemUsed()));
+            if (!justInTime || ex > 0) {
+                resultsTimesDist.add(cd.getAvgPerRemoteMessage());
+                resultsTimesLoc.add(castDoubleList(cd.getGenerationTimes()));
+                resultsMem.add(castDoubleList(cd.getMemUsed()));
+            }else{
+                System.out.println("\nIt was for fun !");
+            }
 
         }
     }
-    
-    
-    static public List<Double> castDoubleList(List<Long> list){
-        LinkedList<Double> ret=new LinkedList();
-        for (long l :list){
+
+    static public List<Double> castDoubleList(List<Long> list) {
+        LinkedList<Double> ret = new LinkedList();
+        for (long l : list) {
             ret.add(new Double(l));
         }
         return ret;
     }
-    
+
     public void writeFiles() throws FileNotFoundException {
         if (this.prefixOutput == null) {
             prefixOutput = factstr.get(this.numFacotory);
@@ -330,13 +333,13 @@ public class TreeSimulation {
         resultsMem.add(computeAvg(resultsMem));
         resultsTimesDist.add(computeAvg(resultsTimesDist));
         resultsTimesLoc.add(computeAvg(resultsTimesLoc));
-        writeMapToFile(resultsMem, prefixOutput + ".mem.data");
-        writeMapToFile(resultsTimesDist, prefixOutput + ".dist.data");
-        writeMapToFile(resultsTimesLoc, prefixOutput + ".loc.data");
+        writeMapToFile(resultsMem, prefixOutput + "-mem.data");
+        writeMapToFile(resultsTimesDist, prefixOutput + "-dist.data");
+        writeMapToFile(resultsTimesLoc, prefixOutput + "-loc.data");
 
-        writeListToFile(resultsMem.getLast(), prefixOutput + ".mem.res", baseSerializ, 1);
-        writeListToFile(resultsTimesDist.getLast(), prefixOutput + ".dist.res", base, 1000);//1000 for micro second
-        writeListToFile(resultsTimesLoc.getLast(), prefixOutput + ".loc.res", base, 1000);
+        writeListToFile(resultsMem.getLast(), prefixOutput + "-mem.res", baseSerializ, 1);
+        writeListToFile(resultsTimesDist.getLast(), prefixOutput + "-dist.res", base, 1000);//1000 for micro second
+        writeListToFile(resultsTimesLoc.getLast(), prefixOutput + "-loc.res", base, 1000);
     }
 
     public static void writeMapToFile(List<List<Double>> m, String filename) throws FileNotFoundException {
@@ -382,7 +385,7 @@ public class TreeSimulation {
             nb++;
             moy += o;
             if (nb == nbAvg) {
-                out.println(((moy / nb) / ((double)div)));
+                out.println(((moy / nb) / ((double) div)));
                 nb = 0;
                 moy = 0;
             }
