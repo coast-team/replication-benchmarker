@@ -157,7 +157,6 @@ public class TreeSimulation {
     }
     @Option(name = "-S", usage = "Serialization format default is overHead")
     Serialization serialization = Serialization.OverHead;
-    
     @Option(name = "-t", usage = "trace to this file", metaVar = "TraceFile", required = true)
     private File traceFile;
     @Option(name = "-r", usage = "Thresold multiplicator")
@@ -170,27 +169,27 @@ public class TreeSimulation {
     int numFacotory;
     @Option(name = "-h", usage = "display this message")
     boolean help = false;
+    @Option(name = "--pass", usage = "set passive replicas number (default is 0)")
+    int passiveReplicats = 0;
 
-    @Option(name = "--pass", usage = "set passive replicas number (default is 0)" )
-    int passiveReplicats=0;
-    
     final void help(int exit) {
-        parser.printUsage(System.err);
+        parser.printUsage(System.out);
+        System.out.println("Factories : ");
+        for (int p = 0; p < factstr.size(); p++) {
+            System.out.println("" + p + ". " + factstr.get(p));
+        }
         System.exit(exit);
     }
-    
     List<NTrace.RandomParameters> randomTrace = new LinkedList();
-    
     TraceParam traceP = new TraceParam(0.1, 5, 10, 5);
 
     @Option(name = "-P", usage = "Set random trace param probability,delay,deviation,replica")
     private void setTraceParam(String param) throws CmdLineException {
         traceP = new TraceParam(param);
     }
+    @Option(name = "-O", usage = "prefix of output file")
+    String prefixOutput = null;
 
-    @Option(name ="-O" , usage = "prefix of output file")
-    String prefixOutput=null;
-    
     @Option(name = "-A", usage = "Generate Add/del Trace -A perIns,perChild,duration")
     private void genAdddel(String param) throws CmdLineException {
         try {
@@ -224,7 +223,7 @@ public class TreeSimulation {
             int duration = Integer.parseInt(params[4]);
 
             totalDuration += duration;
-           // System.out.println("Generation Add/Del/Ren/Mv Trace \n"+duration+" ops with:\n"+perIns+"prob insert, \n"+perChild+"prob use child\n"+perMv+"Prob move\n"+perRen+"prob ren");
+            // System.out.println("Generation Add/Del/Ren/Mv Trace \n"+duration+" ops with:\n"+perIns+"prob insert, \n"+perChild+"prob use child\n"+perMv+"Prob move\n"+perRen+"prob ren");
             OperationProfile opprof = new StandardOrderedTreeOperationProfileWithMoveRename(perIns, perMv, perRen, perChild);
             randomTrace.add(traceP.makeRandomTrace(duration, opprof));
         } catch (Exception ex) {
@@ -238,7 +237,7 @@ public class TreeSimulation {
 
             parser.parseArgument(arg);
 
-            if (help){
+            if (help) {
                 help(0);
             }
         } catch (CmdLineException ex) {
@@ -256,16 +255,16 @@ public class TreeSimulation {
 
 
     }
-    LinkedList<List<Long>> resultsTimesLoc = new LinkedList();
-    LinkedList<List<Long>> resultsTimesDist = new LinkedList();
-    LinkedList<List<Long>> resultsMem = new LinkedList();
+    LinkedList<List<Double>> resultsTimesLoc = new LinkedList();
+    LinkedList<List<Double>> resultsTimesDist = new LinkedList();
+    LinkedList<List<Double>> resultsMem = new LinkedList();
 
     public void run() throws IOException, PreconditionException {
         /**
          * setup
          */
         Factory<CRDT> rf = fact.get(this.numFacotory);
-        System.out.println("-"+factstr.get(this.numFacotory));
+        System.out.println("-" + factstr.get(this.numFacotory));
         SizeCalculator size;
         switch (serialization) {
             case JSon:
@@ -308,16 +307,25 @@ public class TreeSimulation {
             /*
              * Store the result
              */
-            resultsTimesDist.add(cd.getAvgLongPerRemoteMessage());
-            resultsTimesLoc.add(cd.getGenerationTimes());
-            resultsMem.add(cd.getMemUsed());
+            resultsTimesDist.add(cd.getAvgPerRemoteMessage());
+            resultsTimesLoc.add(castDoubleList(cd.getGenerationTimes()));
+            resultsMem.add(castDoubleList(cd.getMemUsed()));
 
         }
     }
-
-    public void writeFiles() throws FileNotFoundException { 
-        if(this.prefixOutput==null){
-                   prefixOutput= factstr.get(this.numFacotory);
+    
+    
+    static public List<Double> castDoubleList(List<Long> list){
+        LinkedList<Double> ret=new LinkedList();
+        for (long l :list){
+            ret.add(new Double(l));
+        }
+        return ret;
+    }
+    
+    public void writeFiles() throws FileNotFoundException {
+        if (this.prefixOutput == null) {
+            prefixOutput = factstr.get(this.numFacotory);
         }
         resultsMem.add(computeAvg(resultsMem));
         resultsTimesDist.add(computeAvg(resultsTimesDist));
@@ -331,7 +339,7 @@ public class TreeSimulation {
         writeListToFile(resultsTimesLoc.getLast(), prefixOutput + ".loc.res", base, 1000);
     }
 
-    public static void writeMapToFile(List<List<Long>> m, String filename) throws FileNotFoundException {
+    public static void writeMapToFile(List<List<Double>> m, String filename) throws FileNotFoundException {
         PrintWriter out = new PrintWriter(filename);
         Iterator[] iterators = getIterators(m);
         while (hasNext(iterators)) {
@@ -357,24 +365,24 @@ public class TreeSimulation {
         return ok == it.length;
     }
 
-    static private Iterator<Long>[] getIterators(List<List<Long>> list) {
-        Iterator<Long>[] iterators = new Iterator[list.size()];
+    static private Iterator<Double>[] getIterators(List<List<Double>> list) {
+        Iterator<Double>[] iterators = new Iterator[list.size()];
         int i = 0;
-        for (List<Long> l : list) {
+        for (List<Double> l : list) {
             iterators[i++] = l.iterator();
         }
         return iterators;
     }
 
-    public static void writeListToFile(List<Long> l, String filename, int nbAvg, int div) throws FileNotFoundException {
+    public static void writeListToFile(List<Double> l, String filename, int nbAvg, int div) throws FileNotFoundException {
         PrintWriter out = new PrintWriter(filename);
-        long moy = 0;
-        int nb = 0;
-        for (Long o : l) {
+        double moy = 0;
+        double nb = 0;
+        for (Double o : l) {
             nb++;
             moy += o;
             if (nb == nbAvg) {
-                out.println(((moy / nb) / div));
+                out.println(((moy / nb) / ((double)div)));
                 nb = 0;
                 moy = 0;
             }
@@ -382,25 +390,25 @@ public class TreeSimulation {
         out.close();
     }
 
-    public List<Long> computeAvg(List<List<Long>> list) {
+    public List<Double> computeAvg(List<List<Double>> list) {
         if (list.size() == 1) {
             return list.get(0);
         }
-        List<Long> ret = new LinkedList();
-        Iterator<Long>[] iterators = getIterators(list);
-        LinkedList<Long> vals = new LinkedList();
+        List<Double> ret = new LinkedList();
+        Iterator<Double>[] iterators = getIterators(list);
+        LinkedList<Double> vals = new LinkedList();
         double moy = 0;
 
         while (hasNext(iterators)) {
             for (int i = 0; i < iterators.length; i++) {
-                Long value = iterators[i].next();
+                Double value = iterators[i].next();
                 vals.add(value);
                 moy += value;
             }
             moy /= vals.size();
             double moyfinal = 0;
             int nbElem = 0;
-            for (Long l : vals) {
+            for (Double l : vals) {
                 if (l < thresold * moy) {
                     nbElem++;
                     moyfinal += l;
@@ -408,7 +416,7 @@ public class TreeSimulation {
             }
             vals.clear();
             moyfinal /= (double) nbElem;
-            ret.add((long) moyfinal);
+            ret.add((double) moyfinal);
         }
         return ret;
     }
