@@ -171,7 +171,7 @@ public class FCNode<T> implements OrderedNode<T> , Serializable {
     }
 
     @Override
-    public List getElements() {
+    public List<FCNode<T>> getElements() {
         //return Arrays.asList(childrens.toArray());
         return childrens;
     }
@@ -311,7 +311,7 @@ public class FCNode<T> implements OrderedNode<T> , Serializable {
     }
 
     @Override
-    public Iterator iterator() {
+    public Iterator<FCNode<T>> iterator() {
         return childrens.iterator();
     }
 

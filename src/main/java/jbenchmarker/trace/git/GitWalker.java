@@ -19,25 +19,17 @@
 package jbenchmarker.trace.git;
 
 import Tools.ExecTools;
+import Tools.ProgressBar;
 import collect.HashMapSet;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.ContentSource;
 import org.eclipse.jgit.diff.DiffAlgorithm;
@@ -62,6 +54,10 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
 
 /**
  *
@@ -76,12 +72,9 @@ public class GitWalker {
     private Repository repository;
     private Git git;
     private DiffAlgorithm diffAlgorithm;
-    private String gitDir;
     private AnyObjectId fromCommit;
     //private boolean countCreatedFile = false;
     //private boolean useOnlyGitCommand = true;
-    static boolean progressBar = false;
-    private String fileFilter = null;
     private static final Logger logger = Logger.getLogger(GitWalker.class.getCanonicalName());
     private int fileNumber;
     private double filePercent;
@@ -92,137 +85,40 @@ public class GitWalker {
     HashMapSet<String, Couple> idCommitParentsToFiles;
     HashMapSet<String, String> commitParent;
 
+    public static enum LogLevel {
+
+        All, Warning, Severe
+    };
+    public static final Level[] levels = {Level.ALL, Level.WARNING, Level.SEVERE};
+    CmdLineParser parser;
+    /**
+     * Options arg4j
+     */
+    @Option(name = "-o", metaVar = "outputfile", usage = "Set ouput file (default: standard ouput )")
+    File outputFile = null;
+    @Option(name = "-A", usage = "append file and not write file header")
+    boolean appendFile = false;
+    @Option(name = "-l", metaVar = "commitID", usage = "id of the begin commit defaut is origin/master")
+    String fromCommitStr = "origin/master";
+    @Option(name = "-f", metaVar = "filefilter", usage = "Filter of only this file")
+    private String fileFilter = null;
+    @Option(name = "-p", usage = "Display the progress bar")
+    boolean progressBar = false;
+    @Option(name = "--log", usage = "Set logger level")
+    LogLevel logLevel = LogLevel.Severe;
+    @Option(name = "-h", usage = "Display this message")
+    boolean help = false;
+    @Argument(usage = "Git repository path", metaVar = "repository", required = true)
+    private String gitDir;
+
     /**
      *
      * @param arg
      * @throws Exception
      */
     public static void main(String... arg) throws Exception {
-        /*
-         * Define options
-         */
-        Options opt = new Options();
-        opt.addOption("p", false, "Display the progress bar");
-        opt.addOption("h", "help", false, "Display this message");
-        opt.addOption("d", false, "Display debug informations");
-        opt.addOption("w", false, "Display warning informations");
-        //opt.addOption("l","CommitID",true,"id of the begin commit defaut is origin/master");
-
-        OptionBuilder.withArgName("CommitID");
-        OptionBuilder.hasArg();
-        OptionBuilder.withDescription("id of the begin commit defaut is origin/master");
-        Option last = OptionBuilder.create("l");
-
-        OptionBuilder.withArgName("csvFile");
-        OptionBuilder.hasArg();
-        OptionBuilder.withDescription("output for the result in CSV format default is standard output");
-        Option csv = OptionBuilder.create("o");
-        OptionBuilder.withArgName("csvFile");
-        OptionBuilder.hasArg();
-        OptionBuilder.withDescription("same as -o but is continue the csv file");
-        Option csvc = OptionBuilder.create("O");
-        OptionBuilder.withArgName("fileFilter");
-        OptionBuilder.hasArg();
-        OptionBuilder.withDescription("Filter of only this file");
-        Option fFilter = OptionBuilder.create("f");
-
-        opt.addOption(csv);
-        opt.addOption(last);
-        opt.addOption(csvc);
-        opt.addOption(fFilter);
-
-        CommandLineParser parser = new PosixParser();
-
-        /*
-         * Set default options
-         */
-        String fromCommit = "origin/master";
-        PrintStream p = System.out;
-        boolean displayHeadOutput = true;
-        String fileFilter = null;
-        Level level = Level.SEVERE;
-        List<String> gitRepositoryPath = null;
-        /*
-         * Parse the command line
-         */
-
-        try {
-            CommandLine cmd = parser.parse(opt, arg);
-            if (cmd.hasOption("h")) {
-                help(0, opt);
-            }
-
-            if (cmd.hasOption("l")) {
-                fromCommit = cmd.getOptionValue("l");
-            }
-
-            if (cmd.hasOption("o")) {
-                File fout = new File(cmd.getOptionValue("o"));
-                p = new PrintStream(fout);
-            } else if (cmd.hasOption("O")) {
-                displayHeadOutput = false;
-                p = new PrintStream(new FileOutputStream(cmd.getOptionValue("O"), true));
-            }
-
-            if (cmd.hasOption("f")) {
-                fileFilter = cmd.getOptionValue("f");
-            }
-
-            if (cmd.hasOption("p")) {
-                progressBar = true;
-            }
-
-            if (cmd.hasOption("d")) {
-                level = Level.ALL;
-            } else if (cmd.hasOption("w")) {
-                level = Level.WARNING;
-            }
-
-            Logger.getLogger("").setLevel(level);
-            gitRepositoryPath = cmd.getArgList();
-            if (gitRepositoryPath.isEmpty()) {
-                throw new ParseException("Git repository missing");
-            }
-
-            /*
-             * Start the process
-             */
-            GitWalker gw = new GitWalker(gitRepositoryPath.get(0), fromCommit);
-            gw.setFileFilter(fileFilter);
-            if (progressBar) {
-                System.out.println("Extracting files path ...");
-            }
-            /*
-             * phases 1 Extract file list from commit
-             */
-            gw.extractFiles();
-            if (progressBar) {
-                System.out.println("\n\nNumber of Files :" + gw.files.size() + "\n\n");
-                System.out.println("Extracting Id of commits with " + gw.getNumberOfWorker() + " thread(s) ...");
-            }
-            /*
-             * Sort by id of father each files version
-             */
-
-            gw.extractIDCommit();
-
-            if (progressBar) {
-                System.out.println("\n\nMesures diff...");
-            }
-            /*
-             * Mesures diff patchs
-             */
-            gw.mesuresDiff();
-            if (progressBar) {
-                System.out.println("");
-            }
-
-            gw.printResults(p, displayHeadOutput);
-
-        } catch (ParseException ex) {
-            System.err.println("Parsing failed reason: " + ex.getMessage());
-            help(-1, opt);
-        }
+        GitWalker gw = new GitWalker(arg);
+        gw.run();
     }
 
     /**
@@ -231,31 +127,74 @@ public class GitWalker {
      * @param i exit value
      * @param opt Options defined for cli-command
      */
-    static void help(int i, Options opt) {
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("GitWalker [option] <gitRepositoryPath>", opt);
+    final void help(int i) {
+        System.out.println("GitWalker [option] <repository>");
+        parser.printUsage(System.out);
+       
         System.exit(i);
     }
 
-    /**
-     *
-     * @param gitDir
-     * @param fromCommit
-     * @throws IOException
-     */
-    public GitWalker(String gitDir, String fromCommit) throws IOException {
+    public GitWalker(String... args) throws IOException {
+
+        try {
+            this.parser = new CmdLineParser(this);
+
+            parser.parseArgument(args);
+
+            if (help) {
+                help(0);
+            }
+        } catch (CmdLineException ex) {
+            System.err.println("Error in argument " + ex);
+            help(-1);
+        }
+
+        Logger.getLogger("").setLevel(levels[logLevel.ordinal()]);
+
         builder = new FileRepositoryBuilder();
         repository = builder.setGitDir(new File(gitDir + "/.git")).readEnvironment()
                 .findGitDir().build();
         this.reader = repository.newObjectReader();
-        this.gitDir = gitDir;
         this.git = new Git(repository);
         this.source = ContentSource.create(reader);
         this.diffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
-        this.fromCommit = repository.resolve(fromCommit);
+        this.fromCommit = repository.resolve(fromCommitStr);
 
-        // this.pairSource = new ContentSource.Pair(source, source);
     }
+
+    public void run() throws Exception {
+        if (progressBar) {
+            System.out.println("Extracting files path ...");
+        }
+        /*
+         * phases 1 Extract file list from commit
+         */
+        extractFiles();
+        if (progressBar) {
+            System.out.println("\n\nNumber of Files :" + files.size() + "\n\n");
+            System.out.println("Extracting Id of commits with " + getNumberOfWorker() + " thread(s) ...");
+        }
+        /*
+         * Sort by id of father each files version
+         */
+
+        extractIDCommit();
+
+        if (progressBar) {
+            System.out.println("\n\nMesures diff...");
+        }
+        /*
+         * Mesures diff patchs
+         */
+        mesuresDiff();
+        if (progressBar) {
+            System.out.println("");
+        }
+
+        printResults();
+    }
+
+    
 
     /**
      * Print result into p (PrintStream)
@@ -263,8 +202,14 @@ public class GitWalker {
      * @param p PrintStream to write the result
      * @param displayHead print columns name.
      */
-    public void printResults(PrintStream p, boolean displayHead) {
-        if (displayHead) {
+    public void printResults() throws FileNotFoundException {
+        PrintStream p;
+        if (outputFile == null) {
+            p = System.out;
+        } else {
+            p = new PrintStream(new FileOutputStream(outputFile, appendFile));
+        }
+        if (!appendFile) {
             p.println("File name;number of commit;number of merge;number of pass"
                     + ";number of block;number of line");
         }
@@ -498,9 +443,10 @@ public class GitWalker {
      * @throws Exception
      */
     public void mesuresDiff() throws Exception {
-        int commit = 0;
-        double commitPercent = idCommitParentsToFiles.keySet().size() / 100.0;
-        double nextStep = commitPercent;
+       // int commit = 0;
+        ProgressBar progress=new ProgressBar(idCommitParentsToFiles.keySet().size());
+/*        double commitPercent = idCommitParentsToFiles.keySet().size() / 100.0;
+        double nextStep = commitPercent;*/
 
 
         for (String idcommitParent : idCommitParentsToFiles.keySet()) {
@@ -549,18 +495,11 @@ public class GitWalker {
                  * make a diff with this file
                  */
                 EditList editList = diffAlgorithm.diff(RawTextComparator.DEFAULT, stateAfterMerge, stateAfterCommit);
-                
-/*if(editList.size()>0)
-{
-    System.out.println("---Patch---");for(int i=0;i<stateAfterCommit.size();i++)System.out.println(stateAfterCommit.getString(i));
-    System.out.println("---Lookup---");for(int i=0;i<stateAfterMerge.size();i++)System.out.println(stateAfterMerge.getString(i));
-}*/
+
                 BlockLine editCount = files.get(c.fileName);
                 editCount.incrementPass();
 
-
                 for (Edit ed : editList) {// Count line replace is two time counted
-//System.out.println("--- Edition -- "+ed.toString()); 
                     editCount.addLine(ed.getEndA() - ed.getBeginA() + ed.getEndB() - ed.getBeginB());
                 }
                 //Count the block size
@@ -569,13 +508,9 @@ public class GitWalker {
 
             }
             logger.info("Next");
-            commit++;
+           // commit++;
             if (progressBar) {
-                while (commit > nextStep) {
-                    System.out.print(".");
-                    System.out.flush();
-                    nextStep += commitPercent;
-                }
+                progress.progress(1);
             }
         }
     }
@@ -636,7 +571,6 @@ public class GitWalker {
         private int block = 0; //sum of different block 
         private int line = 0;  //sum of different line
         private int commitCount = 0; //sum of commit
-        //private int count = 0;
         private LinkedList<String> merges = new LinkedList(); //merges id phase 2
         private String fileName; //path of file
         private int pass;        //number of pass made in phase 3, 
@@ -755,8 +689,7 @@ public class GitWalker {
 
         int fileTotal = 0;
         int fileTaked = 0;
-        int fileThreated = 0;
-        double nextStep = filePercent;
+        ProgressBar progress;
         LinkedList<Entry<String, BlockLine>> jobs = new LinkedList();
         Thread[] threads;
 
@@ -768,6 +701,9 @@ public class GitWalker {
          */
         public TryMultiThreaded(int fileTotal, int nbThread) {
             this.fileTotal = fileTotal;
+            if(progressBar){
+                progress=new ProgressBar(fileTotal);
+            }
             threads = new Thread[nbThread];
 
         }
@@ -821,13 +757,8 @@ public class GitWalker {
          * needed
          */
         synchronized void incFileThreated() {
-            fileThreated++;
             if (progressBar) {
-                while (fileThreated > nextStep) {
-                    System.out.print(".");
-                    System.out.flush();
-                    nextStep += filePercent;
-                }
+               progress.progress(1);
             }
         }
 

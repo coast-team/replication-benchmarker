@@ -125,7 +125,7 @@ public class TreeSimulation {
         fact.add(new FCTree(new FastCycleBreaking("Garbage")));
         factstr.add("FCTreeCycleBreaker");
 
-
+        
         //withoutGarbage
         fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()),
                 null)));
@@ -142,6 +142,10 @@ public class TreeSimulation {
 
         fact.add(new CRDTMockTime(new FCTree(), 2, 3));
         factstr.add("Mock");
+        fact.add(new FCTree(true));
+        factstr.add("FCTreeRS");
+        fact.add(new FCTree(new FastCycleBreaking("Garbage"),true));
+        factstr.add("FCTreeCycleBreakerRS");
 
     }
     int base = 100;
@@ -151,8 +155,11 @@ public class TreeSimulation {
 
     enum Serialization {
 
-        OverHead, JSon, XML
+        OverHead,Data ,JSon, XML
     }
+    /**
+     * Arg4J arguments
+     */
     @Option(name = "-S", usage = "Serialization format default is overHead")
     Serialization serialization = Serialization.OverHead;
     @Option(name = "-t", usage = "trace to this file", metaVar = "TraceFile", required = true)
@@ -171,15 +178,6 @@ public class TreeSimulation {
     int passiveReplicats = 0;
     @Option(name = "-J", usage = "Ignore the first run")
     boolean justInTime = false;
-
-    final void help(int exit) {
-        parser.printUsage(System.out);
-        System.out.println("Factories : ");
-        for (int p = 0; p < factstr.size(); p++) {
-            System.out.println("" + p + ". " + factstr.get(p));
-        }
-        System.exit(exit);
-    }
     List<NTrace.RandomParameters> randomTrace = new LinkedList();
     TraceParam traceP = new TraceParam(0.1, 5, 10, 5);
 
@@ -230,6 +228,18 @@ public class TreeSimulation {
             throw new CmdLineException("Parameter is invalid " + ex);
         }
     }
+    /*
+     * end of arguements
+     */
+
+    final void help(int exit) {
+        parser.printUsage(System.out);
+        System.out.println("Factories : ");
+        for (int p = 0; p < factstr.size(); p++) {
+            System.out.println("" + p + ". " + factstr.get(p));
+        }
+        System.exit(exit);
+    }
 
     public TreeSimulation(String... arg) {
         try {
@@ -259,6 +269,9 @@ public class TreeSimulation {
     LinkedList<List<Double>> resultsTimesDist = new LinkedList();
     LinkedList<List<Double>> resultsMem = new LinkedList();
 
+    /**
+     * experimentation function
+     */
     public void run() throws IOException, PreconditionException {
         /**
          * setup
@@ -273,6 +286,8 @@ public class TreeSimulation {
             case XML:
                 size = new SizeXMLDoc();
                 break;
+            case Data: 
+                size = new StandardSizeCalculator(false);
             case OverHead:
             default:
                 size = new StandardSizeCalculator(true);
@@ -311,7 +326,7 @@ public class TreeSimulation {
                 resultsTimesDist.add(cd.getAvgPerRemoteMessage());
                 resultsTimesLoc.add(castDoubleList(cd.getGenerationTimes()));
                 resultsMem.add(castDoubleList(cd.getMemUsed()));
-            }else{
+            } else {
                 System.out.println("\nIt was for fun !");
             }
 
@@ -330,16 +345,23 @@ public class TreeSimulation {
         if (this.prefixOutput == null) {
             prefixOutput = factstr.get(this.numFacotory);
         }
-        resultsMem.add(computeAvg(resultsMem));
+
         resultsTimesDist.add(computeAvg(resultsTimesDist));
         resultsTimesLoc.add(computeAvg(resultsTimesLoc));
-        writeMapToFile(resultsMem, prefixOutput + "-mem.data");
+
         writeMapToFile(resultsTimesDist, prefixOutput + "-dist.data");
         writeMapToFile(resultsTimesLoc, prefixOutput + "-loc.data");
 
-        writeListToFile(resultsMem.getLast(), prefixOutput + "-mem.res", baseSerializ, 1);
+
         writeListToFile(resultsTimesDist.getLast(), prefixOutput + "-dist.res", base, 1000);//1000 for micro second
         writeListToFile(resultsTimesLoc.getLast(), prefixOutput + "-loc.res", base, 1000);
+
+        if (!resultsMem.isEmpty() && !resultsMem.get(0).isEmpty()) {
+            resultsMem.add(computeAvg(resultsMem));
+            writeMapToFile(resultsMem, prefixOutput + "-mem.data");
+            writeListToFile(resultsMem.getLast(), prefixOutput + "-mem.res", baseSerializ, 1);
+        }
+
     }
 
     public static void writeMapToFile(List<List<Double>> m, String filename) throws FileNotFoundException {
