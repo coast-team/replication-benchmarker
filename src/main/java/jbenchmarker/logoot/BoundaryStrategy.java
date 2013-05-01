@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +21,12 @@ package jbenchmarker.logoot;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
- *
+ * Boundary random strategy as defines in Logoot-undo paper.
  * @author urso
  */
-public class BoundaryStrategy extends LogootStrategy {
+public class BoundaryStrategy extends RandomLogootStrategy {
 
     private long max;
     private BigInteger base;
@@ -48,19 +47,19 @@ public class BoundaryStrategy extends LogootStrategy {
 
     @Override
     public ListIdentifier begin() {
-        return new LogootIdentifier(new Component(0, -1, -1));
+        return new LogootIdentifier(new LogootComponent(0, -1, -1));
     }
 
     @Override
     public ListIdentifier end() {
-        return new LogootIdentifier(new Component(max, -1, -1));
+        return new LogootIdentifier(new LogootComponent(max, -1, -1));
     }
     
     /**
      * Generate N identifier between P and Q;
      */
     @Override
-    ArrayList<ListIdentifier> generateLineIdentifiers(LogootDocument doc, ListIdentifier lP, ListIdentifier lQ, int n) {
+    public ArrayList<ListIdentifier> generateLineIdentifiers(TimestampedDocument doc, ListIdentifier lP, ListIdentifier lQ, int n) {
         LogootIdentifier P = (LogootIdentifier) lP, Q = (LogootIdentifier) lQ;
         int index = 0, tMin = Math.min(P.length(), Q.length());
         
@@ -87,9 +86,8 @@ public class BoundaryStrategy extends LogootStrategy {
         ArrayList<ListIdentifier> patch = new ArrayList<ListIdentifier>();
         List<Long> digits = P.digits(index);
         for (int i = 0; i < n; i++) {
-            LogootStrategy.plus(digits, LogootStrategy.nextLong(interval) + 1, base, max);
-            patch.add(LogootStrategy.constructIdentifier(digits, P, Q, doc.getReplicaNumber(), doc.getClock()));
-            doc.incClock();
+            RandomLogootStrategy.plus(digits, RandomLogootStrategy.nextLong(interval) + 1, base, max);
+            patch.add(RandomLogootStrategy.constructIdentifier(digits, P, Q, doc.getReplicaNumber(), doc.nextClock()));
         }
         return patch;    
     }

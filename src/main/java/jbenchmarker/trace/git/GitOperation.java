@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +21,9 @@ package jbenchmarker.trace.git;
 import collect.VectorClock;
 import crdt.CRDT;
 import crdt.simulator.TraceOperation;
-import java.io.Serializable;
-import java.util.List;
 import jbenchmarker.core.LocalOperation;
-import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.trace.git.model.Edition;
 import jbenchmarker.trace.git.model.FileEdition;
 
@@ -38,22 +36,23 @@ public class GitOperation extends TraceOperation {
         
     public GitOperation(int replica, VectorClock VC, FileEdition f, Edition e) {
         super(replica, new VectorClock(VC));
-        SequenceOperation.OpType type;
+        int arg = 0;
         switch (e.getType()) {
-        case DELETE: 
-            type = SequenceOperation.OpType.del;
-            break;
-        case INSERT:
-            type = SequenceOperation.OpType.ins;
-            break;
-        case REPLACE:
-            type = SequenceOperation.OpType.update;
-            break;
-        default:
-            type = SequenceOperation.OpType.unsupported;    
+            case delete: 
+            case replace:
+            case update:
+                arg = e.sizeA();
+                break;
+            case move:
+                arg = e.getDestMove();
+                break;
         }
-        sop = new SequenceOperation<String>(type, /*replica,*/ e.getBeginA(), 
-                e.getEndA() - e.getBeginA(), e.getCb()/*, new VectorClock(VC)*/);
+        sop = new SequenceOperation<String>(e.getType(), e.getBeginA(), arg, e.getCb()) {
+            @Override // Must always be ok
+            public LocalOperation adaptTo(CRDT replica) {
+                return this;
+            }
+        };
     }
 
     @Override

@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,10 +40,13 @@ public class TreedocDocument extends TreedocRoot implements Document {
 	public void apply(Operation op) {
 		final TreedocOperation treedocOp = (TreedocOperation) op;
 		switch (treedocOp.getType()) {
-		case ins:
+		case insert:
+//System.out.println("--- Remote Add ---"+treedocOp.getId()+", Content: "+treedocOp.getContent());
 			insertAt(treedocOp.getId(), treedocOp.getContent());
 			break;
-		case del:
+		case delete:
+//System.out.println("--- Remote Remove ---"+treedocOp.getId());
+
 			deleteAt(treedocOp.getId());
 			break;
 		default:

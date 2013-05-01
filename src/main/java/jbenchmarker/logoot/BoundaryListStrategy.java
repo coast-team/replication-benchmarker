@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Boundary random logoot strategy that uses list identifiers. 
  * @author urso
  */
-public class BoundaryListStrategy extends LogootStrategy {
+public class BoundaryListStrategy extends RandomLogootStrategy {
 
 
     private final long bound;
@@ -50,7 +50,7 @@ public class BoundaryListStrategy extends LogootStrategy {
      * Generate N identifier between P and Q;
      */
     @Override
-    List<ListIdentifier> generateLineIdentifiers(LogootDocument doc, ListIdentifier P, ListIdentifier Q, int n) {
+    public List<ListIdentifier> generateLineIdentifiers(TimestampedDocument doc, ListIdentifier P, ListIdentifier Q, int n) {
 //        assert P.compareTo(Q) < 0;
         
         LogootListPosition PP = (LogootListPosition) P;
@@ -74,9 +74,8 @@ public class BoundaryListStrategy extends LogootStrategy {
         ArrayList<ListIdentifier> patch = new ArrayList<ListIdentifier>();
         LogootListPosition NP = PP;
         for (int i = 0; i < n; i++) {
-            NP = plus(index, NP, LogootStrategy.nextLong(interval) + 1, doc.getReplicaNumber(), doc.getClock());
+            NP = plus(index, NP, RandomLogootStrategy.nextLong(interval) + 1, doc.getReplicaNumber(), doc.nextClock());
             patch.add(NP);
-            doc.incClock();
         }
         return patch;
     }

@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,9 @@ package jbenchmarker.trace.git.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import jbenchmarker.core.SequenceOperation.OpType;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.Edit.Type;
 import org.eclipse.jgit.diff.RawText;
@@ -32,11 +34,12 @@ import org.eclipse.jgit.diff.RawText;
  *
  * @author urso
  */
-public class Edition implements Serializable{
-    protected int beginA, endA, beginB, endB;
+public class Edition implements Serializable{    
+
+    protected int beginA, beginB, dest;
     protected List<String> ca;
     protected List<String> cb;
-    protected Type type;
+    protected OpType type;
 
     public Edition() {
     }
@@ -57,6 +60,14 @@ public class Edition implements Serializable{
         this.beginB = beginB;
     }
 
+    public int getDestMove() {
+        return dest;
+    }
+
+    public void setDestMove(int destMove) {
+        this.dest = destMove;
+    }
+
     public List<String> getCa() {
         return ca;
     }
@@ -65,6 +76,10 @@ public class Edition implements Serializable{
         this.ca = ca;
     }
 
+    public int sizeA() {
+        return ca == null ? 0 : ca.size();
+    }
+        
     public List<String> getCb() {
         return cb;
     }
@@ -73,55 +88,130 @@ public class Edition implements Serializable{
         this.cb = cb;
     }
 
-    public int getEndA() {
-        return endA;
+    public int sizeB() {
+        return cb == null ? 0 : cb.size();
     }
-
-    public void setEndA(int endA) {
-        this.endA = endA;
-    }
-
-    public int getEndB() {
-        return endB;
-    }
-
-    public void setEndB(int endB) {
-        this.endB = endB;
-    }
-
-    public Type getType() {
+    
+    public OpType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(OpType type) {
         this.type = type;
     }
 
     public Edition(Edit edit, RawText a, RawText b) {
         this.beginA = edit.getBeginA();
-        this.endA = edit.getEndA();
         this.beginB = edit.getBeginB();
-        this.endB = edit.getEndB();
-        this.type = edit.getType();
+        this.type = typeof(edit.getType());
         this.ca = new ArrayList<String>();
         this.cb = new ArrayList<String>();
-        for (int i = beginA; i < endA; ++i) {
+        for (int i = beginA; i < edit.getEndA(); ++i) {
             ca.add(a.getString(i) + '\n');
         }
-        for (int i = beginB; i < endB; ++i) {
+        for (int i = beginB; i < edit.getEndB(); ++i) {
             cb.add(b.getString(i) + '\n');
         }
     }
 
+    public Edition(OpType type, int beginA, int beginB, int dest, List<String> ca, List<String> cb) {
+        this.beginA = beginA;
+        this.beginB = beginB;
+        this.dest = dest;
+        this.ca = ca;
+        this.cb = cb;
+        this.type = type;
+    }
+
+    /**
+     * One line edition.
+     */
+    public Edition(OpType type, int beginA, int beginB, int dest, String a, String b) {
+        this.type = type;
+        this.beginA = beginA;
+        this.beginB = beginB;
+        this.dest = dest;
+        if (a != null) {
+            this.ca = new LinkedList<String>();
+            this.ca.add(a);
+        }
+        if (b != null) {
+            this.cb = new LinkedList<String>();
+            this.cb.add(b);
+        }
+    }
+    
+    /**
+     * One line edition.
+     */
+    public Edition(OpType type, int beginA, int beginB, String a, String b) {
+        this(type, beginA, beginB, 0, a, b);
+    }
+    
     @Override
     public String toString() {
         StringBuilder  s = new StringBuilder();
-        for (int i = this.getBeginA(); i < this.getEndA(); ++i) {
-            s.append("--- (").append(i).append(") ").append(ca.get(i-this.getBeginA()));
+        for (int i = 0; i < sizeA(); ++i) {
+            s.append("--- (").append(i + beginA).append(") ").append(ca.get(i));
         }
-        for (int i = this.getBeginB(); i < this.getEndB(); ++i) {
-            s.append("+++ (").append(i).append(") ").append(cb.get(i-this.getBeginB()));
+        for (int i = 0; i < sizeB(); ++i) {
+            s.append("+++ (").append(i + (type == OpType.move ? dest : beginA)).append(") ").append(cb.get(i));
         }
         return s.toString();
+    }
+
+    private static OpType typeof(Type type) {
+                switch (type) {
+        case DELETE: 
+            return OpType.delete;
+        case INSERT:
+            return OpType.insert;
+        case REPLACE:
+            return OpType.replace;
+        default:
+            return OpType.unsupported;    
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 53 * hash + this.beginA;
+        hash = 53 * hash + this.beginB;
+        hash = 53 * hash + this.dest;
+        hash = 53 * hash + (this.ca != null ? this.ca.hashCode() : 0);
+        hash = 53 * hash + (this.cb != null ? this.cb.hashCode() : 0);
+        hash = 53 * hash + (this.type != null ? this.type.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Edition other = (Edition) obj;
+        if (this.beginA != other.beginA) {
+            return false;
+        }
+        if (this.beginB != other.beginB) {
+            return false;
+        }
+        if (this.dest != other.dest) {
+            return false;
+        }
+        if (this.ca != other.ca && (this.ca == null || !this.ca.equals(other.ca))) {
+            return false;
+        }
+        if (this.cb != other.cb && (this.cb == null || !this.cb.equals(other.cb))) {
+            return false;
+        }
+        if (this.type != other.type) {
+            return false;
+        }
+        return true;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,9 @@ public abstract class SequenceOperationProfile<T> implements OperationProfile {
 
         int l = replica.viewLength();
         int position = nextPosition(l);
-        OpType type = (l == 0) ? OpType.ins : nextType();
-        int offset = (type == OpType.ins) ? 0 : nextOffset(position, l);
-        List<T> content = (type == OpType.del) ? null : nextContent(); 
+        OpType type = (l == 0) ? OpType.insert : nextType();
+        int offset = (type == OpType.insert) ? 0 : nextOffset(position, l);
+        List<T> content = (type == OpType.delete) ? null : nextContent(); 
 
         return new SequenceOperation<T>(type,  position, offset, content);
     }

@@ -1,4 +1,22 @@
 /**
+ * Replication Benchmarker
+ * https://github.com/score-team/replication-benchmarker/
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/**
 * Replication Benchmarker
 * https://github.com/score-team/replication-benchmarker/
 * Copyright (C) 2012 LORIA / Inria / SCORE Team
@@ -124,7 +142,7 @@ public class LogootSAlgorithmTest {
         replica.applyLocal(SequenceOperation.insert(2, "2"));
         replica.applyLocal(SequenceOperation.insert(7, "7"));
         assertEquals("ab2cdef7ghij", replica.lookup());
-        CRDTMessage m2 = replica.applyLocal(SequenceOperation.update(1, 10,"test"));
+        CRDTMessage m2 = replica.applyLocal(SequenceOperation.replace(1, 10,"test"));
         assertEquals("atestj", replica.lookup());
         
         MergeAlgorithm replica2 = (MergeAlgorithm) new LogootSFactory().create();
@@ -140,13 +158,13 @@ public class LogootSAlgorithmTest {
     public void testConcurrentUpdate() throws PreconditionException{
         String content = "abcdefghij";
         CRDTMessage m1 = replica.applyLocal(SequenceOperation.insert(0, content));
-        replica.applyLocal(SequenceOperation.update(2, 4, "27"));
+        replica.applyLocal(SequenceOperation.replace(2, 4, "27"));
         assertEquals("ab27ghij", replica.lookup());
         
         MergeAlgorithm replica2 = (MergeAlgorithm) new LogootSFactory().create();
         replica2.setReplicaNumber(2);
         m1.execute(replica2);
-        CRDTMessage m2 = replica2.applyLocal(SequenceOperation.update(1, 8, "test"));
+        CRDTMessage m2 = replica2.applyLocal(SequenceOperation.replace(1, 8, "test"));
         m2.execute(replica);
         assertEquals("atest27j", replica.lookup());
     }
@@ -157,7 +175,7 @@ public class LogootSAlgorithmTest {
         int pos = 3, off = 5;       
         replica.applyLocal(SequenceOperation.insert(0, content));
         assertEquals(content, replica.lookup());
-        replica.applyLocal(SequenceOperation.update(pos, off, upd));
+        replica.applyLocal(SequenceOperation.replace(pos, off, upd));
         assertEquals(content.substring(0, pos) + upd + content.substring(pos+off), replica.lookup());        
     }
 }

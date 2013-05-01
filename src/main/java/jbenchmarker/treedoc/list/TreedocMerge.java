@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ public class TreedocMerge<T> extends MergeAlgorithm {
 		final List<SequenceMessage> ops = new LinkedList<SequenceMessage>();
 
 		switch (opt.getType()) {
-		case ins:
+		case insert:
 			final int index = restrictedIndex(opt.getPosition(), true);
 			if (content.size() == 1) {
 				final TreedocId id = treedoc.insert(index, content.get(0),
@@ -73,7 +73,7 @@ public class TreedocMerge<T> extends MergeAlgorithm {
 							.get(i)));
 			}
 			break;
-		case del:
+		case delete:
 			// TODO: implement batch delete more efficiently?
 			for (int i = opt.getPosition(); i < opt.getPosition()
 					+ opt.getLenghOfADel(); i++) {

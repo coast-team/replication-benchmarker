@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ public class ABTDocument<T> implements Document{
 		// TODO Auto-generated method stub
 		ABTOperation abtop = (ABTOperation)op;
 		try{
-			if(abtop.getType()==OpType.del){
+			if(abtop.getType()==OpType.delete){
 //				if(abtop.c=='\0') abtop.c = model.charAt(abtop.pos-1);
 //				else {
 					if(abtop.c != model.get(abtop.pos-1)) {

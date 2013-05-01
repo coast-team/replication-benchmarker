@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,7 +129,7 @@ public class TTFOperation<T> implements Operation, Serializable{
         sb.append(this.getType());
         sb.append('(');
         sb.append(this.pos);
-        if (OpType.ins == this.getType()) {
+        if (OpType.insert == this.getType()) {
             sb.append(',');
             sb.append(this.content);
         } 

@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ public class LogootComponentTest {
 
     @Test
     public void testEquals() {
-        assertEquals(new Component(4, 5, 99999), new Component(4, 5, 99999));
+        assertEquals(new LogootComponent(4, 5, 99999), new LogootComponent(4, 5, 99999));
     }
 
     @Test
@@ -37,7 +37,7 @@ public class LogootComponentTest {
         System.out.println("Test Component ...");
 
         //Creation
-        Component c1 = new Component(20, 4, 50);
+        LogootComponent c1 = new LogootComponent(20, 4, 50);
         assertEquals(20, c1.getDigit());
         assertEquals(4, c1.getPeerID());
         assertEquals(50, c1.getClock());
@@ -46,16 +46,16 @@ public class LogootComponentTest {
 
     @Test
     public void testEqualsTo() {
-        Component c1 = new Component(20, 4, 50);
-        Component c2 = new Component(20, 4, 50);
+        LogootComponent c1 = new LogootComponent(20, 4, 50);
+        LogootComponent c2 = new LogootComponent(20, 4, 50);
 
         assertEquals(true, c1.equals(c2));
     }
 
     @Test
     public void testCompareTo() {
-        Component c1 = new Component(20, 4, 50);
-        Component c2 = new Component(20, 6, 50);
+        LogootComponent c1 = new LogootComponent(20, 4, 50);
+        LogootComponent c2 = new LogootComponent(20, 6, 50);
 
         assertTrue(c1.compareTo(c2) < 0);
 

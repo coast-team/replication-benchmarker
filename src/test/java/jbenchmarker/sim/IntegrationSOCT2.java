@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ public class IntegrationSOCT2 {
     @Test
     public void testSOCT2ExempleRun() throws Exception {
         System.out.println("Integration test with WootH");
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
+        Trace trace = TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("exemple.xml"), 1);
         CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGCFactory());
 
         cd.run(trace);
@@ -53,7 +53,7 @@ public class IntegrationSOCT2 {
     @Ignore   // 231,986 s  on rev 105
     @Test
     public void testSOCT2RunG1() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);         
+        Trace trace = TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("G1.xml"), 1);         
         CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGCFactory());
 
         long startTime = System.currentTimeMillis();
@@ -70,7 +70,7 @@ public class IntegrationSOCT2 {
     
     @Test
     public void testSOCT2RunJSON() throws Exception {
-        Trace trace = TraceGenerator.traceFromJson("/home/damien/etherpad-lite/var/dirtyCS.db","test");
+        Trace trace = TraceGenerator.traceFromJson(TracesExample.getExampleTraceMatch("dirtyCS.db"),"test");
         //Trace trace = TraceGenerator.traceFromJson("../../traces/json/dirtyCS.db");
         //Trace trace = TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald3.db","notes001");//pb avec notes001, notes002 corrompu a cause d'un pb lors du test des etudiants
         CausalSimulator cd = new CausalSimulator(new TTFFactories.WithoutGCFactory());

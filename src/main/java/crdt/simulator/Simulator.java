@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ public abstract class Simulator {
     final public List<CRDT> forSerializ;
     
     // memoryUsed
-    final protected List<Double> memUsed; 
+    final protected List<Long> memUsed; 
 
     // operation's generation time
     final protected List<Long> genTime;
@@ -116,7 +116,7 @@ public abstract class Simulator {
      * One entry per measurement : trace size divided by nbrTrace.
      * @return a list of size in bytes, empty list if nbrTrace was 0
      */
-    public List<Double> getMemUsed() {
+    public List<Long> getMemUsed() {
         return memUsed;
     }
     
@@ -125,7 +125,7 @@ public abstract class Simulator {
      * One entry per traceoperation.
      * @return a list of generation times in nanoseconds, empty list if detail was false
      */
-    public List<Long> replicaGenerationTimes() {
+    public List<Long> getGenerationTimes() {
         return genTime;
     }
     

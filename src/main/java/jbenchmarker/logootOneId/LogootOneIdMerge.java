@@ -1,40 +1,56 @@
 /**
-* Replication Benchmarker
-* https://github.com/score-team/replication-benchmarker/
-* Copyright (C) 2012 LORIA / Inria / SCORE Team
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
+ * Replication Benchmarker
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2013
+ * LORIA / Inria / SCORE Team
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2011 INRIA / LORIA / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2012
+ * LORIA / Inria / SCORE Team
+ * 
+* This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+* This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ * 
+* You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+/**
+ * Replication Benchmarker
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2011
+ * INRIA / LORIA / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.logootOneId;
 
@@ -57,11 +73,12 @@ public class LogootOneIdMerge<T> extends MergeAlgorithm {
     public LogootOneIdMerge(Document doc, int r) {
         super(doc, r);
     }
-   @Override
+
+    @Override
     public LogootOneIdDocument<T> getDoc() {
         return (LogootOneIdDocument<T>) super.getDoc();
     }
-   
+
     @Override
     protected void integrateRemote(SequenceMessage op) {
         getDoc().apply(op);
@@ -71,7 +88,7 @@ public class LogootOneIdMerge<T> extends MergeAlgorithm {
     protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
         int offset = opt.getLenghOfADel(), position = opt.getPosition();
-        
+
         for (int k = 1; k <= offset; k++) {
             LogootOneIdOperation<T> wop = LogootOneIdOperation.Delete(opt, getDoc().getId(position + k));
             lop.add(wop);
@@ -82,13 +99,13 @@ public class LogootOneIdMerge<T> extends MergeAlgorithm {
 
     @Override
     protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
-        
+
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
         int N = opt.getContent().size(), position = opt.getPosition();
 
         List<T> content = opt.getContent();
         ArrayList<LogootOneIdentifier> patch = getDoc().generateIdentifiers(position, N);
-              
+
         ArrayList<T> lc = new ArrayList<T>(patch.size());
         for (int cmpt = 0; cmpt < patch.size(); cmpt++) {
             T c = content.get(cmpt);
@@ -96,9 +113,9 @@ public class LogootOneIdMerge<T> extends MergeAlgorithm {
             lop.add(log);
             lc.add(c);
         }
-        
+
         getDoc().insert(position, patch, lc);
-        
+
         return lop;
     }
 
@@ -117,5 +134,4 @@ public class LogootOneIdMerge<T> extends MergeAlgorithm {
     public CRDT<String> create() {
         return new LogootOneIdMerge(getDoc().create(), 0);
     }
-
 }

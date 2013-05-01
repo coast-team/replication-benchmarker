@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,18 +22,12 @@
 package jbenchmarker.trace.git.model;
 
 import java.io.Serializable;
-import jbenchmarker.trace.git.model.FileEdition;
-import jbenchmarker.trace.git.model.Commit;
 import java.util.LinkedList;
 import java.util.List;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.patch.FileHeader;
-import org.eclipse.jgit.patch.FileHeader.PatchType;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.ektorp.support.TypeDiscriminator;
 
 /**
  *
@@ -42,11 +36,11 @@ import org.ektorp.support.TypeDiscriminator;
 
 @JsonIgnoreProperties({"id", "revision"})
 public class Patch implements Serializable{
-    public static final String content = "CONTENT";
+    public static final String CONTENT = "CONTENT";
     
     protected List<FileEdition> edits;
     protected List<String> paths;
-    protected List<byte[]> raws;
+    protected List<String> contents;
     
     public Patch() {
     }
@@ -69,18 +63,22 @@ public class Patch implements Serializable{
      */
     public Patch(Commit commit, List<FileEdition> listEdit) {
         this.edits = listEdit;
-        this.id = commit.getId() + content;
+        this.id = commit.getId();
     }
     
     /**
-     * Merge commit patch constuctor
+     * Content commit patch constuctor
      * @param commit
      * @param listEdit 
      */
     public Patch(Commit commit, List<String> paths, List<byte[]> raws) {       
         this.paths = paths;
-        this.raws = raws;
-        this.id = commit.getId() + content;
+        this.contents = new LinkedList<String>();
+        for (byte[] b : raws) {
+            String c = new String(b);
+            this.contents.add(c.endsWith("\n") ? c : c.concat("\n"));
+        }
+        this.id = commit.getId() + CONTENT;
     }
     
     @JsonProperty("_id")
@@ -117,14 +115,19 @@ public class Patch implements Serializable{
         this.paths = paths;
     }
 
-    public List<byte[]> getRaws() {
-        return raws;
+    public List<String> getContents() {
+        return contents;
     }
 
-    public void setRaws(List<byte[]> raws) {
-        this.raws = raws;
+    public void setContents(List<String> contents) {
+        this.contents = contents;
     }
 
+    public String getContentOf(String path) {
+        int i = paths.indexOf(path);
+        return i == -1 ? "" : contents.get(i);
+    }
+    
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();

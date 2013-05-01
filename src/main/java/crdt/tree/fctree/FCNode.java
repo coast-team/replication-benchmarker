@@ -1,40 +1,37 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2012
- * LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package crdt.tree.fctree;
 
-import collect.Node;
 import collect.OrderedNode;
 import collect.SimpleNode;
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeSet;
 
 /**
  *
  * @param <T>
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class FCNode<T> implements OrderedNode<T> {
+public class FCNode<T> implements OrderedNode<T> , Serializable {
 
     // private ArrayList<FCNode<T>> childrens;
     private ArrayList<FCNode<T>> childrens;
@@ -174,7 +171,7 @@ public class FCNode<T> implements OrderedNode<T> {
     }
 
     @Override
-    public List getElements() {
+    public List<FCNode<T>> getElements() {
         //return Arrays.asList(childrens.toArray());
         return childrens;
     }
@@ -314,7 +311,7 @@ public class FCNode<T> implements OrderedNode<T> {
     }
 
     @Override
-    public Iterator iterator() {
+    public Iterator<FCNode<T>> iterator() {
         return childrens.iterator();
     }
 

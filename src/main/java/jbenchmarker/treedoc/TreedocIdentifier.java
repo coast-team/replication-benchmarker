@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ import java.util.NoSuchElementException;
  * @author mzawirski
  */
 public class TreedocIdentifier implements Serializable {
-	enum EdgeDirection {
+	public enum EdgeDirection {
 		LEFT, RIGHT
 	};
 
@@ -45,7 +45,7 @@ public class TreedocIdentifier implements Serializable {
 	 * 
 	 * @author mzawirski
 	 */
-	static class Recorder {
+	public static class Recorder {
 		private BitSet path = new BitSet();
 		private ArrayList<Integer> tagChanges = new ArrayList<Integer>();
 		private int index;
@@ -90,7 +90,7 @@ public class TreedocIdentifier implements Serializable {
 		}
 	}
 
-	static class ComponentScanner {
+	public static class ComponentScanner {
 		private EdgeDirection direction;
 		private UniqueTag tag;
 

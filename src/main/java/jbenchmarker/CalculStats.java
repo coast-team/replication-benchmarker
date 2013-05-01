@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,11 +45,11 @@ public class CalculStats {
         
         while(en.hasMoreElements()){
             SequenceOperation so = (SequenceOperation)en.nextElement().getOperation();
-            if (so.getType().equals(OpType.ins)){  
+            if (so.getType().equals(OpType.insert)){  
                     ins.add((double)so.getContentAsString().length());
-                }else if(so.getType().equals(OpType.del)){
+                }else if(so.getType().equals(OpType.delete)){
                      del.add((double)so.getLenghOfADel());
-                }else if(so.getType().equals(OpType.update)){
+                }else if(so.getType().equals(OpType.replace)){
                     up.add((double)(so.getContentAsString().length()-so.getLenghOfADel()));
                 }
         }

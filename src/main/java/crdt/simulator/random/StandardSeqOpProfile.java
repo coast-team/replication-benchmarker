@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ public class StandardSeqOpProfile extends SequenceOperationProfile<Character> {
 
     @Override
     public SequenceOperation.OpType nextType() {
-        return (r.nextDouble() < perIns) ? SequenceOperation.OpType.ins : SequenceOperation.OpType.del;            
+        return (r.nextDouble() < perIns) ? SequenceOperation.OpType.insert : SequenceOperation.OpType.delete;            
     }
     
     @Override

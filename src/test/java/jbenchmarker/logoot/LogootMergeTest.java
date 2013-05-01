@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +18,13 @@
  */
 package jbenchmarker.logoot;
 
+import crdt.Factory;
 import jbenchmarker.factories.LogootFactory;
 import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 import java.util.List;
+import jbenchmarker.factories.LogootBinaryFactory;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -41,14 +43,12 @@ public class LogootMergeTest
          return SequenceOperation.delete( p, o);//Replica , position , offset , VH
     }
     SequenceOperation update(int p, int o, String s) {
-        return SequenceOperation.update( p, o, s); //Replica , position , content , VH
+        return SequenceOperation.replace( p, o, s); //Replica , position , content , VH
     }
     
-    @Test
-    public void testgenerateLocal() throws IncorrectTraceException {
-        LogootMerge LM = (LogootMerge) new LogootFactory().create();
-
+    public void testgenerateLocal(LogootMerge LM) throws IncorrectTraceException {
         List<SequenceMessage> a = LM.localInsert(insert(0, "a"));  //a
+        
         assertEquals(1, a.size());
         assertEquals("a", LM.lookup());
 
@@ -69,10 +69,7 @@ public class LogootMergeTest
         assertEquals("fa", LM.lookup());
     }
         
-    @Test
-    public void testUpdateLocal() throws IncorrectTraceException {
-        LogootMerge LM = (LogootMerge) new LogootFactory().create();
-
+    public void testUpdateLocal(LogootMerge LM) throws IncorrectTraceException {
         List<SequenceMessage> a = LM.localInsert(insert(0, "abcdef"));  //a
 
         a = LM.localUpdate(update(0, 2, "X")); 
@@ -88,12 +85,8 @@ public class LogootMergeTest
         assertEquals("XcYZUVW", LM.lookup());
     }
     
-    @Test
-    public void testDeleteBloc() throws IncorrectTraceException {
-        
-        LogootMerge LM = (LogootMerge) new LogootFactory().create();
+    public void testDeleteBloc(LogootMerge LM) throws IncorrectTraceException {
         LogootDocument<Character> lg = (LogootDocument) (LM.getDoc());
-        
         
         List<SequenceMessage> a = LM.localInsert(insert(0, "aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib"));
         assertEquals(80, a.size());
@@ -108,8 +101,22 @@ public class LogootMergeTest
         
         a = LM.localDelete(delete(1, 78));
         assertEquals("ab", LM.lookup());
-        
-        
+    }
+    
+    @Test
+    public void testLogoot() throws IncorrectTraceException {
+        Factory lf = new LogootFactory();
+        testgenerateLocal((LogootMerge) lf.create());
+        testUpdateLocal((LogootMerge) lf.create());
+        testDeleteBloc((LogootMerge) lf.create());
+    }
+    
+    @Test
+    public void testBinaryLogoot() throws IncorrectTraceException {
+        Factory lf = new LogootBinaryFactory();
+        testgenerateLocal((LogootMerge) lf.create());
+        testUpdateLocal((LogootMerge) lf.create());
+        testDeleteBloc((LogootMerge) lf.create());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)

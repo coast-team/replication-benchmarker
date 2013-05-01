@@ -1,20 +1,20 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2013
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.woot;
 
@@ -34,15 +34,15 @@ import jbenchmarker.core.SequenceOperation;
  * @author urso
  */
 public class WootMerge<T> extends MergeAlgorithm {
+
     Map<WootIdentifier, WootOperation> pending;
-    
     private int clock;
-    
+
     public WootMerge(Document doc, int r) {
         super(doc, r);
         clock = 0;
     }
-    
+
     @Override
     protected void integrateRemote(SequenceMessage op) {
 //        WootOperation wop = (WootOperation) op;
@@ -52,7 +52,6 @@ public class WootMerge<T> extends MergeAlgorithm {
         getDoc().apply(op);
     }
 
- 
     @Override
     protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
@@ -87,6 +86,11 @@ public class WootMerge<T> extends MergeAlgorithm {
             lop.add(wop);
         }
         return lop;
+    }
+
+    @Override
+    protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
+        return localReplace(opt);
     }
 
     private WootIdentifier nextIdentifier() {

@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 package crdt.tree.fctree;
 
 import crdt.RemoteOperation;
+import java.io.Serializable;
 import jbenchmarker.core.Operation;
 
 /**
@@ -26,7 +27,7 @@ import jbenchmarker.core.Operation;
  * @param <T> 
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public abstract class FCOperation<T> implements RemoteOperation {
+public abstract class FCOperation<T> implements RemoteOperation,Serializable {
     //public enum OpType{add,del,chlabel,chorder,move};
     private FCIdentifier id;
 

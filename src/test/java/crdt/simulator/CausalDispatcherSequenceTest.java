@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,8 +53,11 @@ public class CausalDispatcherSequenceTest {
 //        new LogootListFactory.ByteList(), 
 //        new LogootListFactory.ShortList(), 
 //        new LogootListFactory.IntList(), 
-        new NCBLogootFactory(), 
-//        new TreedocFactory(), 
+//        new LogootBinaryFactory(), 
+//        new NCBLogootFactory(), 
+        new MuFactories.UpdateFactory<String>(), 
+        new MuFactories.MoveFactory<String>(), 
+        //        new TreedocFactory(), 
 //        new jbenchmarker.treedoc.list.TreedocFactory(),
 //        new WootFactory(), 
 //        new WootOFactory(), 
@@ -88,6 +91,7 @@ public class CausalDispatcherSequenceTest {
     }
 
     static final int vocabularySize = 100;
+    static final OperationProfile diffopp = new StandardDiffProfile(0.7, 0.75, 0.90, 30, 20.0, 30, 10.0); 
     static final OperationProfile seqopp = new StandardSeqOpProfile(0.8, 0.1, 40, 5.0);
     static final OperationProfile uopp = new StandardSeqOpProfile(0.8, 0, 1, 0);
     
@@ -95,8 +99,8 @@ public class CausalDispatcherSequenceTest {
     @Test
     public void stress() throws PreconditionException, IncorrectTraceException, IOException {
 //        Factory f = new TTFFactories.WithGC3();
-        Factory f = new LogootListFactory.IntList();
-        CausalDispatcherSetsAndTreesTest.testRunX(f, 200, 20, 5, uopp);           
+        Factory f = new MuFactories.MoveFactory<String>();
+        CausalDispatcherSetsAndTreesTest.testRunX(f, 200, 200, 5, seqopp);           
     }
     
     @Test
@@ -112,6 +116,14 @@ public class CausalDispatcherSequenceTest {
         
         for (Factory<CRDT> sf : s) {
             CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, seqopp);
+        }
+    }
+    
+    @Test
+    public void testRunDiffs() throws IncorrectTraceException, PreconditionException, IOException {
+        
+        for (Factory<CRDT> sf : s) {
+            CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, diffopp);
         }
     }
     

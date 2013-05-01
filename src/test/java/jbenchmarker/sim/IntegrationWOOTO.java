@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ public class IntegrationWOOTO {
     @Test
     public void testWootOExempleRun() throws Exception {
         System.out.println("Integration test with wooto");
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTO.class.getResource("exemple.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
         cd.run(trace);
@@ -54,7 +54,7 @@ public class IntegrationWOOTO {
     //@Ignore
     @Test
     public void testWootOG1Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTO.class.getResource("G1.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
         cd.run(trace);
@@ -66,7 +66,7 @@ public class IntegrationWOOTO {
     //@Ignore
     @Test
     public void testWootOG2Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTO.class.getResource("G2.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
         cd.run(trace);
@@ -78,7 +78,7 @@ public class IntegrationWOOTO {
     //@Ignore
     @Test
     public void testWootOG3Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTO.class.getResource("G3.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
         cd.run(trace);
@@ -90,7 +90,7 @@ public class IntegrationWOOTO {
     //@Ignore
     @Test
     public void testWootOSerieRun() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTO.class.getResource("Serie.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootOFactory());
 
         cd.run(trace);

@@ -1,6 +1,6 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2012
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2013
  * LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -44,27 +44,32 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
 
         int sizeDoc = ((MergeAlgorithm) replica).getDoc().viewLength();
 //
-        if (this.getType() == OpType.ins && this.position > sizeDoc) {
-            this.position = sizeDoc;//a position exceeds document size
-        } else if (this.getType() != OpType.ins) {
-            if (this.position >= sizeDoc) {
-                this.position = sizeDoc - 1;//a position exceeds document size
+        if (getType() == OpType.insert) {
+            if (position > sizeDoc) {
+                position = sizeDoc; // an insert position exceeds document size
             }
-            if ((this.position + this.lenghOfADel) > sizeDoc) {
-                this.lenghOfADel = sizeDoc - this.position; //delete document at position exceeds document size
-            }
+        } else if (this.position >= sizeDoc) {
+            position = sizeDoc - 1; // a position exceeds document size
+        }
+
+        if ((getType() == OpType.delete || getType() == OpType.update) && position + argument > sizeDoc) {
+            argument = sizeDoc - position; // delete document at position exceeds document size
+        }
+
+        if ((getType() == OpType.update || getType() == OpType.move) && position + content.size() > sizeDoc) {
+            content = content.subList(0, sizeDoc - position); // update document at position exceeds document size
         }
         return this;
     }
 
     public enum OpType {
-        ins, del, update, unsupported, noop
+
+        insert, delete, replace, update, move, unsupported, noop
     };
-    
     private OpType type;                  // type of operation : insert or delete
     private int position;                 // position in the document
-    private int lenghOfADel;                   // length of a del
-    private List<T> content;          // content of an ins
+    private int argument;                 // length of a del or move position
+    private List<T> content;              // content of an ins / update / move
 
     public List<T> getContent() {
         return content;
@@ -79,22 +84,30 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
     }
 
     public int getLenghOfADel() {
-        return lenghOfADel;
+        return argument;
     }
 
     public int getPosition() {
         return position;
+    }
+    
+    public void setPosition(int p) {
+        position = p;
+    }
+
+    public int getDestination() {
+        return argument;
     }
 
     public OpType getType() {
         return type;
     }
 
-    public SequenceOperation(OpType type, int position, int offset, List<T> content) {
+    public SequenceOperation(OpType type, int position, int argument, List<T> content) {
         //super(replica, VC);
         this.type = type;
         this.position = position;
-        this.lenghOfADel = offset;
+        this.argument = argument;
         this.content = content;
     }
 
@@ -106,29 +119,51 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
         for (int i = 0; i < content.length(); ++i) {
             l.add(content.charAt(i));
         }
-        return new SequenceOperation(OpType.ins, position, 0, l);
+        return new SequenceOperation(OpType.insert, position, 0, l);
     }
 
     /*
      * Construction of an delete operation
      */
     static public SequenceOperation delete(int position, int offset) {
-        return new SequenceOperation(OpType.del, position, offset, null);
+        return new SequenceOperation(OpType.delete, position, offset, null);
+    }
+
+    /*
+     * Construction of a replace operation
+     */
+    static public SequenceOperation<Character> replace(int position, int offset, String content) {
+        List<Character> l = new ArrayList<Character>();
+        for (int i = 0; i < content.length(); ++i) {
+            l.add(content.charAt(i));
+        }
+        return new SequenceOperation<Character>(OpType.replace, position, offset, l);
     }
 
     /*
      * Construction of an update operation
      */
-    static public SequenceOperation<Character> update(int position, int offset, String content) {
+    static public SequenceOperation<Character> update(int position, String content) {
         List<Character> l = new ArrayList<Character>();
         for (int i = 0; i < content.length(); ++i) {
             l.add(content.charAt(i));
         }
-        return new SequenceOperation<Character>(OpType.update, position, offset, l);
+        return new SequenceOperation<Character>(OpType.update, position, l.size(), l);
+    }
+    /*
+     * Construction of a move operation (potentially new content)
+     */
+
+    static public SequenceOperation<Character> move(int position, int destination, String content) {
+        List<Character> l = new ArrayList<Character>();
+        for (int i = 0; i < content.length(); ++i) {
+            l.add(content.charAt(i));
+        }
+        return new SequenceOperation<Character>(OpType.move, position, destination, l);
     }
 
-    static public <T> SequenceOperation<T> update(int position, int offset, List<T> content) {
-        return new SequenceOperation(OpType.update, position, offset, content);
+    static public <T> SequenceOperation<T> replace(int position, int offset, List<T> content) {
+        return new SequenceOperation(OpType.replace, position, offset, content);
     }
 
     /**
@@ -160,7 +195,7 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
         if (this.position != other.position) {
             return false;
         }
-        if (this.lenghOfADel != other.lenghOfADel) {
+        if (this.argument != other.argument) {
             return false;
         }
         if ((this.content == null) ? (other.content != null) : !this.content.equals(other.content)) {
@@ -174,13 +209,13 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
         int hash = 7;
         hash = 89 * hash + (this.type != null ? this.type.hashCode() : 0);
         hash = 89 * hash + this.position;
-        hash = 89 * hash + this.lenghOfADel;
+        hash = 89 * hash + this.argument;
         hash = 89 * hash + (this.content != null ? this.content.hashCode() : 0);
         return 89 * hash + super.hashCode();
     }
 
     @Override
     public String toString() {
-        return "SequenceOperation{" + "type=" + type + ", position=" + position + ", numberOf=" + lenghOfADel + ", content=" + content + '}';
+        return "SequenceOperation{" + "type=" + type + ", position=" + position + ", arg=" + argument + ", content=" + content + '}';
     }
 }

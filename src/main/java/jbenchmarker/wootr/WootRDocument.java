@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ public abstract class WootRDocument implements Document {
     public void apply(Operation op) {
         WootROperation wop = (WootROperation) op;
         WootRNode e = wop.getNode();
-        if (wop.getType() == SequenceOperation.OpType.del) {
+        if (wop.getType() == SequenceOperation.OpType.delete) {
             elements.remove(e);
         } else {             
             elements.add(find(e), e);

@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ public class IntegrationWOOTH {
     @Test
     public void testWootHExempleRun() throws Exception {
         System.out.println("Integration test with WootH");
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTH.class.getResource("exemple.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootHFactory());
 
         cd.run(trace);
@@ -54,43 +54,43 @@ public class IntegrationWOOTH {
         assertEquals(r, cd.getReplicas().get(4).lookup());
     }
     
-//    @Ignore
+    @Ignore
     @Test
     public void testWootHG1Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTH.class.getResource("G1.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootHFactory());
 
         assertConsistency(cd,trace);
     }
     
-//    @Ignore
+    @Ignore
     @Test
     public void testWootHG2Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTH.class.getResource("G2.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootHFactory());
 
         assertConsistency(cd,trace);
     }
     
-//    @Ignore
+    @Ignore
     @Test
     public void testWootHG3Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTH.class.getResource("G3.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootHFactory());
 
         assertConsistency(cd,trace);
     }
     
-//    @Ignore
+    @Ignore
     @Test
     public void testWootHSerieRun() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/Serie.xml", 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationWOOTH.class.getResource("Serie.xml").getPath(), 1);
         CausalSimulator cd = new CausalSimulator(new WootHFactory());
 
         assertConsistency(cd,trace);
     }
 
-//    @Ignore
+    @Ignore
     @Test
     public void testWootHStress() throws Exception {
         int i = 0;

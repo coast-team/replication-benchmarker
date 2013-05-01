@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ public class MainSimulaReplica {
                 best = after - befor;
             }
             
-            ltime[ex] = cd.getLocalAvg();
+            ltime[ex] = cd.getLocalTimeSum()/cd.getNbLocalOp();
             rtime[ex] = cd.getRemoteAvg();
             double tab[] = new double[cd.getMemUsed().size()];
             toArrayDouble(tab, cd.getMemUsed());
@@ -120,7 +120,7 @@ public class MainSimulaReplica {
         writeFile(calculAverag(rtime), "gen", nameUsr);
         writeFile(calculAverag(mem), "mem", nameUsr);
     }
-    private static void toArrayDouble(double[] tab, List<Double> memUsed) {
+    private static void toArrayDouble(double[] tab, List<Long> memUsed) {
         for(int i=0; i<memUsed.size(); i++)
             tab[i] = memUsed.get(i).doubleValue();
     }

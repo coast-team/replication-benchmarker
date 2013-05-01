@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ public class TTFDocument<T> implements Document {
         TTFOperation oop = (TTFOperation) op;
         int pos = oop.getPosition();
 
-        if (oop.getType() == SequenceOperation.OpType.del) {
+        if (oop.getType() == SequenceOperation.OpType.delete) {
             TTFChar c = this.model.get(pos);
             if (c.isVisible()) { --size; }
             c.hide();

@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,11 +134,19 @@ public class Commit implements Serializable{
     }
 
     /**
-     * Patch id corresponding to ith parent
+     * Patch id corresponding to ith parent.
      * @return id_commit + id_parent[i]
      */
     public String parentPatchId(int i) {
         return id + parentsIds.get(i);
+    }
+    
+    /**
+     * Patch id of the content of a parent.
+     * @return id_parent + "CONTENT"
+     */
+    public String getParentContent(int i) {
+        return parentsIds.get(i) + Patch.CONTENT;
     }
     
     /**
@@ -150,11 +158,19 @@ public class Commit implements Serializable{
     }
     
     /**
-     * Patch id in case of commit without parent
-     * @return id + "CONTENT"
+     * Patch id of commit
+     * @return id
      */
     public String patchId() {
-        return id + Patch.content;
+        return id;
+    }
+    
+    /**
+     * Patch id for commit content
+     * @return id + "CONTENT"
+     */
+    public String patchContent() {
+        return id + Patch.CONTENT;
     }
     
     public int parentCount() {

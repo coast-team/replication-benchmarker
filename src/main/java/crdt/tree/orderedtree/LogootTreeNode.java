@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@ import collect.SimpleNode;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
-import jbenchmarker.factories.LogootFactory;
 import jbenchmarker.logoot.LogootDocument;
 import jbenchmarker.logoot.LogootIdentifier;
 import jbenchmarker.logoot.LogootStrategy;
@@ -121,13 +120,8 @@ public class LogootTreeNode<T> extends LogootDocument<LogootTreeNode<T>> impleme
     }
 
     @Override
-    protected int getClock() {
-        return clock.value;
-    }
-
-    @Override
-    protected void incClock() {
-        ++clock.value;
+    public int nextClock() {
+        return clock.value++;
     }
 
 /*    public boolean same(OrderedNode<T> other) {

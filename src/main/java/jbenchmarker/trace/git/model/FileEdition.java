@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ public class FileEdition implements Serializable{
      */
     public FileEdition(DiffEntry entry, PatchType type, List<Edition> listEdit) {
         this.entry = new Entry(entry);
-        this.path = null;
+        this.path = entry.getNewPath() == null ? entry.getOldPath() : entry.getNewPath();
         this.listDiff = listEdit;
         this.type = type;
     }

@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -180,7 +180,7 @@ public class TraceGenerator {
         } else if (e.getVal().getOperation().equals("suppression")) {
             return new TraceOperationImpl(SequenceOperation.delete( pos, e.getVal().getNumber_charDeleted()),repli, v);
         } else if (e.getVal().getOperation().equals("remplacement")) {
-            return new TraceOperationImpl(SequenceOperation.update( pos, e.getVal().getNumber_charDeleted(), e.getVal().getChars_inserted()),repli, v);
+            return new TraceOperationImpl(SequenceOperation.replace( pos, e.getVal().getNumber_charDeleted(), e.getVal().getChars_inserted()),repli, v);
         } else {//stylage
             return  new TraceOperationImpl(SequenceOperation.unsupported(),repli, v);
         }

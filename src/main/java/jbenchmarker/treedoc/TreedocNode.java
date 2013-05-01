@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ import jbenchmarker.treedoc.TreedocIdentifier.Recorder;
  * 
  * @author mzawirski
  */
-class TreedocNode<T> implements Serializable{
+public class TreedocNode<T> implements Serializable{
 	// TODO: export as a setting
 	static final boolean USE_DISAMBIGUATORS_TRICK = true;
 

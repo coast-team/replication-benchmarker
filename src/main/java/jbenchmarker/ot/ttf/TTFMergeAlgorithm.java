@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
             while (!doc.getChar(mpos + visibleIndex).isVisible()) {
                 visibleIndex++;
             }
-            TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, getReplicaNumber());
+            TTFOperation op = new TTFOperation(SequenceOperation.OpType.delete, mpos + visibleIndex, getReplicaNumber());
             generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
             doc.apply(op);
         }
@@ -104,7 +104,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
 
         int mpos = doc.viewToModel(opt.getPosition());
         for (int i = 0; i < opt.getContent().size(); i++) {
-            TTFOperation op = new TTFOperation(SequenceOperation.OpType.ins,
+            TTFOperation op = new TTFOperation(SequenceOperation.OpType.insert,
                     mpos + i,
                     opt.getContent().get(i),
                     getReplicaNumber());

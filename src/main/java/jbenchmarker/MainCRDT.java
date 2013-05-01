@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -302,8 +302,8 @@ public class MainCRDT {
         long nbLocal = 0L;
 
         public void addCD(CausalSimulator cd) {
-            timeLocal += cd.getLocalSum();
-            nbLocal += cd.getNbLocal();
+            timeLocal += cd.getLocalTimeSum();
+            nbLocal += cd.getNbLocalOp();
             timeRemote += cd.getRemoteSum();
             nbRemote += cd.getNbRemote();
         }

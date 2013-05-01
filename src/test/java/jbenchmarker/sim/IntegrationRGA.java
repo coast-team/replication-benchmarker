@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ public class IntegrationRGA {
     @Test
     public void testRGAExempleRun() throws Exception {
         System.out.println("Integration test with RGA");
-        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1);
+        Trace trace = TraceGenerator.traceFromXML(IntegrationRGA.class.getResource("exemple.xml").getPath(), 1);
 
         CausalSimulator cd = new CausalSimulator(new RGAFactory());
 
@@ -57,7 +57,7 @@ public class IntegrationRGA {
 ////     @Ignore
 //    @Test
 //    public void testRGAG1Run() throws Exception {
-//        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G1.xml", 1);
+//        Trace trace = TraceGenerator.traceFromXML(IntegrationRGA.class.getResource("G1.xml").getPath(), 1);
 //        CausalSimulator cd = new CausalSimulator(new RGAFactory());
 //
 //        cd.run(trace, true);
@@ -66,7 +66,7 @@ public class IntegrationRGA {
 //    
 //    @Test
 //    public void testRGAG2Run() throws Exception {
-//        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G2.xml", 1,16);
+//        Trace trace = TraceGenerator.traceFromXML(IntegrationRGA.class.getResource("2.xml").getPath(), 1,16);
 //        CausalSimulator cd = new CausalSimulator(new RGAFactory());
 //
 //        cd.run(trace, false);
@@ -75,7 +75,7 @@ public class IntegrationRGA {
 //    
 //    @Test
 //    public void testRGAG3Run() throws Exception {
-//        Trace trace = TraceGenerator.traceFromXML("../../traces/xml/G3.xml", 1);
+//        Trace trace = TraceGenerator.traceFromXML(IntegrationRGA.class.getResource("G3.xml").getPath(), 1);
 //        CausalSimulator cd = new CausalSimulator(new RGAFactory());
 //
 //        cd.run(trace, false);

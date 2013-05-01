@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,19 +20,16 @@ package jbenchmarker.logoot;
 
 import collect.RangeList;
 import crdt.Factory;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceMessage;
-import jbenchmarker.core.SequenceOperation;
 
 /**
  * A Logoot document. Contains a list of Charater and the corresponding list of LogootIndentitifer.
  * @author urso mehdi
  */
-public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
+public class LogootDocument<T> implements  Factory<LogootDocument<T>>, TimestampedDocument {
     private int myClock;
     protected int replicaNumber;
     
@@ -104,6 +101,9 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         document.removeRangeOffset(position + 1, offset);
     }
     
+    /**
+     * Get the ith identifier in the table. O means begin marker.
+     */
     public ListIdentifier getId(int pos) {
         return idTable.get(pos);
     }
@@ -118,13 +118,10 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
     public LogootDocument<T> create() {
         return new LogootDocument<T>(replicaNumber, strategy);
     }
-    
-    protected void incClock() {
-        this.myClock++;
-    }
 
-    protected int getClock() {
-        return this.myClock;
+    @Override
+    public int nextClock() {
+        return this.myClock++;
     }
 
     void setClock(int c) {
@@ -135,13 +132,17 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         this.replicaNumber = replicaNumber;
     }
 
-    int getReplicaNumber() {
+    @Override
+    public int getReplicaNumber() {
         return replicaNumber;
     }
     
-    public ListIdentifier getNewId(int p) {
-        return strategy.generateLineIdentifiers(this, idTable.get(p),
-                    idTable.get(p + 1), 1).get(0);
+    /**
+     * Produce one new identifier after this position.
+     */
+    public ListIdentifier getNewId(int postion) {
+        return strategy.generateLineIdentifiers(this, idTable.get(postion),
+                    idTable.get(postion + 1), 1).get(0);
     }
         
     List<ListIdentifier> generateIdentifiers(int position, int N) {
@@ -173,5 +174,20 @@ public class LogootDocument<T> implements Document, Factory<LogootDocument<T>> {
         hash = 97 * hash + (this.idTable != null ? this.idTable.hashCode() : 0);
         hash = 97 * hash + (this.document != null ? this.document.hashCode() : 0);
         return hash;
+    }
+    
+    // Test & Debug purpose
+    boolean isSorted() {
+        Comparable p = null;
+        for (Comparable c : this.idTable) {
+            if (p != null) {
+                int comp = p.compareTo(c);
+                if (comp >= 0) {
+                    return false;
+                } 
+            }
+            p = c;
+        }
+        return true;
     }
 }

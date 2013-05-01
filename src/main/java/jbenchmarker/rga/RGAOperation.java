@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ public class RGAOperation<T> extends SequenceMessage {
     @Override
 	public String toString(){
 		String ret =new String();
-		if(getType()==SequenceOperation.OpType.del) ret +="del(";
+		if(getType()==SequenceOperation.OpType.delete) ret +="del(";
 		else ret+="ins(\'"+content+"\',";
 		String s4va = s4vpos==null ? "null":s4vpos.toString();
 		String s4vb = s4vtms==null ? "null":s4vtms.toString();
@@ -82,14 +82,14 @@ public class RGAOperation<T> extends SequenceMessage {
 	 * for insert
 	 */
 	public RGAOperation(SequenceOperation o, int pos, RGAS4Vector s4vpos, T c, RGAS4Vector s4vtms){
-		this(o, OpType.ins, pos, s4vpos, c, s4vtms);
+		this(o, OpType.insert, pos, s4vpos, c, s4vtms);
 	}
 	
 	/*
 	 * for delete
 	 */
 	public RGAOperation(SequenceOperation o, int pos, RGAS4Vector s4vpos, RGAS4Vector s4vtms){
-		this(o, OpType.del, pos, s4vpos, null, s4vtms);
+		this(o, OpType.delete, pos, s4vpos, null, s4vtms);
 	}	
 	
 	public int getIntPos(){

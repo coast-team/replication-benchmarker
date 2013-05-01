@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ public class TreedocOperation<T> extends SequenceMessage {
 	 */
 	public TreedocOperation(final SequenceOperation o, final TreedocIdentifier id) {
 		super(o);
-                this.type = OpType.del;
+                this.type = OpType.delete;
 		this.id = id;
 		this.content = null; // Dummy.
 	}
@@ -67,7 +67,7 @@ public class TreedocOperation<T> extends SequenceMessage {
 	public TreedocOperation(final SequenceOperation o, final TreedocIdentifier id,
 			final List<T> content) {
 		super(o);         
-                this.type = OpType.ins;
+                this.type = OpType.insert;
 		this.id = id;
 		this.content = content;
 	}

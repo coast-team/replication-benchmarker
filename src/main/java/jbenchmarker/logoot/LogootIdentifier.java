@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,28 +18,26 @@
  */
 package jbenchmarker.logoot;
 
-import crdt.tree.orderedtree.PositionIdentifier;
-import java.io.Serializable;
 import java.util.*;
 
 public class LogootIdentifier implements ListIdentifier<LogootIdentifier> {
 
-    final private ArrayList<Component> id;
+    final private ArrayList<LogootComponent> id;
 
     public LogootIdentifier(int capacity) {
-        id = new ArrayList<Component>(capacity);
+        id = new ArrayList<LogootComponent>(capacity);
     }
 
-    public LogootIdentifier(Component component) {
+    public LogootIdentifier(LogootComponent component) {
         this(1);
         id.add(component);
     }
 
-    public ArrayList<Component> getID() {
+    public ArrayList<LogootComponent> getID() {
         return id;
     }
 
-    public Component getComponentAt(int position) {
+    public LogootComponent getComponentAt(int position) {
         return id.get(position);
     }
 
@@ -65,7 +63,7 @@ public class LogootIdentifier implements ListIdentifier<LogootIdentifier> {
         return hash;
     }
 
-    public void addComponent(Component cp) {
+    public void addComponent(LogootComponent cp) {
         id.add(cp);
     }
 
@@ -76,7 +74,7 @@ public class LogootIdentifier implements ListIdentifier<LogootIdentifier> {
     @Override
     public String toString() {
         String ligneIdentif = "";
-        for (Component c : id) {
+        for (LogootComponent c : id) {
             ligneIdentif += c.toString();
         }
         return ligneIdentif;
@@ -123,7 +121,7 @@ public class LogootIdentifier implements ListIdentifier<LogootIdentifier> {
     @Override
     public LogootIdentifier clone() {
         LogootIdentifier o = new LogootIdentifier(id.size());
-        for (Component c : id) {
+        for (LogootComponent c : id) {
             o.id.add(c.clone());
         }
         return o;

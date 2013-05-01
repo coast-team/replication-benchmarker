@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,19 +18,21 @@
  */
 package jbenchmarker.trace;
 
-import jbenchmarker.core.SequenceOperation;
+import collect.VectorClock;
 import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.Trace;
 import crdt.simulator.TraceOperation;
-import java.util.Enumeration;
-import java.util.HashMap;
-import collect.VectorClock;
 import crdt.simulator.TraceOperationImpl;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
+import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.sim.TracesExample;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  *
@@ -92,21 +94,22 @@ public class TraceGeneratorTest {
     
     @Test
     public void testTraceFromXML() throws Exception {
-        System.out.println("traceFromXML");
-        List<TraceOperation> trace = it2list(TraceGenerator.traceFromXML("../../traces/xml/exemple.xml", 1));
+        
+        List<TraceOperation> trace = it2list(TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("exemple.xml"), 1));
         
         assertEquals(5, trace.size());
-        assertEquals(SequenceOperation.OpType.ins, ((SequenceOperation) trace.get(0).getOperation()).getType());
+        assertEquals(SequenceOperation.OpType.insert, ((SequenceOperation) trace.get(0).getOperation()).getType());
         assertEquals(14, ((SequenceOperation) trace.get(1).getOperation()).getPosition());
         assertEquals(" Mehdi",((SequenceOperation) trace.get(2).getOperation()).getContentAsString());
         assertEquals(2, (long)trace.get(2).getVectorClock().get(2));
-        assertEquals(SequenceOperation.OpType.del, ((SequenceOperation) trace.get(3).getOperation()).getType());
+        assertEquals(SequenceOperation.OpType.delete, ((SequenceOperation) trace.get(3).getOperation()).getType());
         assertEquals(4, trace.get(3).getReplica());
         assertEquals(3,((SequenceOperation)  trace.get(3).getOperation()).getLenghOfADel());        
         assertEquals(1, (long)trace.get(3).getVectorClock().get(4));
     }
     
     @Test
+    @Ignore //Test is commented ...
     public void testTraceFromJson() throws Exception {        
         List<TraceOperation> trace = it2list(TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald3.db","notes003"));
 //        assertEquals(11, trace.size());
@@ -133,12 +136,13 @@ public class TraceGeneratorTest {
 //        assertEquals(2,trace.get(7).getLenghOfADel());        
     }
     @Test
+    @Ignore //Ressource missing
     public void testTraceFromJson2() throws Exception {        
         //List<SequenceOperation> trace = it2list(TraceGenerator.traceFromJson("../../traces/json/dirtyCSGerald.db","corrections001"));
-        List<TraceOperation> trace = it2list(TraceGenerator.traceFromJson("/home/damien/etherpad-lite/var/dirtyCS.db"));
+        List<TraceOperation> trace = it2list(TraceGenerator.traceFromJson(TracesExample.getExampleTraceMatch("dirtyCS.db")));
         //assertEquals(21, trace.size());
 
-        assertEquals(SequenceOperation.OpType.ins,((SequenceOperation) trace.get(0).getOperation()).getType());
+        assertEquals(SequenceOperation.OpType.insert,((SequenceOperation) trace.get(0).getOperation()).getType());
         assertEquals(0, ((SequenceOperation) trace.get(0).getOperation()).getPosition());        
         assertEquals("f", ((SequenceOperation) trace.get(0).getOperation()).getContentAsString());
         assertEquals(1, (long)trace.get(0).getVectorClock().get(1));

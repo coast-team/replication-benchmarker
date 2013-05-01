@@ -1,7 +1,7 @@
 /**
  * Replication Benchmarker
  * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2012 LORIA / Inria / SCORE Team
+ * Copyright (C) 2013 LORIA / Inria / SCORE Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,9 +108,9 @@ public class ABTOperation<T> extends SequenceMessage{
 		fmt2.format("%2d", this.getReplica());
 		ret=fmt2+".";	
 		
-		if(getType()==OpType.ins) {
+		if(getType()==OpType.insert) {
 			ret+="ins("+fmt+",\'";			
-		} else if(getType()==OpType.del) {
+		} else if(getType()==OpType.delete) {
 			ret+="del("+fmt+",\'";			
 		}
 //		if(this.c=='\0') ret+="\\0";
