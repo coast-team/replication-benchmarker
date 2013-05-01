@@ -17,8 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package crdt.simulator;
+package crdt.simulator.tracestorage;
 
+import crdt.simulator.CausalSimulator;
+import crdt.simulator.TraceOperation;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

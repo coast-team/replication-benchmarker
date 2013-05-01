@@ -69,6 +69,6 @@ public class Del<T> extends FCOperation {
 
     @Override
     public String toString() {
-        return "Del{" + this.getId() + '}';
+        return "Del{" + this.getId() +"kill:"+idToKill+ '}';
     }
 }

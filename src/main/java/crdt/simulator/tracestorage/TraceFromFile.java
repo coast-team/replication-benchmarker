@@ -16,8 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package crdt.simulator;
+package crdt.simulator.tracestorage;
 
+import Tools.FileInputStreamProgress;
+import crdt.simulator.Trace;
+import crdt.simulator.TraceOperation;
 import java.io.*;
 import java.util.Enumeration;
 import java.util.logging.Level;

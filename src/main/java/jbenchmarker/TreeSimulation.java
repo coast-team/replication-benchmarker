@@ -26,8 +26,9 @@ import crdt.PreconditionException;
 import crdt.set.CRDTSet;
 import crdt.set.NaiveSet;
 import crdt.simulator.CausalSimulator;
-import crdt.simulator.TraceFromFile;
-import crdt.simulator.TraceObjectWriter;
+import crdt.simulator.Trace;
+import crdt.simulator.tracestorage.TraceFromFile;
+import crdt.simulator.tracestorage.TraceObjectWriter;
 import crdt.simulator.random.NTrace;
 import crdt.simulator.random.OperationProfile;
 import crdt.simulator.random.ProgressTrace;
@@ -36,6 +37,11 @@ import crdt.simulator.random.StandardOrderedTreeOpProfile;
 import crdt.simulator.random.StandardOrderedTreeOperationProfileWithMoveRename;
 import crdt.simulator.sizecalculator.SizeCalculator;
 import crdt.simulator.sizecalculator.StandardSizeCalculator;
+import crdt.simulator.tracestorage.TraceFromJSONObjectFile;
+import crdt.simulator.tracestorage.TraceFromXMLObjectFile;
+import crdt.simulator.tracestorage.TraceJSonObjectWriter;
+import crdt.simulator.tracestorage.TraceStore;
+import crdt.simulator.tracestorage.TraceXMLObjectWriter;
 import crdt.tree.fctree.FCTree;
 import crdt.tree.fctree.policy.FastCycleBreaking;
 import crdt.tree.orderedtree.LogootTreeNode;
@@ -155,7 +161,10 @@ public class TreeSimulation {
 
     enum Serialization {
 
-        OverHead,Data ,JSon, XML
+        OverHead,Data ,JSON, XML
+    }
+    enum TraceFormat{
+        Bin,XML,JSON
     }
     /**
      * Arg4J arguments
@@ -164,6 +173,9 @@ public class TreeSimulation {
     Serialization serialization = Serialization.OverHead;
     @Option(name = "-t", usage = "trace to this file", metaVar = "TraceFile", required = true)
     private File traceFile;
+    @Option(name ="-T", usage = "Select trace format",metaVar = "TraceFormat")
+    private TraceFormat traceFormat=TraceFormat.Bin;
+
     @Option(name = "-r", usage = "Thresold multiplicator")
     private int thresold = 2;
     @Option(name = "-s", usage = "Period of serialisation (default=0, disabled)")
@@ -280,7 +292,7 @@ public class TreeSimulation {
         System.out.println("-" + factstr.get(this.numFacotory));
         SizeCalculator size;
         switch (serialization) {
-            case JSon:
+            case JSON:
                 size = new SizeJSonStyleDoc();
                 break;
             case XML:
@@ -288,6 +300,7 @@ public class TreeSimulation {
                 break;
             case Data: 
                 size = new StandardSizeCalculator(false);
+                break;
             case OverHead:
             default:
                 size = new StandardSizeCalculator(true);
@@ -297,7 +310,6 @@ public class TreeSimulation {
          * Simulation starts.
          */
         for (int ex = 0; ex < nbExec; ex++) {
-            TraceObjectWriter writer;
             System.out.println("execution : " + ex);
 
             CausalSimulator cd;
@@ -309,10 +321,10 @@ public class TreeSimulation {
             if (traceFile.exists()) {
                 System.out.println("-Trace From File : " + traceFile);
                 cd.setWriter(null);
-                cd.run(new TraceFromFile(traceFile, true));
+                cd.run(traceReader());
             } else {
                 System.out.println("-Trace to File : " + traceFile);
-                writer = new TraceObjectWriter(traceFile);
+                TraceStore writer = getTraceWriter();
                 cd.setWriter(writer);
                 System.out.println(randomTrace);
                 cd.run(new ProgressTrace(new NTrace(randomTrace), totalDuration));
@@ -332,7 +344,30 @@ public class TreeSimulation {
 
         }
     }
-
+    private Trace traceReader() throws IOException{
+        switch(traceFormat){
+            default:
+            case Bin:
+                return new TraceFromFile(traceFile, true);
+            case XML:
+                return new TraceFromXMLObjectFile(traceFile,true);
+            case JSON:
+                return new TraceFromJSONObjectFile(traceFile,true);
+                    
+                   
+        }
+    }
+    private TraceStore getTraceWriter() throws IOException{
+        switch(traceFormat){
+            default:
+            case Bin:
+                return new TraceObjectWriter(traceFile);
+            case XML:
+                return new TraceXMLObjectWriter(traceFile);
+            case JSON:
+                return new TraceJSonObjectWriter(traceFile);
+        }
+    }
     static public List<Double> castDoubleList(List<Long> list) {
         LinkedList<Double> ret = new LinkedList();
         for (long l : list) {

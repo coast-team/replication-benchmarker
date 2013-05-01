@@ -18,6 +18,7 @@
  */
 package crdt.simulator;
 
+import crdt.simulator.tracestorage.TraceStore;
 import collect.VectorClock;
 import crdt.CRDT;
 import crdt.CRDTMessage;

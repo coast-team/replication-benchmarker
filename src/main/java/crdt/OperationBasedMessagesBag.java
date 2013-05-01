@@ -42,7 +42,7 @@ public final class OperationBasedMessagesBag implements OperationBasedMessage,Cl
     public OperationBasedMessagesBag() {
     }
     
-    void addMessage(OperationBasedMessage mess){
+    public void addMessage(OperationBasedMessage mess){
         if (mess==null)
             return;
         if (mess instanceof OperationBasedMessagesBag){

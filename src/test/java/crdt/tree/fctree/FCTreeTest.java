@@ -48,6 +48,9 @@ public class FCTreeTest {
         tree = new FCTree();
         tree2 = new FCTree();
         tree3 = new FCTree();
+        tree.setReplicaNumber(1);
+        tree2.setReplicaNumber(2);
+        tree3.setReplicaNumber(3);
         CRDTMessage mess1 = tree.add(new ArrayList(), 0, "a");
         CRDTMessage mess2 = tree.add(new ArrayList(), 1, "b");
         CRDTMessage mess3 = tree.add(new ArrayList(), 2, "c");
@@ -115,6 +118,32 @@ public class FCTreeTest {
         assertEquals(s3, sa2);
     }
 
+    
+    @Test 
+    public void removeAll2Test()throws Exception{
+        tree.setRemoveEntireSubtree(true);
+        tree2.setRemoveEntireSubtree(true);
+        StandardSizeCalculator sdc=new StandardSizeCalculator(true);
+        int s1=sdc.serializ(tree);
+        int s2=sdc.serializ(tree2);
+        int s3=sdc.serializ(tree3);
+        assertTrue(s3<s1);
+        assertTrue(s3<s2);
+        CRDTMessage mess1 = tree2.remove(Arrays.asList(0));//f
+        CRDTMessage mess2 = tree2.remove(Arrays.asList(0));//f
+        CRDTMessage mess3 = tree2.remove(Arrays.asList(0));//f
+        tree.applyRemote(mess1);
+        tree.applyRemote(mess3);
+        tree.applyRemote(mess2);
+        assertEquals("null", tree2.getRoot().nodetail());
+        assertEquals("null", tree.getRoot().nodetail());
+        int sa1=sdc.serializ(tree);
+        int sa2=sdc.serializ(tree2);
+        assertEquals(1,tree.map.size());
+        assertEquals(1,tree2.map.size());
+        assertEquals(s3, sa1);
+        assertEquals(s3, sa2);
+    }
     @Test
     public void ChLabelTest() {
         CRDTMessage m = tree2.rename(Arrays.asList(0), "ZoidBerg");

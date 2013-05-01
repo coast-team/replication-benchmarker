@@ -30,6 +30,7 @@ import crdt.tree.fctree.Operations.Nop;
 import crdt.tree.fctree.policy.PostAction;
 import crdt.tree.orderedtree.CRDTOrderedTree;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ import java.util.List;
  */
 public class FCTree<T> extends CRDTOrderedTree<T> {
 
-    public boolean removeEntireSubtree = true;
+    boolean removeEntireSubtree ; //remove entire subtree on local delete
     FCNode root;
     HashMap<FCIdentifier, FCNode> map = new HashMap<FCIdentifier, FCNode>();
     //HashMap<FCIdentifier, FCNode> idToCycle = new HashMap<FCIdentifier, FCNode>();
@@ -90,14 +91,15 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
 
     }
 
-    private CRDTMessage delNode(FCNode node) {
-        CRDTMessage ret = new OperationBasedMessagesBag();
-        for (Object n : node.getElements()) {
-            ret.concat(delNode((FCNode) n));
+    private OperationBasedMessagesBag delNode(FCNode node) {
+        OperationBasedMessagesBag ret = new OperationBasedMessagesBag();
+        List<FCNode<T>> child=new LinkedList(node.getElements());
+        for (FCNode<T> n : child) {
+            ret.addMessage(delNode(n));
         }
         Del del = new Del(this.idFactory.createId(), node.getId());
         del.apply(node, this);
-        ret.concat(new OperationBasedOneMessage(del));
+        ret.addMessage(new OperationBasedOneMessage(del));
         return ret;
     }
 
@@ -272,4 +274,14 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
     public FCIdFactory getIdFactory() {
         return idFactory;
     }
+
+    public boolean isRemoveEntireSubtree() {
+        return removeEntireSubtree;
+    }
+
+    public void setRemoveEntireSubtree(boolean removeEntireSubtree) {
+        this.removeEntireSubtree = removeEntireSubtree;
+    }
+    
+    
 }

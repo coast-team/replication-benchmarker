@@ -21,7 +21,7 @@ package jbenchmarker;
 import crdt.CRDT;
 import crdt.Factory;
 import crdt.simulator.CausalSimulator;
-import crdt.simulator.TraceObjectWriter;
+import crdt.simulator.tracestorage.TraceObjectWriter;
 import crdt.simulator.sizecalculator.StandardSizeCalculator;
 import java.io.*;
 import java.util.ArrayList;

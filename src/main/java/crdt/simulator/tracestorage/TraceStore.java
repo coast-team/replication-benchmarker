@@ -17,7 +17,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package crdt.simulator;
+package crdt.simulator.tracestorage;
+
+import crdt.simulator.TraceOperation;
 
 /**
  *

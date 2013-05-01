@@ -22,7 +22,7 @@ import crdt.CRDT;
 import crdt.Factory;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
-import crdt.simulator.TraceObjectWriter;
+import crdt.simulator.tracestorage.TraceObjectWriter;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
 /**
