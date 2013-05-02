@@ -44,6 +44,7 @@ import crdt.simulator.tracestorage.TraceStore;
 import crdt.simulator.tracestorage.TraceXMLObjectWriter;
 import crdt.tree.fctree.FCTreeGf;
 import crdt.tree.fctree.FCTreeT;
+import crdt.tree.fctree.policy.FCTreeGC;
 import crdt.tree.fctree.policy.FastCycleBreaking;
 import crdt.tree.orderedtree.LogootTreeNode;
 import crdt.tree.orderedtree.PositionIdentifierTree;
@@ -167,7 +168,9 @@ public class TreeSimulation {
         
         fact.add(new FCTreeGf(new FastCycleBreaking("Garbage"),true));
         factstr.add("FCTreeGfCycleBreakerRS");
-
+        
+        fact.add(new FCTreeT(new FCTreeGC()));
+        factstr.add("FCTreeTGC");
     }
     int base = 100;
     int baseSerializ = 1;

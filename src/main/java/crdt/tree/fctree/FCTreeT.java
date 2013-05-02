@@ -53,7 +53,6 @@ public class FCTreeT extends FCTree implements Serializable{
         FCIdentifier idroot = new FCIdentifier(-1, 0);
         root = new FCNodeT(root, null, null, idroot);
         map.put(idroot, root);
-        this.removeEntireSubtree = removeEntireTree;
     }
     
     public FCTreeT(PostAction action) {
