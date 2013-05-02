@@ -171,6 +171,8 @@ public class TreeSimulation {
         
         fact.add(new FCTreeT(new FCTreeGC()));
         factstr.add("FCTreeTGC");
+        fact.add(new FCTreeT(new FCTreeGC(),true));
+        factstr.add("FCTreeTGCRS");
     }
     int base = 100;
     int baseSerializ = 1;
