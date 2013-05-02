@@ -114,6 +114,6 @@ public class FCTreeGf<T> extends FCTree<T> implements Serializable{
      */
     @Override
     public FCTreeGf<T> create() {
-        return new FCTreeGf(postAction == null ? null : postAction.clone());
+        return new FCTreeGf(postAction == null ? null : postAction.clone(), removeEntireSubtree);
     }
 }
