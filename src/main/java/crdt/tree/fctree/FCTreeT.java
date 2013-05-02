@@ -61,7 +61,7 @@ public class FCTreeT extends FCTree implements Serializable{
     }
     @Override
     public CRDTOrderedTree create() {
-       return new FCTreeT(this.postAction);
+       return new FCTreeT(this.postAction,removeEntireSubtree);
     }
     
 }
