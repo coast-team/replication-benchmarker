@@ -65,7 +65,6 @@ public class SizeJSonStyleDocTest {
 
     @Test
     public void xmlRendering() {
-        System.out.println(size.view(tree.getRoot()));
         assertEquals("{\"a\":{\"d\", \"e\":\"f\"}, \"b\", \"c\":{\"g\", \"h\"}}"
                 , size.view(tree.getRoot()));
     }

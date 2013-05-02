@@ -129,10 +129,10 @@ public class TreeSimulation {
         factstr.add("OTTree");
         
         fact.add(new FCTreeT());
-        factstr.add("FCTree");
+        factstr.add("FCTreeT");
         
         fact.add(new FCTreeT(true));
-        factstr.add("FCTreeRS");
+        factstr.add("FCTreeTRS");
         
         
 
@@ -263,7 +263,7 @@ public class TreeSimulation {
         parser.printUsage(System.out);
         System.out.println("Factories : ");
         for (int p = 0; p < factstr.size(); p++) {
-            System.out.println("" + p + ". " + factstr.get(p)/*+":"+fact.get(p).toString()*/+')');
+            System.out.println("" + p + ". " + factstr.get(p)/*+":"+fact.get(p).toString()+')'*/);
         }
         System.exit(exit);
     }

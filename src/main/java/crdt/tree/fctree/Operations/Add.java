@@ -23,6 +23,7 @@ import crdt.tree.fctree.FCNode;
 import crdt.tree.fctree.FCOperation;
 import crdt.tree.fctree.FCPosition;
 import crdt.tree.fctree.FCTree;
+import crdt.tree.fctree.FCTreeGf;
 import jbenchmarker.core.Operation;
 
 /**
@@ -50,9 +51,9 @@ public class Add<T> extends FCOperation {
     @Override
     public void apply(FCTree tree) {
         FCNode node = tree.getNodeById(this.father);
-        // if (node != null) {
-        apply(node, tree);
-        //}
+        if (tree instanceof FCTreeGf || node != null) {
+            apply(node, tree);
+        }
     }
 
     public void apply(FCNode<T> father, FCTree tree) {
