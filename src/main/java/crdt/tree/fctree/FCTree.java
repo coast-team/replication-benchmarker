@@ -39,7 +39,7 @@ import java.util.List;
  */
 public abstract class FCTree<T> extends CRDTOrderedTree<T> {
     PostAction postAction = null;
-    boolean removeEntireSubtree ; //remove entire subtree on local delete
+    boolean removeEntireSubtree =false; //remove entire subtree on local delete
     FCNode root;
     HashMap<FCIdentifier, FCNode> map = new HashMap<FCIdentifier, FCNode>();
     //HashMap<FCIdentifier, FCNodeGf> idToCycle = new HashMap<FCIdentifier, FCNodeGf>();
@@ -189,7 +189,7 @@ public abstract class FCTree<T> extends CRDTOrderedTree<T> {
      * @param removeEntireTree Remove entire subtree on local remove
      */
     public FCTree(PostAction action,boolean removeEntireTree) {
-        this(removeEntireTree);
+        this.removeEntireSubtree = removeEntireTree;
         this.postAction = action;
         if (postAction != null) {
             postAction.setTree(this);

@@ -23,12 +23,13 @@ import crdt.tree.fctree.FCTree;
 import crdt.tree.fctree.Operations.Add;
 import crdt.tree.fctree.Operations.ChX;
 import crdt.tree.fctree.Operations.Del;
+import java.io.Serializable;
 
 /**
  * destroy each nonconnex nodes
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public class FCTreeGC implements PostAction{
+public class FCTreeGC implements PostAction, Serializable{
 
     FCTree tree;
     
@@ -47,7 +48,7 @@ public class FCTreeGC implements PostAction{
     @Override
     public void postDel(Del operation, FCNode node) {
         for (Object n:node.getElements()){
-            postDel(operation,node);
+            postDel(operation,(FCNode)n);
             tree.getMap().remove(((FCNode)n).getId());
         }
     }

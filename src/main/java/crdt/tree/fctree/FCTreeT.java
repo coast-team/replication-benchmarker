@@ -42,6 +42,9 @@ public class FCTreeT extends FCTree implements Serializable{
      */
     public FCTreeT(PostAction action,boolean removeEntireTree) {
         super(action, removeEntireTree);
+        FCIdentifier idroot = new FCIdentifier(-1, 0);
+        root = new FCNodeT(root, null, null, idroot);
+        map.put(idroot, root);
     }
 
     /**
@@ -49,10 +52,8 @@ public class FCTreeT extends FCTree implements Serializable{
      * @param removeEntireTree Remove entire subtree on local remove
      */
     public FCTreeT(boolean removeEntireTree) {
-        super(removeEntireTree);
-        FCIdentifier idroot = new FCIdentifier(-1, 0);
-        root = new FCNodeT(root, null, null, idroot);
-        map.put(idroot, root);
+        this(null,removeEntireTree);
+        
     }
     
     public FCTreeT(PostAction action) {
