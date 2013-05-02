@@ -36,7 +36,7 @@ import static org.junit.Assert.*;
  *
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public class FCTreeTest {
+public class FCTreeGfTest {
 
     FCTree<String> tree;
     FCTree<String> tree2;
@@ -45,9 +45,9 @@ public class FCTreeTest {
     
     @Before
     public void setUp() throws PreconditionException {
-        tree = new FCTree();
-        tree2 = new FCTree();
-        tree3 = new FCTree();
+        tree = new FCTreeGf();
+        tree2 = new FCTreeGf();
+        tree3 = new FCTreeGf();
         tree.setReplicaNumber(1);
         tree2.setReplicaNumber(2);
         tree3.setReplicaNumber(3);
@@ -218,6 +218,6 @@ public class FCTreeTest {
 
     }
 
-    public FCTreeTest() {
+    public FCTreeGfTest() {
     }
 }

@@ -56,7 +56,7 @@ public class Add<T> extends FCOperation {
     }
 
     public void apply(FCNode<T> father, FCTree tree) {
-        FCNode newnode = new FCNode(father, label, position, this.getId());
+        FCNode newnode = tree.getRoot().createNode(father, label, position, this.getId());
         if (father != null) {
             father.addChildren(newnode);
         }

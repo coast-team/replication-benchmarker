@@ -22,6 +22,7 @@ package crdt.tree.orderedtree.renderer;
 import crdt.CRDTMessage;
 import crdt.PreconditionException;
 import crdt.tree.fctree.FCTree;
+import crdt.tree.fctree.FCTreeT;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,8 +41,8 @@ public class SizeJSonStyleDocTest {
 
     @Before
     public void setUp() throws PreconditionException {
-        tree = new FCTree();
-        tree2 = new FCTree();
+        tree = new FCTreeT();
+        tree2 = new FCTreeT();
         CRDTMessage mess1 = tree.add(new ArrayList(), 0, "a");
         CRDTMessage mess2 = tree.add(new ArrayList(), 1, "b");
         CRDTMessage mess3 = tree.add(new ArrayList(), 2, "c");

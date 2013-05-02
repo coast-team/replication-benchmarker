@@ -20,8 +20,8 @@ package crdt.tree.fctree.Operations;
 
 import crdt.tree.fctree.FCIdentifier;
 import crdt.tree.fctree.FCLabel;
-import crdt.tree.fctree.FCNode;
-import crdt.tree.fctree.FCNode.FcLabels;
+import crdt.tree.fctree.FCNodeGf;
+import crdt.tree.fctree.FCNodeGf.FcLabels;
 import crdt.tree.fctree.FCOperation;
 import crdt.tree.fctree.FCTree;
 import jbenchmarker.core.Operation;
@@ -32,18 +32,18 @@ import jbenchmarker.core.Operation;
  */
 public class ChX<T> extends FCOperation {
 
-    FCNode.FcLabels whichChange;
+    FCNodeGf.FcLabels whichChange;
     FCLabel<T> newLabel;
     FCIdentifier nodeId;
 
-    public ChX(FCIdentifier id, FCIdentifier nodeId, FCLabel newLabel, FCNode.FcLabels whichChange) {
+    public ChX(FCIdentifier id, FCIdentifier nodeId, FCLabel newLabel, FCNodeGf.FcLabels whichChange) {
         super(id);
         this.nodeId = nodeId;
         this.newLabel = newLabel;
         this.whichChange = whichChange;
     }
 
-    public ChX(FCIdentifier id,FCNode<T> fcnode,T newValue,FCNode.FcLabels whichChange){
+    public ChX(FCIdentifier id,FCNodeGf<T> fcnode,T newValue,FCNodeGf.FcLabels whichChange){
         super(id);
         this.nodeId=fcnode.getId();
         this.newLabel = new FCLabel<T>(id, newValue);
@@ -57,10 +57,10 @@ public class ChX<T> extends FCOperation {
 
     @Override
     public void apply(FCTree tree) {
-        FCNode node = tree.getNodeById(nodeId);
+        FCNodeGf node =(FCNodeGf) tree.getNodeById(nodeId);
         apply(node,tree);
     }
-    public void apply(FCNode node,FCTree tree ){
+    public void apply(FCNodeGf node,FCTree tree ){
         if (node != null) {
             FCLabel label = node.getLabelOf(whichChange);
             if (label.getVersion() < newLabel.getVersion()
@@ -68,8 +68,8 @@ public class ChX<T> extends FCOperation {
                     && label.getId().compareTo(newLabel.getId()) > 0)) {
                 node.setLabelOf(whichChange, newLabel);
                 if(whichChange==FcLabels.fatherId){
-                    FCNode newFather=tree.getNodeById((FCIdentifier)this.newLabel.getLabel());
-                    FCNode oldFather =node.getFather();
+                    FCNodeGf newFather=(FCNodeGf)tree.getNodeById((FCIdentifier)this.newLabel.getLabel());
+                    FCNodeGf oldFather =(FCNodeGf)node.getFather();
                     if(oldFather !=null){
                         oldFather.delChildren(node);
                     }
@@ -81,7 +81,7 @@ public class ChX<T> extends FCOperation {
                         tree.getPostAction().postMove(this, node);
                     }
                 }else if(whichChange==FcLabels.priority){
-                    FCNode father=node.getFather();
+                    FCNodeGf father=(FCNodeGf)node.getFather();
                     father.delChildren(node);
                     father.addChildren(node);
                 }

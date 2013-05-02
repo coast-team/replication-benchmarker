@@ -24,7 +24,6 @@ import crdt.OperationBasedMessagesBag;
 import crdt.OperationBasedOneMessage;
 import crdt.PreconditionException;
 import crdt.tree.fctree.Operations.Add;
-import crdt.tree.fctree.Operations.ChX;
 import crdt.tree.fctree.Operations.Del;
 import crdt.tree.fctree.Operations.Nop;
 import crdt.tree.fctree.policy.PostAction;
@@ -38,15 +37,15 @@ import java.util.List;
  * @param <T>
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class FCTree<T> extends CRDTOrderedTree<T> {
-
+public abstract class FCTree<T> extends CRDTOrderedTree<T> {
+    PostAction postAction = null;
     boolean removeEntireSubtree ; //remove entire subtree on local delete
     FCNode root;
     HashMap<FCIdentifier, FCNode> map = new HashMap<FCIdentifier, FCNode>();
-    //HashMap<FCIdentifier, FCNode> idToCycle = new HashMap<FCIdentifier, FCNode>();
+    //HashMap<FCIdentifier, FCNodeGf> idToCycle = new HashMap<FCIdentifier, FCNodeGf>();
     FCIdFactory idFactory = new FCIdFactory();
     FCPositionFactory positionFactory = new FCPositionFactory();
-    PostAction postAction = null;
+    
 
     /**
      * Add a node at end of path, in position p and return a message to others
@@ -102,50 +101,16 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
         ret.addMessage(new OperationBasedOneMessage(del));
         return ret;
     }
-
     @Override
-    public CRDTMessage rename(List<Integer> path, T newValue) {
-        FCNode node = root.getNodeFromPath(path);
-        ChX operation = new ChX(this.idFactory.createId(), node, newValue, FCNode.FcLabels.contain);
-        operation.apply(node, this);
-        return new OperationBasedOneMessage(operation);
+    public CRDTMessage rename(List<Integer> path, T newValue){
+        return new OperationBasedOneMessage(new Nop(this.idFactory.createId()));
     }
-
-    @Override
+    
+ @Override
     public CRDTMessage move(List<Integer> from, List<Integer> to, int p) {
-        FCNode node = root.getNodeFromPath(from);
-        if (node.getId().getReplicaNumber() < 0) {
-            return new OperationBasedOneMessage(new Nop(this.idFactory.createId()));
-        }
-        FCNode nFather;
-        if (to.isEmpty()) {
-            nFather = getRoot();
-        } else {
-            //List<Integer> toF = to.subList(0, to.size() - 1);
-            nFather = root.getNodeFromPath(to);
-        }
-
-        //int p = to.get(to.size() - 1);
-
-
-        if (nFather.getId().equals(node.getFather().getId()) && p > from.get(from.size() - 1)) {
-            p++;
-        }
-        FCNode gnode = nFather.getChild(p - 1);
-        FCNode lnode = nFather.getChild(p);
-        FCIdentifier id = idFactory.createId();
-
-        ChX op = new ChX(id, node, positionFactory.createBetweenNode(gnode, lnode, id), FCNode.FcLabels.priority);
-
-        CRDTMessage ret = new OperationBasedOneMessage(op);
-        if (!nFather.getId().equals(node.getFather().getId())) {
-            ChX move = new ChX(idFactory.createId(), node, nFather.getId(), FCNode.FcLabels.fatherId);
-            move.apply(node, this);
-            ret = ret.concat(new OperationBasedOneMessage(move));
-        }
-        op.apply(node, this);
-        return ret;
+        return new OperationBasedOneMessage(new Nop(this.idFactory.createId()));
     }
+    
 
     /**
      * search node by identifier
@@ -189,15 +154,7 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
         return root;
     }
 
-    /**
-     * factory of fctree
-     *
-     * @return
-     */
-    @Override
-    public FCTree<T> create() {
-        return new FCTree(postAction == null ? null : postAction.clone());
-    }
+    
 
     /**
      * Return the map of identifier -> fcnodes
@@ -244,9 +201,9 @@ public class FCTree<T> extends CRDTOrderedTree<T> {
      * @param removeEntireTree Remove entire subtree on local remove
      */
     public FCTree(boolean removeEntireTree) {
-        FCIdentifier idroot = new FCIdentifier(-1, 0);
-        root = new FCNode(root, null, null, idroot);
-        map.put(idroot, root);
+        //FCIdentifier idroot = new FCIdentifier(-1, 0);
+        //root = new FCNodeGf(root, null, null, idroot);
+        //map.put(idroot, root);
         this.removeEntireSubtree = removeEntireTree;
     }
     

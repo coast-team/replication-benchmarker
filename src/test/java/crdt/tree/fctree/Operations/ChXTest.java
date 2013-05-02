@@ -20,11 +20,11 @@
 package crdt.tree.fctree.Operations;
 
 import crdt.PreconditionException;
-import crdt.tree.fctree.FCIdFactory;
 import crdt.tree.fctree.FCIdentifier;
-import crdt.tree.fctree.FCNode;
+import crdt.tree.fctree.FCNodeGf;
 import crdt.tree.fctree.FCPosition;
 import crdt.tree.fctree.FCTree;
+import crdt.tree.fctree.FCTreeGf;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.Before;
@@ -42,7 +42,7 @@ public class ChXTest {
 
     @Before
     public void setUp() throws PreconditionException {
-        tree = new FCTree();
+        tree = new FCTreeGf();
         tree.add(new ArrayList(), 0, "a");
         tree.add(new ArrayList(), 1, "b");
         tree.add(new ArrayList(), 2, "c");
@@ -67,10 +67,10 @@ public class ChXTest {
     
     @Test
     public void ChOrder() {
-        FCNode node=tree.getRoot();
+        FCNodeGf node=(FCNodeGf)tree.getRoot();
         FCIdentifier id= tree.getIdFactory().createId();
         FCPosition pos= tree.getPositionFactory().createBetweenNode(node.getChild(2),null,id);
-        ChX operation = new ChX(id, node.getChild(0),pos, FCNode.FcLabels.priority);
+        ChX operation = new ChX(id, (FCNodeGf)node.getChild(0),pos, FCNodeGf.FcLabels.priority);
         tree.applyOneRemote(operation);
         assertEquals("b", node.getChild(0).getValue());
         assertEquals("c", node.getChild(1).getValue());

@@ -36,7 +36,7 @@ public class FCComparatorTest {
 
     @Test
     public void compare() {
-        TreeSet<FCNode<String>> childrens = new TreeSet(new FCComparator());
+        TreeSet<FCNodeGf<String>> childrens = new TreeSet(new FCComparator());
         FCIdFactory fc1 = new FCIdFactory(1);
         FCIdFactory fc2 = new FCIdFactory(2);
         FCIdFactory fc3 = new FCIdFactory(3);
@@ -44,18 +44,18 @@ public class FCComparatorTest {
         FCIdentifier id1 = fc1.createId();
         FCIdentifier id2 = fc2.createId();
         FCIdentifier id3 = fc3.createId();
-        FCNode node1 = new FCNode(null, "a", fp.createBetweenNode(null, null, id1), id1);
-        FCNode node2 = new FCNode(null, "c", fp.createBetweenNode(node1,null , id2), id2);
-        FCNode node3 = new FCNode(null, "b", fp.createBetweenNode(node1, node2, id3), id3);
+        FCNodeGf node1 = new FCNodeGf(null, "a", fp.createBetweenNode(null, null, id1), id1);
+        FCNodeGf node2 = new FCNodeGf(null, "c", fp.createBetweenNode(node1,null , id2), id2);
+        FCNodeGf node3 = new FCNodeGf(null, "b", fp.createBetweenNode(node1, node2, id3), id3);
 
 
         childrens.add(node3);
         childrens.add(node2);
         childrens.add(node1);
-        Iterator<FCNode<String>> it = childrens.iterator();
+        Iterator<FCNodeGf<String>> it = childrens.iterator();
         for (String str : Arrays.asList("a", "b", "c")) {
             assertTrue(it.hasNext());
-            FCNode<String> node = it.next();
+            FCNodeGf<String> node = it.next();
             assertEquals(str, node.getValue());
         }
 

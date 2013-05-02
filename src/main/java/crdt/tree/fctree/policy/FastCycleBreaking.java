@@ -21,6 +21,7 @@ package crdt.tree.fctree.policy;
 
 import crdt.tree.fctree.FCIdentifier;
 import crdt.tree.fctree.FCNode;
+import crdt.tree.fctree.FCNodeGf;
 import crdt.tree.fctree.FCPosition;
 import crdt.tree.fctree.FCTree;
 import crdt.tree.fctree.Operations.Add;
@@ -37,7 +38,7 @@ import java.util.LinkedList;
 public class FastCycleBreaking<T> implements PostAction,Serializable {
 
     static final FCIdentifier garbageAddress = new FCIdentifier(-1, 1);
-    FCNode garbage;
+    FCNodeGf garbage;
     FCTree tree;
     T garbageName;
     
@@ -51,10 +52,10 @@ public class FastCycleBreaking<T> implements PostAction,Serializable {
     @Override
     public void setTree(FCTree tree) {
         this.tree = tree;
-        this.garbage = tree.getNodeById(garbageAddress);
+        this.garbage = (FCNodeGf)tree.getNodeById(garbageAddress);
         if (garbage == null) {
             FCPosition pos = tree.getPositionFactory().createBetweenNode(null, null, garbageAddress);
-            garbage = new FCNode(tree.getRoot(), garbageName, pos, garbageAddress);
+            garbage = new FCNodeGf(tree.getRoot(), garbageName, pos, garbageAddress);
             tree.getRoot().addChildren(garbage);
         }
     }
@@ -66,35 +67,36 @@ public class FastCycleBreaking<T> implements PostAction,Serializable {
      * the headfather will be breaked and
      */
     @Override
-    public void postMove(ChX operation, FCNode node) {
-        FCNode hf=node.getHeadFather();
+    public void postMove(ChX operation, FCNode nodef) {
+        FCNodeGf node=(FCNodeGf)nodef;
+        FCNodeGf hf=node.getHeadFather();
         if(hf!=null && !hf.isDeleted() && hf.getFather()==garbage){
             garbage.delChildren(hf);
-            FCNode oldFather=hf.getOldFather();
+            FCNodeGf oldFather=hf.getOldFather();
             hf.setFather(oldFather);
             hf.setOldFather(null);
             oldFather.addChildren(hf);
             
         }
-        LinkedList<FCNode> pile = new LinkedList<FCNode>();
-        FCNode n = node.getFather();
+        LinkedList<FCNodeGf> pile = new LinkedList<FCNodeGf>();
+        FCNodeGf n = (FCNodeGf) node.getFather();
         pile.add(node);
-        FCNode lowerID = node;
+        FCNodeGf lowerID = node;
         while (n != tree.getRoot() && n != node) {
             //pile.push(n);
             pile.add(n);
             if (n.getId().compareTo(lowerID.getId()) > 0) {
                 lowerID = n;
             }
-            n = n.getFather();
+            n = (FCNodeGf)n.getFather();
         }
         if (n != tree.getRoot()) {
             /* Root lower id*/
-            lowerID.setOldFather(lowerID.getFather());
+            lowerID.setOldFather((FCNodeGf)lowerID.getFather());
             lowerID.getFather().delChildren(lowerID);
             lowerID.setFather(garbage);
             garbage.addChildren(lowerID);
-            for (FCNode nodehf : pile) {
+            for (FCNodeGf nodehf : pile) {
                 nodehf.setHeadFather(lowerID);
             }
         }
@@ -102,13 +104,13 @@ public class FastCycleBreaking<T> implements PostAction,Serializable {
 
     @Override
     public void postDel(Del operation, FCNode node) {
-        Iterator<FCNode> it = node.iterator();
+        Iterator<FCNodeGf> it = node.iterator();
         while (it.hasNext()) {
-            FCNode no = it.next();
+            FCNodeGf no = it.next();
             no.setOldFather(null);
             no.setFather(garbage);
             garbage.addChildren(no);
-            FCNode hf = no.getHeadFather();
+            FCNodeGf hf = no.getHeadFather();
             if (hf != null && hf.getOldFather() != null) {
                 garbage.delChildren(hf);
                 hf.setFather(hf.getOldFather());
@@ -117,7 +119,8 @@ public class FastCycleBreaking<T> implements PostAction,Serializable {
     }
 
     @Override
-    public void postAdd(Add operation, FCNode node) {
+    public void postAdd(Add operation, FCNode nodef) {
+        FCNodeGf node=(FCNodeGf)nodef;
         if (node.getFather() == null) {
             node.setFather(garbage);
             garbage.addChildren(node);

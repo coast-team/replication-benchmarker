@@ -1,141 +1,39 @@
-/**
- * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2013 LORIA / Inria / SCORE Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+/*
+ *  Replication Benchmarker
+ *  https://github.com/score-team/replication-benchmarker/
+ *  Copyright (C) 2013 LORIA / Inria / SCORE Team
+ * 
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package crdt.tree.fctree;
 
 import collect.OrderedNode;
 import collect.SimpleNode;
 import java.io.Serializable;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  *
- * @param <T>
- * @author Stephane Martin <stephane.martin@loria.fr>
+ * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public class FCNode<T> implements OrderedNode<T> , Serializable {
+public abstract class FCNode<T> implements OrderedNode<T>, Serializable {
 
-    // private ArrayList<FCNode<T>> childrens;
-    private ArrayList<FCNode<T>> childrens;
-    private FCIdentifier id;
-    private FCLabel<FCPosition> priorite;
-    private FCLabel<T> contain;
-    private FCLabel<FCIdentifier> fatherID;
-    private FCNode<T> father;
-    private FCNode<T> oldFather;
-    //private FCNode<T> headFather;
-    private WeakReference<FCNode<T>> wheadFather;
-    private boolean deleted=false;
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void delete(){
-        this.deleted=true;
-    }
-
-    @Override
-    public boolean isChildren(SimpleNode<T> n) {
-        return childrens.contains((FCNode)n);
-    }
-
-   
-    public enum FcLabels {
-
-        contain, fatherId, priority
-    };
-
-    /**
-     *
-     * @param fatherId
-     * @param contain
-     * @param position
-     * @param id
-     */
-    public FCNode(FCNode<T> father, T contain, FCPosition position, FCIdentifier id) {
-        this.fatherID = new FCLabel(id, father == null ? null : father.getId());
-        this.father = father;
-        this.childrens = new ArrayList();
-        //new TreeSet(new FCComparator());
-        this.contain = new FCLabel(id, contain);
-        this.priorite = new FCLabel(id, position);
-        this.id = id;
-    }
-
-    /**
-     *
-     * @param path
-     * @return
-     */
-    public FCNode<T> getNodeFromPath(List<Integer> path) {
-        FCNode<T> ret = this;
-        for (Integer i : path) {
-            ret = ret.getChild(i);
-        }
-        return ret;
-    }
-
-    public FCNode<T> getHeadFather() {
-        return wheadFather==null?null:wheadFather.get();
-    }
-
-    public void setHeadFather(FCNode<T> headFather) {
-        this.wheadFather = headFather==null?null:new WeakReference(headFather);
-    }
-
-    public FCNode<T> getOldFather() {
-        return oldFather;
-    }
-
-    public void setOldFather(FCNode<T> oldFather) {
-        this.oldFather = oldFather;
-    }
-
-    public FCLabel getLabelOf(FcLabels fclabels) {
-        switch (fclabels) {
-            case contain:
-                return contain;
-            case fatherId:
-                return fatherID;
-            case priority:
-                return priorite;
-            default:
-                return null;
-        }
-    }
-
-    public void setLabelOf(FcLabels fclabels, FCLabel newlabel) {
-        switch (fclabels) {
-            case contain:
-                contain = newlabel;
-                break;
-            case fatherId:
-                fatherID = newlabel;
-                break;
-            case priority:
-                priorite = newlabel;
-                break;
-        }
-    }
+    ArrayList<FCNode<T>> childrens;
+    FCNode<T> father;
+    FCIdentifier id;
 
     /**
      *
@@ -145,9 +43,18 @@ public class FCNode<T> implements OrderedNode<T> , Serializable {
         return id;
     }
 
-    @Override
-    public int getChildrenNumber() {
-        return childrens.size();
+    public FCNode(FCNode<T> father, FCIdentifier id) {
+        this.childrens = new ArrayList();
+        this.father = father;
+        this.id = id;
+    }
+
+    public FCNode<T> getNodeFromPath(List<Integer> path) {
+        FCNode<T> ret = this;
+        for (Integer i : path) {
+            ret = ret.getChild(i);
+        }
+        return ret;
     }
 
     @Override
@@ -177,23 +84,22 @@ public class FCNode<T> implements OrderedNode<T> , Serializable {
     }
 
     @Override
-    public FCNode<T> createNode(T elem) {
-        return new FCNode(null, elem, null, null);
+    public int getChildrenNumber() {
+        return childrens.size();
     }
 
-    @Override
-    public void setReplicaNumber(int replicaNumber) {
-    }
-
-    @Override
-    public T getValue() {
-        return contain.getLabel();
+    public void delChildren(FCNode node) {
+        childrens.remove(node);
     }
 
     /**
      *
-     * @param node
+     * @return
      */
+    public FCNode<T> getFather() {
+        return father;
+    }
+
     public void addChildren(FCNode node) {
         int min = 0;
         int max = childrens.size() - 1;
@@ -214,101 +120,18 @@ public class FCNode<T> implements OrderedNode<T> , Serializable {
         // this.childrens.add(node);
     }
 
-    /**
-     *
-     * @param node
-     * @return
-     */
-    /*public int nodePositionCompareTo(FCNode node) {
-     return this.getPosition().compareTo(this.getId(), node.getId(), node.getPosition());
-     }*/
-    /**
-     *
-     * @param node
-     */
-    public void delChildren(FCNode node) {
-        childrens.remove(node);
+    @Override
+    public boolean isChildren(SimpleNode<T> n) {
+        return childrens.contains((FCNodeGf) n);
     }
 
-    /**
-     *
-     * @return
-     */
-    public FCNode<T> getFather() {
-        return father;
-    }
-
-    public void setFather(FCNode fcnode) {
-        this.father = fcnode;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public FCPosition getPosition() {
-        return this.priorite.getLabel();
-    }
-
-    /**
-     *
-     * @return
-     */
-    public FCLabel<T> getLContain() {
-        return contain;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public FCLabel<FCIdentifier> getLFatherID() {
-        return fatherID;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public FCLabel<FCPosition> getLPriorite() {
-        return priorite;
-    }
+    public abstract FCNode createNode(FCNode<T> father, T contain, FCPosition position, FCIdentifier id);
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final FCNode<T> other = (FCNode<T>) obj;
-        if (this.childrens != other.childrens && (this.childrens == null || !this.childrens.equals(other.childrens))) {
-            return false;
-        }
-        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
-            return false;
-        }
-        if (this.priorite != other.priorite && (this.priorite == null || !this.priorite.equals(other.priorite))) {
-            return false;
-        }
-        if (this.contain != other.contain && (this.contain == null || !this.contain.equals(other.contain))) {
-            return false;
-        }
-        return true;
+    public void setReplicaNumber(int replicaNumber) {
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + (this.id != null ? this.id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public String toString() {
-        return "(" + id + ", " + priorite + ", " + contain + "){" + childrens + '}';
-    }
+    abstract public FCPosition getPosition();
 
     @Override
     public Iterator<FCNode<T>> iterator() {
@@ -333,4 +156,33 @@ public class FCNode<T> implements OrderedNode<T> , Serializable {
         }
         return str.toString();
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + (this.childrens != null ? this.childrens.hashCode() : 0);
+        hash = 67 * hash + (this.id != null ? this.id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final FCNode<T> other = (FCNode<T>) obj;
+        if (this.childrens != other.childrens && (this.childrens == null || !this.childrens.equals(other.childrens))) {
+            return false;
+        }
+        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+   
+   
 }

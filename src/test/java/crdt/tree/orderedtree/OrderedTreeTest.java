@@ -31,7 +31,8 @@ import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.random.OperationProfile;
 import crdt.simulator.random.OrderedTreeOperationProfile;
 import crdt.simulator.random.StandardOrderedTreeOperationProfileWithMoveRename;
-import crdt.tree.fctree.FCTree;
+import crdt.tree.fctree.FCTreeGf;
+import crdt.tree.fctree.FCTreeT;
 import crdt.tree.fctree.policy.FastCycleBreaking;
 import static crdt.tree.orderedtree.OrderedNodeMock.tree;
 import crdt.tree.wordtree.WordConnectionPolicy;
@@ -248,12 +249,20 @@ public class OrderedTreeTest {
             CausalDispatcherSetsAndTreesTest.testRunX(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null)), 2000, 100, 5, otreeop);
         //}
     }
-     @Test
-    public void testRunsFCTree() throws PreconditionException, IncorrectTraceException, IOException {
+    @Test
+    public void testRunsFCTreeT() throws PreconditionException, IncorrectTraceException, IOException {
         //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
         //for(int p=0;p<20000;p++){
             
-            CausalDispatcherSetsAndTreesTest.testRunX(new FCTree(), 2000, 100, 5, otreeop);
+            CausalDispatcherSetsAndTreesTest.testRunX(new FCTreeT(), 2000, 100, 5, otreeop);
+        //}
+    }
+     @Test
+    public void testRunsFCTreeGf() throws PreconditionException, IncorrectTraceException, IOException {
+        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
+        //for(int p=0;p<20000;p++){
+            
+            CausalDispatcherSetsAndTreesTest.testRunX(new FCTreeGf(), 2000, 100, 5, otreeop);
         //}
     }
       @Test
@@ -261,7 +270,7 @@ public class OrderedTreeTest {
         //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
         //for(int p=0;p<20000;p++){
             
-            CausalDispatcherSetsAndTreesTest.testRunX(new FCTree(), 2000, 100, 5, new StandardOrderedTreeOperationProfileWithMoveRename(0.4, 0.2, 0.2, 0.7));
+            CausalDispatcherSetsAndTreesTest.testRunX(new FCTreeGf(), 2000, 100, 5, new StandardOrderedTreeOperationProfileWithMoveRename(0.4, 0.2, 0.2, 0.7));
         //}
     }
         @Test
@@ -269,7 +278,7 @@ public class OrderedTreeTest {
         //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
         //for(int p=0;p<20000;p++){
             
-            CausalDispatcherSetsAndTreesTest.testRunX(new FCTree(new FastCycleBreaking("Garbage")), 2000, 100, 5, new StandardOrderedTreeOperationProfileWithMoveRename(0.4, 0.2, 0.2, 0.7));
+            CausalDispatcherSetsAndTreesTest.testRunX(new FCTreeGf(new FastCycleBreaking("Garbage")), 2000, 100, 5, new StandardOrderedTreeOperationProfileWithMoveRename(0.4, 0.2, 0.2, 0.7));
         //}
     }
       @Test

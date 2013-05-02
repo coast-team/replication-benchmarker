@@ -25,6 +25,7 @@ import crdt.tree.fctree.FCIdentifier;
 import crdt.tree.fctree.FCNode;
 import crdt.tree.fctree.FCPosition;
 import crdt.tree.fctree.FCTree;
+import crdt.tree.fctree.FCTreeT;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -33,16 +34,16 @@ import org.junit.Before;
  *
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public class AddTest {
+public class AddTTest {
 
     FCTree<String> tree;
 
-    public AddTest() {
+    public AddTTest() {
     }
 
     @Before
     public void setUp() {
-        tree = new FCTree();
+        tree = new FCTreeT();
     }
 
     @Test

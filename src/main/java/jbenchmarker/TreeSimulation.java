@@ -42,7 +42,8 @@ import crdt.simulator.tracestorage.TraceFromXMLObjectFile;
 import crdt.simulator.tracestorage.TraceJSonObjectWriter;
 import crdt.simulator.tracestorage.TraceStore;
 import crdt.simulator.tracestorage.TraceXMLObjectWriter;
-import crdt.tree.fctree.FCTree;
+import crdt.tree.fctree.FCTreeGf;
+import crdt.tree.fctree.FCTreeT;
 import crdt.tree.fctree.policy.FastCycleBreaking;
 import crdt.tree.orderedtree.LogootTreeNode;
 import crdt.tree.orderedtree.PositionIdentifierTree;
@@ -126,32 +127,46 @@ public class TreeSimulation {
         fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()),
                 new SOCT2GarbageCollector(4))));
         factstr.add("OTTree");
-        fact.add(new FCTree());
+        
+        fact.add(new FCTreeT());
         factstr.add("FCTree");
-        fact.add(new FCTree(new FastCycleBreaking("Garbage")));
-        factstr.add("FCTreeCycleBreaker");
+        
+        fact.add(new FCTreeT(true));
+        factstr.add("FCTreeRS");
+        
+        
 
         
         //withoutGarbage
         fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()),
                 null)));
         factstr.add("OTTreeWithoutGarbage");
+        
         fact.add(new TreeOPT(new SOCT2(0, new SOCT2Log(new TreeOPTTTFTranformation()),
                 null)));
         factstr.add("TreeOPTWithoutGarbage");
+        
         fact.add(new OTTree(new SOCT2(0, new SOCT2LogTTFOpt(new OTTreeTranformation()),
                 null)));
         factstr.add("OTTreeWithoutGarbageO");
+        
         fact.add(new TreeOPT(new SOCT2(0, new SOCT2LogTTFOpt(new TreeOPTTTFTranformation()),
                 null)));
         factstr.add("TreeOPTWithoutGarbageO");
 
-        fact.add(new CRDTMockTime(new FCTree(), 2, 3));
+        fact.add(new CRDTMockTime(new FCTreeGf(), 2, 3));
         factstr.add("Mock");
-        fact.add(new FCTree(true));
-        factstr.add("FCTreeRS");
-        fact.add(new FCTree(new FastCycleBreaking("Garbage"),true));
-        factstr.add("FCTreeCycleBreakerRS");
+        fact.add(new FCTreeGf());
+        factstr.add("FCTreeGf");
+        
+        fact.add(new FCTreeGf(new FastCycleBreaking("Garbage")));
+        factstr.add("FCTreeGfCycleBreaker");
+        
+        fact.add(new FCTreeGf(true));
+        factstr.add("FCTreeGfRS");
+        
+        fact.add(new FCTreeGf(new FastCycleBreaking("Garbage"),true));
+        factstr.add("FCTreeGfCycleBreakerRS");
 
     }
     int base = 100;
@@ -169,11 +184,11 @@ public class TreeSimulation {
     /**
      * Arg4J arguments
      */
-    @Option(name = "-S", usage = "Serialization format default is overHead")
+    @Option(name = "-S", usage = "kind of mem mesures format (default is overHead)")
     Serialization serialization = Serialization.OverHead;
-    @Option(name = "-t", usage = "trace to this file", metaVar = "TraceFile", required = true)
+    @Option(name = "-t", usage = "trace file used for experimentation", metaVar = "TraceFile", required = true)
     private File traceFile;
-    @Option(name ="-T", usage = "Select trace format",metaVar = "TraceFormat")
+    @Option(name ="-T", usage = "Select trace format (default is binary)",metaVar = "TraceFormat")
     private TraceFormat traceFormat=TraceFormat.Bin;
 
     @Option(name = "-r", usage = "Thresold multiplicator")
@@ -193,14 +208,14 @@ public class TreeSimulation {
     List<NTrace.RandomParameters> randomTrace = new LinkedList();
     TraceParam traceP = new TraceParam(0.1, 5, 10, 5);
 
-    @Option(name = "-P", usage = "Set random trace param probability,delay,deviation,replica")
+    @Option(name = "-P", usage = "Set random trace param probability,delay,deviation,replica",metaVar = "prob,delay,deviation,replica")
     private void setTraceParam(String param) throws CmdLineException {
         traceP = new TraceParam(param);
     }
     @Option(name = "-O", usage = "prefix of output file")
     String prefixOutput = null;
 
-    @Option(name = "-A", usage = "Generate Add/del Trace -A perIns,perChild,duration")
+    @Option(name = "-A", usage = "Generate Add/del Trace -A perIns,perChild,duration",metaVar = "perIns,perChild,duration")
     private void genAdddel(String param) throws CmdLineException {
         try {
             param = param.replace(")", "");
@@ -219,7 +234,7 @@ public class TreeSimulation {
         }
     }
 
-    @Option(name = "-M", usage = "Generate Add/del/Rename/Move Trace -M perIns,PerMv,perRen,perChild,duration")
+    @Option(name = "-M", usage = "Generate Add/del/Rename/Move Trace",metaVar = "perIns,PerMv,perRen,perChild,duration")
     private void genAddDelMv(String param) throws CmdLineException {
         try {
             param = param.replace(")", "");
@@ -248,7 +263,7 @@ public class TreeSimulation {
         parser.printUsage(System.out);
         System.out.println("Factories : ");
         for (int p = 0; p < factstr.size(); p++) {
-            System.out.println("" + p + ". " + factstr.get(p));
+            System.out.println("" + p + ". " + factstr.get(p)/*+":"+fact.get(p).toString()*/+')');
         }
         System.exit(exit);
     }

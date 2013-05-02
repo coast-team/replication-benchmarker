@@ -25,10 +25,10 @@ import java.util.Comparator;
  *
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public class FCComparator implements Comparator<FCNode> {
+public class FCComparator implements Comparator<FCNodeGf> {
 
     @Override
-    public int compare(FCNode o1, FCNode o2) {
+    public int compare(FCNodeGf o1, FCNodeGf o2) {
         if (o1 == null && o2 == null) {
             return 0;
         }

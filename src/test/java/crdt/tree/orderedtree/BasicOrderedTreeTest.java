@@ -20,7 +20,8 @@ package crdt.tree.orderedtree;
 
 import crdt.CRDTMessage;
 import crdt.Factory;
-import crdt.tree.fctree.FCTree;
+import crdt.tree.fctree.FCTreeGf;
+import crdt.tree.fctree.FCTreeT;
 import org.junit.Test;
 import static crdt.tree.orderedtree.OrderedNodeMock.tree;
 import java.util.Arrays;
@@ -28,7 +29,6 @@ import jbenchmarker.ot.ottree.OTTree;
 import jbenchmarker.ot.ottree.OTTreeTranformation;
 import jbenchmarker.ot.ottree.TreeOPT;
 import jbenchmarker.ot.ottree.TreeOPTTTFTranformation;
-import jbenchmarker.ot.soct2.OTAlgorithm;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2Log;
 import jbenchmarker.ot.soct2.SOCT2LogTTFOpt;
@@ -73,7 +73,11 @@ public class BasicOrderedTreeTest {
     }
     @Test
     public void insertionTest()throws Exception {
-       sequentialTest(new FCTree());
+       sequentialTest(new FCTreeT());
+    }
+    @Test
+    public void insertion2Test()throws Exception {
+       sequentialTest(new FCTreeGf());
     }
     @Test
     public void TreeOPTTest()throws Exception {

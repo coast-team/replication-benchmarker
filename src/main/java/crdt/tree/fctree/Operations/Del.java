@@ -20,6 +20,7 @@ package crdt.tree.fctree.Operations;
 
 import crdt.tree.fctree.FCIdentifier;
 import crdt.tree.fctree.FCNode;
+import crdt.tree.fctree.FCNodeGf;
 import crdt.tree.fctree.FCOperation;
 import crdt.tree.fctree.FCTree;
 import jbenchmarker.core.Operation;

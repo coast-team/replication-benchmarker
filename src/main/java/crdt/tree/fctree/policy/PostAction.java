@@ -35,7 +35,7 @@ public interface PostAction extends Cloneable {
     public void postDel(Del operation, FCNode node);
     public void postAdd(Add operation, FCNode node );
     public void setTree(FCTree tree);
-    //public void update(Observable o, FCNode arg);
+    //public void update(Observable o, FCNodeGf arg);
 
     public PostAction clone();
     

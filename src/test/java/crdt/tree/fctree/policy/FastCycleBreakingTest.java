@@ -20,10 +20,9 @@
 package crdt.tree.fctree.policy;
 
 import crdt.CRDTMessage;
-import crdt.CRDTMessage;
 import crdt.PreconditionException;
 import crdt.tree.fctree.FCTree;
-import crdt.tree.orderedtree.OrderedTreeOperation;
+import crdt.tree.fctree.FCTreeGf;
 import crdt.tree.orderedtree.OrderedTreeOperation;
 import crdt.tree.orderedtree.OrderedTreeOperation.OpType;
 import java.lang.String;
@@ -44,9 +43,9 @@ public class FastCycleBreakingTest {
 
     @Before
     public void setUp() throws PreconditionException {
-        tree = new FCTree(new FastCycleBreaking("Garbage"));
+        tree = new FCTreeGf(new FastCycleBreaking("Garbage"));
 
-        tree2 = new FCTree(new FastCycleBreaking("Garbage"));
+        tree2 = new FCTreeGf(new FastCycleBreaking("Garbage"));
 
         CRDTMessage mess1 = tree.add(new ArrayList(), 0, "a");
         CRDTMessage mess2 = tree.add(new ArrayList(), 1, "b");
