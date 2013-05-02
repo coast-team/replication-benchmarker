@@ -48,7 +48,7 @@ public class FCTreeGC implements PostAction{
     public void postDel(Del operation, FCNode node) {
         for (Object n:node.getElements()){
             postDel(operation,node);
-            tree.getMap().remove((FCNode)n);
+            tree.getMap().remove(((FCNode)n).getId());
         }
     }
 
