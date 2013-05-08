@@ -46,7 +46,7 @@ public class TTFSOCT2Test {
     @Test
     public void testGenerateLocalInsertCharByChar() throws IncorrectTraceException {
         int siteId = 0;
-        TTFMergeAlgorithm merger = new TTFMergeAlgorithm(new TTFDocument(), siteId);
+        TTFMergeAlgorithm merger = new TTFMergeAlgorithm(siteId);
 
         List<SequenceMessage> ops = merger.localInsert(insert( 0, "b"));
         assertEquals(1, ops.size());
@@ -78,7 +78,7 @@ public class TTFSOCT2Test {
     @Test
     public void testGenerateLocalInsertString() throws IncorrectTraceException {
         int siteId = 0;
-        TTFMergeAlgorithm merger = new TTFMergeAlgorithm(new TTFDocument(), siteId);
+        TTFMergeAlgorithm merger = new TTFMergeAlgorithm(siteId);
 
         List<SequenceMessage> ops = merger.localInsert(insert( 0, "abc"));
         assertEquals(3, ops.size());
@@ -105,7 +105,7 @@ public class TTFSOCT2Test {
     @Test
     public void testGenerateLocalDeleteCharByChar() throws IncorrectTraceException {
         int siteId = 0;
-        TTFMergeAlgorithm merger = new TTFMergeAlgorithm(new TTFDocument(), siteId);
+        TTFMergeAlgorithm merger = new TTFMergeAlgorithm(siteId);
         merger.localInsert(insert( 0, "abcd"));
 
         // remove 'a'
@@ -148,7 +148,7 @@ public class TTFSOCT2Test {
     @Test
     public void testGenerateLocalDeleteString() throws IncorrectTraceException {
         int siteId = 0;
-        TTFMergeAlgorithm merger = new TTFMergeAlgorithm(new TTFDocument(), siteId);
+        TTFMergeAlgorithm merger = new TTFMergeAlgorithm(siteId);
         merger.localInsert(insert( 0, "abcd"));
 
         // remove "abcd"
@@ -181,7 +181,7 @@ public class TTFSOCT2Test {
     @Test
     public void testGenerateLocalDeleteStringWhichContainsDeletedChars() throws IncorrectTraceException {
         int siteId = 0;
-        TTFMergeAlgorithm merger = new TTFMergeAlgorithm(new TTFDocument(), siteId);
+        TTFMergeAlgorithm merger = new TTFMergeAlgorithm(siteId);
         merger.localInsert(insert( 0, "abcdefg"));
 
         merger.localDelete(delete( 2, 2));
@@ -209,7 +209,7 @@ public class TTFSOCT2Test {
     @Test
     public void testVectorClockEvolution() throws IncorrectTraceException {
         int siteId = 0;
-        TTFMergeAlgorithm merger = new TTFMergeAlgorithm(new TTFDocument(), siteId);
+        TTFMergeAlgorithm merger = new TTFMergeAlgorithm(siteId);
         assertEquals(vc(0), merger.getClock());
 
         OTMessage op1 = ((TTFSequenceMessage) merger.localInsert(insert( 0, "a")).get(0)).getSoct2Message();
@@ -224,7 +224,7 @@ public class TTFSOCT2Test {
 
     @Test
     public void testTP2PuzzleAtSite0() throws IncorrectTraceException {
-        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
+        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(0);
         site0.localInsert(insert( 0, "abc"));
 
         //site0.generateLocal(insert(0, 1, "x"));
@@ -242,7 +242,7 @@ public class TTFSOCT2Test {
 
     @Test
     public void testTP2PuzzleAtSite0bis() throws IncorrectTraceException {
-        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
+        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(0);
         site0.localInsert(insert(0, "abc"));
 
         TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert( 1, "x"),0, vc(4, 0, 0));
@@ -259,14 +259,14 @@ public class TTFSOCT2Test {
 
     @Test
     public void testTP2PuzzleAtSite1() throws IncorrectTraceException {
-        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
+        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(0);
         List<SequenceMessage> ops = site0.localInsert(insert( 0, "abc"));
 
         TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(1, "x"),0, vc(4, 0, 0));
         TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(2, "y"),1, vc(3, 1, 0));
         TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(1, 1),2, vc(3, 0, 1));
 
-        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(new TTFDocument(), 1);
+        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(1);
         for (SequenceMessage op : ops) {
             site1.integrateRemote(op);
         }
@@ -280,14 +280,14 @@ public class TTFSOCT2Test {
 
     @Test
     public void testTP2PuzzleAtSite1bis() throws IncorrectTraceException {
-        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
+        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(0);
         List<SequenceMessage> ops = site0.localInsert(insert( 0, "abc"));
 
         TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert(1, "x"),0, vc(4, 0, 0));
         TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert(2, "y"),1, vc(3, 1, 0));
         TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete(1, 1),2, vc(3, 0, 1));
 
-        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(new TTFDocument(), 1);
+        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(1);
         for (SequenceMessage op : ops) {
             site1.integrateRemote(op);
         }
@@ -301,14 +301,14 @@ public class TTFSOCT2Test {
 
     @Test
     public void testTP2PuzzleAtSite2() throws IncorrectTraceException {
-        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
+        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(0);
         List<SequenceMessage> ops = site0.localInsert(insert( 0, "abc"));
 
         TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert( 1, "x"),0, vc(4, 0, 0));
         TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert( 2, "y"),1, vc(3, 1, 0));
         TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete( 1, 1),2, vc(3, 0, 1));
 
-        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
+        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(2);
         for (SequenceMessage op : ops) {
             site2.integrateRemote(op);
         }
@@ -322,14 +322,14 @@ public class TTFSOCT2Test {
 
     @Test
     public void testTP2PuzzleAtSite2bis() throws IncorrectTraceException {
-        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
+        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(0);
         List<SequenceMessage> ops = site0.localInsert(insert( 0, "abc"));
 
         TTFSequenceMessage op1 = TTFSequenceMessageFrom(insert( 1, "x"),0, vc(4, 0, 0));
         TTFSequenceMessage op2 = TTFSequenceMessageFrom(insert( 2, "y"),1, vc(3, 1, 0));
         TTFSequenceMessage op3 = TTFSequenceMessageFrom(delete( 1, 1),2, vc(3, 0, 1));
 
-        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
+        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(2);
         for (SequenceMessage op : ops) {
             site2.integrateRemote(op);
         }
@@ -343,9 +343,9 @@ public class TTFSOCT2Test {
 
     @Test
     public void testTP2Puzzle() throws IncorrectTraceException {
-        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(new TTFDocument(), 1);
-        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
-        TTFMergeAlgorithm site3 = new TTFMergeAlgorithm(new TTFDocument(), 3);
+        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(1);
+        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(2);
+        TTFMergeAlgorithm site3 = new TTFMergeAlgorithm(3);
 
         List<SequenceMessage> ops0 = duplicate(site1.localInsert(insert( 0, "abc")));
         assertEquals("abc", site1.lookup());
@@ -377,9 +377,9 @@ public class TTFSOCT2Test {
 
     @Test
     public void testBasicScenario() throws IncorrectTraceException {
-        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
-        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
-        TTFMergeAlgorithm site4 = new TTFMergeAlgorithm(new TTFDocument(), 4);
+        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(0);
+        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(2);
+        TTFMergeAlgorithm site4 = new TTFMergeAlgorithm(4);
 
         List<SequenceMessage> ops0 = duplicate(site0.localInsert(insert( 0, "ABC")));
         assertEquals("ABC", site0.lookup());
@@ -417,9 +417,9 @@ public class TTFSOCT2Test {
 
     @Test
     public void testBasicScenario2() throws IncorrectTraceException {
-        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(new TTFDocument(), 0);
-        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
-        TTFMergeAlgorithm site4 = new TTFMergeAlgorithm(new TTFDocument(), 4);
+        TTFMergeAlgorithm site0 = new TTFMergeAlgorithm(0);
+        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(2);
+        TTFMergeAlgorithm site4 = new TTFMergeAlgorithm(4);
 
         /*
          * Ins('Salut Monsieur \nFin', 0, 1297672411625, 1, 0, [<0,1>])
@@ -452,9 +452,9 @@ public class TTFSOCT2Test {
 
     @Test
     public void testBuggyScenario1() throws IncorrectTraceException {
-        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(new TTFDocument(), 1);
-        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
-        TTFMergeAlgorithm site3 = new TTFMergeAlgorithm(new TTFDocument(), 3);
+        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(1);
+        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(2);
+        TTFMergeAlgorithm site3 = new TTFMergeAlgorithm(3);
 
 //        List<SequenceMessage> ops2 = duplicate(site2.generateLocal(insert(2, 0, "ed")));
 //        List<SequenceMessage> ops2 = duplicate(site2.generateLocal(insert(2, 0, "ed", vc(0,0,1,0))));
@@ -494,8 +494,8 @@ public class TTFSOCT2Test {
 
     @Test
     public void testPartialConcurrencyScenarioWith3Insert() throws IncorrectTraceException {
-        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(new TTFDocument(), 1);
-        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
+        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(1);
+        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(2);
 
         List<SequenceMessage> ops0 = duplicate(site1.localInsert(insert(0, "ABC")));
         integrateSeqAtSite(ops0, site2);
@@ -517,10 +517,10 @@ public class TTFSOCT2Test {
 
     @Test
     public void testTP() throws Exception {
-        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(new TTFDocument(), 1);
-        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(new TTFDocument(), 2);
-        TTFMergeAlgorithm site3 = new TTFMergeAlgorithm(new TTFDocument(), 3);
-        //TTFMergeAlgorithm site4 = new TTFMergeAlgorithm(new TTFDocument(), 4);
+        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(1);
+        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(2);
+        TTFMergeAlgorithm site3 = new TTFMergeAlgorithm(3);
+        //TTFMergeAlgorithm site4 = new TTFMergeAlgorithm(4);
         CRDTMessage mess1 = site1.insert(0, "a").clone();
         CRDTMessage mess2 = site1.remove(0, 1).clone();
         CRDTMessage mess3 = site2.insert(0, "b").clone();

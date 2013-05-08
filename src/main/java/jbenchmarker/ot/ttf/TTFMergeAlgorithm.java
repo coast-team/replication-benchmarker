@@ -34,12 +34,15 @@ import jbenchmarker.ot.soct2.SOCT2;
 /**
  * This TTF Merge Algorithm uses SOCT2 algorithm with TTF method
  *
- * @author oster
+ * @author oster urso
  */
 public class TTFMergeAlgorithm extends MergeAlgorithm {
 
     final private OTAlgorithm<TTFOperation> otAlgo;
-    //private TTFDocument ;
+
+    public OTAlgorithm<TTFOperation> getOtAlgo() {
+        return otAlgo;
+    }
 
     /**
      * Make new TTFMerge algorithm with docuement (TTFDocument) and site id or
@@ -48,25 +51,24 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
      * @param doc TTF Document
      * @param siteId SiteID
      */
-    public TTFMergeAlgorithm(Document doc, int siteId, Factory<OTAlgorithm<TTFOperation>> otAlgo) {
+    public TTFMergeAlgorithm(TTFDocument doc, int siteId, Factory<OTAlgorithm<TTFOperation>> otAlgo) {
         super(doc);
         this.otAlgo = otAlgo.create();
         setReplicaNumber(siteId);
     }
     
-    
-    public TTFMergeAlgorithm(Document doc, int siteId) {
-        this(doc, siteId, new SOCT2<TTFOperation>(new TTFTransformations(), siteId, null));
+    /**
+     * Default SOCT2 Factory
+     **/
+    public TTFMergeAlgorithm(int siteId) {
+        this(new TTFDocument(), siteId, new SOCT2<TTFOperation>(new TTFTransformations(), siteId, null));
         setReplicaNumber(siteId);
     }
 
-    public TTFMergeAlgorithm(Document doc) {
-        this(doc, 0, new SOCT2<TTFOperation>(new TTFTransformations(), 0, null));
+    public TTFMergeAlgorithm(Factory<OTAlgorithm<TTFOperation>> otAlgo) {
+        this(new TTFDocument(), 0, otAlgo);
     }
-
-    public TTFMergeAlgorithm(Document doc, Factory<OTAlgorithm<TTFOperation>> otAlgo) {
-        this(doc, 0, otAlgo);
-    }
+    
     /**
      * @return Vector Clock of site
      */
@@ -74,6 +76,14 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
         return otAlgo.getSiteVC();
     }
 
+    protected TTFOperation deleteOperation(int pos) {
+        return new TTFOperation(SequenceOperation.OpType.delete, pos, getReplicaNumber());
+    }
+    
+    protected TTFOperation insertOperation(int pos, Object content) {
+        return new TTFOperation(SequenceOperation.OpType.insert, pos, content, getReplicaNumber());
+    }
+    
     /*
      * This integrate local modifications and generate message to another
      * replicas
@@ -90,7 +100,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
             while (!doc.getChar(mpos + visibleIndex).isVisible()) {
                 visibleIndex++;
             }
-            TTFOperation op = new TTFOperation(SequenceOperation.OpType.delete, mpos + visibleIndex, getReplicaNumber());
+            TTFOperation op = deleteOperation(mpos + visibleIndex);
             generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
             doc.apply(op);
         }
@@ -104,10 +114,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
 
         int mpos = doc.viewToModel(opt.getPosition());
         for (int i = 0; i < opt.getContent().size(); i++) {
-            TTFOperation op = new TTFOperation(SequenceOperation.OpType.insert,
-                    mpos + i,
-                    opt.getContent().get(i),
-                    getReplicaNumber());
+            TTFOperation op = insertOperation(mpos + i, opt.getContent().get(i));
             generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
             doc.apply(op);
         }
@@ -161,7 +168,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
      */
     @Override
     public CRDT<String> create() {
-        return new TTFMergeAlgorithm(new TTFDocument(), otAlgo);
+        return new TTFMergeAlgorithm(new TTFDocument(), 0, otAlgo);
     }
 
     /*

@@ -39,7 +39,7 @@ import jbenchmarker.ot.ttf.TTFTransformations;
 
         @Override
         public MergeAlgorithm create(int siteId) {
-            return new TTFMergeAlgorithm(new TTFDocument(), siteId);
+            return new TTFMergeAlgorithm(siteId);
         }
     }
 

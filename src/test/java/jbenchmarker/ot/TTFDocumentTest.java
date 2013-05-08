@@ -18,7 +18,7 @@
  */
 package jbenchmarker.ot;
 
-import jbenchmarker.ot.ttf.TTFChar;
+import jbenchmarker.ot.ttf.TTFVisibilityChar;
 import jbenchmarker.ot.ttf.TTFDocument;
 import java.util.ArrayList;
 import org.junit.Test;
@@ -75,10 +75,10 @@ public class TTFDocumentTest {
             super();
         }
 
-        public TTFDoc(TTFChar... cs) {
+        public TTFDoc(TTFVisibilityChar... cs) {
             super();
-            this.model = new ArrayList<TTFChar>();
-            for (TTFChar c : cs)
+            this.model = new ArrayList<TTFVisibilityChar>();
+            for (TTFVisibilityChar c : cs)
                 this.model.add(c);
         }
     }
@@ -86,13 +86,13 @@ public class TTFDocumentTest {
     // helpers
 
     // generate a visible TTFChar
-    private static TTFChar c(char c) {
-        return new TTFChar(c);
+    private static TTFVisibilityChar c(char c) {
+        return new TTFVisibilityChar(c);
     }
 
     // generate an unvisible TTFChar
-    private static TTFChar h(char c) {
-        TTFChar ch = new TTFChar(c);
+    private static TTFVisibilityChar h(char c) {
+        TTFVisibilityChar ch = new TTFVisibilityChar(c);
         ch.hide();
         return ch;
     }

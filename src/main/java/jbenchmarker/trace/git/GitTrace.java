@@ -341,6 +341,7 @@ public class GitTrace implements Trace {
                     if (fileEdit.getType() == FileHeader.PatchType.UNIFIED) {
                         editions = new LinkedList<Edition>(fileEdit.getListDiff());
                     }
+System.out.println(commit.patchId() + "\n" + editions);
                     stat(editions, false);
                 } else { // Commit finished
                     if (commit != null) { // Not first iteration
