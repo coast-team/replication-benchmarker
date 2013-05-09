@@ -18,33 +18,43 @@
  */
 package jbenchmarker.ot;
 
+import crdt.CRDTMessage;
 import java.util.Arrays;
 import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.ot.otset.AddWinTransformation;
 import jbenchmarker.ot.otset.DelWinTransformation;
+import jbenchmarker.ot.otset.OTSet;
 import jbenchmarker.ot.otset.OTSetOperations;
+import jbenchmarker.ot.ottree.OTTree;
 import jbenchmarker.ot.ottree.OTTreeRemoteOperation;
-import jbenchmarker.ot.ottree.OTTreeTranformation;
+import jbenchmarker.ot.ottree.OTTreeTransformation;
+import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
+import jbenchmarker.ot.soct2.OTReplica;
+import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
 import jbenchmarker.ot.ttf.TTFOperation;
 import jbenchmarker.ot.ttf.TTFTransformations;
-import static org.junit.Assert.assertEquals;
+import jbenchmarker.ot.ttf.update.TTFUDelWinsTransformations;
+import jbenchmarker.ot.ttf.update.TTFUMergeAlgorithm;
+import jbenchmarker.ot.ttf.update.TTFUTransformations;
+import static org.junit.Assert.*;
 import org.junit.Test;
-import static org.junit.Assert.fail;
 
 /**
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
 public class TP2Test {
-
-    SOCT2TranformationInterface[] ots = {
-        new AddWinTransformation(),
-        new DelWinTransformation(),
-        new TTFTransformations(),
-        new OTTreeTranformation()
+    OTReplica[] ots = {
+        new OTSet(new SOCT2(new AddWinTransformation())),
+        new OTSet(new SOCT2(new DelWinTransformation())),
+        new TTFMergeAlgorithm(new SOCT2(new TTFTransformations())),    
+        new TTFUMergeAlgorithm(new SOCT2(new TTFUTransformations())),
+        new TTFUMergeAlgorithm(new SOCT2(new TTFUDelWinsTransformations())),
+        new OTTree(new SOCT2(new OTTreeTransformation())),
     };
+   
     Operation ops[][] = {
         {new OTSetOperations(OTSetOperations.OpType.Add, 1, 1),
             new OTSetOperations(OTSetOperations.OpType.Del, 1, 0)
@@ -54,6 +64,20 @@ public class TP2Test {
         },
         {new TTFOperation(SequenceOperation.OpType.delete, 1, 1),
             new TTFOperation(SequenceOperation.OpType.insert, 1, 2),},
+        {new TTFOperation(SequenceOperation.OpType.update, 1, 1),
+            new TTFOperation(SequenceOperation.OpType.noop, 1, 2),
+            new TTFOperation(SequenceOperation.OpType.insert, 1, 3),
+            new TTFOperation(SequenceOperation.OpType.update, 2, 4),
+            new TTFOperation(SequenceOperation.OpType.noop, 2, 5),
+            new TTFOperation(SequenceOperation.OpType.insert, 2, 6),},
+        {new TTFOperation(SequenceOperation.OpType.update, 1, null, 1),
+            new TTFOperation(SequenceOperation.OpType.update, 1, 0, 2),
+            new TTFOperation(SequenceOperation.OpType.noop, 1, 3),
+            new TTFOperation(SequenceOperation.OpType.insert, 1, 4),
+            new TTFOperation(SequenceOperation.OpType.update, 2, null, 5),
+            new TTFOperation(SequenceOperation.OpType.update, 1, 0, 6),
+            new TTFOperation(SequenceOperation.OpType.noop, 2, 7),
+            new TTFOperation(SequenceOperation.OpType.insert, 2, 8),},
         {new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0}), 'a', 0, OTTreeRemoteOperation.OpType.ins),
             new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0}), 'b', 1, OTTreeRemoteOperation.OpType.ins),
             new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0, 0}), 'b', 2, OTTreeRemoteOperation.OpType.ins),
@@ -62,13 +86,16 @@ public class TP2Test {
             new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0, 2}), 'd', 5, OTTreeRemoteOperation.OpType.ins),
         }
     };
-
+    
     @Test
-    public void transformations() {
-
+    public void tp1() {
+        fail("to be tested");
+    }
+    
+    @Test
+    public void tp2() {
         for (int i = 0; i < ots.length; i++) {
-            SOCT2TranformationInterface<Operation> ot = ots[i];
-
+            SOCT2TranformationInterface<Operation> ot = ots[i].getTransformation();
             for (Operation op : ops[i]) {
                 for (Operation op1 : ops[i]) {
                     for (Operation op2 : ops[i]) {

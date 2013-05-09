@@ -24,7 +24,7 @@ import crdt.OperationBasedOneMessage;
 import crdt.tree.orderedtree.CRDTOrderedTree;
 import crdt.tree.orderedtree.PositionIdentifierTree;
 import jbenchmarker.ot.ottree.OTTree;
-import jbenchmarker.ot.ottree.OTTreeTranformation;
+import jbenchmarker.ot.ottree.OTTreeTransformation;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2Log;
 import static org.junit.Assert.assertTrue;
@@ -50,8 +50,8 @@ public class OtTreeTest {
 
     @Test
     public void otTreeTestBasic() throws Exception {
-        OTTree tree1 = new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
-        OTTree tree2 = new OTTree(new SOCT2(1, new SOCT2Log(new OTTreeTranformation()), null));
+        OTTree tree1 = new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTransformation()), null));
+        OTTree tree2 = new OTTree(new SOCT2(1, new SOCT2Log(new OTTreeTransformation()), null));
         CRDTMessage mess = tree1.add(Arrays.asList(new Integer[]{}), 0, 'a');
         mess = mess.concat(tree1.add(Arrays.asList(new Integer[]{0}), 0, 'm')).clone();
         

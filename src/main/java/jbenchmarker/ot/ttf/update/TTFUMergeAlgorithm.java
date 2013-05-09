@@ -75,15 +75,23 @@ public class TTFUMergeAlgorithm extends TTFMergeAlgorithm {
         List<SequenceMessage> generatedOperations = new ArrayList<SequenceMessage>();
 
         int mpos = getDoc().viewToModel(opt.getPosition());
-        int visibleIndex = 0;
-        for (int i = 0; i < opt.getLenghOfADel(); i++) {
-            // TODO: could be improved with an iterator on only visible characters
-            while (!getDoc().getChar(mpos + visibleIndex).isVisible()) {
-                visibleIndex++;
+        int i = 0;
+        while (i < opt.getLenghOfADel()) {
+            while (!getDoc().getChar(mpos).isVisible()) {
+                ++mpos;
             }
-            TTFOperation op = updateOperation(mpos + visibleIndex, opt.getContent().get(i));
+            TTFOperation op = updateOperation(mpos, i < opt.getContent().size() ? opt.getContent().get(i) : null);
             generatedOperations.add(new TTFSequenceMessage(getOtAlgo().estampileMessage(op), opt));
             getDoc().apply(op);
+            ++i; 
+            ++mpos;
+        }
+        while (i < opt.getContent().size()) {
+            TTFOperation op = insertOperation(mpos, opt.getContent().get(i));
+            generatedOperations.add(new TTFSequenceMessage(getOtAlgo().estampileMessage(op), opt));
+            getDoc().apply(op);
+            ++i;            
+            ++mpos;
         }
         return generatedOperations;
     }

@@ -16,29 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.ot.soct2;
+package crdt;
 
-import jbenchmarker.core.Operation;
+import jbenchmarker.core.LocalOperation;
 
 /**
- *
- * @param <O> 
- * @author stephane martin
+ * A replica.
+ * @author urso
  */
-public interface SOCT2TranformationInterface<O extends Operation> {
-    
-    /**
-     * transopose op1 with op2 is previous occurs
-     * @param op1
-     * @param op2
-     * @return transposed operation
-     */
-    public  O transpose(O op1, O op2);
-    /**
-     * restaure op1 modified by op2
-     * @param op1 
-     * @param op2
-     * @return original operation
-     */
-    public  O transposeBackward(O op1, O op2);
+public interface Replica<L> {
+
+    CRDTMessage applyLocal(LocalOperation op) throws PreconditionException;
+
+    void applyRemote(CRDTMessage msg);
+
+    int getReplicaNumber();
+
+    L lookup();
+
+    void setReplicaNumber(int replicaNumber);   
 }

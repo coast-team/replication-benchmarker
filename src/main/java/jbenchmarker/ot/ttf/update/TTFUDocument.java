@@ -49,13 +49,13 @@ public class TTFUDocument<T> extends TTFDocument<T> {
         int pos = oop.getPosition();
 
             if (oop.getType() == SequenceOperation.OpType.update) {
-                TTFUChar c = (TTFUChar) this.model.get(pos);
+                TTFUpdateChar c = (TTFUpdateChar) this.model.get(pos);
                 if (c.isVisible() && oop.getChar() == null) {
                     decSize();
                 }
                 c.set(oop.getChar(), oop.getSiteId());
             } else if (oop.getType() == SequenceOperation.OpType.insert) { 
-                this.model.add(pos, new TTFUChar<T>(oop.getChar(), oop.getSiteId()));
+                this.model.add(pos, new TTFUpdateChar<T>(oop.getChar(), oop.getSiteId()));
                 incSize();
             }
         }

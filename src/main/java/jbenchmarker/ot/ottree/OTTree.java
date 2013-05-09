@@ -25,12 +25,14 @@ import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.ot.soct2.OTAlgorithm;
 import jbenchmarker.ot.soct2.OTMessage;
+import jbenchmarker.ot.soct2.OTReplica;
+import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 
 /**
  *
  * @author Stephane Martin
  */
-public class OTTree<T> extends CRDTOrderedTree<T> {
+public class OTTree<T> extends CRDTOrderedTree<T> implements OTReplica<OrderedNode<T>, TreeOPTTTFNodeOperation<T>> {
 
     OTTreeNode root;
     OTAlgorithm soct2;
@@ -115,6 +117,11 @@ public class OTTree<T> extends CRDTOrderedTree<T> {
     @Override
     public CRDTMessage move(List<Integer> from, List<Integer> to, int p) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public SOCT2TranformationInterface<TreeOPTTTFNodeOperation<T>> getTransformation() {
+        return soct2.getTransformation();
     }
     
 }

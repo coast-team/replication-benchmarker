@@ -66,6 +66,13 @@ public class SOCT2 <O extends Operation> implements OTAlgorithm<O>, Serializable
     /**
      * Make soct2 instance. 
      */
+    public SOCT2(SOCT2TranformationInterface ot) {
+        this(ot, 0, null);
+    }
+    
+    /**
+     * Make soct2 instance. 
+     */
     public SOCT2(Factory<SOCT2Log<O>> log, Factory<GarbageCollector> gc) {
         this(0, log, gc);
     }
@@ -163,5 +170,10 @@ public class SOCT2 <O extends Operation> implements OTAlgorithm<O>, Serializable
     @Override
     public int getReplicaNumber() {
         return replicaNumber;
+    }
+
+    @Override
+    public SOCT2TranformationInterface<O> getTransformation() {
+        return log.transforme;
     }
 }

@@ -19,7 +19,9 @@
 
 package jbenchmarker.ot.soct2;
 
+import jbenchmarker.core.Operation;
 
-public interface SOCT2TranformationInterfaceOpt<O> extends SOCT2TranformationInterface<O> {
+
+public interface SOCT2TranformationInterfaceOpt<O extends Operation> extends SOCT2TranformationInterface<O> {
     public boolean isLogInterest(O o);
 }

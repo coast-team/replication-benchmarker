@@ -18,27 +18,15 @@
  */
 package jbenchmarker.ot.soct2;
 
+import collect.VectorClock;
+import crdt.Factory;
+import crdt.Replica;
 import jbenchmarker.core.Operation;
 
 /**
- *
- * @param <O> 
- * @author stephane martin
+ * Something that get transformation interface.
+ * @author urso
  */
-public interface SOCT2TranformationInterface<O extends Operation> {
-    
-    /**
-     * transopose op1 with op2 is previous occurs
-     * @param op1
-     * @param op2
-     * @return transposed operation
-     */
-    public  O transpose(O op1, O op2);
-    /**
-     * restaure op1 modified by op2
-     * @param op1 
-     * @param op2
-     * @return original operation
-     */
-    public  O transposeBackward(O op1, O op2);
+public interface OTReplica<L, O extends Operation> extends Replica<L> {
+    public SOCT2TranformationInterface<O> getTransformation();
 }

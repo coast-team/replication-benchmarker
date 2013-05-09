@@ -24,12 +24,13 @@ import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 import jbenchmarker.ot.ttf.TTFOperation;
 
 /**
- * Is transformation and backward transformation for TTF model including updates.
+ * Is transformation and backward transformation for TTF model including uodates.
  * Delete is considered as update to null.
- * Concurrent updates are managed using site id priority.
+ * Concurrent updates are managed using site id priority except that delete wins againt other update.
+ * 
  * @author oster urso
  */
-public class TTFUTransformations implements SOCT2TranformationInterface<TTFOperation>, Serializable {
+public class TTFUDelWinsTransformations implements SOCT2TranformationInterface<TTFOperation>, Serializable {
 
     @Override
     public TTFOperation transpose(TTFOperation op1, TTFOperation op2) {
@@ -46,7 +47,8 @@ public class TTFUTransformations implements SOCT2TranformationInterface<TTFOpera
             }
             return op1;
         } else if (op1.getType() == OpType.update && op2.getType() == OpType.update) {
-            if (op1.getPosition() == op2.getPosition() && op2.getSiteId() > op1.getSiteId()) {
+            if (op1.getPosition() == op2.getPosition()
+                    && (op1.getChar() != null && (op2.getSiteId() > op1.getSiteId() || op2.getChar() == null))) {
                 op1.setType(OpType.noop);
             }
             return op1;
@@ -69,7 +71,8 @@ public class TTFUTransformations implements SOCT2TranformationInterface<TTFOpera
             }
             return op1;
         } else if (op1.getType() == OpType.noop && op2.getType() == OpType.update) {
-            if (op1.getPosition() == op2.getPosition() && op2.getSiteId() > op1.getSiteId()) {
+            if (op1.getPosition() == op2.getPosition()
+                    && (op1.getChar() != null && (op2.getSiteId() > op1.getSiteId() || op2.getChar() == null))) {
                 op1.setType(OpType.update);
             }
             return op1;

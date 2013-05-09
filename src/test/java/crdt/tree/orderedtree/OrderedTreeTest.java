@@ -47,7 +47,7 @@ import jbenchmarker.factories.LogootFactory;
 import jbenchmarker.logoot.BoundaryStrategy;
 import jbenchmarker.logoot.RandomLogootStrategy;
 import jbenchmarker.ot.ottree.OTTree;
-import jbenchmarker.ot.ottree.OTTreeTranformation;
+import jbenchmarker.ot.ottree.OTTreeTransformation;
 import jbenchmarker.ot.ottree.TreeOPT;
 import jbenchmarker.ot.ottree.TreeOPTTTFTranformation;
 import jbenchmarker.ot.soct2.SOCT2;
@@ -243,15 +243,15 @@ public class OrderedTreeTest {
     
     @Test
     public void testRunsOTTree() throws PreconditionException, IncorrectTraceException, IOException {
-        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
+        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTransformation()), null));
         //for(int p=0;p<20000;p++){
             
-            CausalDispatcherSetsAndTreesTest.testRunX(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null)), 2000, 100, 5, otreeop);
+            CausalDispatcherSetsAndTreesTest.testRunX(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTransformation()), null)), 2000, 100, 5, otreeop);
         //}
     }
     @Test
     public void testRunsFCTreeT() throws PreconditionException, IncorrectTraceException, IOException {
-        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
+        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTransformation()), null));
         //for(int p=0;p<20000;p++){
             
             CausalDispatcherSetsAndTreesTest.testRunX(new FCTreeT(), 2000, 100, 5, otreeop);
@@ -259,7 +259,7 @@ public class OrderedTreeTest {
     }
      @Test
     public void testRunsFCTreeGf() throws PreconditionException, IncorrectTraceException, IOException {
-        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
+        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTransformation()), null));
         //for(int p=0;p<20000;p++){
             
             CausalDispatcherSetsAndTreesTest.testRunX(new FCTreeGf(), 2000, 100, 5, otreeop);
@@ -267,7 +267,7 @@ public class OrderedTreeTest {
     }
       @Test
     public void testRunsFCTreeMove() throws PreconditionException, IncorrectTraceException, IOException {
-        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
+        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTransformation()), null));
         //for(int p=0;p<20000;p++){
             
             CausalDispatcherSetsAndTreesTest.testRunX(new FCTreeGf(), 2000, 100, 5, new StandardOrderedTreeOperationProfileWithMoveRename(0.4, 0.2, 0.2, 0.7));
@@ -275,7 +275,7 @@ public class OrderedTreeTest {
     }
         @Test
     public void testRunsFCTreeMoveCB() throws PreconditionException, IncorrectTraceException, IOException {
-        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
+        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTransformation()), null));
         //for(int p=0;p<20000;p++){
             
             CausalDispatcherSetsAndTreesTest.testRunX(new FCTreeGf(new FastCycleBreaking("Garbage")), 2000, 100, 5, new StandardOrderedTreeOperationProfileWithMoveRename(0.4, 0.2, 0.2, 0.7));
@@ -283,7 +283,7 @@ public class OrderedTreeTest {
     }
       @Test
     public void testRunsTreeOPT() throws PreconditionException, IncorrectTraceException, IOException {
-        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
+        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTransformation()), null));
         //for(int p=0;p<20000;p++){
             
             CausalDispatcherSetsAndTreesTest.testRunX(new TreeOPT(new SOCT2(0, new SOCT2Log(new TreeOPTTTFTranformation()), null)), 2000, 100, 5, otreeop);
@@ -291,7 +291,7 @@ public class OrderedTreeTest {
     }
          @Test
     public void testRunsTreeOPT2() throws PreconditionException, IncorrectTraceException, IOException {
-        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
+        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTransformation()), null));
         //for(int p=0;p<20000;p++){
             
             CausalDispatcherSetsAndTreesTest.testRunX(new TreeOPT(new SOCT2(0, new SOCT2LogTTFOpt(new TreeOPTTTFTranformation()), null)), 2000, 100, 5, otreeop);
@@ -299,10 +299,10 @@ public class OrderedTreeTest {
     }
           @Test
     public void testRunsOTTree2() throws PreconditionException, IncorrectTraceException, IOException {
-        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()), null));
+        //new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTransformation()), null));
         //for(int p=0;p<20000;p++){
             
-            CausalDispatcherSetsAndTreesTest.testRunX(new OTTree(new SOCT2(0, new SOCT2LogTTFOpt(new OTTreeTranformation()), null)), 2000, 100, 5, otreeop);
+            CausalDispatcherSetsAndTreesTest.testRunX(new OTTree(new SOCT2(0, new SOCT2LogTTFOpt(new OTTreeTransformation()), null)), 2000, 100, 5, otreeop);
         //}
     }
 }

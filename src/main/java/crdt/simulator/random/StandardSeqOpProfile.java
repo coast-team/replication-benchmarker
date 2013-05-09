@@ -21,6 +21,7 @@ package crdt.simulator.random;
 import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  * A profile that generates operation.
@@ -28,14 +29,20 @@ import jbenchmarker.core.SequenceOperation;
  */
 public class StandardSeqOpProfile extends SequenceOperationProfile<Character> {
  
-    private final double perIns, perBlock, sdvBlockSize;
-    private final int avgBlockSize;
+    protected final double perIns, perBlock, sdvBlockSize;
+    protected final int avgBlockSize;
 
     static final public StandardSeqOpProfile BASIC = new StandardSeqOpProfile(0.8, 0.1, 50, 5.0);
     static final public StandardSeqOpProfile WITHOUT_BLOCK = new StandardSeqOpProfile(0.8, 0, 0, 0);
     static final public StandardSeqOpProfile ONLY_BLOCK = new StandardSeqOpProfile(0.8, 1, 50, 5.0);
-    static final public StandardSeqOpProfile ALL_INS  = new StandardSeqOpProfile(1, 0.1, 50, 5.0);
-    
+    static final public StandardSeqOpProfile ALL_INS  = new StandardSeqOpProfile(1, 0.1, 50, 5.0);    
+    static final public StandardSeqOpProfile WITH_UPDATE  = new StandardSeqOpProfile(0.8, 0.8, 3, 0.01) {
+        @Override
+        public SequenceOperation.OpType nextType() {
+            return Math.random() < perIns ? OpType.update : super.nextType(); 
+        }
+    };
+
     /**
      * Constructor of profile
      * @param perIns  percentage of ins vs del operation 

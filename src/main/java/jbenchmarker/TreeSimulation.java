@@ -61,7 +61,7 @@ import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.logoot.BoundaryStrategy;
 import jbenchmarker.ot.ottree.OTTree;
-import jbenchmarker.ot.ottree.OTTreeTranformation;
+import jbenchmarker.ot.ottree.OTTreeTransformation;
 import jbenchmarker.ot.ottree.TreeOPT;
 import jbenchmarker.ot.ottree.TreeOPTTTFTranformation;
 import jbenchmarker.ot.soct2.SOCT2;
@@ -106,7 +106,7 @@ public class TreeSimulation {
          */"NaiveSet"};
     /*
      * static Factory<CRDT> fact[]={ new OTTree(new SOCT2(0, new SOCT2Log(new
-     * OTTreeTranformation()), null), new
+     * OTTreeTransformation()), null), new
      * PositionIdentifierTree((PositionnedNode)root.createNode(null), wt),      *
      *
      * };
@@ -125,7 +125,7 @@ public class TreeSimulation {
                 }
             }
         }
-        fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()),
+        fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTransformation()),
                 new SOCT2GarbageCollector(4))));
         factstr.add("OTTree");
         
@@ -139,7 +139,7 @@ public class TreeSimulation {
 
         
         //withoutGarbage
-        fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTranformation()),
+        fact.add(new OTTree(new SOCT2(0, new SOCT2Log(new OTTreeTransformation()),
                 null)));
         factstr.add("OTTreeWithoutGarbage");
         
@@ -147,7 +147,7 @@ public class TreeSimulation {
                 null)));
         factstr.add("TreeOPTWithoutGarbage");
         
-        fact.add(new OTTree(new SOCT2(0, new SOCT2LogTTFOpt(new OTTreeTranformation()),
+        fact.add(new OTTree(new SOCT2(0, new SOCT2LogTTFOpt(new OTTreeTransformation()),
                 null)));
         factstr.add("OTTreeWithoutGarbageO");
         

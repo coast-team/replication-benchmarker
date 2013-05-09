@@ -27,7 +27,7 @@ import java.io.Serializable;
  * @param <T> Character
  * @author urso
  */
-public class TTFUChar<T> implements TTFChar<T> {
+public class TTFUpdateChar<T> implements TTFChar<T> {
 
     private T character;
     private int lastId;
@@ -37,7 +37,7 @@ public class TTFUChar<T> implements TTFChar<T> {
      *
      * @param c character
      */
-    public TTFUChar(T c, int lastId) {
+    public TTFUpdateChar(T c, int lastId) {
         this.character = c;
         this.lastId = lastId;
     }
@@ -48,7 +48,7 @@ public class TTFUChar<T> implements TTFChar<T> {
      * @return true if visible
      */
     public boolean isVisible() {
-        return this.character == null;
+        return this.character != null;
     }
 
     /**

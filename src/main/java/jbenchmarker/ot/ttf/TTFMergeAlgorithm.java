@@ -20,9 +20,7 @@ package jbenchmarker.ot.ttf;
 
 import collect.VectorClock;
 import crdt.CRDT;
-import crdt.CRDTMessage;
 import crdt.Factory;
-import crdt.OperationBasedOneMessage;
 import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +28,15 @@ import jbenchmarker.core.*;
 import jbenchmarker.ot.soct2.OTAlgorithm;
 import jbenchmarker.ot.soct2.OTMessage;
 import jbenchmarker.ot.soct2.SOCT2;
+import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
+import jbenchmarker.ot.soct2.OTReplica;
 
 /**
  * This TTF Merge Algorithm uses SOCT2 algorithm with TTF method
  *
  * @author oster urso
  */
-public class TTFMergeAlgorithm extends MergeAlgorithm {
+public class TTFMergeAlgorithm extends MergeAlgorithm implements OTReplica<String, TTFOperation> {
 
     final private OTAlgorithm<TTFOperation> otAlgo;
 
@@ -189,5 +189,10 @@ public class TTFMergeAlgorithm extends MergeAlgorithm {
     public void setReplicaNumber(int replicaNumber) {
         super.setReplicaNumber(replicaNumber);
         otAlgo.setReplicaNumber(replicaNumber);
+    }
+
+    @Override
+    public SOCT2TranformationInterface<TTFOperation> getTransformation() {
+        return otAlgo.getTransformation();
     }
 }

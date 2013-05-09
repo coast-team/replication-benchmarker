@@ -1,43 +1,42 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2013 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2013
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.ot;
 
-import jbenchmarker.ot.ttf.TTFVisibilityChar;
-import jbenchmarker.ot.ttf.TTFDocument;
-import java.util.ArrayList;
 import java.util.Arrays;
 import jbenchmarker.ot.ttf.TTFChar;
+import jbenchmarker.ot.ttf.update.TTFUDocument;
+import jbenchmarker.ot.ttf.update.TTFUpdateChar;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
  *
- * @author oster
+ * @author oster urso
  */
-public class TTFDocumentTest {
+public class TTFUDocumentTest {
 
     @Test
     public void testView() {
         TTFDoc model = new TTFDoc(c('a'), h('b'), h('c'), c('d'), h('e'));
         assertEquals("ad", model.view());
     }
-    
+
     @Test
     public void testViewToModel() {
         TTFDoc model;
@@ -75,9 +74,8 @@ public class TTFDocumentTest {
         assertEquals(4, model.viewToModel(2));
     }
 
-
     // enable internal data-model injection
-    private class TTFDoc extends TTFDocument {
+    private class TTFDoc extends TTFUDocument {
         public TTFDoc() {
             super();
         }
@@ -92,13 +90,11 @@ public class TTFDocumentTest {
 
     // generate a visible TTFChar
     private static TTFChar c(char c) {
-        return new TTFVisibilityChar(c);
+        return new TTFUpdateChar(c, 1);
     }
 
     // generate an unvisible TTFChar
     private static TTFChar h(char c) {
-        TTFVisibilityChar ch = new TTFVisibilityChar(c);
-        ch.hide();
-        return ch;
+        return new TTFUpdateChar(null, 0);
     }
 }

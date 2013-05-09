@@ -24,13 +24,15 @@ import java.util.HashSet;
 import java.util.Set;
 import jbenchmarker.ot.soct2.OTAlgorithm;
 import jbenchmarker.ot.soct2.OTMessage;
+import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
+import jbenchmarker.ot.soct2.OTReplica;
 
 /**
  *
  * @param <T> Type of elements in set.
  * @author stephane martin OT set
  */
-public class OTSet<T> extends CRDTSet<T>  {
+public class OTSet<T> extends CRDTSet<T> implements OTReplica<Set<T>, OTSetOperations<T>> {
 
     final Set set = new HashSet();
     final OTAlgorithm<OTSetOperations<T>> otAlgo;
@@ -177,6 +179,8 @@ public class OTSet<T> extends CRDTSet<T>  {
         return otAlgo;
     }
 
-    
-    
+    @Override
+    public SOCT2TranformationInterface<OTSetOperations<T>> getTransformation() {
+        return otAlgo.getTransformation();
+    } 
 }
