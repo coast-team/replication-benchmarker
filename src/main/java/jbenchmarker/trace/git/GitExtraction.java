@@ -81,7 +81,6 @@ public class GitExtraction {
     public static final DiffAlgorithm defaultDiffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
     private static final DiffMatchPatch neil = new DiffMatchPatch();
     private final boolean detectMoveAndUpdate;
-    private int lineUpdateThresold = 50;
     private int updateThresold = 20;
     private int moveThresold = 10;
     public int nbUpdBlockBefore=0,nbMoveBefore=0, nbrMergeBefore;
@@ -90,7 +89,7 @@ public class GitExtraction {
      * Test constructor. Do not use outside test.
      *
      */
-    GitExtraction(int lineUpdateThresold, int updateThresold, int moveThresold) {
+    GitExtraction(int updateThresold, int moveThresold) {
         this.repository = null;
         this.reader = null;
         this.source = null;
@@ -101,19 +100,18 @@ public class GitExtraction {
         this.git = null;
         this.path = null;
         this.detectMoveAndUpdate = true;
-        this.lineUpdateThresold = lineUpdateThresold;
         this.updateThresold = updateThresold;
         this.moveThresold = moveThresold;
     }
 
     public GitExtraction(Repository repo, CouchDbRepositorySupport<Commit> dbc,
             CouchDbRepositorySupport<Patch> dbp, DiffAlgorithm diffAlgorithm, String path) {
-        this(repo, dbc, dbp, diffAlgorithm, path, false, 0, 0, 0);
+        this(repo, dbc, dbp, diffAlgorithm, path, false, 0, 0);
     }
 
     public GitExtraction(Repository repo, CouchDbRepositorySupport<Commit> dbc,
             CouchDbRepositorySupport<Patch> dbp, DiffAlgorithm diffAlgorithm, String path,
-            boolean detectMovesAndUpdates, int lineUpdateThresold, int updateThresold, int moveThresold) {
+            boolean detectMovesAndUpdates, int updateThresold, int moveThresold) {
         this.repository = repo;
         this.reader = repo.newObjectReader();
         this.source = ContentSource.create(reader);
@@ -124,7 +122,6 @@ public class GitExtraction {
         this.git = new Git(repo);
         this.path = path;
         this.detectMoveAndUpdate = detectMovesAndUpdates;
-        this.lineUpdateThresold = lineUpdateThresold;
         this.updateThresold = updateThresold;
         this.moveThresold = moveThresold;
     }
@@ -209,10 +206,10 @@ public class GitExtraction {
      */
 
     List<Edition> detectMovesAndUpdates(List<Edition> elist) {
-        return detectMovesAndUpdates(elist, lineUpdateThresold, updateThresold, moveThresold);
+        return detectMovesAndUpdates(elist, updateThresold, moveThresold);
     }
     
-    static List<Edition> detectMovesAndUpdates(List<Edition> input, int lineUpdateThresold, int updateThresold, int moveThresold) {
+    static List<Edition> detectMovesAndUpdates(List<Edition> input, int updateThresold, int moveThresold) {
         Map<OpType, LinkedList<Edition>> edits = new EnumMap<OpType, LinkedList<Edition>>(OpType.class);
         edits.put(OpType.delete, new LinkedList<Edition>());
         edits.put(OpType.insert, new LinkedList<Edition>());
@@ -224,7 +221,7 @@ public class GitExtraction {
         while (edit.hasNext()) {
             Edition e = edit.next();
             if (e.getType() == OpType.replace) {
-                LinkedList<Edition> lines = lineUpdate(e, lineUpdateThresold, updateThresold);
+                LinkedList<Edition> lines = lineUpdate(e, updateThresold);
                 if (lines != null) {
                     for (Edition ed : lines) {
                         edits.get(ed.getType()).add(ed);
@@ -249,7 +246,7 @@ public class GitExtraction {
                 while (insit.hasNext()) {
                     Edition f = insit.next();
                     if (!(f instanceof GhostMove) && f.getCb().size() > 1) {
-                        List<Edition> lines = lineMove(e, f, lineUpdateThresold, moveThresold);
+                        List<Edition> lines = lineMove(e, f, moveThresold);
                         if (lines != null && (move == null || lines.size() < move.size())) {
                             move = lines;
                             pos = insit.previousIndex();
@@ -398,7 +395,7 @@ public class GitExtraction {
         return md;
     }
 
-    static private int[][] editMat(List<String> listDelete, List<String> listInsert, int[][] md, int lineUpdateThresold, int thresold) {
+    static private int[][] editMat(List<String> listDelete, List<String> listInsert, int[][] md, int thresold) {
         int[][] mat = new int[listDelete.size() + 1][listInsert.size() + 1];
         boolean match = false;
 
@@ -410,10 +407,8 @@ public class GitExtraction {
             for (int j = 1; j <= listInsert.size(); ++j) {
                 mat[i][j] = Math.min(mat[i][j - 1], mat[i - 1][j]) + 100;
                 int d = md[i - 1][j - 1];
-                if (d < lineUpdateThresold) {
-                    if (d < thresold) {
-                        match = true;
-                    }
+                if (d < thresold) {
+                    match = true;
                     mat[i][j] = Math.min(mat[i - 1][j - 1] + d, mat[i][j]);
                 }
             }
@@ -425,10 +420,10 @@ public class GitExtraction {
      * Identify partial updates. I.E. updates combined with insertion and
      * deletions. Dynamic programming algorithm for diffing.
      */
-    static private LinkedList<Edition> lineUpdate(Edition edit, int lineUpdateThresold, int updateThresold) {
+    static private LinkedList<Edition> lineUpdate(Edition edit, int updateThresold) {
         List<String> listDelete = edit.getCa(), listInsert = edit.getCb();
         int[][] md = distMat(listDelete, listInsert);
-        int[][] mat = editMat(listDelete, listInsert, md, lineUpdateThresold, updateThresold);
+        int[][] mat = editMat(listDelete, listInsert, md, updateThresold);
 
         if (mat == null) {
             return null;
@@ -482,10 +477,10 @@ public class GitExtraction {
      * Identify partial moves. I.E. moves combined with insertion and deletions.
      * Dynamic programming algorithm for diffing.
      */
-    static private LinkedList<Edition> lineMove(Edition delete, Edition insert, int lineUpdateThresold, int moveThresold) {
+    static private LinkedList<Edition> lineMove(Edition delete, Edition insert, int moveThresold) {
         List<String> listDelete = delete.getCa(), listInsert = insert.getCb();
         int[][] md = distMat(listDelete, listInsert);
-        int[][] mat = editMat(listDelete, listInsert, md, lineUpdateThresold, moveThresold);
+        int[][] mat = editMat(listDelete, listInsert, md, moveThresold);
 
         if (mat == null) {
             return null;

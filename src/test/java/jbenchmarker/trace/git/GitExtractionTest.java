@@ -109,7 +109,7 @@ public class GitExtractionTest {
     
     @Test 
     public void detectNone() {
-        GitExtraction ge = new GitExtraction(50, 20, 10);
+        GitExtraction ge = new GitExtraction(20, 10);
         Edition e = new Edition(OpType.replace, 42, 33, 0, toList(A, B), toList(X, Y, Z)),
                 r1 = new Edition(OpType.delete, 42, 33, 0, toList(A, B), null),
                 r2 = new Edition(OpType.insert, 42, 33, 0, null, toList(X, Y, Z));
@@ -120,7 +120,7 @@ public class GitExtractionTest {
     
     @Test 
     public void detectUpdate() {
-        GitExtraction ge = new GitExtraction(50, 20, 10);
+        GitExtraction ge = new GitExtraction(20, 10);
         Edition e = new Edition(OpType.replace, 42, 33, 0, toList(A, B), toList(Aa, Ba)),
                 r = new Edition(OpType.update, 42, 33, 0, toList(A, B), toList(Aa, Ba));
         List<Edition> result = ge.detectMovesAndUpdates(toList(e));
@@ -130,7 +130,7 @@ public class GitExtractionTest {
     
     @Test 
     public void detectPartialUpdate() {
-        GitExtraction ge = new GitExtraction(50, 20, 10);
+        GitExtraction ge = new GitExtraction(20, 10);
         Edition e = new Edition(OpType.delete, 55, 43, 0, toList(X), null),
                 f = new Edition(OpType.replace, 42, 33, 0, toList(A, B), toList(Y, Aa, Z)),
                 
@@ -147,7 +147,7 @@ public class GitExtractionTest {
 
     @Test 
     public void detectPureMove() {
-        GitExtraction ge = new GitExtraction(50, 20, 10);
+        GitExtraction ge = new GitExtraction(20, 10);
         Edition e = new Edition(OpType.delete, 55, 43, 0, toList(A, B), null),
                 f = new Edition(OpType.insert, 42, 33, 0, null, toList(A, B)),
                 
@@ -159,7 +159,7 @@ public class GitExtractionTest {
     
     @Test 
     public void detectMove() {
-        GitExtraction ge = new GitExtraction(50, 20, 10);
+        GitExtraction ge = new GitExtraction(20, 10);
         Edition e = new Edition(OpType.delete, 55, 43, 0, toList(A, Ba), null),
                 f = new Edition(OpType.insert, 42, 33, 0, null, toList(Aa, B)),
                 
@@ -171,7 +171,7 @@ public class GitExtractionTest {
     
     @Test 
     public void detectPartialMoveDown() {
-        GitExtraction ge = new GitExtraction(50, 20, 10);
+        GitExtraction ge = new GitExtraction(20, 10);
         Edition e = new Edition(OpType.replace, 55, 43, 0, toList(X, A, Ba, Y), toList(Z)),
                 f = new Edition(OpType.insert, 42, 33, 0, null, toList(C, A, B, C)),
                 
@@ -188,7 +188,7 @@ public class GitExtractionTest {
 
     @Test 
     public void detectPartialMoveUp() {
-        GitExtraction ge = new GitExtraction(50, 20, 10);
+        GitExtraction ge = new GitExtraction(20, 10);
         Edition e = new Edition(OpType.replace, 55, 73, 0, toList(X, A, Ba, Y), toList(Z)),
                 f = new Edition(OpType.insert, 62, 83, 0, null, toList(A, B, C, Z)),
                 
@@ -204,7 +204,7 @@ public class GitExtractionTest {
     
     @Test 
     public void detectCrossMoveOut() {
-        GitExtraction ge = new GitExtraction(50, 20, 10);
+        GitExtraction ge = new GitExtraction(20, 10);
         Edition e = new Edition(OpType.insert, 9, 6, 0, null, toList(B, B, Ba)),
                 f = new Edition(OpType.delete, 6, 5, 0, toList(Aa, A), null),
                 g = new Edition(OpType.delete, 2, 4, 0, toList(Ba, B, B), null),
@@ -219,7 +219,7 @@ public class GitExtractionTest {
 
     @Test 
     public void detectCrossMoveIn() {
-        GitExtraction ge = new GitExtraction(50, 20, 10);
+        GitExtraction ge = new GitExtraction(20, 10);
         Edition e = new Edition(OpType.delete, 6, 9, 0, toList(B, B, Ba), null),
                 f = new Edition(OpType.insert, 5, 6, 0, null, toList(Aa, A)),
                 g = new Edition(OpType.insert, 4, 2, 0, null, toList(Ba, B, B)),
@@ -235,7 +235,7 @@ public class GitExtractionTest {
 
     @Test 
     public void detectCrossMoveDown() {
-        GitExtraction ge = new GitExtraction(50, 20, 10);
+        GitExtraction ge = new GitExtraction(20, 10);
         Edition e = new Edition(OpType.delete, 6, 9, 0, toList(B, B, Ba), null),
                 f = new Edition(OpType.delete, 3, 8, 0, toList(A, A), null),
                 g = new Edition(OpType.insert, 2, 4, 0, null, toList(Ba, B, B)),
@@ -250,7 +250,7 @@ public class GitExtractionTest {
     
     @Test 
     public void detectCrossMoveUp() {
-        GitExtraction ge = new GitExtraction(50, 20, 10);
+        GitExtraction ge = new GitExtraction(20, 10);
         Edition e = new Edition(OpType.insert, 9, 6, 0, null, toList(Ba, B, B)),
                 f = new Edition(OpType.insert, 8, 3, 0, null, toList(Aa, A)),
                 g = new Edition(OpType.delete, 4, 2, 0, toList(B, B, Ba), null),
@@ -265,7 +265,7 @@ public class GitExtractionTest {
     
     @Test 
     public void detectCrossMove() {
-        GitExtraction ge = new GitExtraction(50, 20, 10);
+        GitExtraction ge = new GitExtraction(20, 10);
         Edition e = new Edition(OpType.replace, 75, 76, 0, toList(C, C, C), toList(X, X)),
                 f = new Edition(OpType.insert, 62, 61, 0, null, toList(Aa, A)),
                 g = new Edition(OpType.replace, 57, 56, 0, toList(X, X), toList(B, Ba)),

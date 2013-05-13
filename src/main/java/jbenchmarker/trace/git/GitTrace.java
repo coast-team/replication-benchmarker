@@ -72,7 +72,6 @@ public class GitTrace implements Trace {
     static final boolean DEBUG = true;
     static public int UpdBefore = 0, MoveBefore = 0, MergeBefore=0;
     private final boolean detectMoveAndUpdate;
-    private final int lineUpdateThresold;
     private final int updateThresold;
     private final int moveThresold;
 
@@ -88,7 +87,7 @@ public class GitTrace implements Trace {
      * @throws IOException if git directory not accessible
      */
     public static GitTrace create(String gitdir, CouchConnector cc, String path, boolean cleanDB) throws IOException {
-        return create(gitdir, cc, path, cleanDB, false, 0, 0, 0);
+        return create(gitdir, cc, path, cleanDB, false, 0, 0);
     }
 
     /**
@@ -100,19 +99,17 @@ public class GitTrace implements Trace {
      * @param couchURL URL of couch BD
      * @param path a path in the gir repository
      * @param clean if true recreates db
-     * @param lineUpdateThresold difference percentage thresold to integrate a
-     * line in an update
      * @param updateThresold difference percentage thresold to detect an update
      * @param moveThresold difference percentage thresold to detect a move
      * @return a new git extractor
      * @throws IOException if git directory not accessible
      */
     public static GitTrace createWithMoves(String gitdir, CouchConnector cc, String path, boolean cleanDB,
-            int lineUpdateThresold, int updateThresold, int moveThresold) throws IOException {
-        return create(gitdir, cc, path, cleanDB, true, lineUpdateThresold, updateThresold, moveThresold);
+            int updateThresold, int moveThresold) throws IOException {
+        return create(gitdir, cc, path, cleanDB, true, updateThresold, moveThresold);
     }
 
-    public static GitTrace create(String gitdir, CouchConnector cc, String path, boolean cleanDB, boolean detectMaU, int lut, int ut, int mt) throws IOException {
+    public static GitTrace create(String gitdir, CouchConnector cc, String path, boolean cleanDB, boolean detectMaU, int ut, int mt) throws IOException {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         Repository repo = builder.setGitDir(new File(gitdir + "/.git")).readEnvironment()
                 .findGitDir().build();
@@ -131,7 +128,7 @@ public class GitTrace implements Trace {
             clearDB(dbInstance, pa);
             commitCRUD = new CommitCRUD(dbcc);
             patchCRUD = new PatchCRUD(dbcp);
-            GitExtraction ge = new GitExtraction(repo, commitCRUD, patchCRUD, GitExtraction.defaultDiffAlgorithm, path, detectMaU, lut, ut, mt);
+            GitExtraction ge = new GitExtraction(repo, commitCRUD, patchCRUD, GitExtraction.defaultDiffAlgorithm, path, detectMaU, ut, mt);
             ge.parseRepository();
             UpdBefore = ge.nbUpdBlockBefore;
             MoveBefore = ge.nbMoveBefore;
@@ -141,13 +138,12 @@ public class GitTrace implements Trace {
             patchCRUD = new PatchCRUD(dbcp);
         }
 
-        return new GitTrace(commitCRUD, patchCRUD, detectMaU, lut, ut, mt);
+        return new GitTrace(commitCRUD, patchCRUD, detectMaU, ut, mt);
     }
 
     // TODO : Working view
-    public GitTrace(CommitCRUD dbc, PatchCRUD dbp, boolean detectMovesAndUpdates, int lineUpdateThresold, int updateThresold, int moveThresold) {
+    public GitTrace(CommitCRUD dbc, PatchCRUD dbp, boolean detectMovesAndUpdates, int updateThresold, int moveThresold) {
         this.detectMoveAndUpdate = detectMovesAndUpdates;
-        this.lineUpdateThresold = lineUpdateThresold;
         this.updateThresold = updateThresold;
         this.moveThresold = moveThresold;
         commitCRUD = dbc;
@@ -279,7 +275,7 @@ public class GitTrace implements Trace {
 //System.out.println("----- PATCH -----\n" + target);                                
                         List<Edition> l = diff(replica.lookup().toString(), target);
                         if (gitTrace.detectMoveAndUpdate) {
-                            l = GitExtraction.detectMovesAndUpdates(l, gitTrace.lineUpdateThresold, gitTrace.updateThresold, gitTrace.moveThresold);
+                            l = GitExtraction.detectMovesAndUpdates(l, gitTrace.updateThresold, gitTrace.moveThresold);
                         }
                         gitTrace.stat(l, true);
 //for (Edition ed : l) { System.out.println("--- DIFF ---\n" + ed); }                                

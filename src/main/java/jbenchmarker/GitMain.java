@@ -147,7 +147,7 @@ public final class GitMain extends Experience {
                     int sizeMsg = 0;
                     boolean oneclean = clean;
                     for (int k = 0; k < nbrExec; k++) {
-                        GitTrace trace = dmau ? GitTrace.createWithMoves(gitdir, cc, path, oneclean, lineUpdateThresold, updateThresold, moveThresold)
+                        GitTrace trace = dmau ? GitTrace.createWithMoves(gitdir, cc, path, oneclean, updateThresold, moveThresold)
                                 : GitTrace.create(gitdir, cc, path, oneclean);
                         oneclean = false;
                         CausalSimulator cd = new CausalSimulator(rf, stat, stat ? nbserializ : 0, stat);
