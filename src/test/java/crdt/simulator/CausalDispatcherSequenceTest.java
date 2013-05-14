@@ -105,9 +105,9 @@ public class CausalDispatcherSequenceTest {
             try {
                 CausalDispatcherSetsAndTreesTest.testRun(sf, 1000, 10, uopp);
             } catch (AssertionError e) {
-                msg = "### " + sf.getClass().getName() + "\n" + msg;
+                msg += "### " + sf.getClass().getName() + "\n" ;
             } catch (RuntimeException e) {
-                msg = "!!! " + sf.getClass().getName() + " : " + e.getClass().getName() + "\n" + msg;
+                msg += "!!! " + sf.getClass().getName() + " : " + e.getClass().getName() + e.getMessage()+ "\n";
             }
         }
         if (!msg.isEmpty()) {

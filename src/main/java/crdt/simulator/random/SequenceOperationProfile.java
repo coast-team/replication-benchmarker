@@ -37,7 +37,7 @@ public abstract class SequenceOperationProfile<T> implements OperationProfile {
     abstract public SequenceOperation.OpType nextType();
     
     public int nextPosition(int length) {
-       return (int) (length*r.nextDouble());
+        return (int) (length*r.nextDouble());
     }
     
     abstract public List<T> nextContent();
@@ -53,7 +53,7 @@ public abstract class SequenceOperationProfile<T> implements OperationProfile {
         OpType type = (l == 0) ? OpType.insert : nextType();
         int offset = (type == OpType.insert) ? 0 : nextOffset(position, l);
         List<T> content = (type == OpType.delete) ? null : nextContent(); 
-
+        
         return new SequenceOperation<T>(type,  position, offset, content);
     }
 }

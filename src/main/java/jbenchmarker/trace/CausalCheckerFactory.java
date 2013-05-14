@@ -66,11 +66,11 @@ public class CausalCheckerFactory extends ReplicaFactory {
         private VectorClock vc = new VectorClock();
 
         @Override
-        protected void integrateRemote(SequenceMessage op) throws IncorrectTraceException {
-            CausalCheckerFactoryMessage ops = (CausalCheckerFactoryMessage) op;
+        protected void integrateRemote(crdt.RemoteOperation message) throws IncorrectTraceException {
+            CausalCheckerFactoryMessage ops = (CausalCheckerFactoryMessage) message;
             check(ops);
-            this.getDoc().apply(op.getOriginalOp());
-            vc.inc(op.getReplica());
+            this.getDoc().apply(((SequenceMessage)message).getOriginalOp());
+            vc.inc(((SequenceMessage)message).getReplica());
         }
 
         /*@Override

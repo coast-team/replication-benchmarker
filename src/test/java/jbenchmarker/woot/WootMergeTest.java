@@ -55,27 +55,33 @@ public class WootMergeTest {
         CRDTMessage r = instance.applyLocal(SequenceOperation.insert(0,"a"));
         assertEquals(1, r.size());
         assertEquals('a', ((WootOperation) ((OperationBasedOneMessage) r).getOperation()).getContent());
-        assertEquals("a", instance.lookup());        
+        assertEquals("a", instance.lookup());  
+        assertEquals(1, instance.getDoc().viewLength());
 
         r = instance.applyLocal(SequenceOperation.insert(0,"bc"));
         assertEquals(2, r.size());
-        assertEquals("bca", instance.lookup());         
+        assertEquals("bca", instance.lookup());        
+        assertEquals(3, instance.getDoc().viewLength());
 
         r = instance.applyLocal(SequenceOperation.delete(0,1));
         assertEquals(1, r.size());
         assertEquals("ca", instance.lookup()); 
+        assertEquals(2, instance.getDoc().viewLength());
 
         r = instance.applyLocal(SequenceOperation.insert(1,"efg"));
         assertEquals(3, r.size());
         assertEquals("cefga", instance.lookup()); 
+        assertEquals(5, instance.getDoc().viewLength());
 
         r = instance.applyLocal(SequenceOperation.delete(1,2));
         assertEquals(2, r.size());
         assertEquals("cga", instance.lookup()); 
+        assertEquals(3, instance.getDoc().viewLength());
 
         r = instance.applyLocal(SequenceOperation.delete(1,2));
         assertEquals(2, r.size());
         assertEquals("c", instance.lookup()); 
+        assertEquals(1, instance.getDoc().viewLength());
     }
     
     /**

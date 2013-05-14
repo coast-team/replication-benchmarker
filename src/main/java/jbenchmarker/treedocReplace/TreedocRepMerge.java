@@ -28,8 +28,8 @@ public class TreedocRepMerge extends MergeAlgorithm{
     
     
     @Override
-    protected void integrateRemote(SequenceMessage op) throws IncorrectTraceException {
-        getDoc().apply(op);
+    protected void integrateRemote(crdt.RemoteOperation message) throws IncorrectTraceException {
+        getDoc().apply(message);
     }
 
     @Override

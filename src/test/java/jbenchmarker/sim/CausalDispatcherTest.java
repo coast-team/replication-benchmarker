@@ -25,6 +25,7 @@ import crdt.simulator.CausalSimulator;
 import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.OperationBasedOneMessage;
+import crdt.RemoteOperation;
 import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.TraceOperation;
 import java.util.Enumeration;
@@ -139,8 +140,8 @@ public class CausalDispatcherTest {
                 }
             }, r) {
                 @Override
-                protected void integrateRemote(SequenceMessage op) {
-                    this.getDoc().apply(op);
+                protected void integrateRemote(crdt.RemoteOperation message) {
+                    this.getDoc().apply(message);
                 }
 
                 protected List<SequenceMessage> generateLocal(SequenceOperation opt) {
@@ -167,7 +168,7 @@ public class CausalDispatcherTest {
                 }
 
                 @Override
-                protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
+                protected List<? extends RemoteOperation> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
                     return localReplace(opt);
                 }
             };

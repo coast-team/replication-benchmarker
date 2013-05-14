@@ -44,8 +44,8 @@ public class TreedocMerge<T> extends MergeAlgorithm {
 	}
 
 	@Override
-	protected void integrateRemote(SequenceMessage op) throws IncorrectTraceException {
-		getDoc().apply(op);
+	protected void integrateRemote(crdt.RemoteOperation message) throws IncorrectTraceException {
+		getDoc().apply(message);
 	}
 
 	protected List<SequenceMessage> generateLocal(SequenceOperation opt)

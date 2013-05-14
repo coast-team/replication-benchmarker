@@ -87,10 +87,7 @@ public class TP2Test {
         }
     };
     
-    @Test
-    public void tp1() {
-        fail("to be tested");
-    }
+    
     
     @Test
     public void tp2() {

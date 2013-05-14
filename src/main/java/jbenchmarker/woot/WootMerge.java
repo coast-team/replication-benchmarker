@@ -20,6 +20,7 @@ package jbenchmarker.woot;
 
 import crdt.CRDT;
 import crdt.Factory;
+import crdt.RemoteOperation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,16 +45,17 @@ public class WootMerge<T> extends MergeAlgorithm {
     }
 
     @Override
-    protected void integrateRemote(SequenceMessage op) {
+    protected void integrateRemote(crdt.RemoteOperation message) {
 //        WootOperation wop = (WootOperation) op;
 //        WootDocument<? extends WootNode> wdoc = (WootDocument<? extends WootNode>) (this.getDoc());
 //        if (wop.getType()==SequenceOperation.OpType.ins && (!wdoc.has(wop.getIp()) || !wdoc.has(wop.getIp())))
 //            pending.put(wop.getId(),wop);
-        getDoc().apply(op);
+        getDoc().apply(message);
     }
 
     @Override
     protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+        
         List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
         WootDocument<? extends WootNode> wdoc = (WootDocument<? extends WootNode>) (this.getDoc());
         int p = opt.getPosition();
@@ -89,7 +91,7 @@ public class WootMerge<T> extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<? extends RemoteOperation> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
         return localReplace(opt);
     }
 

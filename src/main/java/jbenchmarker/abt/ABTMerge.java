@@ -50,10 +50,10 @@ public class ABTMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected void integrateRemote(SequenceMessage op) throws IncorrectTraceException {
+    protected void integrateRemote(crdt.RemoteOperation message) throws IncorrectTraceException {
         // TODO Auto-generated method stub
 
-        ABTOperation abtop = (ABTOperation) op;
+        ABTOperation abtop = (ABTOperation) message;
         ABTOperation top = null;
         ABTDocument abtdoc = (ABTDocument) (this.getDoc());
         if (this.readyFor(abtop.getReplica(), abtop.vc)) {

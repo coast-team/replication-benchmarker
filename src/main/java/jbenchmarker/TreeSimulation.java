@@ -171,6 +171,7 @@ public class TreeSimulation {
         
         fact.add(new FCTreeT(new FCTreeGC()));
         factstr.add("FCTreeTGC");
+        
         fact.add(new FCTreeT(new FCTreeGC(),true));
         factstr.add("FCTreeTGCRS");
     }

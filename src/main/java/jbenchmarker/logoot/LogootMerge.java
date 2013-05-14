@@ -19,6 +19,7 @@
 package jbenchmarker.logoot;
 
 import crdt.CRDT;
+import crdt.RemoteOperation;
 import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +46,8 @@ public class LogootMerge<T> extends MergeAlgorithm {
     }
 
     @Override
-    protected void integrateRemote(SequenceMessage op) {
-        getDoc().apply(op);
+    protected void integrateRemote(crdt.RemoteOperation message) {
+        getDoc().apply(message);
     }
 
     @Override
@@ -84,7 +85,7 @@ public class LogootMerge<T> extends MergeAlgorithm {
 
     // For tests
     @Override
-    protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<? extends RemoteOperation> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
         return super.localUpdate(opt);
     }
 

@@ -175,8 +175,8 @@ public class TTFMergeAlgorithm extends MergeAlgorithm implements OTReplica<Strin
      * IntegrateRemote Operation
      */
     @Override
-    public void integrateRemote(SequenceMessage mess) throws IncorrectTraceException {
-        integrateOneRemoteOperation(((TTFSequenceMessage) mess).getSoct2Message());
+    protected void integrateRemote(crdt.RemoteOperation message) throws IncorrectTraceException {
+        integrateOneRemoteOperation(((TTFSequenceMessage) message).getSoct2Message());
     }
 
 
