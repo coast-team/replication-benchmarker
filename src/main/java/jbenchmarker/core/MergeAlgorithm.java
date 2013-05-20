@@ -144,8 +144,8 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
         return applyLocal(SequenceOperation.insert(position, content));
     }
 
-    final public CRDTMessage remove(int position, int offset) throws PreconditionException {
-        return applyLocal(SequenceOperation.delete(position, offset));
+    final public CRDTMessage remove(int position, int length) throws PreconditionException {
+        return applyLocal(SequenceOperation.delete(position, length));
     }
 
     /**
