@@ -34,7 +34,6 @@ import org.junit.Test;
 
 public class IntegrationLogootSplitO {
     
-   @Ignore
     @Test
     public void testLogootSplitOG1Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML(IntegrationLogootSplitO.class.getResource("G1.xml").getPath(), 1);
@@ -43,7 +42,6 @@ public class IntegrationLogootSplitO {
         assertConsistency(cd, trace);
     }
     
-    @Ignore
     @Test
     public void testLogootSplitOG2Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML(IntegrationLogootSplitO.class.getResource("G2.xml").getPath(), 1);
@@ -52,7 +50,6 @@ public class IntegrationLogootSplitO {
         assertConsistency(cd, trace);
     }
     
-    @Ignore
     @Test
     public void testLogootSplitOG3Run() throws Exception {
         Trace trace = TraceGenerator.traceFromXML(IntegrationLogootSplitO.class.getResource("G3.xml").getPath(), 1);
@@ -61,7 +58,6 @@ public class IntegrationLogootSplitO {
         assertConsistency(cd, trace);
     }
     
-    @Ignore
     @Test
     public void testLogootSplitOSerieRun() throws Exception {
         Trace trace = TraceGenerator.traceFromXML(IntegrationLogootSplitO.class.getResource("Serie.xml").getPath(), 1);
@@ -71,7 +67,6 @@ public class IntegrationLogootSplitO {
     }
     
     
-    @Ignore
     @Test
     public void testLogootSplitOProfile() throws Exception {
         for (int i = 0; i < 20; ++i) {

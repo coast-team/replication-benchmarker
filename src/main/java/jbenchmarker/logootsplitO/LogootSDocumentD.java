@@ -106,21 +106,7 @@ public class LogootSDocumentD implements LogootSDoc {
 
         }
         return min;
-        //min=Math.min(min, max);
-        /*System.out.println("dic : "+min);
-        if (min > 0 && min < list.size() && list.size() > 0) {
-            if (list.get(min - 1).getID().compareTo(id) > 0) {
-                System.out.println("merde");
-            }
-            assert (list.get(min - 1).getID().compareTo(id) <= 0);
-        }
-        if (min < list.size() && list.size() > 0) {
-            if (list.get(min).getID().compareTo(id) < 0) {
-                System.out.println("merde");
-            }
-            assert (list.get(min).getID().compareTo(id) >= 0);
-        }*/
-        
+      
     }
 
     /**
@@ -167,8 +153,7 @@ public class LogootSDocumentD implements LogootSDoc {
             if (pos < list.size()) {
                 Identifier beginId = new Identifier(block.id.base, begin);
                 offsetMax = maxOffsetBeforeNex(beginId, list.get(pos).getBlock().getId().getBeginId(), end);
-               /* System.out.println("max:"+offsetMax + "   "+beginId+ list.get(pos ).getBlock().getId().getBeginId());
-                assert (offsetMax <= end);*/
+               
             } else {
                 offsetMax = end;
             }
@@ -179,7 +164,7 @@ public class LogootSDocumentD implements LogootSDoc {
                 pos++;
             }
         }
-        //assert (list.size() == view.length());
+       
     }
 
     private void add(int pos, LogootSBlock block, int offset, Object o) {
@@ -187,16 +172,7 @@ public class LogootSDocumentD implements LogootSDoc {
         list.add(pos, new LinkBlock(block, offset));
         view.insert(pos, o);
         
-        /*if(pos<list.size()-1 && list.size()>1){
-            if(list.get(pos).getID().compareTo(list.get(pos+1).getID())>=0){
-                System.out.println("merde");
-            }
-        }
-         if(pos>0 && list.size()>0){
-            if(list.get(pos-1).getID().compareTo(list.get(pos).getID())>=0){
-                System.out.println("merde");
-            }
-        }*/
+        
     }
 
     @Override
@@ -264,7 +240,6 @@ public class LogootSDocumentD implements LogootSDoc {
 
     @Override
     public LogootSOpAdd insertLocal(int pos, List l) {
-        assert(list.size()==view.length());
         LinkBlock after = pos < list.size() ? list.get(pos) : null;
         LinkBlock before = pos > 0 ? list.get(pos - 1) : null;
         int offset;
@@ -285,16 +260,7 @@ public class LogootSDocumentD implements LogootSDoc {
 
             List<Integer> base = IDFactory.createBetweenPosition(before == null ? null : before.getID(),
                     after == null ? null : after.getID(), replicaNumber, clock++);
-            /*if (before != null && after != null) {
-                Identifier idf = new Identifier(base);
-                if (before.getID().compareTo(idf) != -1){
-                    assert(false);
-                }
-                if(after.getID().compareTo(idf) != 1){
-                    assert(false);
-                }
             
-            }*/
             IdentifierInterval id = new IdentifierInterval(base, 0, l.size() - 1);
             block = new LogootSBlockLight(id);//TODO build factory
             offset = 0;
@@ -307,7 +273,7 @@ public class LogootSDocumentD implements LogootSDoc {
             add(i,block,offset++,o);
             i++;
         }
-        assert (list.size() == view.length());
+        
         return new LogootSOpAdd(idi, l);
     }
 
@@ -320,8 +286,6 @@ public class LogootSDocumentD implements LogootSDoc {
      */
     @Override
     public LogootSOpDel delLocal(int begin, int end) {
-        System.out.println(""+list.size()+"+"+view.length());
-       assert(list.size()==view.length());
         List<IdentifierInterval> li = new LinkedList<IdentifierInterval>();
         LinkBlock lb = list.get(begin);
         LogootSBlock block = lb.getBlock();

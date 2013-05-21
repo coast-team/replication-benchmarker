@@ -81,7 +81,7 @@ public class IntegrationLogootSplit {
         }    
     }
     
-    @Ignore
+    
     @Test
     public void testLogootSplitRandom() throws Exception {
         Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);

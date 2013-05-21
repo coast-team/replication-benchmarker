@@ -56,26 +56,26 @@ public class LogootSAlgo extends MergeAlgorithm {
 
     @Override
     protected void integrateRemote(RemoteOperation message) throws IncorrectTraceException {
-        System.out.println("rep : "+ this.getReplicaNumber()+" type: "+message.toString());
+       
         ((LogootSOp) message).apply((LogootSDoc) this.getDoc());
         
     }
 
     @Override
     protected List<RemoteOperation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
-         System.out.print("rep : "+ this.getReplicaNumber()+" Addloc : " + opt.getPosition() + " c: " + opt.getContentAsString() );
+       
         List ret = new LinkedList();
         ret.add(getLDoc().insertLocal(opt.getPosition(), opt.getContent()));
-       System.out.println(" op :" +ret);
+       
         return ret;
     }
 
     @Override
     protected List<RemoteOperation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
-        System.out.print("rep : "+ this.getReplicaNumber()+" delloc : " + opt.getPosition() + " lenght " + opt.getLenghOfADel() );
+        
         List ret = new LinkedList();
         ret.add(getLDoc().delLocal(opt.getPosition(), opt.getLenghOfADel()+opt.getPosition()-1));
-        System.out.println(" op :" +ret);
+        
         return ret;
     }
 
