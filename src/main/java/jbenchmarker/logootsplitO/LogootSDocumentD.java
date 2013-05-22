@@ -18,6 +18,7 @@
  */
 package jbenchmarker.logootsplitO;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,7 +30,7 @@ import jbenchmarker.core.Operation;
  *
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public class LogootSDocumentD implements LogootSDoc {
+public class LogootSDocumentD implements LogootSDoc, Serializable {
 
     private int clock = 0;
     private HashMap<List<Integer>, LogootSBlock> mapBaseToBlock = new HashMap<List<Integer>, LogootSBlock>(); //for test
@@ -42,7 +43,7 @@ public class LogootSDocumentD implements LogootSDoc {
         this.replicaNumber = i;
     }
 
-    public static class LinkBlock implements Comparable {
+    public static class LinkBlock implements Comparable, Serializable {
 
         LogootSBlock block;
         int offset;
@@ -55,7 +56,7 @@ public class LogootSDocumentD implements LogootSDoc {
         @Override
         public int compareTo(Object t) {
             if (t instanceof LinkBlock) {
-                this.getID().compareTo(((LinkBlock)t).getID());
+                this.getID().compareTo(((LinkBlock) t).getID());
             }
             throw new UnsupportedOperationException("Bad comparaison"); //To change body of generated methods, choose Tools | Templates.
         }
@@ -106,7 +107,7 @@ public class LogootSDocumentD implements LogootSDoc {
 
         }
         return min;
-      
+
     }
 
     /**
@@ -140,7 +141,7 @@ public class LogootSDocumentD implements LogootSDoc {
      * @return inserted block
      */
     public void addBlock(LogootSBlock block, int begin, List elem) {
-        
+
         int offset = begin;
         int pos = 0;
         int end = begin + elem.size() - 1;
@@ -153,7 +154,7 @@ public class LogootSDocumentD implements LogootSDoc {
             if (pos < list.size()) {
                 Identifier beginId = new Identifier(block.id.base, begin);
                 offsetMax = maxOffsetBeforeNex(beginId, list.get(pos).getBlock().getId().getBeginId(), end);
-               
+
             } else {
                 offsetMax = end;
             }
@@ -164,15 +165,15 @@ public class LogootSDocumentD implements LogootSDoc {
                 pos++;
             }
         }
-       
+
     }
 
     private void add(int pos, LogootSBlock block, int offset, Object o) {
-        
+
         list.add(pos, new LinkBlock(block, offset));
         view.insert(pos, o);
-        
-        
+
+
     }
 
     @Override
@@ -189,7 +190,7 @@ public class LogootSDocumentD implements LogootSDoc {
     }
 
     public void delBlock(LogootSBlock block, int begin, int end) {
-        
+
         int offset = begin;
         int pos = 0;
         LinkBlock lb;
@@ -223,7 +224,7 @@ public class LogootSDocumentD implements LogootSDoc {
         if (block.numberOfElements() == 0) {// little garbage collection
             this.mapBaseToBlock.remove(block.getId().getBase());
         }
-       
+
     }
 
     @Override
@@ -260,7 +261,7 @@ public class LogootSDocumentD implements LogootSDoc {
 
             List<Integer> base = IDFactory.createBetweenPosition(before == null ? null : before.getID(),
                     after == null ? null : after.getID(), replicaNumber, clock++);
-            
+
             IdentifierInterval id = new IdentifierInterval(base, 0, l.size() - 1);
             block = new LogootSBlockLight(id);//TODO build factory
             offset = 0;
@@ -270,10 +271,10 @@ public class LogootSDocumentD implements LogootSDoc {
         Identifier idi = new Identifier(block.getId().base, offset);
         int i = pos;
         for (Object o : l) {
-            add(i,block,offset++,o);
+            add(i, block, offset++, o);
             i++;
         }
-        
+
         return new LogootSOpAdd(idi, l);
     }
 
@@ -309,7 +310,7 @@ public class LogootSDocumentD implements LogootSDoc {
         } while (i <= end);
         addDelIdf(block, b, e, li, nbElement);
         view.delete(begin, end + 1);
-       
+
         return new LogootSOpDel(li);
     }
 

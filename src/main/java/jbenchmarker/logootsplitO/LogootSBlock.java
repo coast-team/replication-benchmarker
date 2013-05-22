@@ -18,6 +18,7 @@
  */
 package jbenchmarker.logootsplitO;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import java.util.List;
  *
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public abstract class LogootSBlock<T> {
+public abstract class LogootSBlock<T> implements Serializable{
     // List<ElementList> elements=new ArrayList();
      IdentifierInterval id;
 

@@ -18,6 +18,7 @@
  */
 package jbenchmarker.logootsplitO;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import java.util.List;
  *
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public class Identifier implements Comparable,Iterable {
+public class Identifier implements Comparable,Iterable, Serializable {
 
     List<Integer> base;
     Integer last;

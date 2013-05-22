@@ -18,13 +18,14 @@
  */
 package jbenchmarker.logootsplitO;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  *
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public class IdentifierInterval {
+public class IdentifierInterval implements Serializable {
     List <Integer> base;
     int begin;
     int end;

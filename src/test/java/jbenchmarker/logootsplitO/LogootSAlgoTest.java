@@ -47,8 +47,8 @@ public class LogootSAlgoTest {
     @Before
     public void setup() {
         alg1 = new LogootSAlgo(new LogootSDocumentD(), 1);
-        alg2 = new LogootSAlgo(new LogootSDocumentD(), 2);
-        alg3 = new LogootSAlgo(new LogootSDocumentD(), 3);
+        alg2 = new LogootSAlgo(new LogootSDocumentD(), 50);
+        alg3 = new LogootSAlgo(new LogootSDocumentD(), 75);
     }
 
     @Test
@@ -143,11 +143,26 @@ public class LogootSAlgoTest {
         alg3.applyRemote(op4);
 
         assertEquals("Tes34", alg3.lookup());
+        CRDTMessage op5 = alg3.insert(2, "toto");
+        CRDTMessage op6 =alg2.insert(3,"jiji");
+        
+        alg2.applyRemote(op5);
+        alg3.applyRemote(op6);
+        assertEquals(alg2.lookup(), alg3.lookup());
 
     }
     
 
-    
+    @Test
+    public void testRnd() throws PreconditionException{
+       CRDTMessage op1 =  alg1.insert(0, "test");
+      CRDTMessage op2 =  alg2.insert(0, "jklm");
+      alg3.applyRemote(op2);
+      alg3.applyRemote(op1);
+      alg3.insert(4, "now");
+        
+        System.out.println("");
+    }
 
     @Test
     public void testEmpty() {

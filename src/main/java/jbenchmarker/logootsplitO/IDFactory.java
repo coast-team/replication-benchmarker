@@ -18,39 +18,39 @@
  */
 package jbenchmarker.logootsplitO;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public class IDFactory {
+public class IDFactory implements Serializable{
 
     public static final boolean alea = false;
+    static Random rnd=new Random();
 
     static public List<Integer> createBetweenPosition(Identifier id1, Identifier id2, int replicaNumber, int clock) {
         Iterator<Integer> s1;
         Iterator<Integer> s2;
-
-
         s1 = new IDFactory.infinitString((int) (Integer.MIN_VALUE + 1), id1 != null ? id1.iterator() : null);
-
-
-
         s2 = new IDFactory.infinitString((int) (Integer.MAX_VALUE), id2 != null ? id2.iterator() : null);
-
-
-
-        LinkedList<Integer> sb = new LinkedList();
+       LinkedList<Integer> sb = new LinkedList();
 
         while (true) {
             long b1 = s1.next();
             long b2 = s2.next();
-            if (b2 - b1 > 1) {
-
-                sb.addLast(new Integer((int) ((b1 + b2) / (long) 2)));
+            if (b2 - b1 > 2) {
+                if(replicaNumber>b1 && replicaNumber<b2){
+                    break;
+                }
+                int r=((int)((rnd.nextDouble()*(b2-b1-2))+b1))+1;
+                
+                //sb.addLast(new Integer((int) ((b1 + b2) / (long) 2)));
+                sb.addLast(r);
                 break;
             } else {
                 sb.addLast((int) b1);
@@ -62,6 +62,16 @@ public class IDFactory {
         sb.add(replicaNumber);
         // sb.addLast(Integer.MIN_VALUE);
         sb.add(clock);
+        
+        if(id1!=null && id2!=null){
+            Identifier idf= new Identifier(sb,0);
+            if(id1.compareTo(idf)!=-1){
+                System.out.println(""+id1+"!<"+idf);
+            }
+            if(idf.compareTo(id2)!=-1){
+                System.out.println(""+idf+"!<"+id2);
+            }
+        }
         return sb;
     }
 

@@ -21,6 +21,7 @@ package jbenchmarker.logootsplitO;
 import crdt.CRDT;
 import crdt.RemoteOperation;
 import crdt.simulator.IncorrectTraceException;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.core.Document;
@@ -31,7 +32,7 @@ import jbenchmarker.core.SequenceOperation;
  *
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public class LogootSAlgo extends MergeAlgorithm {
+public class LogootSAlgo extends MergeAlgorithm implements Serializable {
 
     
     public LogootSAlgo(LogootSDoc doc, int siteId) {

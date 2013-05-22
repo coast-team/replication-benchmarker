@@ -18,6 +18,7 @@
  */
 package jbenchmarker.logootsplitO;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ import java.util.List;
  * The elements are on view
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public class LogootSBlockLight<T> extends LogootSBlock<T> {
+public class LogootSBlockLight<T> extends LogootSBlock<T> implements Serializable{
 
     int nbElement=0;
     public LogootSBlockLight(IdentifierInterval id, int list) {
@@ -49,6 +50,9 @@ public class LogootSBlockLight<T> extends LogootSBlock<T> {
     @Override
     void addBlock(int pos, List<T> contains) {
         nbElement+=contains.size();
+        this.getId().begin=Math.min(this.getId().begin, pos);
+        this.getId().end=Math.max(this.getId().end, pos+contains.size()-1);
+        
     }
     
 
