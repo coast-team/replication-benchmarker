@@ -62,16 +62,7 @@ public class IDFactory implements Serializable{
         sb.add(replicaNumber);
         // sb.addLast(Integer.MIN_VALUE);
         sb.add(clock);
-        
-        if(id1!=null && id2!=null){
-            Identifier idf= new Identifier(sb,0);
-            if(id1.compareTo(idf)!=-1){
-                System.out.println(""+id1+"!<"+idf);
-            }
-            if(idf.compareTo(id2)!=-1){
-                System.out.println(""+idf+"!<"+id2);
-            }
-        }
+       
         return sb;
     }
 
