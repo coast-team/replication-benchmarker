@@ -21,7 +21,6 @@ package jbenchmarker.factories;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.logootsplitO.LogootSAlgo;
-import jbenchmarker.logootsplitO.LogootSDoc;
 import jbenchmarker.logootsplitO.LogootSDocumentD;
 
 /**

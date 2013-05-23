@@ -64,7 +64,6 @@ public class LogootSAlgo extends MergeAlgorithm implements Serializable {
 
     @Override
     protected List<RemoteOperation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
-       
         List ret = new LinkedList();
         ret.add(getLDoc().insertLocal(opt.getPosition(), opt.getContent()));
        

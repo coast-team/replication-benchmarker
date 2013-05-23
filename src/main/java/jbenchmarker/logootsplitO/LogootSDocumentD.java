@@ -19,6 +19,7 @@
 package jbenchmarker.logootsplitO;
 
 import java.io.Serializable;
+import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -146,6 +147,7 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
         int pos = 0;
         int end = begin + elem.size() - 1;
         Iterator it = elem.iterator();
+        int diffOffset = begin;
         while (offset <= end) {
             //search the first position
             pos = dicSearch(block.getId().getBaseId(offset), pos);
@@ -159,19 +161,38 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
                 offsetMax = end;
             }
 
-
-            for (; offset <= offsetMax; offset++) {
-                add(pos, block, offset, it.next());
-                pos++;
-            }
+            add(pos, block, offset, elem.subList(offset - begin, offsetMax - begin + 1));
+            offset = offsetMax + 1;
+            /* for (; offset <= offsetMax; offset++) {
+             add(pos, block, offset, it.next());
+             pos++;
+             }*/
         }
 
     }
 
-    private void add(int pos, LogootSBlock block, int offset, Object o) {
+    private ArrayList makeOffsets(LogootSBlock block, int offset, List o) {
+        ArrayList l = new ArrayList(o.size());
+        for (int i = 0; i < o.size(); i++) {
+            l.add(new LinkBlock(block, offset++));
+        }
+        return l;
+    }
 
-        list.add(pos, new LinkBlock(block, offset));
-        view.insert(pos, o);
+    private char[] makeChar(List<Character> o) {
+        char[] ret = new char[o.size()];
+
+        for (int i = 0; i < o.size(); i++) {
+            ret[i] = o.get(i);
+        }
+        return ret;
+    }
+
+    private void add(int pos, LogootSBlock block, int offset, List o) {
+
+        list.addAll(pos, makeOffsets(block, offset, o));
+
+        view.insert(pos, makeChar(o));
 
 
     }
@@ -207,17 +228,27 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
                 pos++;
                 offset++;
             } else {
+                int b = pos;
+                int e = pos;
                 do {
                     if (lb.offset != offset) {
                         offset = lb.offset;
                     } else {
-                        list.remove(pos);
-                        view.deleteCharAt(pos);
-                        lb = pos < list.size() ? list.get(pos) : null;
+                        /* list.remove(pos);
+                         view.deleteCharAt(pos);*/
+                        e++;
                         offset++;
+                        pos++;
                         nbElement++;
+                        lb = pos < list.size() ? list.get(pos) : null;
+
                     }
                 } while (lb != null && lb.getBlock() == block && offset <= end);
+                if (e - b > 0) {
+                    list.subList(b, e).clear();
+                    view.delete(b, e);
+                    pos = b;
+                }
             }
         }
         block.delBlock(begin, end, nbElement);
@@ -269,11 +300,13 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
             mapBaseToBlock.put(block.getId().getBase(), block);
         }
         Identifier idi = new Identifier(block.getId().base, offset);
-        int i = pos;
-        for (Object o : l) {
-            add(i, block, offset++, o);
-            i++;
-        }
+        //int i = pos;
+
+
+        add(pos, block, offset, l);
+        offset += l.size();
+        //    i++;
+
 
         return new LogootSOpAdd(idi, l);
     }
@@ -295,7 +328,7 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
         int nbElement = 0;
         int i = begin;
         do {
-            lb = list.get(begin);//Todo try to put at end of loop
+            lb = list.get(i);
             if (lb.block != block) {
                 addDelIdf(block, b, e, li, nbElement);
                 block = lb.block;
@@ -303,14 +336,14 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
                 nbElement = 0;
             }
             e = lb.offset;
-
-            list.remove(begin);
+            
             i++;
             nbElement++;
+            
         } while (i <= end);
         addDelIdf(block, b, e, li, nbElement);
         view.delete(begin, end + 1);
-
+        list.subList(begin, end+1).clear();
         return new LogootSOpDel(li);
     }
 
