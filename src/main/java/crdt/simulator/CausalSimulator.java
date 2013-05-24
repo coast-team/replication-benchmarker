@@ -395,11 +395,18 @@ public class CausalSimulator extends Simulator {
 
     private void ifSerializ() throws IOException {
         if (nbrTrace > 0 && tour == nbrTrace && serializer != null) {
-            long SumMemory = 0;
+            long sumMemory = 0;
+            long sumTimeView=0;
             for (int rep : this.getReplicas().keySet()) {
-                SumMemory += serializer.serializ(this.getReplicas().get(rep));
+                
+                CRDT crdt=this.getReplicas().get(rep);
+                long before = System.nanoTime();
+                crdt.lookup();
+                long after=System.nanoTime();
+                sumMemory += serializer.serializ(crdt);
             }
-            memUsed.add(new Long(SumMemory / this.getReplicas().keySet().size()));
+            viewTime.add(new Long(sumTimeView / this.getReplicas().keySet().size()));
+            memUsed.add(new Long(sumMemory / this.getReplicas().keySet().size()));
             tour = 0;
 
             //debug

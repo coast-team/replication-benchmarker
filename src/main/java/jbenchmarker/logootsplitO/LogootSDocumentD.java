@@ -171,7 +171,7 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
 
     }
 
-    private ArrayList makeOffsets(LogootSBlock block, int offset, List o) {
+   private ArrayList makeOffsets(LogootSBlock block, int offset, List o) {
         ArrayList l = new ArrayList(o.size());
         for (int i = 0; i < o.size(); i++) {
             l.add(new LinkBlock(block, offset++));
@@ -179,12 +179,21 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
         return l;
     }
 
+   /* private LinkBlock[] makeOffsets(LogootSBlock block, int offset, List o) {
+        LinkBlock[] l=new LinkBlock[o.size()];
+        for (int i = 0; i < o.size(); i++) {
+            l[i]=new LinkBlock(block, offset++);
+        }
+        return l;
+    }*/
+    
     private char[] makeChar(List<Character> o) {
         char[] ret = new char[o.size()];
 
         for (int i = 0; i < o.size(); i++) {
             ret[i] = o.get(i);
         }
+        
         return ret;
     }
 
@@ -246,6 +255,7 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
                 } while (lb != null && lb.getBlock() == block && offset <= end);
                 if (e - b > 0) {
                     list.subList(b, e).clear();
+                   // list.delRange(b, e);
                     view.delete(b, e);
                     pos = b;
                 }
@@ -344,6 +354,7 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
         addDelIdf(block, b, e, li, nbElement);
         view.delete(begin, end + 1);
         list.subList(begin, end+1).clear();
+        //list.delRange(begin,  end+1);
         return new LogootSOpDel(li);
     }
 

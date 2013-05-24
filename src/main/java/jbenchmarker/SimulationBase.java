@@ -134,6 +134,7 @@ public abstract class SimulationBase {
     LinkedList<List<Double>> resultsTimesLoc = new LinkedList();
     LinkedList<List<Double>> resultsTimesDist = new LinkedList();
     LinkedList<List<Double>> resultsMem = new LinkedList();
+    LinkedList<List<Double>> resultsTimesView = new LinkedList();
 
     abstract Factory<CRDT> getFactory();
 
@@ -207,6 +208,7 @@ public abstract class SimulationBase {
                 resultsTimesDist.add(cd.getAvgPerRemoteMessage());
                 resultsTimesLoc.add(castDoubleList(cd.getGenerationTimes()));
                 resultsMem.add(castDoubleList(cd.getMemUsed()));
+                resultsTimesView.add(castDoubleList(cd.getMemUsed()));
             } else {
                 System.out.println("\nIt was for fun !");
             }
@@ -257,6 +259,7 @@ public abstract class SimulationBase {
 
         resultsTimesDist.add(computeAvg(resultsTimesDist));
         resultsTimesLoc.add(computeAvg(resultsTimesLoc));
+        
 
         writeMapToFile(resultsTimesDist, prefixOutput + "-dist.data");
         writeMapToFile(resultsTimesLoc, prefixOutput + "-loc.data");
@@ -267,6 +270,11 @@ public abstract class SimulationBase {
 
         if (!resultsMem.isEmpty() && !resultsMem.get(0).isEmpty()) {
             resultsMem.add(computeAvg(resultsMem));
+            resultsTimesView.add(computeAvg(resultsTimesView));
+            
+            writeMapToFile(resultsTimesView, prefixOutput + "-view.data");
+            writeListToFile(resultsTimesView.getLast(), prefixOutput + "-view.res", baseSerializ, 1);
+            
             writeMapToFile(resultsMem, prefixOutput + "-mem.data");
             writeListToFile(resultsMem.getLast(), prefixOutput + "-mem.res", baseSerializ, 1);
         }

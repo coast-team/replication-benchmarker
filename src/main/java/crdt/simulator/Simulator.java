@@ -35,6 +35,8 @@ public abstract class Simulator {
     
     // memoryUsed
     final protected List<Long> memUsed; 
+    
+    final protected List<Long> viewTime; 
 
     // operation's generation time
     final protected List<Long> genTime;
@@ -71,6 +73,7 @@ public abstract class Simulator {
     public Simulator(Factory<? extends CRDT> rf) {
         this.replicas = new HashMap<Integer,CRDT>();
         this.memUsed = new ArrayList();
+        this.viewTime = new ArrayList();
         this.genTime = new ArrayList<Long>();
         this.remoteTime = new ArrayList<Long>();
         this.genSize = new ArrayList<Integer>();
@@ -137,4 +140,9 @@ public abstract class Simulator {
     public List<Long> getRemoteTimes() {
         return remoteTime;
     }
+
+    public List<Long> getViewTime() {
+        return viewTime;
+    }
+    
 }
