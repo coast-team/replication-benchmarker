@@ -58,7 +58,7 @@ public class LogootSBlockLight<T> extends LogootSBlock<T> implements Serializabl
 
     @Override
     void delBlock(int begin, int end,int nbElement) {
-       nbElement-=nbElement;
+       this.nbElement-=nbElement;
     }
 
     @Override

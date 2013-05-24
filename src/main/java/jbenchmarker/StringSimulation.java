@@ -22,6 +22,7 @@ import crdt.CRDT;
 import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.simulator.random.OperationProfile;
+import crdt.simulator.random.SequenceOperationStupid;
 import crdt.simulator.random.StandardSeqOpProfile;
 import java.io.IOException;
 import org.kohsuke.args4j.CmdLineException;
@@ -69,7 +70,28 @@ public class StringSimulation extends SimulationBase {
         }
     }
    
-    
+     
+     @Option(name = "-S", usage = "Generate Add/del Trace -A perIns,perBlock,avgBlockSize,sdvBlockSize,duration (without spaces)",metaVar = "perIns,perBlock,avgBlockSize,sdvBlockSize,duration")
+    private void genAdddelS(String param) throws CmdLineException {
+        try {
+            param = param.replace(")", "");
+            param = param.replace("(", "");
+            String[] params = param.split(",");
+            double perIns = Double.parseDouble(params[0]);
+            double perBlock = Double.parseDouble(params[1]);
+            int avgBlockSize = Integer.parseInt(params[2]);
+            double sdvBlockSize = Double.parseDouble(params[3]);
+            int duration = Integer.parseInt(params[4]);
+
+            totalDuration += duration;
+            //System.out.println("Generation Add/Del Trace \n"+duration+" ops with:\n"+perIns+"prob insert and \n"+perChild+"prob use child");
+            OperationProfile opprof = new SequenceOperationStupid(perIns, perBlock, avgBlockSize, sdvBlockSize);
+            randomTrace.add(traceP.makeRandomTrace(duration, opprof));
+        } catch (Exception ex) {
+            throw new CmdLineException(this.parser,"-A parameter is invalid " + ex);
+        }
+    }
+     
     public StringSimulation(String... arg) {
         super(arg);
     }
