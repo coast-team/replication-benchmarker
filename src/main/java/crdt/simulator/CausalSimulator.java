@@ -403,6 +403,7 @@ public class CausalSimulator extends Simulator {
                 long before = System.nanoTime();
                 crdt.lookup();
                 long after=System.nanoTime();
+                sumTimeView += after-before;
                 sumMemory += serializer.serializ(crdt);
             }
             viewTime.add(new Long(sumTimeView / this.getReplicas().keySet().size()));
