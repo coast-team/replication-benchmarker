@@ -208,7 +208,7 @@ public abstract class SimulationBase {
                 resultsTimesDist.add(cd.getAvgPerRemoteMessage());
                 resultsTimesLoc.add(castDoubleList(cd.getGenerationTimes()));
                 resultsMem.add(castDoubleList(cd.getMemUsed()));
-                resultsTimesView.add(castDoubleList(cd.getMemUsed()));
+                resultsTimesView.add(castDoubleList(cd.getViewTime()));
             } else {
                 System.out.println("\nIt was for fun !");
             }
