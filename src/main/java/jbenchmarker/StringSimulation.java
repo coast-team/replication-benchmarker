@@ -71,7 +71,7 @@ public class StringSimulation extends SimulationBase {
     }
    
      
-     @Option(name = "-S", usage = "Generate Add/del Trace -A perIns,perBlock,avgBlockSize,sdvBlockSize,duration (without spaces)",metaVar = "perIns,perBlock,avgBlockSize,sdvBlockSize,duration")
+     @Option(name = "-X", usage = "Generate Add/del Trace -A perIns,perBlock,avgBlockSize,sdvBlockSize,duration (without spaces)",metaVar = "perIns,perBlock,avgBlockSize,sdvBlockSize,duration")
     private void genAdddelS(String param) throws CmdLineException {
         try {
             param = param.replace(")", "");
