@@ -51,8 +51,14 @@ public class StandardSizeCalculator implements SizeCalculator{
         //System.out.println("After: replica :"+m.getReplicaNumber()+" has "+byteOutput.size()+" byte");
         return size;
     }
+    /**
+     *
+     * @param m the value of m
+     * @return the long
+     * @throws IOException
+     */
     @Override
-     public int serializ(CRDT m) throws IOException {
+     public long serializ(CRDT m) throws IOException {
         
         if (overhead) {
             return (sizeOf(m));

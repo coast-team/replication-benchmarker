@@ -27,6 +27,12 @@ import java.io.IOException;
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
 public interface SizeCalculator {
-    public int serializ(CRDT m) throws IOException;
+    /**
+     *
+     * @param m the value of m
+     * @return the long
+     * @throws IOException
+     */
+    public long serializ(CRDT m) throws IOException;
     
 }

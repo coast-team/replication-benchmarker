@@ -28,8 +28,14 @@ import java.io.IOException;
  */
 public class StringSizeCalculator implements SizeCalculator {
 
+    /**
+     *
+     * @param m the value of m
+     * @return the long
+     * @throws IOException
+     */
     @Override
-    public int serializ(CRDT m) throws IOException {
+    public long serializ(CRDT m) throws IOException {
         return ((String)m.lookup()).length();
     }
     

@@ -30,8 +30,14 @@ import jbenchmarker.core.Document;
  */
 public class DocumentSizeCalculator implements SizeCalculator{
 
+    /**
+     *
+     * @param m the value of m
+     * @return the long
+     * @throws IOException
+     */
     @Override
-    public int serializ(CRDT m) throws IOException {
+    public long serializ(CRDT m) throws IOException {
         return ((Document)m).viewLength();
     }
     

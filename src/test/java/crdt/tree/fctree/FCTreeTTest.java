@@ -87,9 +87,9 @@ public class FCTreeTTest {
     @Test
     public void removeAllTest() throws PreconditionException, IOException {
         StandardSizeCalculator sdc=new StandardSizeCalculator(true);
-        int s1=sdc.serializ(tree);
-        int s2=sdc.serializ(tree2);
-        int s3=sdc.serializ(tree3);
+        long s1=sdc.serializ(tree);
+        long s2=sdc.serializ(tree2);
+        long s3=sdc.serializ(tree3);
         assertTrue(s3<s1);
         assertTrue(s3<s2);
         CRDTMessage mess1 = tree2.remove(Arrays.asList(0, 1, 0));//f
@@ -110,8 +110,8 @@ public class FCTreeTTest {
         tree.applyOneRemote(mess2);
         assertEquals("null", tree.getRoot().nodetail());
         assertEquals("null", tree2.getRoot().nodetail());
-        int sa1=sdc.serializ(tree);
-        int sa2=sdc.serializ(tree2);
+        long sa1=sdc.serializ(tree);
+        long sa2=sdc.serializ(tree2);
         assertEquals(s3, sa1);
         assertEquals(s3, sa2);
     }
@@ -122,9 +122,9 @@ public class FCTreeTTest {
         tree.setRemoveEntireSubtree(true);
         tree2.setRemoveEntireSubtree(true);
         StandardSizeCalculator sdc=new StandardSizeCalculator(true);
-        int s1=sdc.serializ(tree);
-        int s2=sdc.serializ(tree2);
-        int s3=sdc.serializ(tree3);
+        long s1=sdc.serializ(tree);
+        long s2=sdc.serializ(tree2);
+        long s3=sdc.serializ(tree3);
         assertTrue(s3<s1);
         assertTrue(s3<s2);
         CRDTMessage mess1 = tree2.remove(Arrays.asList(0));//f
@@ -135,8 +135,8 @@ public class FCTreeTTest {
         tree.applyRemote(mess2);
         assertEquals("null", tree2.getRoot().nodetail());
         assertEquals("null", tree.getRoot().nodetail());
-        int sa1=sdc.serializ(tree);
-        int sa2=sdc.serializ(tree2);
+        long sa1=sdc.serializ(tree);
+        long sa2=sdc.serializ(tree2);
         assertEquals(1,tree.map.size());
         assertEquals(1,tree2.map.size());
         assertEquals(s3, sa1);

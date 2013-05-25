@@ -58,8 +58,14 @@ public class SizeXMLDoc implements SizeCalculator {
 
     }
 
+    /**
+     *
+     * @param m the value of m
+     * @return the long
+     * @throws IOException
+     */
     @Override
-    public int serializ(CRDT m) throws IOException {
+    public long serializ(CRDT m) throws IOException {
         String xml = view((OrderedNode<String>) m.lookup());
         return xml.length();
     }

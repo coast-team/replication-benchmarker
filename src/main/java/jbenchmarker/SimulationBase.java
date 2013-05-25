@@ -27,6 +27,7 @@ import crdt.simulator.random.NTrace;
 import crdt.simulator.random.OperationProfile;
 import crdt.simulator.random.ProgressTrace;
 import crdt.simulator.random.RandomTrace;
+import crdt.simulator.sizecalculator.MemSizeCalculator;
 import crdt.simulator.sizecalculator.SizeCalculator;
 import crdt.simulator.sizecalculator.StandardSizeCalculator;
 import crdt.simulator.tracestorage.TraceFromFile;
@@ -65,7 +66,7 @@ public abstract class SimulationBase {
 
     enum Serialization {
 
-        OverHead, Data, JSON, XML
+        OverHead, Data,OverHeadSer,DataSer, JSON, XML
     }
 
     enum TraceFormat {
@@ -78,7 +79,7 @@ public abstract class SimulationBase {
     @Option(name = "--avg", usage = "time average in res files (default 100)")
     int base = 100;
     @Option(name = "-S", usage = "kind of mem mesures format (default is overHead)")
-    jbenchmarker.TreeSimulation.Serialization serialization = jbenchmarker.TreeSimulation.Serialization.OverHead;
+    Serialization serialization = Serialization.OverHead;
     @Option(name = "-t", usage = "trace file used for experimentation", metaVar = "TraceFile")
     private File traceFile;
     @Option(name = "-T", usage = "Select trace format (default is binary)", metaVar = "TraceFormat")
@@ -146,6 +147,28 @@ public abstract class SimulationBase {
         return trace;
     }
 
+    
+    public SizeCalculator getSizeCalculator(){
+         switch (serialization) {
+            case JSON:
+                return new SizeJSonStyleDoc();
+                
+            case XML:
+                return new SizeXMLDoc();
+                
+            case DataSer:
+               return new StandardSizeCalculator(false);
+                
+            case OverHeadSer:
+                return new StandardSizeCalculator(true);
+                
+            case Data:
+                return new MemSizeCalculator(false);
+            case OverHead:
+            default:
+                return new MemSizeCalculator(true);
+         }
+    }
     /**
      * experimentation function
      */
@@ -155,22 +178,9 @@ public abstract class SimulationBase {
          */
         Factory<CRDT> rf = getFactory();
         System.out.println("-" + getDefaultPrefix());
-        SizeCalculator size;
-        switch (serialization) {
-            case JSON:
-                size = new SizeJSonStyleDoc();
-                break;
-            case XML:
-                size = new SizeXMLDoc();
-                break;
-            case Data:
-                size = new StandardSizeCalculator(false);
-                break;
-            case OverHead:
-            default:
-                size = new StandardSizeCalculator(true);
-        }
-
+        SizeCalculator size=getSizeCalculator();
+       
+                
         /**
          * Simulation starts.
          */
@@ -273,7 +283,7 @@ public abstract class SimulationBase {
             resultsTimesView.add(computeAvg(resultsTimesView));
             
             writeMapToFile(resultsTimesView, prefixOutput + "-view.data");
-            writeListToFile(resultsTimesView.getLast(), prefixOutput + "-view.res", baseSerializ, 1);
+            writeListToFile(resultsTimesView.getLast(), prefixOutput + "-view.res", baseSerializ, 1000);//1000 for micro second
             
             writeMapToFile(resultsMem, prefixOutput + "-mem.data");
             writeListToFile(resultsMem.getLast(), prefixOutput + "-mem.res", baseSerializ, 1);
