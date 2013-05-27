@@ -102,7 +102,8 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
             case noop:
                 return null;
             default:
-                throw new IncorrectTraceException("Unsupported operation : " + opt);
+                return null;
+                //throw new IncorrectTraceException("Unsupported operation : " + opt);
         }
     }
 
