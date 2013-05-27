@@ -23,18 +23,18 @@ import jbenchmarker.core.Operation;
 import jbenchmarker.core.SequenceMessage;
 
 /**
- * A Logoot document. Contains a list of Charater and the corresponding list of LogootIndentitifer.
+ * A Logoot documentStr. Contains a list of Charater and the corresponding list of LogootIndentitifer.
  * @author urso mehdi
  */
 public class LogootDocumentChar extends LogootDocument<Character> {
     private int myClock;
     
     
-    final protected StringBuilder document;
+    final protected StringBuilder documentStr;
     
     public LogootDocumentChar(int r, LogootStrategy strategy) {
         super(r, strategy);
-        document = new StringBuilder();
+        documentStr = new StringBuilder();
         
         this.replicaNumber = r;
         myClock = 0;        
@@ -42,7 +42,7 @@ public class LogootDocumentChar extends LogootDocument<Character> {
     
     @Override
     public String view() {
-        return document.toString();
+        return documentStr.toString();
     }
 
   
@@ -55,10 +55,10 @@ public class LogootDocumentChar extends LogootDocument<Character> {
         //Insertion et Delete
         if (lg.getType() == SequenceMessage.MessageType.ins) {
             idTable.add(pos, idToSearch);
-            document.insert(pos-1,  lg.getContent());
+            documentStr.insert(pos-1,  lg.getContent());
         } else if (idTable.get(pos).equals(idToSearch)) {
             idTable.remove(pos);
-            document.deleteCharAt(pos-1);
+            documentStr.deleteCharAt(pos-1);
         }
     }
     private char[] makeChar(List<Character> o) {
@@ -76,19 +76,19 @@ public class LogootDocumentChar extends LogootDocument<Character> {
     public void insert(int position, List<ListIdentifier> patch, List<Character> lc) {
         idTable.addAll(position + 1, patch);
         
-        document.insert(position ,makeChar( lc));
+        documentStr.insert(position ,makeChar( lc));
     }
     
     @Override
     public void remove(int position, int offset) {
         idTable.removeRangeOffset(position + 1, offset);
-        document.delete(position ,position+offset+1);
+        documentStr.delete(position ,position+offset);
     }
     
     
     @Override
     public int viewLength() {
-        return document.length();
+        return documentStr.length();
     }
 
     // TODO : duplicate strategy ?
@@ -114,7 +114,7 @@ public class LogootDocumentChar extends LogootDocument<Character> {
         if (this.idTable != other.idTable && (this.idTable == null || !this.idTable.equals(other.idTable))) {
             return false;
         }
-        if (this.document != other.document && (this.document == null || !this.document.equals(other.document))) {
+        if (this.documentStr != other.documentStr && (this.documentStr == null || !this.documentStr.equals(other.documentStr))) {
             return false;
         }
         return true;
@@ -124,7 +124,7 @@ public class LogootDocumentChar extends LogootDocument<Character> {
     public int hashCode() {
         int hash = 7;
         hash = 97 * hash + (this.idTable != null ? this.idTable.hashCode() : 0);
-        hash = 97 * hash + (this.document != null ? this.document.hashCode() : 0);
+        hash = 97 * hash + (this.documentStr != null ? this.documentStr.hashCode() : 0);
         return hash;
     }
     
