@@ -20,6 +20,7 @@ package jbenchmarker.logootsplitO;
 
 import crdt.CRDT;
 import crdt.CRDTMessage;
+import crdt.OperationBasedOneMessage;
 import crdt.PreconditionException;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
@@ -249,11 +250,26 @@ public class LogootSAlgoTest {
         alg1.applyLocal(SequenceOperation.replace(pos, off, upd));
         assertEquals(content.substring(0, pos) + upd + content.substring(pos + off), alg1.lookup());
     }
-
+    static LogootSOpAdd extractOpAdd(CRDTMessage mess){
+        return (LogootSOpAdd) ((OperationBasedOneMessage)mess).getOperation();
+    }
+     static LogootSOpDel extractOpDel(CRDTMessage mess){
+        return (LogootSOpDel) ((OperationBasedOneMessage)mess).getOperation();
+    }
     @Test 
     public void testAppending() throws PreconditionException{
         CRDTMessage op1 = alg1.insert(0, "Test1234");
         CRDTMessage op2 = alg1.insert(8, "la suite");
+        CRDTMessage op3 = alg1.insert(0, "before");
+        
+        assertEquals("beforeTest1234la suite", alg1.lookup());
+             
+        alg2.applyRemote(op2);
+        alg2.applyRemote(op1);   
+        alg2.applyRemote(op3);
+        
+        
+        assertEquals("beforeTest1234la suite", alg2.lookup());
        // System.out.println(alg1.lookup());
         assertEquals(1,((LogootSDocumentD)alg1.getLDoc()).getMapBaseToBlock().size());
         

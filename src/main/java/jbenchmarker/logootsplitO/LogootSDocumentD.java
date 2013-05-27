@@ -145,17 +145,16 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
         int offset = begin;
         int pos = 0;
         int end = begin + elem.size() - 1;
-        Iterator it = elem.iterator();
-        int diffOffset = begin;
+        
+        
         while (offset <= end) {
             //search the first position
             pos = dicSearch(block.getId().getBaseId(offset), pos);
             //computation of offset Max 
             int offsetMax;
             if (pos < list.size()) {
-                Identifier beginId = new Identifier(block.id.base, begin);
-                offsetMax = maxOffsetBeforeNex(beginId, list.get(pos).getBlock().getId().getBeginId(), end);
-
+                Identifier beginId = new Identifier(block.id.base, offset);
+                offsetMax = maxOffsetBeforeNex(beginId, list.get(pos).getID(), end);
             } else {
                 offsetMax = end;
             }
@@ -289,7 +288,7 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
             //add before block
             block = after.block;
             //offset = after.offset;
-            offset = block.id.begin - l.size()-1;
+            offset = block.id.begin - l.size();
             block.addBlock(offset, l);
         } else if (before != null && after == null && before.block.mine && before.block.getId().end + l.size() < Integer.MAX_VALUE) {
             //add after block

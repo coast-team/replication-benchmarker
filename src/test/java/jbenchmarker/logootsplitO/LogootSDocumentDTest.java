@@ -133,9 +133,7 @@ public class LogootSDocumentDTest {
 
     }
 
-    @Test
-    public void SimpleDelCouvrant() {
-    }
+    
     @Test
     public void maxOffsetTest(){
         Identifier id1=new Identifier(Arrays.asList(0,0,9,0),0);
