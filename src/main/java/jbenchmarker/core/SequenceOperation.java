@@ -48,6 +48,8 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
             if (position > sizeDoc) {
                 position = sizeDoc; // an insert position exceeds document size
             }
+        } else if(this.type==OpType.delete && sizeDoc==0){
+            return new SequenceOperation(OpType.noop,0,0,null);
         } else if (this.position >= sizeDoc) {
             position = sizeDoc - 1; // a position exceeds document size
         }
