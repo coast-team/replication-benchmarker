@@ -24,6 +24,7 @@ import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardDiffProfile;
 import crdt.simulator.random.StandardSeqOpProfile;
 import jbenchmarker.factories.LogootFactory;
+import jbenchmarker.factories.LogootFactoryChar;
 import static jbenchmarker.sim.CausalDispatcherTest.assertConsistency;
 import static jbenchmarker.sim.CausalDispatcherTest.assertGoodViewLength;
 import jbenchmarker.trace.TraceGenerator;
@@ -103,6 +104,15 @@ public class IntegrationLogoot {
     public void testLogootRandom() throws Exception {
         Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
         CausalSimulator cd = new CausalSimulator(new LogootFactory<Character>());
+
+        assertConsistency(cd, trace);  
+        assertGoodViewLength(cd);
+    }
+    
+    @Test
+    public void testLogootRandomchar() throws Exception {
+        Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
+        CausalSimulator cd = new CausalSimulator(new LogootFactoryChar());
 
         assertConsistency(cd, trace);  
         assertGoodViewLength(cd);
