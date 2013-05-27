@@ -65,11 +65,13 @@ public class GitTrace implements Trace {
     public int nbMove = 0;
     public int insertSize = 0;
     public int deleteSize = 0;
+    public int advance = 0;
+    
     private CommitCRUD commitCRUD;
     private PatchCRUD patchCRUD;
     private List<Commit> initCommit;
     private static final DiffAlgorithm diffAlgorithm = GitExtraction.defaultDiffAlgorithm;
-    static final boolean DEBUG = true;
+    static final boolean DEBUG = false;
     static public int UpdBefore = 0, MoveBefore = 0, MergeBefore=0;
     private final boolean detectMoveAndUpdate;
     private final int updateThresold;
@@ -248,12 +250,14 @@ public class GitTrace implements Trace {
         transient Walker walker;
         transient GitTrace gitTrace;
         LocalOperation first;
+        transient final String targetID;
         transient final String target;
 
-        MergeCorrection(int replica, VectorClock VC, String target, Walker walker, GitTrace gitTrace) {
+        MergeCorrection(int replica, VectorClock VC, String targetID, Walker walker, GitTrace gitTrace) {
             super(replica, new VectorClock(VC));
             getVectorClock().inc(replica);
-            this.target = target;
+            this.targetID = targetID;
+            this.target = gitTrace.patchCRUD.get(targetID).getContents().get(0);
             this.walker = walker;
             this.gitTrace = gitTrace;
         }
@@ -272,7 +276,8 @@ public class GitTrace implements Trace {
                 public LocalOperation adaptTo(CRDT replica) {
                     if (first == null) {
 //System.out.println("----- REPLICA -----\n" + replica.lookup());                                
-//System.out.println("----- PATCH -----\n" + target);                                
+//System.out.println("----- PATCH -----\n" + target); 
+                        walker.merges.put(targetID, replica.lookup().toString());
                         List<Edition> l = diff(replica.lookup().toString(), target);
                         if (gitTrace.detectMoveAndUpdate) {
                             l = GitExtraction.detectMovesAndUpdates(l, gitTrace.updateThresold, gitTrace.moveThresold);
@@ -318,6 +323,7 @@ public class GitTrace implements Trace {
         private TraceOperation next = null;
         private boolean finish = false;
         private boolean check;
+        private Map<String, String> merges = new HashMap<String, String>();
 
         public Walker() {
             startingCommit = new LinkedList<Commit>(initCommit);
@@ -337,7 +343,9 @@ public class GitTrace implements Trace {
                     if (fileEdit.getType() == FileHeader.PatchType.UNIFIED) {
                         editions = new LinkedList<Edition>(fileEdit.getListDiff());
                     }
-System.out.println(commit.patchId() + "\n" + editions);
+//System.out.println(commit.patchId() + "\n" + editions);
+                    advanceMerge(commit);
+                    
                     stat(editions, false);
                 } else { // Commit finished
                     if (commit != null) { // Not first iteration
@@ -379,7 +387,7 @@ System.out.println(commit.patchId() + "\n" + editions);
                         if (commit.parentCount() > 1) {
                             ++nbMerge;
                             // TODO : treat several files 
-                            op = new MergeCorrection(commit.getReplica(), currentVC, patchCRUD.get(commit.patchContent()).getContents().get(0), this, GitTrace.this);
+                            op = new MergeCorrection(commit.getReplica(), currentVC, commit.patchContent(), this, GitTrace.this);
                         } else {
                             Patch p = patchCRUD.get(commit.parentPatchId(0));
                             files = new LinkedList<FileEdition>(p.getEdits());
@@ -423,6 +431,25 @@ System.out.println(commit.patchId() + "\n" + editions);
                 }
             }
             return false;
+        }
+
+        // Check if computed merge was better than commited one 
+        private void advanceMerge(Commit commit) {
+            if (commit.parentCount() == 1) {
+                Commit parent = commitCRUD.get(commit.getParents().get(0));
+                if (parent.parentCount() > 1) {
+                    Patch patch = patchCRUD.get(commit.patchContent());
+                    if (!patch.getContents().isEmpty()) {
+                        String son = patch.getContents().get(0),
+                                commited = patchCRUD.get(parent.patchContent()).getContents().get(0),
+                                merge = merges.get(parent.patchContent());
+                        if (diff(commited, son).size() > diff(merge, son).size()) {
+                            ++advance;
+                        }
+                    }
+                }
+            }
+                    
         }
     }
 
