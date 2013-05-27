@@ -344,7 +344,7 @@ public class GitTrace implements Trace {
                         editions = new LinkedList<Edition>(fileEdit.getListDiff());
                     }
 //System.out.println(commit.patchId() + "\n" + editions);
-                    advanceMerge(commit);
+//                    advanceMerge(commit);
                     
                     stat(editions, false);
                 } else { // Commit finished
