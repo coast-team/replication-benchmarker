@@ -82,7 +82,7 @@ public class LogootDocumentChar extends LogootDocument<Character> {
     @Override
     public void remove(int position, int offset) {
         idTable.removeRangeOffset(position + 1, offset);
-        document.delete(position ,position+offset);
+        document.delete(position ,position+offset+1);
     }
     
     
