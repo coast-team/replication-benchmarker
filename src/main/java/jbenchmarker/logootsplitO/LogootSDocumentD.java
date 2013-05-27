@@ -288,12 +288,14 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
         if (after != null && before == null && after.block.mine && after.block.getId().begin - l.size() > Integer.MIN_VALUE) {// Block in position is mine
             //add before block
             block = after.block;
-            offset = after.offset;
+            //offset = after.offset;
+            offset = block.id.begin - l.size()-1;
             block.addBlock(offset, l);
         } else if (before != null && after == null && before.block.mine && before.block.getId().end + l.size() < Integer.MAX_VALUE) {
             //add after block
             block = before.block;
-            offset = block.id.begin - l.size();
+            offset = block.id.end+1;
+            //offset = block.id.begin - l.size();
             block.addBlock(offset, l);
 
         } else {
@@ -304,6 +306,7 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
 
             IdentifierInterval id = new IdentifierInterval(base, 0, l.size() - 1);
             block = new LogootSBlockLight(id);//TODO build factory
+            block.setMine(true);
             offset = 0;
             block.addBlock(offset, l);
             mapBaseToBlock.put(block.getId().getBase(), block);

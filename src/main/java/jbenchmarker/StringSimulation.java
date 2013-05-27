@@ -21,10 +21,12 @@ package jbenchmarker;
 import crdt.CRDT;
 import crdt.Factory;
 import crdt.PreconditionException;
+import crdt.simulator.Trace;
 import crdt.simulator.random.OperationProfile;
 import crdt.simulator.random.SequenceOperationStupid;
 import crdt.simulator.random.StandardSeqOpProfile;
 import java.io.IOException;
+import jbenchmarker.trace.json.JSONTrace;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
 
@@ -33,23 +35,29 @@ import org.kohsuke.args4j.Option;
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
 public class StringSimulation extends SimulationBase {
+
     String factoryName;
     Factory<CRDT> factory;
-    @Option(name="-f", usage = "Factory name")
-    private void factory(String arg) throws CmdLineException{
-        this.factoryName=arg;
+    
+    
+    @Option(name = "-E", usage = "Etherpad Trace subname")
+    String etherpad;
+
+    @Option(name = "-f", usage = "Factory name")
+    private void factory(String arg) throws CmdLineException {
+        this.factoryName = arg;
         try {
-            factory= (Factory<CRDT>) Class.forName(arg).newInstance();
+            factory = (Factory<CRDT>) Class.forName(arg).newInstance();
         } catch (ClassNotFoundException ex) {
-           throw new CmdLineException(this.parser,"Factory not found " + ex);
+            throw new CmdLineException(this.parser, "Factory not found " + ex);
         } catch (InstantiationException ex) {
-           throw new CmdLineException(this.parser,"Factory not valid " + ex);
+            throw new CmdLineException(this.parser, "Factory not valid " + ex);
         } catch (IllegalAccessException ex) {
-           throw new CmdLineException(this.parser,"Factory access is invalid " + ex);
+            throw new CmdLineException(this.parser, "Factory access is invalid " + ex);
         }
     }
-    
-     @Option(name = "-A", usage = "Generate Add/del Trace -A perIns,perBlock,avgBlockSize,sdvBlockSize,duration (without spaces)",metaVar = "perIns,perBlock,avgBlockSize,sdvBlockSize,duration")
+
+    @Option(name = "-A", usage = "Generate Add/del Trace -A perIns,perBlock,avgBlockSize,sdvBlockSize,duration (without spaces)", metaVar = "perIns,perBlock,avgBlockSize,sdvBlockSize,duration")
     private void genAdddel(String param) throws CmdLineException {
         try {
             param = param.replace(")", "");
@@ -66,12 +74,11 @@ public class StringSimulation extends SimulationBase {
             OperationProfile opprof = new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize);
             randomTrace.add(traceP.makeRandomTrace(duration, opprof));
         } catch (Exception ex) {
-            throw new CmdLineException(this.parser,"-A parameter is invalid " + ex);
+            throw new CmdLineException(this.parser, "-A parameter is invalid " + ex);
         }
     }
-   
-     
-     @Option(name = "-X", usage = "Generate Add/del Trace -A perIns,perBlock,avgBlockSize,sdvBlockSize,duration (without spaces)",metaVar = "perIns,perBlock,avgBlockSize,sdvBlockSize,duration")
+
+    @Option(name = "-X", usage = "Generate Add/del Trace -A perIns,perBlock,avgBlockSize,sdvBlockSize,duration (without spaces)", metaVar = "perIns,perBlock,avgBlockSize,sdvBlockSize,duration")
     private void genAdddelS(String param) throws CmdLineException {
         try {
             param = param.replace(")", "");
@@ -88,10 +95,10 @@ public class StringSimulation extends SimulationBase {
             OperationProfile opprof = new SequenceOperationStupid(perIns, perBlock, avgBlockSize, sdvBlockSize);
             randomTrace.add(traceP.makeRandomTrace(duration, opprof));
         } catch (Exception ex) {
-            throw new CmdLineException(this.parser,"-A parameter is invalid " + ex);
+            throw new CmdLineException(this.parser, "-A parameter is invalid " + ex);
         }
     }
-     
+
     public StringSimulation(String... arg) {
         super(arg);
     }
@@ -104,13 +111,20 @@ public class StringSimulation extends SimulationBase {
 
     @Override
     Factory<CRDT> getFactory() {
-       return factory;
+        return factory;
     }
-
-   
 
     @Override
     String getDefaultPrefix() {
         return factoryName;
+    }
+
+    @Override
+    protected Trace traceReader() throws IOException {
+        if (etherpad != null) {
+            return new JSONTrace(this.traceFile.getCanonicalPath(), etherpad);
+        } else {
+            return super.traceReader();
+        }
     }
 }

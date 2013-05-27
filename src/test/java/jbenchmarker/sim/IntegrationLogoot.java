@@ -54,26 +54,47 @@ public class IntegrationLogoot {
     @Ignore
     @Test
     public void testLogootG1Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G1.xml").getPath(), 1);
+        Trace trace = TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("G1.xml"), 1);
         CausalSimulator cd = new CausalSimulator(new LogootFactory<Character>());
 
         assertConsistency(cd, trace);
     }
-    
+    @Ignore
+    @Test
+    public void testLogootCharG1Run() throws Exception {
+        Trace trace = TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("G1.xml"), 1);
+        CausalSimulator cd = new CausalSimulator(new LogootFactoryChar());
+
+        assertConsistency(cd, trace);
+    }
     @Ignore
     @Test
     public void testLogootG2Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G2.xml").getPath(), 1);
+        Trace trace = TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("G2.xml"), 1);
         CausalSimulator cd = new CausalSimulator(new LogootFactory<Character>());
 
         assertConsistency(cd, trace);
     }
-    
+    @Ignore
+    @Test
+     public void testLogootCharG2Run() throws Exception {
+        Trace trace = TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("G2.xml"), 1);
+        CausalSimulator cd = new CausalSimulator(new LogootFactoryChar());
+
+        assertConsistency(cd, trace);
+    }
     @Ignore
     @Test
     public void testLogootG3Run() throws Exception {
-        Trace trace = TraceGenerator.traceFromXML(IntegrationLogoot.class.getResource("G3.xml").getPath(), 1);
+        Trace trace = TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("G3.xml"), 1);
         CausalSimulator cd = new CausalSimulator(new LogootFactory<Character>());
+
+        assertConsistency(cd, trace);
+    }
+     @Test
+    public void testLogootCharG3Run() throws Exception {
+        Trace trace = TraceGenerator.traceFromXML(TracesExample.getExampleTraceMatch("G3.xml"), 1);
+        CausalSimulator cd = new CausalSimulator(new LogootFactoryChar());
 
         assertConsistency(cd, trace);
     }

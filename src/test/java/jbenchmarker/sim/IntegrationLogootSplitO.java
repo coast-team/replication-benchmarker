@@ -74,10 +74,10 @@ public class IntegrationLogootSplitO {
         }
     }
 
-    @Ignore // only to find a bug
+    @Ignore  // only to find a bug
     @Test
     public void testLogootSplitORandomMini() throws Exception {
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 1000000; i++) {
             Trace trace = new RandomTrace(10, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 1, 5.0), 0.1, 10, 3.0, 13);
             CausalSimulator cd = new CausalSimulator(new LogootSplitOFactory());
             assertConsistency(cd, trace);

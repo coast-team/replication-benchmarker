@@ -250,6 +250,16 @@ public class LogootSAlgoTest {
         assertEquals(content.substring(0, pos) + upd + content.substring(pos + off), alg1.lookup());
     }
 
+    @Test 
+    public void testAppending() throws PreconditionException{
+        CRDTMessage op1 = alg1.insert(0, "Test1234");
+        CRDTMessage op2 = alg1.insert(8, "la suite");
+       // System.out.println(alg1.lookup());
+        assertEquals(1,((LogootSDocumentD)alg1.getLDoc()).getMapBaseToBlock().size());
+        
+        
+    }
+    
     @Test
     public void testGC() throws Exception {
         Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);

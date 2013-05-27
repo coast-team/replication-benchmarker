@@ -66,7 +66,7 @@ public abstract class SimulationBase {
 
     enum Serialization {
 
-        OverHead, Data,OverHeadSer,DataSer, JSON, XML
+        OverHead, Data, OverHeadSer, DataSer, JSON, XML
     }
 
     enum TraceFormat {
@@ -81,7 +81,7 @@ public abstract class SimulationBase {
     @Option(name = "-S", usage = "kind of mem mesures format (default is overHead)")
     Serialization serialization = Serialization.OverHead;
     @Option(name = "-t", usage = "trace file used for experimentation", metaVar = "TraceFile")
-    private File traceFile;
+    protected File traceFile;
     @Option(name = "-T", usage = "Select trace format (default is binary)", metaVar = "TraceFormat")
     private jbenchmarker.TreeSimulation.TraceFormat traceFormat = jbenchmarker.TreeSimulation.TraceFormat.Bin;
     @Option(name = "-r", usage = "Thresold multiplicator")
@@ -98,12 +98,14 @@ public abstract class SimulationBase {
     boolean justInTime = false;
     @Option(name = "-O", usage = "prefix of output file")
     String prefixOutput = null;
+    @Option(name = "--expname", usage = "folder of experience")
+    File folder;
     @Option(name = "-p", usage = "Show progresss bar")
     boolean progressBar = false;
 
     @Option(name = "-R", usage = "Set random trace param probability,delay,deviation,replica", metaVar = "prob,delay,deviation,replica")
     private void setTraceParam(String param) throws CmdLineException {
-        traceP = new TraceParam(param,parser);
+        traceP = new TraceParam(param, parser);
     }
     /*
      * end of arguements
@@ -147,28 +149,28 @@ public abstract class SimulationBase {
         return trace;
     }
 
-    
-    public SizeCalculator getSizeCalculator(){
-         switch (serialization) {
+    public SizeCalculator getSizeCalculator() {
+        switch (serialization) {
             case JSON:
                 return new SizeJSonStyleDoc();
-                
+
             case XML:
                 return new SizeXMLDoc();
-                
+
             case DataSer:
-               return new StandardSizeCalculator(false);
-                
+                return new StandardSizeCalculator(false);
+
             case OverHeadSer:
                 return new StandardSizeCalculator(true);
-                
+
             case Data:
                 return new MemSizeCalculator(false);
             case OverHead:
             default:
                 return new MemSizeCalculator(true);
-         }
+        }
     }
+
     /**
      * experimentation function
      */
@@ -178,9 +180,9 @@ public abstract class SimulationBase {
          */
         Factory<CRDT> rf = getFactory();
         System.out.println("-" + getDefaultPrefix());
-        SizeCalculator size=getSizeCalculator();
-       
-                
+        SizeCalculator size = getSizeCalculator();
+
+
         /**
          * Simulation starts.
          */
@@ -226,7 +228,7 @@ public abstract class SimulationBase {
         }
     }
 
-    private Trace traceReader() throws IOException {
+    protected Trace traceReader() throws IOException {
         switch (traceFormat) {
             default:
             case Bin:
@@ -235,12 +237,10 @@ public abstract class SimulationBase {
                 return new TraceFromXMLObjectFile(traceFile, true);
             case JSON:
                 return new TraceFromJSONObjectFile(traceFile, true);
-
-
         }
     }
 
-    private TraceStore getTraceWriter() throws IOException {
+    protected TraceStore getTraceWriter() throws IOException {
         switch (traceFormat) {
             default:
             case Bin:
@@ -266,10 +266,21 @@ public abstract class SimulationBase {
         if (this.prefixOutput == null) {
             prefixOutput = getDefaultPrefix();
         }
+        if (folder != null) {
+            if (!folder.exists()) {
+                folder.mkdir();
+            }
+            if (folder.isDirectory()) {
+                prefixOutput = folder.getName() + "/" + prefixOutput;
+            } else {
+                prefixOutput = folder.getName() + "." + prefixOutput;
+            }
+        }
+
 
         resultsTimesDist.add(computeAvg(resultsTimesDist));
         resultsTimesLoc.add(computeAvg(resultsTimesLoc));
-        
+
 
         writeMapToFile(resultsTimesDist, prefixOutput + "-dist.data");
         writeMapToFile(resultsTimesLoc, prefixOutput + "-loc.data");
@@ -281,10 +292,10 @@ public abstract class SimulationBase {
         if (!resultsMem.isEmpty() && !resultsMem.get(0).isEmpty()) {
             resultsMem.add(computeAvg(resultsMem));
             resultsTimesView.add(computeAvg(resultsTimesView));
-            
+
             writeMapToFile(resultsTimesView, prefixOutput + "-view.data");
             writeListToFile(resultsTimesView.getLast(), prefixOutput + "-view.res", baseSerializ, 1000);//1000 for micro second
-            
+
             writeMapToFile(resultsMem, prefixOutput + "-mem.data");
             writeListToFile(resultsMem.getLast(), prefixOutput + "-mem.res", baseSerializ, 1);
         }
@@ -427,7 +438,7 @@ public abstract class SimulationBase {
             return replicas;
         }
 
-        public TraceParam(String str,CmdLineParser parser) throws CmdLineException {
+        public TraceParam(String str, CmdLineParser parser) throws CmdLineException {
             try {
                 str = str.replace(")", "");
                 str = str.replace("(", "");
@@ -437,7 +448,7 @@ public abstract class SimulationBase {
                 sdv = Double.parseDouble(param[2]);
                 replicas = Integer.parseInt(param[3]);
             } catch (Exception ex) {
-                throw new CmdLineException(parser,"Parameter is invalid " + ex);
+                throw new CmdLineException(parser, "Parameter is invalid " + ex);
             }
         }
 
