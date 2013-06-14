@@ -10,12 +10,13 @@ Without this configuration present, some functionality in the IDE may be limited
         <configurations>
             <configuration id="App" profiles=""/>
             <configuration id="Git" profiles=""/>
+            <configuration id="GitMove" profiles=""/>
             <configuration id="GitWalkerDiff" profiles=""/>
             <configuration id="TraceViewer" profiles=""/>
             <configuration id="TreeSimFrom" profiles=""/>
             <configuration id="run ABT G1 " profiles=""/>
             <configuration id="treesim" profiles=""/>
-            <configuration id="GitMove" profiles=""/>
+            <configuration id="Git Analyze" profiles=""/>
         </configurations>
     </config-data>
 </project-shared-configuration>

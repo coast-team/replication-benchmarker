@@ -64,7 +64,7 @@ public abstract class Experience<T> {
 
     abstract String createName(String[] args);    
     
-    public void extractFiles(File dir, String gitdir, List<String> paths) {
+    public static void extractFiles(File dir, String gitdir, List<String> paths) {
         for (File f : dir.listFiles()) {
             if (f.isFile()) {
                 paths.add(f.getAbsolutePath().substring(gitdir.length() + 1));

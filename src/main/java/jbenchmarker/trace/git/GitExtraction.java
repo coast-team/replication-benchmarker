@@ -130,7 +130,6 @@ public class GitExtraction {
         this.moveThresold = moveThresold;
     }
 
-    // TODO : resolve problem of diff docuement in same DB
     private GitExtraction(Repository repo, CouchDbConnector db) {
         this(repo, new CommitCRUD(db), new PatchCRUD(db), defaultDiffAlgorithm, "");
     }
