@@ -72,10 +72,11 @@ public class GitTrace implements Trace {
     private List<Commit> initCommit;
     private static final DiffAlgorithm diffAlgorithm = GitExtraction.defaultDiffAlgorithm;
     static final boolean DEBUG = false;
-    static public int UpdBefore = 0, MoveBefore = 0, MergeBefore=0;
+    static public int UpdBefore = 0, MoveBefore = 0, MergeBefore=0, returnStat =0;
     private final boolean detectMoveAndUpdate;
     private final int updateThresold;
     private final int moveThresold;
+    static public ArrayList<String> commitRevert= new ArrayList<String>();
 
     /**
      * Produces a git trace using a git directory a couch db URL and a file
@@ -135,6 +136,8 @@ public class GitTrace implements Trace {
             UpdBefore = ge.nbUpdBlockBefore;
             MoveBefore = ge.nbMoveBefore;
             MergeBefore= ge.nbrMergeBefore;
+            returnStat = ge.returnLastStat;
+            commitRevert = ge.commitReverted;
         } else {
             commitCRUD = new CommitCRUD(dbcc);
             patchCRUD = new PatchCRUD(dbcp);
@@ -335,14 +338,20 @@ public class GitTrace implements Trace {
             while (op == null && !finish) {
                 if (editions != null && !editions.isEmpty()) {
                     Edition e = editions.pollFirst();
-                    currentVC.inc(commit.getReplica());
-                    op = new GitOperation(commit.getReplica(), currentVC, fileEdit, e);
+                    currentVC.inc(commit.getReplica());       
+                    op = new GitOperation(commit.getReplica(), currentVC, fileEdit, e, commit.getId());
                     check = true;
                 } else if (files != null && !files.isEmpty()) {
                     fileEdit = files.pollFirst();
                     if (fileEdit.getType() == FileHeader.PatchType.UNIFIED) {
+//                        if (commitRevert.contains(commit.getId())) {
+//                            for (Edition ed : fileEdit.getListDiff()) {
+//                                ed.setType(SequenceOperation.OpType.revert);
+//                            }
+//                        }
                         editions = new LinkedList<Edition>(fileEdit.getListDiff());
                     }
+
 //System.out.println(commit.patchId() + "\n" + editions);
 //                    advanceMerge(commit);
                     

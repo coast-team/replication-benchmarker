@@ -21,6 +21,8 @@ package jbenchmarker.trace.git;
 import collect.HashMapSet;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.trace.git.model.Commit;
 import jbenchmarker.trace.git.model.Edition;
@@ -84,6 +86,8 @@ public class GitExtraction {
     private int updateThresold = 20;
     private int moveThresold = 10;
     public int nbUpdBlockBefore=0,nbMoveBefore=0, nbrMergeBefore;
+    public int returnLastStat=0;
+    public ArrayList<String> commitReverted = new ArrayList<String>();
 
     /**
      * Test constructor. Do not use outside test.
@@ -573,6 +577,19 @@ public class GitExtraction {
 
         return new FileEdition(ent, type, elist);
     }
+    
+    public void detectRevert(RevCommit commit)
+    {
+        String msg = commit.getFullMessage();
+          if(msg.contains("This reverts"))
+          {
+              Pattern pattern = Pattern.compile("\\b[a-f0-9]{40}\\b");
+              Matcher matcher = pattern.matcher(msg);
+               if (matcher.find()) {
+                   commitReverted.add(matcher.group());
+               }
+          }
+    }
 
 // TODO : No parent
     public Commit parseRepository() throws IOException {
@@ -636,6 +653,7 @@ public class GitExtraction {
                 }
                 patchCrud.add(new Patch(co, edits));
             } else {
+                detectRevert(commit);
                 // Computes replica identifiers
                 Iterator<Integer> itid = identifiers.getAll(co.getId()).iterator();
 

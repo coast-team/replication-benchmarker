@@ -225,7 +225,7 @@ public class CausalSimulator extends Simulator {
         while (it.hasMoreElements()) {
             tour++;
             final TraceOperation opt = it.nextElement();
-
+            
             final int r = opt.getReplica();
 
             if (r == -1) {

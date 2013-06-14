@@ -36,7 +36,7 @@ public class TTFUTransformations implements SOCT2TranformationInterface<TTFOpera
         if (op1.getType() == OpType.insert && op2.getType() == OpType.insert) {
             if (op1.getPosition() > op2.getPosition()
                     || (op1.getPosition() == op2.getPosition() && op1.getSiteId() > op2.getSiteId())) {
-                op1.setPosition(op1.getPosition() + 1);
+                op1.setPosition(op1.getPosition() + 1);//insertion op2 ensuite op1
             }
             return op1;
         } else if ((op1.getType() == OpType.update || op1.getType() == OpType.noop)

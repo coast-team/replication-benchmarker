@@ -33,10 +33,12 @@ import jbenchmarker.trace.git.model.FileEdition;
  */
 public class GitOperation extends TraceOperation {
     SequenceOperation<String> sop;
+    String commitRev;
         
-    public GitOperation(int replica, VectorClock VC, FileEdition f, Edition e) {
+    public GitOperation(int replica, VectorClock VC, FileEdition f, Edition e, String commit) {
         super(replica, new VectorClock(VC));
         int arg = 0;
+        commitRev = commit;
         switch (e.getType()) {
             case delete: 
             case replace:

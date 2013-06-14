@@ -66,7 +66,7 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
 
     public enum OpType {
 
-        insert, delete, replace, update, move, unsupported, noop
+        insert, delete, replace, update, move, unsupported, noop, revert
     };
     private OpType type;                  // type of operation : insert or delete
     private int position;                 // position in the document

@@ -92,7 +92,7 @@ public final class GitMain extends Experience {
 
         System.out.println("*** Total number of files : " + paths.size());
         double[] memory = new double[paths.size()];
-        int m = 0;
+        int m = 0, sumRever=0;
         boolean memOk = false;
         double serMem = 0;
         //System.out.println("Path;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
@@ -153,12 +153,16 @@ public final class GitMain extends Experience {
                         CausalSimulator cd = new CausalSimulator(rf, stat, stat ? nbserializ : 0, stat);
                         cd.setWriter(save ? new TraceObjectWriter("trace") : null);
                         
-                  //      try {
+                       try {
                             cd.run(trace);
-                  //      } catch (RuntimeException e) {
-                   //       fileCrashed.add(path);
-                  //      }
-
+                       } catch (RuntimeException e) {
+                        fileCrashed.add(path);
+                  
+                     }
+                        if (trace.commitRevert != null) {
+                            System.out.println("---" + trace.commitRevert.size() + "---");
+                            sumRever += trace.commitRevert.size();
+                        }
                         if (k == 0 && stat) {
                             cop = cd.getRemoteTimes().size();
                             uop = cd.getGenerationTimes().size();
@@ -281,7 +285,7 @@ public final class GitMain extends Experience {
                     }
                 }
         }
-        
+        System.out.println("Number total of revert : "+sumRever);
         if (fileCrashed.size() > 0) {
             System.out.println("\n\nNumber of file crashed :" + fileCrashed.size());
             for (String f : fileCrashed) {
