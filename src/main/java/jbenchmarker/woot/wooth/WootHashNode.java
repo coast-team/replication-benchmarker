@@ -29,7 +29,7 @@ public class WootHashNode<T> extends WootNode<T> {
     private WootHashNode next;
     final private int degree;
 
-    public WootHashNode(WootIdentifier id, T content, boolean visible, WootHashNode next, int degree) {
+    public WootHashNode(WootIdentifier id, T content, boolean visible, WootHashNode<T> next, int degree) {
         super(id, content, visible);
         this.next = next;
         this.degree = degree;
@@ -39,7 +39,7 @@ public class WootHashNode<T> extends WootNode<T> {
         return degree;
     }
 
-    WootHashNode getNext() {
+    public WootHashNode getNext() {
         return next;
     }
 

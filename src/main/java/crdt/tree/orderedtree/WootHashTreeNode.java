@@ -41,7 +41,8 @@ public class WootHashTreeNode<T> extends WootHashDocument<WootHashTreeNode<T>> i
     private Map<WootIdentifier, WootPosition> positions = new HashMap<WootIdentifier, WootPosition>();
 
     public WootHashTreeNode(T value, int replicaNumber) {
-        super(replicaNumber);
+        super();
+        setReplicaNumber(replicaNumber);
         this.value = value;
     }
 

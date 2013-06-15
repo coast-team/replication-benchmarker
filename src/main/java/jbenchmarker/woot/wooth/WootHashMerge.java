@@ -27,6 +27,7 @@ import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceMessage;
 import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.woot.WootDocument;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;
 
@@ -97,6 +98,6 @@ public class WootHashMerge<T> extends MergeAlgorithm {
 
     @Override
     public CRDT<String> create() {
-        return new WootHashMerge(new WootHashDocument(), -1);
+        return new WootHashMerge(getDoc().create(), -1);
     }
 }

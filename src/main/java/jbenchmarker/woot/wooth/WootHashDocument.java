@@ -18,6 +18,7 @@
  */
 package jbenchmarker.woot.wooth;
 
+import crdt.Factory;
 import java.util.Map;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.Operation;
@@ -27,29 +28,28 @@ import jbenchmarker.woot.WootOperation;
 import jbenchmarker.woot.WootPosition;
 
 /**
- *
+ * A WOOTH document. Linked list and hash table to retrieve elements.
  * @author urso
  */
-public class WootHashDocument<T> implements Document {
+public class WootHashDocument<T> implements Document, Factory<Document> {
 
-    final private WootHashNode<T> first;
-    final private Map<WootIdentifier, WootHashNode<T>> map;
-    private int size = 0;
+    final protected WootHashNode<T> first;
+    final protected Map<WootIdentifier, WootHashNode<T>> map = new java.util.HashMap<WootIdentifier, WootHashNode<T>>();
+    protected int size = 0;
     private int clock = 0;
     private int replicaNumber;
 
-    public WootHashDocument() {
-        super();
-        WootHashNode end = new WootHashNode(WootIdentifier.IE, ' ', false, null, 0);
-        this.first = new WootHashNode(WootIdentifier.IB, ' ', false, end, 0);
-        this.map = new java.util.HashMap<WootIdentifier, WootHashNode<T>>();
+     public WootHashDocument() {
+        WootHashNode<T> end = new WootHashNode<T>(WootIdentifier.IE, null, false, null, 0);
+        this.first = new WootHashNode<T>(WootIdentifier.IB, null, false, end, 0);
         this.map.put(WootIdentifier.IB, first);
         this.map.put(WootIdentifier.IE, end);
-    }
-
-    public WootHashDocument(int replicaNumber) {
-        this();
-        this.replicaNumber = replicaNumber;
+     }
+    
+    public WootHashDocument(WootHashNode<T> first, WootHashNode<T> end) {
+        this.first = first;
+        this.map.put(WootIdentifier.IB, first);
+        this.map.put(WootIdentifier.IE, end);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class WootHashDocument<T> implements Document {
     protected void add(WootIdentifier id, T content, WootIdentifier ip, WootIdentifier in) {
         WootHashNode wp = map.get(ip);
         WootHashNode wn = map.get(in);
-        WootHashNode w = new WootHashNode(id, content, true, null, Math.max(wp.getDegree(), wn.getDegree()) + 1);
+        WootHashNode w = newNode(id, content, true, null, Math.max(wp.getDegree(), wn.getDegree()) + 1);
         insertBetween(w, wp, wn);
         map.put(id, w);
         ++size;
@@ -198,7 +198,11 @@ public class WootHashDocument<T> implements Document {
             insertBetween(wn, ip, in);
         }
     }
-
+    
+    protected WootHashNode get(WootIdentifier id) {
+        return map.get(id);
+    }
+            
     WootHashNode getFirst() {
         return first;
     }
@@ -241,5 +245,14 @@ public class WootHashDocument<T> implements Document {
         int hash = 7;
         hash = 59 * hash + (this.first != null ? this.first.hashCode() : 0);
         return hash;
+    }
+
+    protected WootHashNode<T> newNode(WootIdentifier id, T content, boolean visible, WootHashNode<T> next, int degree) {
+        return new WootHashNode(id, content, visible, next, degree);
+    }
+
+    @Override
+    public Document create() {
+        return new WootHashDocument();
     }
 }

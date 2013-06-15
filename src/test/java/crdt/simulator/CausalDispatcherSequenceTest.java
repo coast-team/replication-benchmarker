@@ -33,9 +33,7 @@ import jbenchmarker.ot.ttf.TTFDocument;
 import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
 import jbenchmarker.ot.ttf.TTFTransformations;
 import jbenchmarker.factories.TreedocFactory;
-import jbenchmarker.factories.WootFactories.WootFactory;
-import jbenchmarker.factories.WootFactories.WootHFactory;
-import jbenchmarker.factories.WootFactories.WootOFactory;
+import jbenchmarker.factories.WootFactories.*;
 import jbenchmarker.ot.ttf.update.TTFUMergeAlgorithm;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -61,6 +59,7 @@ public class CausalDispatcherSequenceTest {
         new WootFactory(),
         new WootOFactory(),
         new WootHFactory(),
+        new WootUFactory(),
         new RGAFactory(),
         new TTFFactories.WithoutGCFactory(),
         new TTFFactories.WithGC10(),
@@ -94,8 +93,8 @@ public class CausalDispatcherSequenceTest {
 //        Factory f = new TTFFactories.WithGC3();
 //        Factory f = new TTFUMergeAlgorithm(0);        
 //        Factory f = new TTFFactories.WithoutGCFactory();
-        Factory f = new TTFUFactories.DelWins();
-        CausalDispatcherSetsAndTreesTest.testRunX(f, 20, 100, 10, StandardSeqOpProfile.WITH_UPDATE);
+        Factory f = new WootUFactory();
+        CausalDispatcherSetsAndTreesTest.testRunX(f, 20, 1000, 10, StandardSeqOpProfile.WITH_UPDATE);
     }
 
     @Test

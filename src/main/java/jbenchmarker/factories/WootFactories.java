@@ -23,6 +23,7 @@ import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.woot.WootMerge;
 import jbenchmarker.woot.original.*;
 import jbenchmarker.woot.wooth.*;
+import jbenchmarker.woot.wooth.undo.WootHashReuse;
 import jbenchmarker.woot.wooto.*;
 
 /**
@@ -42,6 +43,12 @@ public class WootFactories extends ReplicaFactory {
         }
     }
     
+    public static class WootUFactory extends ReplicaFactory {
+        public MergeAlgorithm create(int r) {
+            return new WootHashMerge(WootHashReuse.newDocument(), r);
+        }
+    }
+    
     public static class WootOFactory extends ReplicaFactory {
         public MergeAlgorithm create(int r) {
             return new WootMerge(new WootOptimizedDocument(), r);
@@ -51,6 +58,5 @@ public class WootFactories extends ReplicaFactory {
     @Override
     public MergeAlgorithm create(int r) {
         return new WootHashMerge(new WootHashDocument(), r);
-    }
-    
+    }    
 }
