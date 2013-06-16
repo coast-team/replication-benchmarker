@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.core;
+package crdt;
 
 import java.io.Serializable;
 
 /**
- *
+ * An update operation (remote or local)
  * @author urso
  */
-public interface Operation<T> extends Cloneable,Serializable {
+public interface Operation<T> extends Cloneable, Serializable {
     public Operation<T> clone();
 }

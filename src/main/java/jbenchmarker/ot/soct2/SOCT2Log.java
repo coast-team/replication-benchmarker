@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  *  This object is a log of Soct2. It splits the history the process to transform new operation

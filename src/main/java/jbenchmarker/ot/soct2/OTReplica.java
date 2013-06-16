@@ -21,7 +21,7 @@ package jbenchmarker.ot.soct2;
 import collect.VectorClock;
 import crdt.Factory;
 import crdt.Replica;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  * Something that get transformation interface.

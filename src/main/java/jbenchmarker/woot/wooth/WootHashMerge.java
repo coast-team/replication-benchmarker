@@ -19,7 +19,7 @@
 package jbenchmarker.woot.wooth;
 
 import crdt.CRDT;
-import crdt.RemoteOperation;
+import crdt.Operation;
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
@@ -43,7 +43,7 @@ public class WootHashMerge<T> extends MergeAlgorithm {
     }
 
     @Override
-    protected void integrateRemote(crdt.RemoteOperation message) {
+    protected void integrateRemote(crdt.Operation message) {
         getDoc().apply(message);
     }
 
@@ -81,7 +81,7 @@ public class WootHashMerge<T> extends MergeAlgorithm {
     }
 
     @Override
-    protected List<? extends RemoteOperation> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<? extends Operation> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
         return localReplace(opt);
     }
 

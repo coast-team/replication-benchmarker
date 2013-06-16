@@ -5,7 +5,7 @@
 package jbenchmarker.woot.wooth.undo;
 
 import jbenchmarker.core.Document;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;

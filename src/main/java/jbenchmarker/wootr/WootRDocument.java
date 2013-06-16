@@ -20,7 +20,7 @@ package jbenchmarker.wootr;
 
 import java.util.ArrayList;
 import jbenchmarker.core.Document;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 
 /**

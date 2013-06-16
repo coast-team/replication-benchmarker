@@ -438,7 +438,7 @@ public class CausalSimulator extends Simulator {
  * One message can contain many operations
  * @return list of long
  */
-     public List<Long> getAvgLongPerRemoteOperation() {
+     public List<Long> getAvgLongPerOperation() {
         List<Long> l = new ArrayList();
         for (int i = 0; i < remoteTime.size(); ++i) {
             int gs = genSize.get(i);

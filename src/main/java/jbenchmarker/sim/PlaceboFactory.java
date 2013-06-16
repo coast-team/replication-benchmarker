@@ -18,6 +18,7 @@
  */
 package jbenchmarker.sim;
 
+import crdt.Operation;
 import crdt.CRDT;
 import crdt.simulator.IncorrectTraceException;
 import java.util.List;
@@ -67,7 +68,7 @@ public class PlaceboFactory extends ReplicaFactory {
         }
 
         @Override
-        protected void integrateRemote(crdt.RemoteOperation message) throws IncorrectTraceException {
+        protected void integrateRemote(crdt.Operation message) throws IncorrectTraceException {
             this.getDoc().apply(message);
         }
 

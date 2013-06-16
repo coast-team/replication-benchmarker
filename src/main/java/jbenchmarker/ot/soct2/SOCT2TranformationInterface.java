@@ -18,7 +18,7 @@
  */
 package jbenchmarker.ot.soct2;
 
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  *

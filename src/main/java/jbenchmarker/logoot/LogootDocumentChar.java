@@ -19,7 +19,7 @@
 package jbenchmarker.logoot;
 
 import java.util.List;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 import jbenchmarker.core.SequenceMessage;
 
 /**

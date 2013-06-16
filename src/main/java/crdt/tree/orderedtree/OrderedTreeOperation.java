@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jbenchmarker.core.LocalOperation;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  *

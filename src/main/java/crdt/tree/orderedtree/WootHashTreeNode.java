@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;
 import jbenchmarker.woot.WootPosition;

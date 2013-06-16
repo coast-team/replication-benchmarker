@@ -18,14 +18,14 @@
  */
 package jbenchmarker.logootsplitO;
 
-import crdt.RemoteOperation;
+import crdt.Operation;
 import java.io.Serializable;
 
 /**
  *
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public abstract class LogootSOp  implements  RemoteOperation, Serializable{
+public abstract class LogootSOp  implements  Operation, Serializable{
     
 
   @Override

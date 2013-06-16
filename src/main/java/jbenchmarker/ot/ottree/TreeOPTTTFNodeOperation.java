@@ -18,16 +18,15 @@
  */
 package jbenchmarker.ot.ottree;
 
-import crdt.RemoteOperation;
+import crdt.Operation;
 import java.io.Serializable;
-import jbenchmarker.core.Operation;
 import jbenchmarker.ot.soct2.OTMessage;
 
 /**
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class TreeOPTTTFNodeOperation<T> implements RemoteOperation, Serializable{
+public class TreeOPTTTFNodeOperation<T> implements Operation, Serializable{
 
     static public enum OpType{ins,del,chT,child};
     

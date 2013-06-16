@@ -20,7 +20,7 @@ package jbenchmarker.ot;
 
 import crdt.CRDTMessage;
 import java.util.Arrays;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.ot.otset.AddWinTransformation;
 import jbenchmarker.ot.otset.DelWinTransformation;

@@ -44,7 +44,7 @@ public class RGAMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected void integrateRemote(crdt.RemoteOperation message) throws IncorrectTraceException {
+    protected void integrateRemote(crdt.Operation message) throws IncorrectTraceException {
         RGAOperation rgaop = (RGAOperation) message;
         RGADocument rgadoc = (RGADocument) (this.getDoc());
         this.siteVC.inc(rgaop.getReplica());

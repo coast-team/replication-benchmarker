@@ -21,7 +21,7 @@ package jbenchmarker.woot.wooth;
 import crdt.Factory;
 import java.util.Map;
 import jbenchmarker.core.Document;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;

@@ -18,7 +18,7 @@
  */
 package jbenchmarker.ot.soct2;
 
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  *  This object is a log of Soct2. It splits the history the process to transform new operation

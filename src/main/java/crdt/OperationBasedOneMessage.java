@@ -20,50 +20,26 @@ package crdt;
 
 import crdt.simulator.TraceOperation;
 import java.io.Serializable;
-import jbenchmarker.core.Operation;
 
 /**
- *
+ * A message that contains one operation.
  * @author urso
  */
-public  class OperationBasedOneMessage implements OperationBasedMessage,Serializable {
-    //TraceOperation traceOperation;
-    //private LinkedList<CommutativeMessage<T>> msgs = new LinkedList<CommutativeMessage<T>>();
+public  class OperationBasedOneMessage implements OperationBasedMessage, Serializable {
+    Operation operation;
 
-    /*public LinkedList<CommutativeMessage<T>> getMsgs() {
-        return msgs;
-    }*/
-    RemoteOperation operation;
-
-   /* public OperationBasedOneMessage(/*TraceOperation traceOperation, RemoteOperation operation) {
-        this.traceOperation = traceOperation;
-        this.operation = operation;
-    }*/
-
-    public OperationBasedOneMessage(RemoteOperation operation) {
+    public OperationBasedOneMessage(Operation operation) {
         this.operation = operation;
     }
-        
     
     @Override
     public CRDTMessage concat(CRDTMessage msg){
        return new OperationBasedMessagesBag(this,(OperationBasedMessage)msg);
    }
-
-    /*@Override
-    public String toString() {
-        StringBuilder s = new StringBuilder(toString());
-        for (OperationBasedOneMessage m : msgs) {
-            s.append(" + ").append(m.toString());
-        }
-        return s.toString();
-    }*/
-
-    //abstract protected String toString();
     
     @Override
     public OperationBasedOneMessage clone(){
-        return new OperationBasedOneMessage((RemoteOperation)this.operation.clone());
+        return new OperationBasedOneMessage((Operation)this.operation.clone());
     }
 
     @Override
@@ -75,21 +51,11 @@ public  class OperationBasedOneMessage implements OperationBasedMessage,Serializ
         cmrdt.applyOneRemote(this);   
     }
 
-    /*@Override
-    public void setTraceOperation(TraceOperation traceOperation) {
-        this.traceOperation=traceOperation;
-    }
-
-    @Override
-    public TraceOperation getTraceOperation() {
-        return traceOperation;
-    }*/
-
-    public RemoteOperation getOperation() {
+    public Operation getOperation() {
         return operation;
     }
 
-    public void setOperation(RemoteOperation operation) {
+    public void setOperation(Operation operation) {
         this.operation = operation;
     }
 

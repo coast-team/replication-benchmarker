@@ -42,6 +42,7 @@
  */
 package jbenchmarker.logootOneId;
 
+import crdt.Operation;
 import jbenchmarker.core.*;
 
 /**

@@ -21,7 +21,7 @@ package crdt.set;
 import crdt.CRDTMessage;
 import crdt.OperationBasedOneMessage;
 import crdt.PreconditionException;
-import crdt.RemoteOperation;
+import crdt.Operation;
 
 /**
  *

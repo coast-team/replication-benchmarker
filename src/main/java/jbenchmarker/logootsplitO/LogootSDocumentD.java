@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  *

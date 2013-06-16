@@ -22,7 +22,7 @@ package jbenchmarker.logootsplit;
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 

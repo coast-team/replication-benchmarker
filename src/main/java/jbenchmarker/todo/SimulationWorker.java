@@ -104,7 +104,7 @@ public class SimulationWorker {
              */
             cd.run(trace);
             if (ltime == null) {
-                cop = cd.getAvgLongPerRemoteOperation().size();
+                cop = cd.getAvgLongPerOperation().size();
                 uop = cd.getGenerationTimes().size();
                 mop = cd.getMemUsed().size();
                 ltime = new long[nb][uop];
@@ -126,10 +126,10 @@ public class SimulationWorker {
                 minSizeMem = m.size();
             toArrayLong(mem[ex], m, minSizeMem);
             
-            if (minSizeInteg > cd.getAvgLongPerRemoteOperation().size()) {
-                minSizeInteg = cd.getAvgLongPerRemoteOperation().size();
+            if (minSizeInteg > cd.getAvgLongPerOperation().size()) {
+                minSizeInteg = cd.getAvgLongPerOperation().size();
             }
-            toArrayLong(rtime[ex], cd.getAvgLongPerRemoteOperation(), minSizeInteg);
+            toArrayLong(rtime[ex], cd.getAvgLongPerOperation(), minSizeInteg);
             for (int i = 0; i < cop - 1; i++) {
                 rtime[ex][i] /= nbrReplica - 1;
             }

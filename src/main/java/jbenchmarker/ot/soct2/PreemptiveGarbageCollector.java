@@ -21,7 +21,7 @@ package jbenchmarker.ot.soct2;
 import collect.VectorClock;
 import java.util.*;
 import java.util.Map.Entry;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  *

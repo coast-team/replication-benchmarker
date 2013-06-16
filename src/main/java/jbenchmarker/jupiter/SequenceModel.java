@@ -25,7 +25,7 @@ package jbenchmarker.jupiter;
 import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.core.LocalOperation;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 

@@ -20,7 +20,7 @@ package jbenchmarker.treedocReplace;
 
 import jbenchmarker.treedoc.*;
 import jbenchmarker.core.Document;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  * An instance of Treedoc document, implemented as a binary-like tree.

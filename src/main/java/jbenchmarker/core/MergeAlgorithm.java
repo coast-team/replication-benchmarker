@@ -64,7 +64,7 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
      * @param message from another replicas
      * @throws IncorrectTraceException
      */
-    protected abstract void integrateRemote(crdt.RemoteOperation message) throws IncorrectTraceException;
+    protected abstract void integrateRemote(crdt.Operation message) throws IncorrectTraceException;
 
     /**
      *
@@ -87,7 +87,7 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
      * @return List of message for sequence
      * @throws IncorrectTraceException
      */
-    private List<? extends RemoteOperation> oldApplyLocal(SequenceOperation opt) throws IncorrectTraceException {
+    private List<? extends Operation> oldApplyLocal(SequenceOperation opt) throws IncorrectTraceException {
         switch (opt.getType()) {
             case insert:
                 return localInsert(opt);
@@ -122,13 +122,13 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
             throw new PreconditionException("Not a sequenceOperation : " + op);
         }
 
-        List<? extends RemoteOperation> l = oldApplyLocal((SequenceOperation) op);
+        List<? extends Operation> l = oldApplyLocal((SequenceOperation) op);
         if (l == null || l.isEmpty()) {
             return CRDTMessage.emptyMessage;
         }
 
         CRDTMessage m = null;
-        for (RemoteOperation n : l) {
+        for (Operation n : l) {
             if (m == null) {
                 m = new OperationBasedOneMessage(n);
             } else {
@@ -169,8 +169,8 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
         }
     }
 
-    public static RemoteOperation CRDTMessage2SequenceMessage(CRDTMessage mess) {
-        return (RemoteOperation) ((OperationBasedOneMessage) mess).getOperation();
+    public static Operation CRDTMessage2SequenceMessage(CRDTMessage mess) {
+        return (Operation) ((OperationBasedOneMessage) mess).getOperation();
     }
 
     /**
@@ -192,21 +192,21 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
      * replicas
      * @throws IncorrectTraceException by default
      */
-    abstract protected List<? extends RemoteOperation> localInsert(SequenceOperation opt) throws IncorrectTraceException;
+    abstract protected List<? extends Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException;
 
-    abstract protected List<? extends RemoteOperation> localDelete(SequenceOperation opt) throws IncorrectTraceException;
+    abstract protected List<? extends Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException;
     
     /**
      * Default behavior of update is to delete and insert
      */
-    protected List<? extends RemoteOperation> localUpdate(SequenceOperation opt) throws IncorrectTraceException{
+    protected List<? extends Operation> localUpdate(SequenceOperation opt) throws IncorrectTraceException{
          return localReplace(opt);
     }
 
     /**
      * Default behavior of move is to delele plus insert
      */
-    protected List<? extends RemoteOperation> localMove(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<? extends Operation> localMove(SequenceOperation opt) throws IncorrectTraceException {
         SequenceOperation del = new SequenceOperation(OpType.delete, opt.getPosition(), opt.getContent().size(), null),
                 ins = new SequenceOperation(OpType.insert, opt.getDestination(), 0, opt.getContent());
         List lop = localDelete(del);
@@ -217,7 +217,7 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
     /**
      * Default behavior of replace is to delele plus insert
      */
-    protected List<? extends RemoteOperation> localReplace(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<? extends Operation> localReplace(SequenceOperation opt) throws IncorrectTraceException {
         List lop = localDelete(opt);
         lop.addAll(localInsert(opt));
         return lop;

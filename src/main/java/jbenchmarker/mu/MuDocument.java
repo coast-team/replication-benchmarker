@@ -22,7 +22,7 @@ import collect.Tree;
 import crdt.Factory;
 import java.util.*;
 import java.util.Map.Entry;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;

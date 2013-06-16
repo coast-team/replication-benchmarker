@@ -18,6 +18,7 @@
  */
 package jbenchmarker.ot.ttf;
 
+import crdt.Operation;
 import collect.VectorClock;
 import crdt.CRDT;
 import crdt.Factory;
@@ -175,12 +176,12 @@ public class TTFMergeAlgorithm extends MergeAlgorithm implements OTReplica<Strin
      * IntegrateRemote Operation
      */
     @Override
-    protected void integrateRemote(crdt.RemoteOperation message) throws IncorrectTraceException {
-        integrateOneRemoteOperation(((TTFSequenceMessage) message).getSoct2Message());
+    protected void integrateRemote(crdt.Operation message) throws IncorrectTraceException {
+        integrateOneOperation(((TTFSequenceMessage) message).getSoct2Message());
     }
 
 
-    private void integrateOneRemoteOperation(OTMessage mess) {
+    private void integrateOneOperation(OTMessage mess) {
         Operation op = otAlgo.integrateRemote(mess);
         this.getDoc().apply(op);
     }

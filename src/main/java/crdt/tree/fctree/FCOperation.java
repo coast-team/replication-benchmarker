@@ -18,16 +18,16 @@
  */
 package crdt.tree.fctree;
 
-import crdt.RemoteOperation;
+import crdt.Operation;
 import java.io.Serializable;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  *
  * @param <T> 
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public abstract class FCOperation<T> implements RemoteOperation,Serializable {
+public abstract class FCOperation<T> implements Operation,Serializable {
     //public enum OpType{add,del,chlabel,chorder,move};
     private FCIdentifier id;
 

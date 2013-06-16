@@ -22,7 +22,7 @@ import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceOperation;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  *

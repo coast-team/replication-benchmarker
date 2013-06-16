@@ -18,7 +18,7 @@
  */
 package jbenchmarker.ot.otset;
 
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 import crdt.OperationBasedMessagesBag;
 
 /**

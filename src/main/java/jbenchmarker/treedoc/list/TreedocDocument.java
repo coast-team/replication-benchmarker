@@ -25,7 +25,7 @@ import jbenchmarker.core.SequenceOperation;
 import citi.treedoc.Treedoc;
 import citi.treedoc.TreedocId;
 import citi.treedoc.TreedocIdFactory;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  * 

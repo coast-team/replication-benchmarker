@@ -18,16 +18,15 @@
  */
 package jbenchmarker.ot.ottree;
 
-import crdt.RemoteOperation;
+import crdt.Operation;
 import java.util.LinkedList;
 import java.util.List;
-import jbenchmarker.core.Operation;
 
 /**
  *
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
-public class OTTreeRemoteOperation<T> implements RemoteOperation{
+public class OTTreeRemoteOperation<T> implements Operation{
 
     private List<Integer> path;
     private T contain;

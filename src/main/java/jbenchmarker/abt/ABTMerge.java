@@ -50,7 +50,7 @@ public class ABTMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected void integrateRemote(crdt.RemoteOperation message) throws IncorrectTraceException {
+    protected void integrateRemote(crdt.Operation message) throws IncorrectTraceException {
         // TODO Auto-generated method stub
 
         ABTOperation abtop = (ABTOperation) message;

@@ -19,7 +19,7 @@
 package jbenchmarker.logootsplitO;
 
 import crdt.CRDT;
-import crdt.RemoteOperation;
+import crdt.Operation;
 import crdt.simulator.IncorrectTraceException;
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -56,14 +56,14 @@ public class LogootSAlgo extends MergeAlgorithm implements Serializable {
     }
 
     @Override
-    protected void integrateRemote(RemoteOperation message) throws IncorrectTraceException {
+    protected void integrateRemote(Operation message) throws IncorrectTraceException {
        
         ((LogootSOp) message).apply((LogootSDoc) this.getDoc());
         
     }
 
     @Override
-    protected List<RemoteOperation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
         List ret = new LinkedList();
         ret.add(getLDoc().insertLocal(opt.getPosition(), opt.getContent()));
        
@@ -71,7 +71,7 @@ public class LogootSAlgo extends MergeAlgorithm implements Serializable {
     }
 
     @Override
-    protected List<RemoteOperation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         
         List ret = new LinkedList();
         ret.add(getLDoc().delLocal(opt.getPosition(), opt.getLenghOfADel()+opt.getPosition()-1));

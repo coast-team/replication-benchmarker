@@ -20,7 +20,7 @@ package jbenchmarker.logoot;
 
 import collect.HashVectorWithHoles;
 import collect.VectorWithHoles;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 import jbenchmarker.core.SequenceMessage;
 
 /**

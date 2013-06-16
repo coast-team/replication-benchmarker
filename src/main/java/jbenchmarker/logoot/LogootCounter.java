@@ -18,6 +18,7 @@
  */
 package jbenchmarker.logoot;
 
+import crdt.Operation;
 import jbenchmarker.core.*;
 
 /**

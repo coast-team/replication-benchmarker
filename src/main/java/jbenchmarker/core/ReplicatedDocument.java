@@ -18,6 +18,7 @@
  */
 package jbenchmarker.core;
 
+import crdt.Operation;
 import crdt.Factory;
 import crdt.PreconditionException;
 import java.util.Observable;

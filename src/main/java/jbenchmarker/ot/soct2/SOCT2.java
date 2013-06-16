@@ -22,7 +22,7 @@ import collect.VectorClock;
 import crdt.Factory;
 import java.io.Serializable;
 import java.util.Map;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  *

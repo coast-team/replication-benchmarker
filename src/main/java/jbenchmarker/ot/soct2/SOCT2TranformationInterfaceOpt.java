@@ -19,7 +19,7 @@
 
 package jbenchmarker.ot.soct2;
 
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 
 public interface SOCT2TranformationInterfaceOpt<O extends Operation> extends SOCT2TranformationInterface<O> {

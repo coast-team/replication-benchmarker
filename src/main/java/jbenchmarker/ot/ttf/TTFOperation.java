@@ -19,7 +19,7 @@
 package jbenchmarker.ot.ttf;
 
 import java.io.Serializable;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation.OpType;
 
 /**

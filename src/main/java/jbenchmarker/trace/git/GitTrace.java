@@ -29,7 +29,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jbenchmarker.core.LocalOperation;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.trace.git.model.Commit;
 import jbenchmarker.trace.git.model.Edition;

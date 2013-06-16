@@ -22,7 +22,7 @@ import crdt.CRDT;
 import crdt.tree.orderedtree.OrderedTreeOperation;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 import jbenchmarker.core.LocalOperation;
 /**
  *

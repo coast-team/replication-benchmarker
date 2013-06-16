@@ -18,6 +18,7 @@
  */
 package jbenchmarker.sim;
 
+import crdt.Operation;
 import crdt.simulator.Simulator;
 import java.util.Iterator;
 import crdt.simulator.Trace;
@@ -25,7 +26,7 @@ import crdt.simulator.CausalSimulator;
 import crdt.CRDT;
 import crdt.CRDTMessage;
 import crdt.OperationBasedOneMessage;
-import crdt.RemoteOperation;
+import crdt.Operation;
 import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.TraceOperation;
 import java.util.Enumeration;
@@ -140,7 +141,7 @@ public class CausalDispatcherTest {
                 }
             }, r) {
                 @Override
-                protected void integrateRemote(crdt.RemoteOperation message) {
+                protected void integrateRemote(crdt.Operation message) {
                     this.getDoc().apply(message);
                 }
 
@@ -168,7 +169,7 @@ public class CausalDispatcherTest {
                 }
 
                 @Override
-                protected List<? extends RemoteOperation> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
+                protected List<? extends Operation> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
                     return localReplace(opt);
                 }
             };

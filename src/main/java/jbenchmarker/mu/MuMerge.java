@@ -19,7 +19,7 @@
 package jbenchmarker.mu;
 
 import crdt.CRDT;
-import crdt.RemoteOperation;
+import crdt.Operation;
 import crdt.simulator.IncorrectTraceException;
 import java.util.List;
 import jbenchmarker.core.Document;
@@ -46,7 +46,7 @@ public class MuMerge<T> extends MergeAlgorithm {
     }
    
     @Override
-    protected void integrateRemote(crdt.RemoteOperation message) {
+    protected void integrateRemote(crdt.Operation message) {
         getDoc().apply(message);
     }
 
@@ -66,7 +66,7 @@ public class MuMerge<T> extends MergeAlgorithm {
     }
     
     @Override
-    protected List<? extends RemoteOperation> localMove(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<? extends Operation> localMove(SequenceOperation opt) throws IncorrectTraceException {
         return handleMoves ? getDoc().move(opt.getPosition(), opt.getDestination(), opt.getContent(), opt) : super.localMove(opt);
     }
     

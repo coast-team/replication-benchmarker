@@ -18,6 +18,7 @@
  */
 package jbenchmarker.core;
 
+import crdt.Operation;
 import java.io.Serializable;
 
 /**

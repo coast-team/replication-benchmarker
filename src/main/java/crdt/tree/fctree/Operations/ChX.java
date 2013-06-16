@@ -24,7 +24,7 @@ import crdt.tree.fctree.FCNodeGf;
 import crdt.tree.fctree.FCNodeGf.FcLabels;
 import crdt.tree.fctree.FCOperation;
 import crdt.tree.fctree.FCTree;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  *

@@ -26,7 +26,7 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jbenchmarker.core.LocalOperation;
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  *

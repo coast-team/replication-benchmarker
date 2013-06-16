@@ -22,7 +22,7 @@
  */
 package jbenchmarker.jupiter;
 
-import jbenchmarker.core.Operation;
+import crdt.Operation;
 
 /**
  *

@@ -18,13 +18,13 @@
  */
 package crdt.set;
 
-import crdt.RemoteOperation;
+import crdt.Operation;
 
 /**
  *
  * @author urso
  */
-public abstract class CommutativeSetMessage<T> implements RemoteOperation<T> {   
+public abstract class CommutativeSetMessage<T> implements Operation<T> {   
     public static enum OpType {add, del}; 
     
     protected T content;

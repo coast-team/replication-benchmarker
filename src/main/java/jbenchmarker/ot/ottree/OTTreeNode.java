@@ -20,13 +20,13 @@ package jbenchmarker.ot.ottree;
 
 import collect.OrderedNode;
 import collect.SimpleNode;
+import crdt.Operation;
 import crdt.tree.orderedtree.PositionIdentifier;
 import crdt.tree.orderedtree.Positioned;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import jbenchmarker.core.Operation;
 
 /**
  *
