@@ -19,13 +19,12 @@
 package jbenchmarker.woot;
 
 import crdt.tree.orderedtree.PositionIdentifier;
-import java.io.Serializable;
 
 /**
  *
  * @author urso
  */
-public class WootPosition implements Cloneable, PositionIdentifier, Serializable {
+public class WootPosition implements WootId, PositionIdentifier {
     final private WootIdentifier id;
     final private WootIdentifier ip;   // previous
     final private WootIdentifier in;   // next

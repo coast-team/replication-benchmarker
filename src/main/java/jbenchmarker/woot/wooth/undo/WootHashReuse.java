@@ -7,6 +7,7 @@ package jbenchmarker.woot.wooth.undo;
 import jbenchmarker.core.Document;
 import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;
 import jbenchmarker.woot.wooth.WootHashDocument;
@@ -31,7 +32,7 @@ public class WootHashReuse<T> extends WootHashDocument<T> {
 
     @Override
     public WootOperation delete(SequenceOperation o, WootIdentifier id) { // diseappar
-        return new WootUndo(o, id, -get(id).getVisibility());
+        return new WootUndo(id, -get(id).getVisibility());
     }
 
     @Override
@@ -39,7 +40,7 @@ public class WootHashReuse<T> extends WootHashDocument<T> {
         WootHashNode<T> p = get(ip).getNext();
         while (p.getId() != in) {
             if (p.getContent().equals(content)) { // reappear
-                return new WootUndo(o, p.getId(), -((WootUndoNode) p).getVisibility() + 1);
+                return new WootUndo(p.getId(), -((WootUndoNode) p).getVisibility() + 1);
             }
             p = p.getNext();
         }

@@ -45,7 +45,7 @@ public class NonCausalLogoot<T> extends LogootDocument<T> {
     @Override
     public void apply(Operation op) {
         LogootOperation lg = (LogootOperation) op;
-        ListIdentifier id = lg.getIdentifiant();
+        ListIdentifier id = lg.getPosition();
         int r = id.replica(), h = id.clock();
         if (lg.getType() == OpType.delete || !seen.contains(r, h)) {
             super.apply(op);

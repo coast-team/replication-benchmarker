@@ -18,10 +18,8 @@
  */
 package jbenchmarker.mu;
 
-import java.util.Collection;
-import java.util.List;
 import crdt.Operation;
-import jbenchmarker.core.SequenceOperation;
+import java.util.Collection;
 import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.logoot.*;
 
@@ -29,30 +27,20 @@ import jbenchmarker.logoot.*;
  *
  * @author mehdi urso
  */
-public class MuOperation<T> implements Operation {
+public class MuOperation<T> extends LogootOperation<T> {
     
-    final private ListIdentifier origin;
     final private ListIdentifier destination;
     final private Collection<Timestamp> oldVersions;
     final private Timestamp timestamp;   
     final private Timestamp target;   
-    final private T content;
-    final private OpType type; 
 
-    public MuOperation(Timestamp target, ListIdentifier position, ListIdentifier destination, 
+    MuOperation(Timestamp target, ListIdentifier position, ListIdentifier destination, 
             Collection<Timestamp> oldVersions, Timestamp timestamp, T content, OpType type) {
-        this.origin = position;
+        super(type, position, content);
         this.destination = destination;
         this.oldVersions = oldVersions;
         this.timestamp = timestamp;
         this.target = target;
-        this.content = content;
-        this.type = type;
-    }
-
-
-    ListIdentifier getOrigin() {
-        return origin;
     }
 
     public ListIdentifier getDestination() {
@@ -67,14 +55,6 @@ public class MuOperation<T> implements Operation {
         return timestamp;
     }
 
-    public T getContent() {
-        return content;
-    }
-
-    public OpType getType() {
-        return type;
-    }
-
     Timestamp getTarget() {
         return target;
     }
@@ -82,6 +62,6 @@ public class MuOperation<T> implements Operation {
     // FIXME: shoud clone the operation and its parameters
     @Override
     public Operation clone() {
-        return new MuOperation(target, origin, destination, oldVersions, timestamp, content, type);
+        return new MuOperation(target, getPosition(), destination, oldVersions, timestamp, getContent(), getType());
     }
 }

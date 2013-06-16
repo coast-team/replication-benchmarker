@@ -18,7 +18,6 @@
  */
 package jbenchmarker.core;
 
-import collect.VectorClock;
 import crdt.CRDT;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,6 +30,10 @@ import java.util.List;
  */
 public class SequenceOperation<T> implements LocalOperation, Serializable {
 
+    public enum OpType {
+        insert, delete, replace, update, move, unsupported, noop, revert, undo
+    };
+    
     @Override
     public SequenceOperation clone() {
         throw new UnsupportedOperationException("Not implemented yet");
@@ -48,8 +51,8 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
             if (position > sizeDoc) {
                 position = sizeDoc; // an insert position exceeds document size
             }
-        } else if(this.type==OpType.delete && sizeDoc==0){
-            return new SequenceOperation(OpType.noop,0,0,null);
+        } else if (this.type == OpType.delete && sizeDoc == 0) {
+            return new SequenceOperation(OpType.noop, 0, 0, null);
         } else if (this.position >= sizeDoc) {
             position = sizeDoc - 1; // a position exceeds document size
         }
@@ -64,10 +67,6 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
         return this;
     }
 
-    public enum OpType {
-
-        insert, delete, replace, update, move, unsupported, noop, revert
-    };
     private OpType type;                  // type of operation : insert or delete
     private int position;                 // position in the document
     private int argument;                 // length of a del or move position
@@ -92,7 +91,7 @@ public class SequenceOperation<T> implements LocalOperation, Serializable {
     public int getPosition() {
         return position;
     }
-    
+
     public void setPosition(int p) {
         position = p;
     }

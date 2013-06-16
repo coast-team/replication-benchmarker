@@ -27,11 +27,11 @@ import jbenchmarker.core.SequenceOperation.OpType;
  * @author urso
  */
 public class WootOperation<T> implements Operation {
-    final private Cloneable identifier;   // next   
+    final protected WootId identifier;   // next   
     final private T content;
     final private SequenceOperation.OpType type;
 
-    public WootOperation(OpType type, Cloneable identifier, T content) {
+    public WootOperation(OpType type, WootId identifier, T content) {
         this.identifier = identifier;
         this.content = content;
         this.type = type;
@@ -61,10 +61,6 @@ public class WootOperation<T> implements Operation {
 
     @Override
     public Operation clone() {
-        return new WootOperation(type,
-                identifier instanceof WootIdentifier ? 
-                ((WootIdentifier) identifier).clone() : 
-                ((WootPosition) identifier).clone(), 
-                content);
+        return new WootOperation(type, identifier.clone(), content);
     }
 }

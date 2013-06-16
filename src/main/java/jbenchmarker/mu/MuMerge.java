@@ -24,7 +24,6 @@ import crdt.simulator.IncorrectTraceException;
 import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 
 /**

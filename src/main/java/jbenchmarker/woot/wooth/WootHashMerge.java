@@ -20,14 +20,12 @@ package jbenchmarker.woot.wooth;
 
 import crdt.CRDT;
 import crdt.Operation;
+import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import crdt.Operation;
-import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.woot.WootDocument;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;
 

@@ -18,12 +18,10 @@
  */
 package jbenchmarker.mu;
 
-import collect.Tree;
 import crdt.Factory;
+import crdt.Operation;
 import java.util.*;
 import java.util.Map.Entry;
-import crdt.Operation;
-import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.logoot.*;
@@ -67,17 +65,17 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
         Timestamp target = lg.getTarget();
         Cell<T> c = elements.get(target);
         if (lg.getType() == OpType.replace) { // hack replace
-            c.places.remove(lg.getOrigin());
-            positions.remove(lg.getOrigin());
+            c.places.remove(lg.getPosition());
+            positions.remove(lg.getPosition());
             elements.put(lg.getTimestamp(), new Cell(lg.getDestination(), lg.getTimestamp(), lg.getContent()));
             positions.put(lg.getDestination(), lg.getTimestamp());
         } else {
             if (c == null) {
                 elements.put(target, c = new Cell());
             }
-            if (lg.getOrigin() != null) {
-                c.places.remove(lg.getOrigin());
-                positions.remove(lg.getOrigin());
+            if (lg.getPosition() != null) {
+                c.places.remove(lg.getPosition());
+                positions.remove(lg.getPosition());
             }
             if (lg.getDestination() != null) {
                 c.places.add(lg.getDestination());

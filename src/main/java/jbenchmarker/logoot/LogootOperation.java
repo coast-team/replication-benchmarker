@@ -32,7 +32,7 @@ public class LogootOperation<T> implements Operation {
     final private T content;
     final private OpType type;
 
-    private LogootOperation(OpType type, ListIdentifier identif, T content) {
+    public LogootOperation(OpType type, ListIdentifier identif, T content) {
         this.type = type;
         this.identif = identif;
         this.content = content;
@@ -42,7 +42,7 @@ public class LogootOperation<T> implements Operation {
         return this.type;
     }
 
-    public ListIdentifier getIdentifiant() {
+    public ListIdentifier getPosition() {
         return identif;
     }
     

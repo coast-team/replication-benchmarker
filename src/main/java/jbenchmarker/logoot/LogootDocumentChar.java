@@ -51,7 +51,7 @@ public class LogootDocumentChar extends LogootDocument<Character> {
     @Override
     public void apply(Operation op) {
         LogootOperation lg = (LogootOperation) op;
-        ListIdentifier idToSearch = lg.getIdentifiant();
+        ListIdentifier idToSearch = lg.getPosition();
         int pos = dicho(idToSearch);
         //Insertion et Delete
         if (lg.getType() == OpType.insert) {
