@@ -25,7 +25,7 @@ import crdt.simulator.IncorrectTraceException;
 import java.util.NoSuchElementException;
 import jbenchmarker.woot.original.WootOriginalDocument;
 import java.util.List;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -110,7 +110,7 @@ public class WootMergeTest {
     @Test
     public void accent() throws IncorrectTraceException {
         WootMerge instance = new WootMerge(new WootOriginalDocument(), 1);
-        List<SequenceMessage> r = instance.localInsert(SequenceOperation.insert(0,"à"));
+        List<Operation> r = instance.localInsert(SequenceOperation.insert(0,"à"));
         assertEquals(1, r.size());
     }
    

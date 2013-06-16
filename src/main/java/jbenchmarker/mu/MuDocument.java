@@ -23,7 +23,7 @@ import crdt.Factory;
 import java.util.*;
 import java.util.Map.Entry;
 import crdt.Operation;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.logoot.*;
@@ -95,32 +95,32 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
         }
     }
 
-    public List<SequenceMessage> insert(int position, List<T> lc, SequenceOperation opt) {
+    public List<Operation> insert(int position, List<T> lc, SequenceOperation opt) {
         List<ListIdentifier> pos = generateIdentifiers(position, lc.size());
         Iterator<ListIdentifier> itp = pos.iterator();
-        List<SequenceMessage> patch = new LinkedList<SequenceMessage>();
+        List<Operation> patch = new LinkedList<Operation>();
         Iterator<T> itc = lc.iterator();
         while (itp.hasNext()) {
             ListIdentifier p = itp.next();
             T value = itc.next();
             Timestamp ts = new Timestamp(p.clock(), p.replica());
-            MuOperation op = new MuOperation(ts, null, p, null, ts, value, OpType.insert, opt);
+            MuOperation op = new MuOperation(ts, null, p, null, ts, value, OpType.insert);
             apply(op);
             patch.add(op);
         }
         return patch;
     }
 
-    public List<SequenceMessage> delete(int position, int length, SequenceOperation opt) {
+    public List<Operation> delete(int position, int length, SequenceOperation opt) {
         List<Entry<ListIdentifier, Timestamp>> elems = new ArrayList<Entry<ListIdentifier, Timestamp>>(positions.entrySet()).subList(position, position + length);
-        List<SequenceMessage> patch = new LinkedList<SequenceMessage>();
+        List<Operation> patch = new LinkedList<Operation>();
         for (Entry<ListIdentifier, Timestamp> e : elems) {
             Cell<T> c = elements.get(e.getValue());
             MuOperation op;
             if (c.places.size() > 1) { // move clones hack : treat as single delete
-                op = new MuOperation(e.getValue(), e.getKey(), null, null, null, null, OpType.delete, opt);
+                op = new MuOperation(e.getValue(), e.getKey(), null, null, null, null, OpType.delete);
             } else {
-                op = new MuOperation(e.getValue(), e.getKey(), null, new TreeSet(c.contents.keySet()), null, null, OpType.delete, opt);
+                op = new MuOperation(e.getValue(), e.getKey(), null, new TreeSet(c.contents.keySet()), null, null, OpType.delete);
             }
             apply(op);
             patch.add(op);
@@ -128,18 +128,18 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
         return patch;
     }
 
-    List<SequenceMessage> update(int position, List<T> content, SequenceOperation opt) {
+    List<Operation> update(int position, List<T> content, SequenceOperation opt) {
         List<Entry<ListIdentifier, Timestamp>> elems = new ArrayList<Entry<ListIdentifier, Timestamp>>(positions.entrySet()).subList(position, position + content.size());
-        List<SequenceMessage> patch = new LinkedList<SequenceMessage>();
+        List<Operation> patch = new LinkedList<Operation>();
         Iterator<T> itc = content.iterator();
         for (Entry<ListIdentifier, Timestamp> e : elems) {
             Cell<T> c = elements.get(e.getValue());
             MuOperation op;
             if (c.places.size() > 1) { // move clones hack : treat as replace
                 ListIdentifier pos = generateAfter(e.getKey());
-                op = new MuOperation(e.getValue(), e.getKey(), pos, null, Timestamp.of(pos), itc.next(), OpType.replace, opt);
+                op = new MuOperation(e.getValue(), e.getKey(), pos, null, Timestamp.of(pos), itc.next(), OpType.replace);
             } else {
-                op = new MuOperation(e.getValue(), null, null, new TreeSet(c.contents.keySet()), nextTimestamp(), itc.next(), OpType.update, opt);
+                op = new MuOperation(e.getValue(), null, null, new TreeSet(c.contents.keySet()), nextTimestamp(), itc.next(), OpType.update);
             }
             apply(op);
             patch.add(op);
@@ -147,9 +147,9 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
         return patch;
     }
 
-    List<SequenceMessage> move(int position, int destination, List<T> content, SequenceOperation opt) {
+    List<Operation> move(int position, int destination, List<T> content, SequenceOperation opt) {
         List<Entry<ListIdentifier, Timestamp>> elems = new ArrayList<Entry<ListIdentifier, Timestamp>>(positions.entrySet()).subList(position, position + content.size());
-        List<SequenceMessage> patch = new LinkedList<SequenceMessage>();
+        List<Operation> patch = new LinkedList<Operation>();
         Iterator<ListIdentifier> itpos = generateIdentifiers(destination < position ? destination : destination + content.size(), content.size()).iterator();
         Iterator<T> itc = content.iterator();
         for (Entry<ListIdentifier, Timestamp> e : elems) {
@@ -157,10 +157,10 @@ public class MuDocument<T> implements TimestampedDocument, Factory<MuDocument<T>
             ListIdentifier d = itpos.next();
             T t = itc.next();
             MuOperation op = c.places.size() > 1 // move clones hack : treat as replace
-                    ? new MuOperation(e.getValue(), e.getKey(), d, null, Timestamp.of(d), t, OpType.replace, opt)
+                    ? new MuOperation(e.getValue(), e.getKey(), d, null, Timestamp.of(d), t, OpType.replace)
                     : c.value().equals(t)
-                    ? new MuOperation(e.getValue(), e.getKey(), d, null, null, null, OpType.move, opt) // Pure move
-                    : new MuOperation(e.getValue(), e.getKey(), d, new TreeSet(c.contents.keySet()), nextTimestamp(), t, OpType.move, opt);
+                    ? new MuOperation(e.getValue(), e.getKey(), d, null, null, null, OpType.move)
+                    : new MuOperation(e.getValue(), e.getKey(), d, new TreeSet(c.contents.keySet()), nextTimestamp(), t, OpType.move);
             apply(op);
             patch.add(op);
         }

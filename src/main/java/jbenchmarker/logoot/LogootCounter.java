@@ -20,6 +20,7 @@ package jbenchmarker.logoot;
 
 import crdt.Operation;
 import jbenchmarker.core.*;
+import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  * Logoot document for counting concurrent deletes. 
@@ -46,7 +47,7 @@ public class LogootCounter extends LogootDocument {
         ListIdentifier idToSearch = lg.getIdentifiant();
         int pos = dicho(idToSearch);
         //Insertion et Delete
-        if ((lg.getType() == SequenceMessage.MessageType.ins) && !getId(pos).equals(idToSearch)) {
+        if ((lg.getType() == OpType.insert) && !getId(pos).equals(idToSearch)) {
             count++;
         }
         super.apply(op);

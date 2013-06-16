@@ -24,7 +24,7 @@ import crdt.simulator.IncorrectTraceException;
 import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 
 /**
@@ -51,17 +51,17 @@ public class MuMerge<T> extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         return getDoc().delete(opt.getPosition(), opt.getLenghOfADel(), opt);
     }
 
     @Override
-    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
         return getDoc().insert(opt.getPosition(), opt.getContent(), opt);
     }
     
     @Override
-    protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<Operation> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
         return getDoc().update(opt.getPosition(), opt.getContent(), opt);
     }
     

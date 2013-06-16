@@ -25,7 +25,7 @@ import java.util.Map;
 
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import collect.VectorClock;
 import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceOperation;
@@ -69,10 +69,10 @@ public class ABTMerge extends MergeAlgorithm {
         //this.abtgc.collect(abtop);
     }
 
-    protected List<SequenceMessage> generateLocal(SequenceOperation opt)
+    protected List<Operation> generateLocal(SequenceOperation opt)
             throws IncorrectTraceException {
         // TODO Auto-generated method stub
-        List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
+        List<Operation> lop = new ArrayList<Operation>();
         ABTDocument abtdoc = (ABTDocument) (this.getDoc());
         ABTOperation abtop;
 
@@ -89,9 +89,9 @@ public class ABTMerge extends MergeAlgorithm {
             this.siteVC.inc(this.getReplicaNumber());
 
             if (opt.getType() == SequenceOperation.OpType.delete) {
-                abtop = new ABTOperation(opt, this.getReplicaNumber(), p + 1, siteVC);
+                abtop = new ABTOperation(opt.getType(), this.getReplicaNumber(), p + 1, null, siteVC);
             } else {
-                abtop = new ABTOperation(opt, this.getReplicaNumber(), p + i, opt.getContent().get(i), siteVC);
+                abtop = new ABTOperation(opt.getType(), this.getReplicaNumber(), p + i, opt.getContent().get(i), siteVC);
             }
 
             abtdoc.apply(abtop);
@@ -120,12 +120,12 @@ public class ABTMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
         return generateLocal(opt);
     }
 
     @Override
-    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         return generateLocal(opt);
     }
 

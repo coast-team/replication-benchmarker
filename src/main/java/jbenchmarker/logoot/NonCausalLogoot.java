@@ -21,7 +21,7 @@ package jbenchmarker.logoot;
 import collect.HashVectorWithHoles;
 import collect.VectorWithHoles;
 import crdt.Operation;
-import jbenchmarker.core.SequenceMessage;
+import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  * Logoot that support operation delivered in non-causal order.
@@ -47,7 +47,7 @@ public class NonCausalLogoot<T> extends LogootDocument<T> {
         LogootOperation lg = (LogootOperation) op;
         ListIdentifier id = lg.getIdentifiant();
         int r = id.replica(), h = id.clock();
-        if (lg.getType() == SequenceMessage.MessageType.del || !seen.contains(r, h)) {
+        if (lg.getType() == OpType.delete || !seen.contains(r, h)) {
             super.apply(op);
         }
         seen.add(r, h);

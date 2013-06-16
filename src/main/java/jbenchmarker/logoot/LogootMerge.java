@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 
 /**
@@ -51,12 +51,12 @@ public class LogootMerge<T> extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
-        List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
+    protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+        List<Operation> lop = new ArrayList<Operation>();
         int offset = opt.getLenghOfADel(), position = opt.getPosition();
 
         for (int k = 1; k <= offset; k++) {
-            LogootOperation<T> wop = LogootOperation.Delete(opt, getDoc().getId(position + k));
+            LogootOperation<T> wop = LogootOperation.delete(getDoc().getId(position + k));
             lop.add(wop);
         }
         getDoc().remove(position, offset);
@@ -64,8 +64,8 @@ public class LogootMerge<T> extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
-        List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
+    protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+        List<Operation> lop = new ArrayList<Operation>();
         int N = opt.getContent().size(), position = opt.getPosition();
 
         List<T> content = opt.getContent();
@@ -74,7 +74,7 @@ public class LogootMerge<T> extends MergeAlgorithm {
         ArrayList<T> lc = new ArrayList<T>(patch.size());
         for (int cmpt = 0; cmpt < patch.size(); cmpt++) {
             T c = content.get(cmpt);
-            LogootOperation<T> log = LogootOperation.insert(opt, patch.get(cmpt), c);
+            LogootOperation<T> log = LogootOperation.insert(patch.get(cmpt), c);
             lop.add(log);
             lc.add(c);
         }

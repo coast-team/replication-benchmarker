@@ -21,7 +21,7 @@ package jbenchmarker.logoot;
 import crdt.Factory;
 import jbenchmarker.factories.LogootFactory;
 import crdt.simulator.IncorrectTraceException;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import java.util.List;
 import jbenchmarker.factories.LogootBinaryFactory;
@@ -47,7 +47,7 @@ public class LogootMergeTest
     }
     
     public void testgenerateLocal(LogootMerge LM) throws IncorrectTraceException {
-        List<SequenceMessage> a = LM.localInsert(insert(0, "a"));  //a
+        List<Operation> a = LM.localInsert(insert(0, "a"));  //a
         
         assertEquals(1, a.size());
         assertEquals("a", LM.lookup());
@@ -70,7 +70,7 @@ public class LogootMergeTest
     }
         
     public void testUpdateLocal(LogootMerge LM) throws IncorrectTraceException {
-        List<SequenceMessage> a = LM.localInsert(insert(0, "abcdef"));  //a
+        List<Operation> a = LM.localInsert(insert(0, "abcdef"));  //a
 
         a = LM.localUpdate(update(0, 2, "X")); 
         assertEquals(3, a.size());
@@ -88,7 +88,7 @@ public class LogootMergeTest
     public void testDeleteBloc(LogootMerge LM) throws IncorrectTraceException {
         LogootDocument<Character> lg = (LogootDocument) (LM.getDoc());
         
-        List<SequenceMessage> a = LM.localInsert(insert(0, "aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib"));
+        List<Operation> a = LM.localInsert(insert(0, "aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib"));
         assertEquals(80, a.size());
         assertEquals("aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib", LM.lookup());
 

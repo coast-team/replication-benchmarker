@@ -18,7 +18,7 @@
  */
 package jbenchmarker.woot;
 
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 
@@ -26,13 +26,12 @@ import jbenchmarker.core.SequenceOperation.OpType;
  *
  * @author urso
  */
-public class WootOperation<T> extends SequenceMessage {
+public class WootOperation<T> implements Operation {
     final private Cloneable identifier;   // next   
     final private T content;
     final private SequenceOperation.OpType type;
 
-    public WootOperation(SequenceOperation o, OpType type, Cloneable identifier, T content) {
-        super(o);
+    public WootOperation(OpType type, Cloneable identifier, T content) {
         this.identifier = identifier;
         this.content = content;
         this.type = type;
@@ -61,8 +60,8 @@ public class WootOperation<T> extends SequenceMessage {
     }
 
     @Override
-    public SequenceMessage clone() {
-        return new WootOperation(this.getOriginalOp(), type,
+    public Operation clone() {
+        return new WootOperation(type,
                 identifier instanceof WootIdentifier ? 
                 ((WootIdentifier) identifier).clone() : 
                 ((WootPosition) identifier).clone(), 

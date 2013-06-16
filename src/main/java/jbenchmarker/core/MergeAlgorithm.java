@@ -224,9 +224,9 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
 
     }
 
-    /*protected List<SequenceMessage> localReplaceCorrecteId(SequenceOperation opt) throws IncorrectTraceException {
+    /*protected List<Operation> localReplaceCorrecteId(SequenceOperation opt) throws IncorrectTraceException {
         System.out.println("--- localReplaceCorrecteId ---");
-        List<SequenceMessage> lop = localInsert(opt);
+        List<Operation> lop = localInsert(opt);
         int newPos = opt.getPosition()+opt.getContent().size();
         opt.setPosition(newPos);
         lop.addAll(localDelete(opt));

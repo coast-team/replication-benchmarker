@@ -18,19 +18,19 @@
  */
 package jbenchmarker.ot.ttf;
 
-import crdt.Operation;
 import collect.VectorClock;
 import crdt.CRDT;
 import crdt.Factory;
+import crdt.Operation;
 import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.*;
 import jbenchmarker.ot.soct2.OTAlgorithm;
 import jbenchmarker.ot.soct2.OTMessage;
+import jbenchmarker.ot.soct2.OTReplica;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
-import jbenchmarker.ot.soct2.OTReplica;
 
 /**
  * This TTF Merge Algorithm uses SOCT2 algorithm with TTF method
@@ -90,9 +90,9 @@ public class TTFMergeAlgorithm extends MergeAlgorithm implements OTReplica<Strin
      * replicas
      */
     @Override
-    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         TTFDocument doc = (TTFDocument) this.getDoc();
-        List<SequenceMessage> generatedOperations = new ArrayList<SequenceMessage>();
+        List<Operation> generatedOperations = new ArrayList<Operation>();
 
         int mpos = doc.viewToModel(opt.getPosition());
         int visibleIndex = 0;
@@ -102,30 +102,30 @@ public class TTFMergeAlgorithm extends MergeAlgorithm implements OTReplica<Strin
                 visibleIndex++;
             }
             TTFOperation op = deleteOperation(mpos + visibleIndex);
-            generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
+            generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op)));
             doc.apply(op);
         }
         return generatedOperations;
     }
 
     @Override
-    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
         TTFDocument doc = (TTFDocument) this.getDoc();
-        List<SequenceMessage> generatedOperations = new ArrayList<SequenceMessage>();
+        List<Operation> generatedOperations = new ArrayList<Operation>();
 
         int mpos = doc.viewToModel(opt.getPosition());
         for (int i = 0; i < opt.getContent().size(); i++) {
             TTFOperation op = insertOperation(mpos + i, opt.getContent().get(i));
-            generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
+            generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op)));
             doc.apply(op);
         }
         return generatedOperations;
     }
 
 //    @Override
-//    public List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
+//    public List<Operation> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
 //        TTFDocument doc = (TTFDocument) this.getDoc();
-//        List<SequenceMessage> generatedOperations = new ArrayList<SequenceMessage>();
+//        List<Operation> generatedOperations = new ArrayList<Operation>();
 //
 //        int mpos = doc.viewToModel(opt.getPosition());
 //        switch (opt.getType()) {

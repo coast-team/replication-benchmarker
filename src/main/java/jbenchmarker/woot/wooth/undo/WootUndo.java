@@ -17,7 +17,7 @@ public class WootUndo<T> extends WootOperation<T> {
     
     // TODO : remove type and content.
     public WootUndo(SequenceOperation o, Cloneable identifier, int visibility) {
-        super(o, null, identifier, null);
+        super(null, identifier, null);
         this.visibility = visibility;
     } 
 

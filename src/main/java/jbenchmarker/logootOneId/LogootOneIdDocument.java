@@ -16,56 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
-* Replication Benchmarker
-* https://github.com/score-team/replication-benchmarker/
-* Copyright (C) 2012 LORIA / Inria / SCORE Team
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 
-
-/**
- * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2011 INRIA / LORIA / SCORE Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package jbenchmarker.logootOneId;
 
-import crdt.Factory;
 import collect.RangeList;
+import crdt.Factory;
+import crdt.Operation;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
-import crdt.Operation;
-import jbenchmarker.core.SequenceMessage;
-
-import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  * A Logoot document. Contains a list of Charater and the corresponding list of LogootIndentitifer.
@@ -128,7 +89,7 @@ public class LogootOneIdDocument<T> implements Document, Factory<LogootOneIdDocu
         LogootOneIdentifier idToSearch = lg.getIdentifiant();
         int pos = dicho(idToSearch);
         //Insertion et Delete
-        if (lg.getType() == SequenceMessage.MessageType.ins) {
+        if (lg.getType() == OpType.insert) {
             idTable.add(pos, idToSearch);
             document.add(pos, (T) lg.getContent());
         } else if (idTable.get(pos).equals(idToSearch)) {

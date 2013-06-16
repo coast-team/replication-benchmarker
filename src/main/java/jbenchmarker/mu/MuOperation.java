@@ -20,7 +20,7 @@ package jbenchmarker.mu;
 
 import java.util.Collection;
 import java.util.List;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.logoot.*;
@@ -29,7 +29,7 @@ import jbenchmarker.logoot.*;
  *
  * @author mehdi urso
  */
-public class MuOperation<T> extends SequenceMessage {
+public class MuOperation<T> implements Operation {
     
     final private ListIdentifier origin;
     final private ListIdentifier destination;
@@ -39,8 +39,8 @@ public class MuOperation<T> extends SequenceMessage {
     final private T content;
     final private OpType type; 
 
-    public MuOperation(Timestamp target, ListIdentifier position, ListIdentifier destination, Collection<Timestamp> oldVersions, Timestamp timestamp, T content, OpType type, SequenceOperation originalOp) {
-        super(originalOp);
+    public MuOperation(Timestamp target, ListIdentifier position, ListIdentifier destination, 
+            Collection<Timestamp> oldVersions, Timestamp timestamp, T content, OpType type) {
         this.origin = position;
         this.destination = destination;
         this.oldVersions = oldVersions;
@@ -81,9 +81,7 @@ public class MuOperation<T> extends SequenceMessage {
 
     // FIXME: shoud clone the operation and its parameters
     @Override
-    public SequenceMessage clone() {
-        return new MuOperation(target, origin, destination, oldVersions, timestamp, content, type, getOriginalOp());
+    public Operation clone() {
+        return new MuOperation(target, origin, destination, oldVersions, timestamp, content, type);
     }
-
-
 }

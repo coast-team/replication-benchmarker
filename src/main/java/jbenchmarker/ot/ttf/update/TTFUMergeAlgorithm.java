@@ -24,7 +24,7 @@ import crdt.Factory;
 import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
 import java.util.List;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.ot.soct2.OTAlgorithm;
@@ -71,8 +71,8 @@ public class TTFUMergeAlgorithm extends TTFMergeAlgorithm {
     }
     
     @Override
-    protected List<SequenceMessage> localReplace(SequenceOperation opt) throws IncorrectTraceException {
-        List<SequenceMessage> generatedOperations = new ArrayList<SequenceMessage>();
+    protected List<Operation> localReplace(SequenceOperation opt) throws IncorrectTraceException {
+        List<Operation> generatedOperations = new ArrayList<Operation>();
 
         int mpos = getDoc().viewToModel(opt.getPosition());
         int i = 0;
@@ -81,14 +81,14 @@ public class TTFUMergeAlgorithm extends TTFMergeAlgorithm {
                 ++mpos;
             }
             TTFOperation op = updateOperation(mpos, i < opt.getContent().size() ? opt.getContent().get(i) : null);
-            generatedOperations.add(new TTFSequenceMessage(getOtAlgo().estampileMessage(op), opt));
+            generatedOperations.add(new TTFSequenceMessage(getOtAlgo().estampileMessage(op)));
             getDoc().apply(op);
             ++i; 
             ++mpos;
         }
         while (i < opt.getContent().size()) {
             TTFOperation op = insertOperation(mpos, opt.getContent().get(i));
-            generatedOperations.add(new TTFSequenceMessage(getOtAlgo().estampileMessage(op), opt));
+            generatedOperations.add(new TTFSequenceMessage(getOtAlgo().estampileMessage(op)));
             getDoc().apply(op);
             ++i;            
             ++mpos;

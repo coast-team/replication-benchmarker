@@ -18,22 +18,20 @@
  */
 package jbenchmarker.logootsplit;
 
+import crdt.Operation;
 import java.util.ArrayList;
 import java.util.List;
-import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.SequenceOperation;
 
-public class LogootSSplit extends SequenceMessage implements LogootSOperation{
+public class LogootSSplit implements LogootSOperation{
     
     private LogootSElement element;
     private int offset;
     
 
-    public LogootSSplit(SequenceOperation so, LogootSElement el, int offset) {
-        super(so);
+    public LogootSSplit(LogootSElement el, int offset) {
         this.element=el;
-        this.offset=offset;
-        
+        this.offset=offset;  
     }
 
     @Override
@@ -97,8 +95,8 @@ public class LogootSSplit extends SequenceMessage implements LogootSOperation{
     }
 
     @Override
-    public SequenceMessage clone() {
-        return new LogootSSplit(this.getOriginalOp(), element.clone(), offset);
+    public Operation clone() {
+        return new LogootSSplit(element.clone(), offset);
     }
 
     

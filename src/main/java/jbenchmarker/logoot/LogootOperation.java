@@ -18,7 +18,7 @@
  */
 package jbenchmarker.logoot;
 
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 
@@ -26,20 +26,19 @@ import jbenchmarker.core.SequenceOperation.OpType;
  *
  * @author mehdi urso
  */
-public class LogootOperation<T> extends SequenceMessage {
+public class LogootOperation<T> implements Operation {
     
     final private ListIdentifier identif;
     final private T content;
-    final private MessageType type;
+    final private OpType type;
 
-    private LogootOperation(SequenceOperation o, MessageType type, ListIdentifier identif, T content) {
-        super(o);
+    private LogootOperation(OpType type, ListIdentifier identif, T content) {
         this.type = type;
         this.identif = identif;
         this.content = content;
     }
     
-    public MessageType getType() {
+    public OpType getType() {
         return this.type;
     }
 
@@ -51,18 +50,17 @@ public class LogootOperation<T> extends SequenceMessage {
         return content;
     }
 
-    static <T> LogootOperation insert(SequenceOperation o, ListIdentifier idf, T cont) {
-        return new LogootOperation(o, MessageType.ins, idf, cont);
+    static <T> LogootOperation insert(ListIdentifier idf, T cont) {
+        return new LogootOperation(OpType.insert, idf, cont);
     }
 
-    public static LogootOperation Delete(SequenceOperation o, ListIdentifier idf) {
-        return new LogootOperation(o, MessageType.del, idf, null);
+    public static LogootOperation delete(ListIdentifier idf) {
+        return new LogootOperation(OpType.delete, idf, null);
     }
 
     // FIXME: shoud clone the operation and its parameters
-    @Override
-    public SequenceMessage clone() {
-        return new LogootOperation(this.getOriginalOp(), type, this.identif.clone(), this.content);
+    public Operation clone() {
+        return new LogootOperation(type, this.identif.clone(), this.content);
     }
 
 }

@@ -18,7 +18,7 @@
  */
 package jbenchmarker.wootr;
 
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 
@@ -26,9 +26,10 @@ import jbenchmarker.core.SequenceOperation.OpType;
  *
  * @author urso
  */
-public class WootROperation extends SequenceMessage {
+public class WootROperation implements Operation {
     final private WootRNode node; 
-        
+    final private OpType type;
+    
     /**
      * Constructor for insert operation
      * @param o a trace insert
@@ -37,9 +38,8 @@ public class WootROperation extends SequenceMessage {
      * @param in identifier of next element
      * @param content content of element
      */
-    public WootROperation(SequenceOperation o, WootRNode p, WootRNode n, char content) {
-        super(o);
-        this.node = new WootRNode(content, p, n);
+    public WootROperation(OpType type, WootRNode p, WootRNode n, char content) {
+        this(type, new WootRNode(content, p, n));
     }
 
     /**
@@ -47,14 +47,14 @@ public class WootROperation extends SequenceMessage {
      * @param o a trace delete
      * @param id identifier to delete
      */
-    public WootROperation(SequenceOperation o, WootRNode e) {
-        super(o);
+    public WootROperation(OpType type, WootRNode e) {
+        this.type = type;
         this.node = e;
     }
 
 
     public OpType getType() {
-        return this.getOriginalOp().getType();
+        return type;
     }
 
     public WootRNode getNode() {
@@ -63,7 +63,7 @@ public class WootROperation extends SequenceMessage {
 
     
     @Override
-    public SequenceMessage clone() {
-        return new WootROperation(this.getOriginalOp(), (WootRNode) node.clone());
+    public Operation clone() {
+        return new WootROperation(null, (WootRNode) node.clone());
     }
 }

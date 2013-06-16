@@ -19,12 +19,11 @@
 package jbenchmarker.treedoc;
 
 import crdt.CRDT;
+import crdt.Operation;
+import crdt.simulator.IncorrectTraceException;
 import java.util.LinkedList;
 import java.util.List;
-
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.SequenceMessage;
-import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceOperation;
 
 /**
@@ -43,24 +42,24 @@ public class TreedocMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> localInsert(SequenceOperation opt)
+    protected List<Operation> localInsert(SequenceOperation opt)
             throws IncorrectTraceException {
         final TreedocDocument doc = ((TreedocDocument) getDoc());
-        final List<SequenceMessage> ops = new LinkedList<SequenceMessage>();
+        final List<Operation> ops = new LinkedList<Operation>();
         
         final TreedocIdentifier id = doc.insertAt(
                 restrictedIndex(opt.getPosition(), true), opt.getContent(), getReplicaNumber());
-        ops.add(new TreedocOperation(opt, id, opt.getContent()));
+        ops.add(new TreedocOperation(id, opt.getContent()));
     //System.out.println("--- localInsert ---"+id);
 
         return ops;
     }
 
     @Override
-    protected List<SequenceMessage> localDelete(SequenceOperation opt)
+    protected List<Operation> localDelete(SequenceOperation opt)
             throws IncorrectTraceException {
         final TreedocDocument doc = ((TreedocDocument) getDoc());
-        final List<SequenceMessage> ops = new LinkedList<SequenceMessage>();
+        final List<Operation> ops = new LinkedList<Operation>();
 
 
         // TODO: implement batch delete more efficiently?
@@ -68,7 +67,7 @@ public class TreedocMerge extends MergeAlgorithm {
                 + opt.getLenghOfADel(); i++) {
             final TreedocIdentifier deletedId = doc
                     .deleteAt(restrictedIndex(opt.getPosition(), false));
-            ops.add(new TreedocOperation(opt, deletedId));
+            ops.add(new TreedocOperation(deletedId));
             //System.out.println("---- localDelete --- "+deletedId);
         }
 

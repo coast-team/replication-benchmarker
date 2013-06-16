@@ -1,67 +1,78 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2013 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2013
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.rga;
 
-import collect.VectorClock; 
+import collect.VectorClock;
 import java.io.Serializable;
+
 /**
-*
-* @author Roh
-*/
+ *
+ * @author Roh
+ */
 public class RGAS4Vector implements Comparable<RGAS4Vector>, Serializable {
-	public static final int AFTER 	= 1;
-	public static final int EQUAL 	= 0;
-	public static final int BEFORE	= -1;
-	
-	protected int ssn;
-	protected int sid;
-	protected int sum;
-	protected int seq;
-	
-	public RGAS4Vector(int ssn, int sid, VectorClock vc){
-		this.ssn	= ssn;	
-		this.sid	= sid;
-		this.sum 	= vc.getSum();
-		this.seq	= vc.getSafe(sid);
-	}
-	
-	public RGAS4Vector(int sid, VectorClock vc){
-		this(0, sid, vc);
-	}
-	@Override 
-	public String toString(){
-		return "["+ssn+","+sid+","+sum+"]";
-	}
-	
-	public int compareTo(RGAS4Vector s4v) {
-		if(this.ssn > s4v.ssn) return  AFTER;
-		else if (this.ssn < s4v.ssn) return BEFORE;
-		else { // this.ssn==s4v.ssn
-			if(this.sum > s4v.sum) return AFTER;
-			else if(this.sum < s4v.sum) return BEFORE;
-			else { // this.sum == s4v.sum
-				if(this.sid > s4v.sid) return AFTER;
-				else if(this.sid < s4v.sid) return BEFORE;
-				else return EQUAL;
-			}
-		}
-	}
+
+    public static final int AFTER = 1;
+    public static final int EQUAL = 0;
+    public static final int BEFORE = -1;
+    protected int ssn;
+    protected int sid;
+    protected int sum;
+    protected int seq;
+
+    public RGAS4Vector(int ssn, int sid, VectorClock vc) {
+        this.ssn = ssn;
+        this.sid = sid;
+        this.sum = vc.getSum();
+        this.seq = vc.getSafe(sid);
+    }
+
+    public RGAS4Vector(int sid, VectorClock vc) {
+        this(0, sid, vc);
+    }
+
+    @Override
+    public String toString() {
+        return "[" + ssn + "," + sid + "," + sum + "]";
+    }
+
+    @Override
+    public int compareTo(RGAS4Vector s4v) {
+        if (this.ssn > s4v.ssn) {
+            return AFTER;
+        } else if (this.ssn < s4v.ssn) {
+            return BEFORE;
+        } else { // this.ssn==s4v.ssn
+            if (this.sum > s4v.sum) {
+                return AFTER;
+            } else if (this.sum < s4v.sum) {
+                return BEFORE;
+            } else { // this.sum == s4v.sum
+                if (this.sid > s4v.sid) {
+                    return AFTER;
+                } else if (this.sid < s4v.sid) {
+                    return BEFORE;
+                } else {
+                    return EQUAL;
+                }
+            }
+        }
+    }
 
     public RGAS4Vector(int ssn, int sid, int sum, int seq) {
         this.ssn = ssn;
@@ -107,5 +118,4 @@ public class RGAS4Vector implements Comparable<RGAS4Vector>, Serializable {
         hash = 79 * hash + this.seq;
         return hash;
     }
-
 }

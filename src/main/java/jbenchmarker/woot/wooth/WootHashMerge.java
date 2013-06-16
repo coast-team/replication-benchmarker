@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.woot.WootDocument;
@@ -48,8 +48,8 @@ public class WootHashMerge<T> extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
-        List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
+    protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+        List<Operation> lop = new ArrayList<Operation>();
         WootHashDocument wdoc = this.getDoc();
         int p = opt.getPosition();
         WootHashNode w = wdoc.getVisible(p);
@@ -65,8 +65,8 @@ public class WootHashMerge<T> extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
-        List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
+    protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+        List<Operation> lop = new ArrayList<Operation>();
         WootHashDocument wdoc = this.getDoc();
         int p = opt.getPosition();
         WootHashNode ip = wdoc.getPrevious(p), in = wdoc.getNext(ip);

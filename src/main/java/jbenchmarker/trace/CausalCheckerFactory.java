@@ -18,17 +18,16 @@
  */
 package jbenchmarker.trace;
 
-import jbenchmarker.core.SequenceOperation;
-import crdt.simulator.IncorrectTraceException;
+import collect.VectorClock;
 import crdt.CRDT;
-import java.util.ArrayList;
+import crdt.Operation;
+import crdt.simulator.IncorrectTraceException;
+import crdt.simulator.TraceOperation;
 import java.util.List;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.SequenceMessage;
 import jbenchmarker.core.ReplicaFactory;
-import collect.VectorClock;
+import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.sim.PlaceboFactory.PlaceboDocument;
-import crdt.simulator.TraceOperation;
 
 /**
  * Check that operation are received in causal order.
@@ -39,12 +38,15 @@ import crdt.simulator.TraceOperation;
 public class CausalCheckerFactory extends ReplicaFactory {
 //   @Override
 
-    class CausalCheckerFactoryMessage extends SequenceMessage {
+    class CausalCheckerFactoryMessage implements Operation {
 
         VectorClock v;
+        SequenceOperation o;
+        int replica;
 
         public CausalCheckerFactoryMessage(SequenceOperation o, VectorClock v, int replica) {
-            super(o, replica);
+            this.o = o;
+            this.replica = replica; 
             this.v = v;
         }
 
@@ -53,8 +55,16 @@ public class CausalCheckerFactory extends ReplicaFactory {
         }
 
         @Override
-        public SequenceMessage clone() {
+        public Operation clone() {
             return this;
+        }
+
+        private Operation getOriginalOp() {
+            return o;
+        }
+
+        private int getReplica() {
+            return replica;
         }
     }
 
@@ -69,8 +79,8 @@ public class CausalCheckerFactory extends ReplicaFactory {
         protected void integrateRemote(crdt.Operation message) throws IncorrectTraceException {
             CausalCheckerFactoryMessage ops = (CausalCheckerFactoryMessage) message;
             check(ops);
-            this.getDoc().apply(((SequenceMessage)message).getOriginalOp());
-            vc.inc(((SequenceMessage)message).getReplica());
+            this.getDoc().apply(ops.getOriginalOp());
+            vc.inc(ops.getReplica());
         }
 
         /*@Override
@@ -101,12 +111,12 @@ public class CausalCheckerFactory extends ReplicaFactory {
         }
 
         @Override
-        protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+        protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
             return null;
         }
 
         @Override
-        protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+        protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
             return null;
         }
     }

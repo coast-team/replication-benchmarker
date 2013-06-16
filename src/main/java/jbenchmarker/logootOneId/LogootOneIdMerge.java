@@ -59,7 +59,7 @@ import crdt.Operation;
 import crdt.simulator.IncorrectTraceException;
 import java.math.BigInteger;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.Document;
 
@@ -86,12 +86,12 @@ public class LogootOneIdMerge<T> extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
-        List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
+    protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+        List<Operation> lop = new ArrayList<Operation>();
         int offset = opt.getLenghOfADel(), position = opt.getPosition();
 
         for (int k = 1; k <= offset; k++) {
-            LogootOneIdOperation<T> wop = LogootOneIdOperation.Delete(opt, getDoc().getId(position + k));
+            LogootOneIdOperation<T> wop = LogootOneIdOperation.Delete(getDoc().getId(position + k));
             lop.add(wop);
         }
         getDoc().remove(position, offset);
@@ -99,9 +99,9 @@ public class LogootOneIdMerge<T> extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
 
-        List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
+        List<Operation> lop = new ArrayList<Operation>();
         int N = opt.getContent().size(), position = opt.getPosition();
 
         List<T> content = opt.getContent();
@@ -110,7 +110,7 @@ public class LogootOneIdMerge<T> extends MergeAlgorithm {
         ArrayList<T> lc = new ArrayList<T>(patch.size());
         for (int cmpt = 0; cmpt < patch.size(); cmpt++) {
             T c = content.get(cmpt);
-            LogootOneIdOperation<T> log = LogootOneIdOperation.insert(opt, patch.get(cmpt), c);
+            LogootOneIdOperation<T> log = LogootOneIdOperation.insert(patch.get(cmpt), c);
             lop.add(log);
             lc.add(c);
         }

@@ -72,12 +72,11 @@ public class LogootDocumentTest {
 
     // helpers
     LogootOneIdOperation ins(LogootOneIdentifier n, char c) {
-        return LogootOneIdOperation.insert(SequenceOperation.insert(0, ""),
-                n, c);
+        return LogootOneIdOperation.insert(n, c);
     }
 
     LogootOneIdOperation del(LogootOneIdentifier n) {
-        return LogootOneIdOperation.Delete(SequenceOperation.delete(0, 0), n);
+        return LogootOneIdOperation.Delete(n);
     }
     @Test
     public void testapply() {

@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceOperation;
 
@@ -63,12 +63,12 @@ public class WootMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -18,12 +18,11 @@
  */
 package jbenchmarker.sim;
 
-import crdt.Operation;
 import crdt.CRDT;
+import crdt.Operation;
 import crdt.simulator.IncorrectTraceException;
 import java.util.List;
 import jbenchmarker.core.*;
-import jbenchmarker.core.SequenceOperation;
 
 /**
  * Used to measure the base memory/time required to simulate a trace.
@@ -32,15 +31,14 @@ import jbenchmarker.core.SequenceOperation;
  */
 public class PlaceboFactory extends ReplicaFactory {
 
-    public static class PlaceboOperation extends SequenceMessage {
+    public static class PlaceboOperation implements Operation {
 
-        public PlaceboOperation(SequenceOperation o) {
-            super(o);
+        public PlaceboOperation() {
         }
 
         @Override
-        public SequenceMessage clone() {
-            return new PlaceboOperation(this.getOriginalOp());
+        public Operation clone() {
+            return new PlaceboOperation();
         }
     }
 
@@ -72,11 +70,11 @@ public class PlaceboFactory extends ReplicaFactory {
             this.getDoc().apply(message);
         }
 
-        protected List<SequenceMessage> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
+        protected List<Operation> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
             int nbop = (opt.getType() == SequenceOperation.OpType.delete) ? opt.getLenghOfADel() : opt.getContent().size();
-            List<SequenceMessage> l = new java.util.ArrayList<SequenceMessage>(nbop);
+            List<Operation> l = new java.util.ArrayList<Operation>(nbop);
             for (int i = 0; i < nbop; i++) {
-                l.add(new PlaceboOperation(opt));
+                l.add(new PlaceboOperation());
             }
             return l;
         }
@@ -87,12 +85,12 @@ public class PlaceboFactory extends ReplicaFactory {
         }
 
         @Override
-        protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+        protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
             return generateLocal(opt);
         }
 
         @Override
-        protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+        protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
             return generateLocal(opt);
         }
     }

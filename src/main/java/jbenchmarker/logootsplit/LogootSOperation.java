@@ -18,7 +18,9 @@
  */
 package jbenchmarker.logootsplit;
 
-public interface LogootSOperation {
+import crdt.Operation;
+
+public interface LogootSOperation extends Operation {
     
     
     public abstract void apply(LogootSDocument doc);

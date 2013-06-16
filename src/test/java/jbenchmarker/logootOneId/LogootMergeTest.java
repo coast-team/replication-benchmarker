@@ -59,7 +59,7 @@ import crdt.PreconditionException;
 import org.junit.Ignore;
 import jbenchmarker.factories.LogootOneIdFactory;
 import crdt.simulator.IncorrectTraceException;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import java.util.List;
 import jbenchmarker.core.MergeAlgorithm;
@@ -134,7 +134,7 @@ public class LogootMergeTest
     public void testgenerateLocal() throws IncorrectTraceException {
          LogootOneIdMerge LM = (LogootOneIdMerge) new LogootOneIdFactory().create();
 
-        List<SequenceMessage> a = LM.localInsert(insert(0, "a"));  //a
+        List<Operation> a = LM.localInsert(insert(0, "a"));  //a
         assertEquals(1, a.size());
         assertEquals("a", LM.lookup());
 
@@ -160,7 +160,7 @@ public class LogootMergeTest
     public void testUpdateLocal() throws IncorrectTraceException {
         LogootOneIdMerge LM = (LogootOneIdMerge) new LogootOneIdFactory().create();
 
-        List<SequenceMessage> a = LM.localInsert(insert(0, "abcdef"));  //a
+        List<Operation> a = LM.localInsert(insert(0, "abcdef"));  //a
 
         a = LM.localUpdate(update(0, 2, "X")); 
         assertEquals(3, a.size());
@@ -183,7 +183,7 @@ public class LogootMergeTest
         LogootOneIdDocument<Character> lg = (LogootOneIdDocument) (LM.getDoc());
         
         
-        List<SequenceMessage> a = LM.localInsert(insert(0, "aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib"));
+        List<Operation> a = LM.localInsert(insert(0, "aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib"));
         assertEquals(80, a.size());
         assertEquals("aiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiib", LM.lookup());
 

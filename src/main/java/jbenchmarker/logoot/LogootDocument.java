@@ -21,9 +21,8 @@ package jbenchmarker.logoot;
 import collect.RangeList;
 import crdt.Factory;
 import java.util.List;
-import jbenchmarker.core.Document;
 import crdt.Operation;
-import jbenchmarker.core.SequenceMessage;
+import jbenchmarker.core.SequenceOperation.OpType;
 
 /**
  * A Logoot document. Contains a list of Charater and the corresponding list of LogootIndentitifer.
@@ -82,7 +81,7 @@ public class LogootDocument<T> implements  Factory<LogootDocument<T>>, Timestamp
         ListIdentifier idToSearch = lg.getIdentifiant();
         int pos = dicho(idToSearch);
         //Insertion et Delete
-        if (lg.getType() == SequenceMessage.MessageType.ins) {
+        if (lg.getType() == OpType.insert) {
             idTable.add(pos, idToSearch);
             document.add(pos, (T) lg.getContent());
         } else if (idTable.get(pos).equals(idToSearch)) {

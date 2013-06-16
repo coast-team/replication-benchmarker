@@ -18,28 +18,21 @@
  */
 package jbenchmarker.sim;
 
-import crdt.Operation;
-import crdt.simulator.Simulator;
-import java.util.Iterator;
-import crdt.simulator.Trace;
-import crdt.simulator.CausalSimulator;
 import crdt.CRDT;
-import crdt.CRDTMessage;
-import crdt.OperationBasedOneMessage;
 import crdt.Operation;
+import crdt.simulator.CausalSimulator;
 import crdt.simulator.IncorrectTraceException;
+import crdt.simulator.Simulator;
+import crdt.simulator.Trace;
 import crdt.simulator.TraceOperation;
-import java.util.Enumeration;
-import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.core.Document;
-import jbenchmarker.core.MergeAlgorithm;
 import java.util.ArrayList;
-import jbenchmarker.core.SequenceMessage;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import jbenchmarker.core.*;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import static jbenchmarker.trace.TraceGeneratorTest.op;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -68,28 +61,27 @@ public class CausalDispatcherTest {
         }
     }
 
-    static private class SequenceMock extends SequenceMessage {
-
-        public SequenceMock(SequenceOperation o, int replica) {
-            super(o, replica);
+    static private class SequenceMock implements Operation {
+        SequenceOperation op;
+        public SequenceMock() {
         }
 
         public SequenceMock(SequenceOperation originalOp) {
-            super(originalOp);
+            this.op = originalOp;
         }
 
         @Override
         public boolean equals(Object obj) {
-            return this.getOriginalOp().equals(obj);
+            return this.op.equals(obj);
         }
 
         @Override
-        public SequenceMessage clone() {
+        public Operation clone() {
             return this;
         }
     }
 
-    // SequenceMessage mock
+    // Operation mock
     static private class TraceMock extends TraceOperation {
 
         SequenceOperation opt;
@@ -145,8 +137,8 @@ public class CausalDispatcherTest {
                     this.getDoc().apply(message);
                 }
 
-                protected List<SequenceMessage> generateLocal(SequenceOperation opt) {
-                    List<SequenceMessage> l = new ArrayList<SequenceMessage>();
+                protected List<Operation> generateLocal(SequenceOperation opt) {
+                    List<Operation> l = new ArrayList<Operation>();
                     SequenceMock op = new SequenceMock(opt);
 //                this.getDoc().apply(op);
                     l.add(op);
@@ -159,12 +151,12 @@ public class CausalDispatcherTest {
                 }
 
                 @Override
-                protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+                protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
                     return generateLocal(opt);
                 }
 
                 @Override
-                protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+                protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
                     return generateLocal(opt);
                 }
 

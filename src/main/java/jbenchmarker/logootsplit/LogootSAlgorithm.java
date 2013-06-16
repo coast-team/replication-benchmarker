@@ -24,7 +24,7 @@ import crdt.simulator.IncorrectTraceException;
 import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 
 public class LogootSAlgorithm<T> extends MergeAlgorithm{
@@ -53,8 +53,8 @@ public class LogootSAlgorithm<T> extends MergeAlgorithm{
     }
 
     @Override
-    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
-        List<SequenceMessage> list=new ArrayList<SequenceMessage>();
+    protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+        List<Operation> list=new ArrayList<Operation>();
         list= ((LogootSDocument)this.getDoc()).generateInsertion(opt);
         for(int i=0;i<list.size();i++){
             this.getDoc().apply(list.get(i));
@@ -63,8 +63,8 @@ public class LogootSAlgorithm<T> extends MergeAlgorithm{
     }
 
     @Override
-    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
-        List<SequenceMessage> list=new ArrayList<SequenceMessage>();
+    protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+        List<Operation> list=new ArrayList<Operation>();
         list= ((LogootSDocument)this.getDoc()).generateDeletion(opt);
         for(int i=0;i<list.size();i++){
             this.getDoc().apply(list.get(i));
@@ -73,8 +73,8 @@ public class LogootSAlgorithm<T> extends MergeAlgorithm{
     }
     
     @Override
-    protected List<SequenceMessage> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
-        List<SequenceMessage> list=new ArrayList<SequenceMessage>();
+    protected List<Operation> localUpdate(SequenceOperation opt) throws IncorrectTraceException {
+        List<Operation> list=new ArrayList<Operation>();
         list= ((LogootSDocument)this.getDoc()).generateDeletion(opt);
         list.addAll(((LogootSDocument)this.getDoc()).generateInsertion(opt));
         for(int i=0;i<list.size();i++){
@@ -84,8 +84,8 @@ public class LogootSAlgorithm<T> extends MergeAlgorithm{
     }     
     
     /*@Override
-    protected List<SequenceMessage> generateLocal(SequenceOperation opt) {
-        List<SequenceMessage> list=new ArrayList<SequenceMessage>();
+    protected List<Operation> generateLocal(SequenceOperation opt) {
+        List<Operation> list=new ArrayList<Operation>();
         if(opt.getType()==SequenceOperation.OpType.ins){
             list= ((LogootSDocument)this.getDoc()).generateInsertion(opt);
         }

@@ -20,7 +20,7 @@ package jbenchmarker.abt;
 
 import java.util.Formatter;
 
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import collect.VectorClock;
 import collect.VectorClock.Causality;
 import jbenchmarker.core.SequenceOperation;
@@ -30,38 +30,27 @@ import jbenchmarker.core.SequenceOperation.OpType;
 *
 * @author Roh
 */
-public class ABTOperation<T> extends SequenceMessage{
+public class ABTOperation<T> implements Operation{
 
 	protected T 			c;
-	protected int 			pos;
+	protected int 			pos, replica;
 	protected VectorClock 	vc;
+        final OpType type;
 	//protected final int		sid;	
+
+    public ABTOperation(OpType type, int replica, int pos, T c, VectorClock vc) {
+        this.c = c;
+        this.pos = pos;
+        this.replica = replica;
+        this.vc = vc;
+        this.type = type;
+    }
+
+    public int getReplica() {
+        return replica;
+    }
 	
-	public ABTOperation(SequenceOperation o,int replica){
-		super(o,replica);
-		//this.sid = this.getOriginalOp().getReplica();
-//		this.c	 ='\0';
-	}
-	
-	//delete
-	public ABTOperation(SequenceOperation o, int replica, int p, VectorClock vc) {
-		super(o,replica);
-		// TODO Auto-generated constructor stub
-		//this.sid = this.getReplica();
-		this.pos = p;		
-		this.vc  = new VectorClock(vc);
-//		this.c   = '\0';
-	}
-	
-	//insert
-	public ABTOperation(SequenceOperation o, int replica,  int p, T c, VectorClock vc) {
-		super(o,replica);
-		// TODO Auto-generated constructor stub
-		//this.sid = this.getOriginalOp().getReplica();
-		this.pos = p;
-		this.vc  = new VectorClock(vc);
-		this.c	 = c;
-	}
+
 
 	public static Causality getRelation(ABTOperation op1, ABTOperation op2){
 		Causality c = VectorClock.comp(op1.getReplica(), op1.vc, op2.getReplica(), op2.vc);
@@ -83,19 +72,15 @@ public class ABTOperation<T> extends SequenceMessage{
 		return c;
 	}
 	
-    // FIXME: should be moved to SequenceMessage class?
+    // FIXME: should be moved to Operation class?
     public OpType getType() {
-        return this.getOriginalOp().getType();
+        return type;
     }
 	
-	@Override
-	public SequenceMessage clone() {
+	public Operation clone() {
 		// TODO Auto-generated method stub
-		ABTOperation op = new ABTOperation(getOriginalOp(),this.getReplica());
-		op.pos = this.pos;
-		op.c   = this.c;
-		op.vc  = this.vc;		// do not copy vector clock. 
-		return op;
+				// do not copy vector clock. 
+		return new ABTOperation(type, replica, pos, c, vc);
 	}
         
 	

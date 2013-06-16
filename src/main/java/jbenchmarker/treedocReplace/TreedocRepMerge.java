@@ -9,7 +9,7 @@ import crdt.simulator.IncorrectTraceException;
 import java.util.LinkedList;
 import java.util.List;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.treedoc.TreedocIdentifier;
@@ -33,10 +33,10 @@ public class TreedocRepMerge extends MergeAlgorithm{
     }
 
     @Override
-    protected List<SequenceMessage> localInsert(SequenceOperation opt)
+    protected List<Operation> localInsert(SequenceOperation opt)
             throws IncorrectTraceException {
         final TreedocReplaceDocument doc = ((TreedocReplaceDocument) getDoc());
-        final List<SequenceMessage> ops = new LinkedList<SequenceMessage>();
+        final List<Operation> ops = new LinkedList<Operation>();
          final TreedocIdentifier id;
         int pos = opt.getPosition();
         
@@ -46,17 +46,17 @@ public class TreedocRepMerge extends MergeAlgorithm{
             id = doc.insertAt(restrictedIndex(pos, true), opt.getContent(), getReplicaNumber(), false);
         }
         
-        ops.add(new TreedocOperation(opt, id, opt.getContent()));
+        ops.add(new TreedocOperation(id, opt.getContent()));
 System.out.println("--- localInsert ---"+id);
 
         return ops;
     }
 
     @Override
-    protected List<SequenceMessage> localDelete(SequenceOperation opt)
+    protected List<Operation> localDelete(SequenceOperation opt)
             throws IncorrectTraceException {
         final TreedocReplaceDocument doc = ((TreedocReplaceDocument) getDoc());
-        final List<SequenceMessage> ops = new LinkedList<SequenceMessage>();
+        final List<Operation> ops = new LinkedList<Operation>();
 
 
         // TODO: implement batch delete more efficiently?
@@ -64,7 +64,7 @@ System.out.println("--- localInsert ---"+id);
                 + opt.getLenghOfADel(); i++) {
             final TreedocIdentifier deletedId = doc
                     .deleteAt(restrictedIndex(opt.getPosition(), false));
-            ops.add(new TreedocOperation(opt, deletedId));
+            ops.add(new TreedocOperation(deletedId));
 System.out.println("---- localDelete --- "+deletedId);
         }
 
@@ -87,9 +87,9 @@ System.out.println("---- localDelete --- "+deletedId);
     }
 
     @Override
-    protected List<SequenceMessage> localReplace(SequenceOperation opt) throws IncorrectTraceException {
+    protected List<Operation> localReplace(SequenceOperation opt) throws IncorrectTraceException {
         System.out.println("---Replace--");
-        List<SequenceMessage> lop = localInsert(opt);
+        List<Operation> lop = localInsert(opt);
         int newPos = opt.getPosition()+opt.getContent().size();
         opt.setPosition(newPos);
         lop.addAll(localDelete(opt));

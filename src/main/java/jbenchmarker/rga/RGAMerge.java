@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import collect.VectorClock;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.SequenceMessage;
+import crdt.Operation;
 import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceOperation;
 
@@ -55,8 +55,8 @@ public class RGAMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> localInsert(SequenceOperation opt) throws IncorrectTraceException {
-        List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
+    protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+        List<Operation> lop = new ArrayList<Operation>();
         RGADocument rgadoc = (RGADocument) (this.getDoc());
         RGAS4Vector s4vtms, s4vpos = null;
         RGAOperation rgaop;
@@ -74,7 +74,7 @@ public class RGAMerge extends MergeAlgorithm {
         for (int i = 0; i < offset; i++) {
             this.siteVC.inc(this.getReplicaNumber());
             s4vtms = new RGAS4Vector(this.getReplicaNumber(), this.siteVC);
-            rgaop = new RGAOperation(opt, p + i, s4vpos, opt.getContent().get(i), s4vtms);
+            rgaop = new RGAOperation(p + i, s4vpos, opt.getContent().get(i), s4vtms);
             s4vpos = s4vtms; // The s4v of the current insert becomes the s4vpos of next insert.
             lop.add(rgaop);
             rgadoc.apply(rgaop);
@@ -86,8 +86,8 @@ public class RGAMerge extends MergeAlgorithm {
     }
 
     @Override
-    protected List<SequenceMessage> localDelete(SequenceOperation opt) throws IncorrectTraceException {
-        List<SequenceMessage> lop = new ArrayList<SequenceMessage>();
+    protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+        List<Operation> lop = new ArrayList<Operation>();
         RGADocument rgadoc = (RGADocument) (this.getDoc());
         RGAS4Vector s4vtms, s4vpos = null;
         RGAOperation rgaop;
@@ -102,7 +102,7 @@ public class RGAMerge extends MergeAlgorithm {
         for (int i = 0; i < offset; i++) {
             this.siteVC.inc(this.getReplicaNumber());
             s4vtms = new RGAS4Vector(this.getReplicaNumber(), this.siteVC);
-            rgaop = new RGAOperation(opt, p + 1, target.getKey(), s4vtms);
+            rgaop = new RGAOperation(p + 1, target.getKey(), s4vtms);
             target = target.getNextVisible();
             lop.add(rgaop);
             rgadoc.apply(rgaop);
