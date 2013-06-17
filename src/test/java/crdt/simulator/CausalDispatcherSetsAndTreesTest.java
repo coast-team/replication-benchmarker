@@ -176,7 +176,7 @@ public class CausalDispatcherSetsAndTreesTest {
         }
     }
     
-    
+    //bug
     @Test
     public void testRunLogootTree() throws IncorrectTraceException, PreconditionException, IOException {
         for (Factory<CRDT> sf : set) {
