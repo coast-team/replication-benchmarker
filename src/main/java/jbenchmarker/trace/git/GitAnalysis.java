@@ -34,6 +34,8 @@ import org.eclipse.jgit.treewalk.filter.TreeFilter;
 public class GitAnalysis {
 
     private final Repository repository;
+    static private int revertsTotal = 0;
+    static private int failedTotal = 0;
     private int reverts = 0;
     private int failed = 0;
         
@@ -48,7 +50,8 @@ public class GitAnalysis {
     void countFailedRevert(String path) throws IOException, GitAPIException {
         RevWalk revwalk = new RevWalk(repository);
         revwalk.sort(RevSort.TOPO);
-
+        reverts = 0;
+        failed = 0;
         if (path != null) {
             revwalk.setTreeFilter(AndTreeFilter.create(PathFilter.create(path), TreeFilter.ANY_DIFF));
         }
@@ -56,26 +59,34 @@ public class GitAnalysis {
         Iterator<RevCommit> it = revwalk.iterator();
         while (it.hasNext()) {
             RevCommit commit = it.next();
-            ObjectId r = sayRevert(commit);
-            if (r != null) {
-                reverts++;
-                if (commit.getParentCount() == 1) {
-                    Git git = new Git(repository);
-                    ResetCommand reset = git.reset();
-                    reset.addPath(path);
-                    reset.setRef(commit.getParent(0).getName());
-                    reset.call();
-                    RevertCommand revert = git.revert();
-                    revert.include(r);
-                    try {
-                        revert.call();
-                    } catch (GitAPIException ex) {
-                        failed++;
-                    }
+            failed = computeConflict(commit, 0, path);
+        }
+    }
+    
+    public int computeConflict(RevCommit commit, int f, String path) throws IOException, GitAPIException
+    {
+        ObjectId r = sayRevert(commit);
+        if (r != null) {
+            revertsTotal++;
+            reverts++;
+            if (commit.getParentCount() == 1) {
+                Git git = new Git(repository);
+                ResetCommand reset = git.reset();
+                reset.addPath(path);
+                reset.setRef(commit.getParent(0).getName());
+                reset.call();
+                RevertCommand revert = git.revert();
+                revert.include(r);
+                try {
+                    revert.call();
+                } catch (GitAPIException ex) {
+                    failedTotal++;
+                    f++;
                 }
             }
-
+            computeConflict(commit.getParent(0), f, path);
         }
+        return f;
     }
 
     /**
@@ -114,6 +125,7 @@ public class GitAnalysis {
             ga.countFailedRevert(p);
             System.out.println(p + ":" + ga.failed + "/" + ga.reverts);
         }
+        System.out.println("Total revert :"+revertsTotal+", Total failed :"+failedTotal);
     }
     
 }
