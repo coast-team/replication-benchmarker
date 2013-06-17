@@ -16,33 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.woot.original;
-
-import jbenchmarker.woot.WootIdentifier;
-import jbenchmarker.woot.VisibleNode;
+package jbenchmarker.woot;
 
 /**
  *
  * @author urso
  */
-public class WootOriginalNode<T> extends VisibleNode<T> {
-    final private WootOriginalNode cp; // previous node
-    final private WootOriginalNode cn; // next node
-    
-    public static final WootOriginalNode CB = new WootOriginalNode(WootIdentifier.IB, null, null, ' ', false);
-    public static final WootOriginalNode CE = new WootOriginalNode(WootIdentifier.IE, null, null, ' ', false);
+public class VisibleNode<T> extends WootNode<T>{
+    private boolean visible;
 
-    public WootOriginalNode(WootIdentifier id, WootOriginalNode cp, WootOriginalNode cn, T content, boolean visible) {
-        super(id, content, visible);
-        this.cp = cp;
-        this.cn = cn;
+    public VisibleNode(WootIdentifier id, T content, boolean visible) {
+        super(id, content);
+        this.visible = visible;
     }
 
-    public VisibleNode getCn() {
-        return cn;
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
-    public VisibleNode getCp() {
-        return cp;
+    @Override
+    public boolean isVisible() {
+        return visible;
     }
 }

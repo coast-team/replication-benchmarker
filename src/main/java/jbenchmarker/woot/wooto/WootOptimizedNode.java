@@ -19,13 +19,13 @@
 package jbenchmarker.woot.wooto;
 
 import jbenchmarker.woot.WootIdentifier;
-import jbenchmarker.woot.WootNode;
+import jbenchmarker.woot.VisibleNode;
 
 /**
  *
  * @author urso
  */
-public class WootOptimizedNode<T> extends WootNode<T> {
+public class WootOptimizedNode<T> extends VisibleNode<T> {
     final private int degree;
     
     public static final WootOptimizedNode CB = new WootOptimizedNode(WootIdentifier.IB, 0, ' ', false);

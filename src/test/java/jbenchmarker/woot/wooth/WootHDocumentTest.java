@@ -23,9 +23,6 @@ import crdt.Factory;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.woot.WootDocument;
 import jbenchmarker.woot.WootIdentifier;
-import jbenchmarker.woot.WootOperation;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -144,7 +141,7 @@ public class WootHDocumentTest {
     public void testGetNext() {
         System.out.println("getNext");
         WootHashDocument instance = new WootHashDocument();
-        WootHashNode CB = instance.getFirst(), CE = instance.getFirst().getNext();
+        LinkedNode CB = instance.getFirst(), CE = instance.getFirst().getNext();
         assertEquals(CE, instance.getNext(CB));
        
         WootHashNode c = new WootHashNode(new WootIdentifier(1,1), 'c', true, instance.getFirst().getNext(), 1);

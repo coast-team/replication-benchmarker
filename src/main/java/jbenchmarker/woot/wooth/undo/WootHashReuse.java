@@ -7,11 +7,10 @@ package jbenchmarker.woot.wooth.undo;
 import jbenchmarker.core.Document;
 import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;
+import jbenchmarker.woot.wooth.LinkedNode;
 import jbenchmarker.woot.wooth.WootHashDocument;
-import jbenchmarker.woot.wooth.WootHashNode;
 
 /**
  * A woot document that reuse objects that reappear. If the user inserts the
@@ -37,7 +36,7 @@ public class WootHashReuse<T> extends WootHashDocument<T> {
 
     @Override
     public WootOperation insert(SequenceOperation o, WootIdentifier ip, WootIdentifier in, T content) {
-        WootHashNode<T> p = get(ip).getNext();
+        LinkedNode<T> p = get(ip).getNext();
         while (p.getId() != in) {
             if (p.getContent().equals(content)) { // reappear
                 return new WootUndo(p.getId(), -((WootUndoNode) p).getVisibility() + 1);
@@ -79,7 +78,7 @@ public class WootHashReuse<T> extends WootHashDocument<T> {
     }
 
     @Override
-    protected WootUndoNode<T> newNode(WootIdentifier IE, T content, boolean visible, WootHashNode<T> next, int degree) {
+    protected WootUndoNode<T> newNode(WootIdentifier IE, T content, boolean visible, LinkedNode<T> next, int degree) {
         return new WootUndoNode<T>(IE, content, next, degree, visible ? 1 : 0);
     }
     

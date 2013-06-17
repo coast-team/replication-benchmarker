@@ -33,20 +33,20 @@ import jbenchmarker.woot.WootPosition;
  */
 public class WootHashDocument<T> implements Document, Factory<Document> {
 
-    final protected WootHashNode<T> first;
-    final protected Map<WootIdentifier, WootHashNode<T>> map = new java.util.HashMap<WootIdentifier, WootHashNode<T>>();
+    final protected LinkedNode<T> first;
+    final protected Map<WootIdentifier, LinkedNode<T>> map = new java.util.HashMap<WootIdentifier, LinkedNode<T>>();
     protected int size = 0;
     private int clock = 0;
     private int replicaNumber;
 
      public WootHashDocument() {
-        WootHashNode<T> end = new WootHashNode<T>(WootIdentifier.IE, null, false, null, 0);
+        LinkedNode<T> end = new WootHashNode<T>(WootIdentifier.IE, null, false, null, 0);
         this.first = new WootHashNode<T>(WootIdentifier.IB, null, false, end, 0);
         this.map.put(WootIdentifier.IB, first);
         this.map.put(WootIdentifier.IE, end);
      }
     
-    public WootHashDocument(WootHashNode<T> first, WootHashNode<T> end) {
+    public WootHashDocument(LinkedNode<T> first, LinkedNode<T> end) {
         this.first = first;
         this.map.put(WootIdentifier.IB, first);
         this.map.put(WootIdentifier.IE, end);
@@ -55,7 +55,7 @@ public class WootHashDocument<T> implements Document, Factory<Document> {
     @Override
     public String view() {
         StringBuilder s = new StringBuilder();
-        for (WootHashNode w = first; w != null; w = w.getNext()) {
+        for (LinkedNode<T> w = first; w != null; w = w.getNext()) {
             if (w.isVisible()) {
                 s.append(w.getContent());
             }
@@ -68,7 +68,7 @@ public class WootHashDocument<T> implements Document, Factory<Document> {
     }
 
     public boolean has(WootIdentifier id) {
-        for (WootHashNode w = first; w != null; w = w.getNext()) {
+        for (LinkedNode<T> w = first; w != null; w = w.getNext()) {
             if (w.isVisible()) {
                 return true;
             }
@@ -88,9 +88,9 @@ public class WootHashDocument<T> implements Document, Factory<Document> {
     }
 
     protected void add(WootIdentifier id, T content, WootIdentifier ip, WootIdentifier in) {
-        WootHashNode wp = map.get(ip);
-        WootHashNode wn = map.get(in);
-        WootHashNode w = newNode(id, content, true, null, Math.max(wp.getDegree(), wn.getDegree()) + 1);
+        LinkedNode<T> wp = map.get(ip);
+        LinkedNode<T> wn = map.get(in);
+        LinkedNode<T> w = newNode(id, content, true, null, Math.max(wp.getDegree(), wn.getDegree()) + 1);
         insertBetween(w, wp, wn);
         map.put(id, w);
         ++size;
@@ -101,21 +101,21 @@ public class WootHashDocument<T> implements Document, Factory<Document> {
     }
 
     protected void setVisible(WootIdentifier id, boolean b) {
-        WootHashNode<T> e = map.get(id);
+        LinkedNode<T> e = map.get(id);
         if (!b && e.isVisible()) {
             --size;
         } else if (b && !e.isVisible()) {
             ++size;
         }
-        e.setVisible(b);
+        ((WootHashNode) e).setVisible(b);
     }
 
     /**
      * pth visible character
      */
-    public WootHashNode<T> getVisible(int p) {
+    public LinkedNode<T> getVisible(int p) {
         int j = -1;
-        WootHashNode w = first;
+        LinkedNode<T> w = first;
         while (j < p) {
             if (w.isVisible()) {
                 j++;
@@ -130,7 +130,7 @@ public class WootHashDocument<T> implements Document, Factory<Document> {
     /**
      * next visible character starting from v model position.
      */
-    public WootHashNode nextVisible(WootHashNode v) {
+    public LinkedNode<T> nextVisible(LinkedNode<T> v) {
         v = v.getNext();
         while (!v.isVisible()) {
             v = v.getNext();
@@ -141,7 +141,7 @@ public class WootHashDocument<T> implements Document, Factory<Document> {
     /**
      * Previous character of pth visible character. 0 for 0th
      */
-    public WootHashNode getPrevious(int p) {
+    public LinkedNode<T> getPrevious(int p) {
         if (p == 0) {
             return first;
         }
@@ -152,7 +152,7 @@ public class WootHashDocument<T> implements Document, Factory<Document> {
      * Next character of pth visible characterstarting from v model position. IE
      * for last visible.
      */
-    public WootHashNode getNext(WootHashNode v) {
+    public LinkedNode<T> getNext(LinkedNode<T> v) {
         v = v.getNext();
         while (!v.isVisible() && v.getNext() != null) {
             v = v.getNext();
@@ -169,12 +169,12 @@ public class WootHashDocument<T> implements Document, Factory<Document> {
                 new WootPosition(nextIdentifier(), ip, in), content);
     }
 
-    private void insertBetween(WootHashNode wn, WootHashNode ip, WootHashNode in) {
+    private void insertBetween(LinkedNode<T> wn, LinkedNode<T> ip, LinkedNode<T> in) {
         if (in == ip.getNext()) {
             wn.setNext(in);
             ip.setNext(wn);
         } else {
-            WootHashNode e = ip.getNext().getNext();
+            LinkedNode<T> e = ip.getNext().getNext();
             int dMin = ip.getNext().getDegree();
             while (e != in) {
                 if (e.getDegree() < dMin) {
@@ -199,11 +199,11 @@ public class WootHashDocument<T> implements Document, Factory<Document> {
         }
     }
     
-    protected WootHashNode get(WootIdentifier id) {
+    protected LinkedNode<T> get(WootIdentifier id) {
         return map.get(id);
     }
             
-    WootHashNode getFirst() {
+    LinkedNode<T> getFirst() {
         return first;
     }
 
@@ -247,8 +247,8 @@ public class WootHashDocument<T> implements Document, Factory<Document> {
         return hash;
     }
 
-    protected WootHashNode<T> newNode(WootIdentifier id, T content, boolean visible, WootHashNode<T> next, int degree) {
-        return new WootHashNode(id, content, visible, next, degree);
+    protected LinkedNode<T> newNode(WootIdentifier id, T content, boolean visible, LinkedNode<T> next, int degree) {
+        return new WootHashNode<T>(id, content, visible, next, degree);
     }
 
     @Override

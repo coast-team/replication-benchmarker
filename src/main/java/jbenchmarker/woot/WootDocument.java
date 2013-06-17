@@ -31,7 +31,7 @@ import jbenchmarker.core.SequenceOperation;
  *
  * @author urso
  */
-public abstract class WootDocument<N extends WootNode> implements Document, Factory<Document> {
+public abstract class WootDocument<N extends VisibleNode> implements Document, Factory<Document> {
 
     final protected List<N> elements;
     private int size = 0;
@@ -45,7 +45,7 @@ public abstract class WootDocument<N extends WootNode> implements Document, Fact
 
     public String view() {
         StringBuilder s = new StringBuilder();
-        for (WootNode w : elements) {
+        for (VisibleNode w : elements) {
             if (w.isVisible()) {
                 s.append(w.getContent());
             }

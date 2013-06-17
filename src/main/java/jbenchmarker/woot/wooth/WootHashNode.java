@@ -19,58 +19,26 @@
 package jbenchmarker.woot.wooth;
 
 import jbenchmarker.woot.WootIdentifier;
-import jbenchmarker.woot.WootNode;
 
 /**
  * A linked list of WootNodes.
  * @author urso
  */
-public class WootHashNode<T> extends WootNode<T> {
-    private WootHashNode next;
-    final private int degree;
+public class WootHashNode<T> extends LinkedNode<T> {
 
-    public WootHashNode(WootIdentifier id, T content, boolean visible, WootHashNode<T> next, int degree) {
-        super(id, content, visible);
-        this.next = next;
-        this.degree = degree;
-    }
-
-    public int getDegree() {
-        return degree;
-    }
-
-    public WootHashNode getNext() {
-        return next;
-    }
-
-    void setNext(WootHashNode next) {
-        this.next = next;
-    }
-
-    /**
-     * May not halt. Costly!
-     * @param obj
-     * @return the lists are equals
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final WootHashNode<T> other = (WootHashNode<T>) obj;
-        if (this.next != other.next && (this.next == null || !this.next.equals(other.next))) {
-            return false;
-        }
-        return super.equals(obj);
+    private boolean visible;
+    
+    public WootHashNode(WootIdentifier id, T content, boolean visible, LinkedNode<T> next, int degree) {
+        super(id, content, next, degree);
+        this.visible = visible;
     }
 
     @Override
-    public int hashCode() {
-        int hash = super.hashCode();
-        hash = 97 * hash + (this.next != null ? this.next.hashCode() : 0);
-        return hash;
+    public boolean isVisible() {
+        return visible;
+    }
+
+    void setVisible(boolean b) {
+        visible = b;
     }
 }

@@ -47,7 +47,7 @@ public class WootMerge<T> extends MergeAlgorithm {
     @Override
     protected void integrateRemote(crdt.Operation message) {
 //        WootOperation wop = (WootOperation) op;
-//        WootDocument<? extends WootNode> wdoc = (WootDocument<? extends WootNode>) (this.getDoc());
+//        WootDocument<? extends VisibleNode> wdoc = (WootDocument<? extends VisibleNode>) (this.getDoc());
 //        if (wop.getType()==SequenceOperation.OpType.ins && (!wdoc.has(wop.getIp()) || !wdoc.has(wop.getIp())))
 //            pending.put(wop.getId(),wop);
         getDoc().apply(message);
@@ -57,7 +57,7 @@ public class WootMerge<T> extends MergeAlgorithm {
     protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
         
         List<Operation> lop = new ArrayList<Operation>();
-        WootDocument<? extends WootNode> wdoc = (WootDocument<? extends WootNode>) (this.getDoc());
+        WootDocument<? extends VisibleNode> wdoc = (WootDocument<? extends VisibleNode>) (this.getDoc());
         int p = opt.getPosition();
         int v = wdoc.getVisible(p);
         for (int i = 0; i < opt.getLenghOfADel(); i++) {
@@ -74,7 +74,7 @@ public class WootMerge<T> extends MergeAlgorithm {
     @Override
     protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
         List<Operation> lop = new ArrayList<Operation>();
-        WootDocument<? extends WootNode> wdoc = (WootDocument<? extends WootNode>) (this.getDoc());
+        WootDocument<? extends VisibleNode> wdoc = (WootDocument<? extends VisibleNode>) (this.getDoc());
         int p = opt.getPosition();
         int ip = wdoc.getPrevious(p);
         int in = wdoc.getNext(ip);

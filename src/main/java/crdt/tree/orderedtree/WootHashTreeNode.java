@@ -29,6 +29,7 @@ import crdt.Operation;
 import jbenchmarker.woot.WootIdentifier;
 import jbenchmarker.woot.WootOperation;
 import jbenchmarker.woot.WootPosition;
+import jbenchmarker.woot.wooth.LinkedNode;
 import jbenchmarker.woot.wooth.WootHashDocument;
 import jbenchmarker.woot.wooth.WootHashNode;
 
@@ -76,13 +77,13 @@ public class WootHashTreeNode<T> extends WootHashDocument<WootHashTreeNode<T>> i
 
     @Override
     public Positioned<T> getPositioned(int p) {        
-        WootHashNode<WootHashTreeNode<T>> wn = getVisible(p);
+        LinkedNode<WootHashTreeNode<T>> wn = getVisible(p);
         return new Positioned<T>(positions.get(wn.getId()), wn.getContent().getValue());
     }
     
     @Override
     public PositionIdentifier getNewPosition(int p, T element) {
-        WootHashNode<WootHashTreeNode<T>>  wp = getPrevious(p), wn = getNext(wp);
+        LinkedNode<WootHashTreeNode<T>>  wp = getPrevious(p), wn = getNext(wp);
         return new WootPosition(nextIdentifier(), wp.getId(), wn.getId()); 
     }
 

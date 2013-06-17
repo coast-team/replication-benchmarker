@@ -50,7 +50,7 @@ public class WootHashMerge<T> extends MergeAlgorithm {
         List<Operation> lop = new ArrayList<Operation>();
         WootHashDocument wdoc = this.getDoc();
         int p = opt.getPosition();
-        WootHashNode w = wdoc.getVisible(p);
+        LinkedNode<T> w = wdoc.getVisible(p);
         for (int i = 0; i < opt.getLenghOfADel(); i++) {
             WootOperation wop = wdoc.delete(opt, w.getId());
             lop.add(wop);
@@ -67,7 +67,7 @@ public class WootHashMerge<T> extends MergeAlgorithm {
         List<Operation> lop = new ArrayList<Operation>();
         WootHashDocument wdoc = this.getDoc();
         int p = opt.getPosition();
-        WootHashNode ip = wdoc.getPrevious(p), in = wdoc.getNext(ip);
+        LinkedNode<T> ip = wdoc.getPrevious(p), in = wdoc.getNext(ip);
         WootIdentifier idp = ip.getId(), idn = in.getId();
         for (int i = 0; i < opt.getContent().size(); i++) {
             WootOperation wop = wdoc.insert(opt, idp, idn, opt.getContent().get(i));
