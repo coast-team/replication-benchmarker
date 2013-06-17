@@ -19,7 +19,7 @@
 package jbenchmarker.woot;
 
 /**
- *
+ * A woot identifier : replica and logical clock.
  * @author urso
  */
 public class WootIdentifier implements Comparable<WootIdentifier>, WootId {
@@ -85,5 +85,10 @@ public class WootIdentifier implements Comparable<WootIdentifier>, WootId {
     @Override
     public String toString() {
         return "[" + replica + ',' + clock + ']';
+    }
+
+    @Override
+    public WootIdentifier getId() {
+        return this;
     }
 }

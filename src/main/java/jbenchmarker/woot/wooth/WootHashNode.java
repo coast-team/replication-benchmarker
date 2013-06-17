@@ -21,7 +21,7 @@ package jbenchmarker.woot.wooth;
 import jbenchmarker.woot.WootIdentifier;
 
 /**
- * A linked list of WootNodes.
+ * A linked woot node with visibility flag?
  * @author urso
  */
 public class WootHashNode<T> extends LinkedNode<T> {

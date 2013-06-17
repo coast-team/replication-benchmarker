@@ -42,9 +42,7 @@ public class WootOperation<T> implements Operation {
     }
 
     public WootIdentifier getId() {
-        return identifier instanceof WootIdentifier ? 
-                (WootIdentifier) identifier : 
-                ((WootPosition) identifier).getId();
+        return identifier.getId();
     }
 
     public WootIdentifier getIn() {

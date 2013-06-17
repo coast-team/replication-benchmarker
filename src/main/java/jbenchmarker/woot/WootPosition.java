@@ -21,7 +21,7 @@ package jbenchmarker.woot;
 import crdt.tree.orderedtree.PositionIdentifier;
 
 /**
- *
+ * A woot position defined as a triplet <previous, id, next>. 
  * @author urso
  */
 public class WootPosition implements WootId, PositionIdentifier {
@@ -35,6 +35,7 @@ public class WootPosition implements WootId, PositionIdentifier {
         this.in = in;
     }
 
+    @Override
     public WootIdentifier getId() {
         return id;
     }
