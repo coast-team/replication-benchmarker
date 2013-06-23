@@ -159,10 +159,10 @@ public final class GitMain extends Experience {
                         fileCrashed.add(path);
                   
                      }
-                        if (trace.commitRevert != null) {
+                      /*  if (trace.commitRevert != null) {
                             System.out.println("---" + trace.commitRevert.size() + "---");
                             sumRever += trace.commitRevert.size();
-                        }
+                        }*/
                         if (k == 0 && stat) {
                             cop = cd.getRemoteTimes().size();
                             uop = cd.getGenerationTimes().size();

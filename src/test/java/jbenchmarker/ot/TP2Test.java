@@ -1,20 +1,20 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2013 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2013
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.ot;
 
@@ -32,6 +32,8 @@ import jbenchmarker.ot.ottree.OTTreeTransformation;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 import jbenchmarker.ot.soct2.OTReplica;
+import jbenchmarker.ot.ttf.MC.TTFMCMergeAlgorithm;
+import jbenchmarker.ot.ttf.MC.TTFMCTransformations;
 import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
 import jbenchmarker.ot.ttf.TTFOperation;
 import jbenchmarker.ot.ttf.TTFTransformations;
@@ -46,15 +48,15 @@ import org.junit.Test;
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
 public class TP2Test {
+
     OTReplica[] ots = {
         new OTSet(new SOCT2(new AddWinTransformation())),
         new OTSet(new SOCT2(new DelWinTransformation())),
-        new TTFMergeAlgorithm(new SOCT2(new TTFTransformations())),    
+        new TTFMergeAlgorithm(new SOCT2(new TTFTransformations())),
         new TTFUMergeAlgorithm(new SOCT2(new TTFUTransformations())),
         new TTFUMergeAlgorithm(new SOCT2(new TTFUDelWinsTransformations())),
         new OTTree(new SOCT2(new OTTreeTransformation())),
-    };
-   
+        new TTFMCMergeAlgorithm(new SOCT2(new TTFMCTransformations())),};
     Operation ops[][] = {
         {new OTSetOperations(OTSetOperations.OpType.Add, 1, 1),
             new OTSetOperations(OTSetOperations.OpType.Del, 1, 0)
@@ -83,12 +85,16 @@ public class TP2Test {
             new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0, 0}), 'b', 2, OTTreeRemoteOperation.OpType.ins),
             new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0, 1}), 'e', 3, OTTreeRemoteOperation.OpType.ins),
             new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0, 2}), 'c', 4, OTTreeRemoteOperation.OpType.ins),
-            new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0, 2}), 'd', 5, OTTreeRemoteOperation.OpType.ins),
-        }
+            new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0, 2}), 'd', 5, OTTreeRemoteOperation.OpType.ins),},
+        {new TTFOperation(SequenceOperation.OpType.insert, 3, 'x', 1),
+            new TTFOperation(SequenceOperation.OpType.insert, 3, 'x', 2),
+            new TTFOperation(SequenceOperation.OpType.insert, 3, 'y', 3),
+            new TTFOperation(SequenceOperation.OpType.insert, 3, 'z', 4),
+            new TTFOperation(SequenceOperation.OpType.insert, 3, 'y', 5),
+            new TTFOperation(SequenceOperation.OpType.insert, 3, 'x', 6),
+            new TTFOperation(SequenceOperation.OpType.noop, 2, 7),}
     };
-    
-    
-    
+
     @Test
     public void tp2() {
         for (int i = 0; i < ots.length; i++) {
