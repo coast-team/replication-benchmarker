@@ -33,7 +33,7 @@ public class TTFMCTransformations implements SOCT2TranformationInterface<TTFOper
     @Override
     public TTFOperation transpose(TTFOperation op1, TTFOperation op2) {
         if (op1.getType() == OpType.insert && op2.getType() == OpType.insert) {
-            if (op1.getPosition() == op2.getPosition()) {
+            if (op1.getPosition() == op2.getPosition() && op1.getChar().equals(op2.getChar())) {
                 op1.setType(OpType.noop);
                 return op1;
             }
@@ -70,7 +70,7 @@ public class TTFMCTransformations implements SOCT2TranformationInterface<TTFOper
         if (op1.getType() == OpType.insert && op2.getType() == OpType.insert) {
             if (op1.getPosition() < op2.getPosition()) {
                 return op1;
-            } else if (op1.getPosition() == op2.getPosition()) {
+            } else if (op1.getPosition() == op2.getPosition() && op1.getChar().equals(op2.getChar())) {
                 op1.setType(OpType.noop);
                 return op1;
             } else {

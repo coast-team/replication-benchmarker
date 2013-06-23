@@ -56,6 +56,32 @@ public class TTFMCTest {
         site0.integrateRemote(op2);
         assertEquals("axc", site0.lookup());
     }
+    
+    @Test
+    public void testSimpleMergeClean3() throws IncorrectTraceException {
+        TTFMCMergeAlgorithm site0 = new TTFMCMergeAlgorithm(0);
+        TTFMCMergeAlgorithm site1 = new TTFMCMergeAlgorithm(1);
+        TTFMCMergeAlgorithm site2 = new TTFMCMergeAlgorithm(2);
+        
+        List<Operation> ops0 = duplicate(site0.localInsert(insert(0, "abc")));
+        assertEquals("abc", site0.lookup());
+        
+        integrateSeqAtSite(ops0, site1);
+        assertEquals("abc", site1.lookup());
+        //site0.generateLocal(insert(0, 1, "x"));
+        List<Operation> ops00 = duplicate(site0.localInsert(insert(1, "xyz")));
+        assertEquals("axyzbc", site0.lookup());
+        
+        List<Operation> ops1 = duplicate(site1.localInsert(insert(1, "xyz")));
+        assertEquals("axyzbc", site1.lookup());
+        
+        integrateSeqAtSite(ops0, site2);
+        assertEquals("abc", site2.lookup());
+        integrateSeqAtSite(ops00, site2);
+        assertEquals("axyzbc", site2.lookup());
+       // integrateSeqAtSite(ops1, site2);
+       // assertEquals("axyzbc", site2.lookup());
+    }
 
     //=======================Generic test====================
     @Test

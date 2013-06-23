@@ -286,6 +286,7 @@ public class GitTrace implements Trace {
                             l = GitExtraction.detectMovesAndUpdates(l, gitTrace.updateThresold, gitTrace.moveThresold);
                         }
                         gitTrace.stat(l, true);
+ //                       System.out.println("Replica: "+replica.getReplicaNumber());
 //for (Edition ed : l) { System.out.println("--- DIFF ---\n" + ed); }                                
                         if (l.isEmpty()) {
                             walker.currentVC.inc(replica.getReplicaNumber());
