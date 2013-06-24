@@ -37,27 +37,19 @@ public class TTFMCTransformations implements SOCT2TranformationInterface<TTFOper
                 op1.setType(OpType.noop);
                 return op1;
             }
-            if (op1.getPosition() < op2.getPosition()) {
-                return op1;
-            } /*else if (op1.getPosition() == op2.getPosition()
-             && op1.getSiteId() < op2.getSiteId()) {
-             return op1;
-             }*/ else {
-                op1.setPosition(op1.getPosition() + 1);
+            else if (op1.getPosition() > op2.getPosition()
+                    || (op1.getPosition() == op2.getPosition() && op1.getSiteId() > op2.getSiteId())) {
+                 op1.setPosition(op1.getPosition() + 1);
                 return op1;
             }
         } else if (op1.getType() == OpType.delete && op2.getType() == OpType.insert) {
-            if (op1.getPosition() < op2.getPosition()) {
-                return op1;
-            } else {
+            if (op1.getPosition() >= op2.getPosition()) {
                 op1.setPosition(op1.getPosition() + 1);
                 return op1;
             }
         } else if ((op1.getType() == OpType.delete || op1.getType() == OpType.insert)
                 && op2.getType() == OpType.noop) {
-            if (op1.getPosition() < op2.getPosition()) {
-                return op1;
-            } else {
+            if (op1.getPosition() >= op2.getPosition()) {
                 op1.setPosition(op1.getPosition() + 1);
                 return op1;
             }
@@ -68,27 +60,22 @@ public class TTFMCTransformations implements SOCT2TranformationInterface<TTFOper
     @Override
     public TTFOperation transposeBackward(TTFOperation op1, TTFOperation op2) {
         if (op1.getType() == OpType.insert && op2.getType() == OpType.insert) {
-            if (op1.getPosition() < op2.getPosition()) {
-                return op1;
-            } else if (op1.getPosition() == op2.getPosition() && op1.getChar().equals(op2.getChar())) {
+            if (op1.getPosition() == op2.getPosition() && op1.getChar().equals(op2.getChar())) {
                 op1.setType(OpType.noop);
                 return op1;
-            } else {
+            } else if(op1.getPosition() > op2.getPosition()
+                    || (op1.getPosition() == op2.getPosition() && op1.getSiteId() > op2.getSiteId())){
                 op1.setPosition(op1.getPosition() - 1);
                 return op1;
             }
         } else if (op1.getType() == OpType.delete && op2.getType() == OpType.insert) {
-            if (op1.getPosition() < op2.getPosition()) {
-                return op1;
-            } else {
+            if(op1.getPosition() >= op2.getPosition()){
                 op1.setPosition(op1.getPosition() - 1);
                 return op1;
             }
         } else if ((op1.getType() == OpType.delete || op1.getType() == OpType.insert)
                 && op2.getType() == OpType.noop) {
-            if (op1.getPosition() < op2.getPosition()) {
-                return op1;
-            } else {
+            if (op1.getPosition() >= op2.getPosition()) {
                 op1.setPosition(op1.getPosition() - 1);
                 return op1;
             }

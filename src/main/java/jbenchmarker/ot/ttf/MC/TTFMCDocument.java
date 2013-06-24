@@ -34,6 +34,7 @@ public class TTFMCDocument<T> extends TTFDocument<T> {
         int pos = oop.getPosition();
         
         if (oop.getType() == SequenceOperation.OpType.noop) {
+            //this.model.add(pos, new TTFVisibilityChar(oop.getChar()));
             TTFVisibilityChar c = (TTFVisibilityChar) this.model.get(pos);
             c.hide();
         }
