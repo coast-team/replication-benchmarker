@@ -33,18 +33,13 @@ public class TTFMCDocument<T> extends TTFDocument<T> {
         TTFOperation oop = (TTFOperation) op;
         int pos = oop.getPosition();
         
-        if (oop.getType() == SequenceOperation.OpType.noop) {
-            //this.model.add(pos, new TTFVisibilityChar(oop.getChar()));
-            TTFVisibilityChar c = (TTFVisibilityChar) this.model.get(pos);
-            c.hide();
-        }
         if (oop.getType() == SequenceOperation.OpType.delete) {
             TTFVisibilityChar c = (TTFVisibilityChar) this.model.get(pos);
             if (c.isVisible()) {
                 decSize();
             }
             c.hide();
-        } else {
+        } else if(oop.getType() == SequenceOperation.OpType.insert){
             this.model.add(pos, new TTFVisibilityChar(oop.getChar()));
             incSize();
         }

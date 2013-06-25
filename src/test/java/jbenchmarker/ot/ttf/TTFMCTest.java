@@ -499,11 +499,11 @@ public class TTFMCTest {
         List<Operation> ops0 = duplicate(site1.localInsert(insert(0, "ABC")));
         integrateSeqAtSite(ops0, site2);
 
-        List<Operation> ops1 = duplicate(site1.localInsert(insert(2, "X")));
+        List<Operation> ops1 = duplicate(site1.localInsert(insert( 2, "X")));
         assertEquals("ABXC", site1.lookup());
 
-        List<Operation> ops2 = duplicate(site2.localInsert(insert(1, "12")));
-        List<Operation> ops2b = duplicate(site2.localInsert(insert(3, "34")));
+        List<Operation> ops2 = duplicate(site2.localInsert(insert( 1, "12")));
+        List<Operation> ops2b = duplicate(site2.localInsert(insert( 3, "34")));
         assertEquals("A1234BC", site2.lookup());
 
         integrateSeqAtSite(ops1, site2);
@@ -512,7 +512,63 @@ public class TTFMCTest {
         integrateSeqAtSite(ops2, site1);
         assertEquals("A12BXC", site1.lookup());
         integrateSeqAtSite(ops2b, site1);
+        assertEquals("A1234BXC", site1.lookup());
     }
+    
+    
+     @Test
+    public void testPartialConcurrencyScenarioWithDelInsert() throws IncorrectTraceException {
+        TTFMCMergeAlgorithm site1 = new TTFMCMergeAlgorithm(1);
+        TTFMCMergeAlgorithm site2 = new TTFMCMergeAlgorithm(2);
+
+        List<Operation> ops0 = duplicate(site1.localInsert(insert(0, "ABC")));
+        integrateSeqAtSite(ops0, site2);
+
+        List<Operation> ops2 = duplicate(site2.localInsert(insert(1, "X")));
+        assertEquals("AXBC", site2.lookup());
+        List<Operation> ops22 = duplicate(site2.localInsert(insert(4, "Y")));
+        assertEquals("AXBCY", site2.lookup());
+        
+        List<Operation> ops1 = duplicate(site1.localDelete(delete(1, 1)));
+        assertEquals("AC", site1.lookup());
+
+        integrateSeqAtSite(ops2, site1);
+        assertEquals("AXC", site1.lookup());
+        
+        integrateSeqAtSite(ops22, site1);
+        assertEquals("AXCY", site1.lookup());
+        
+        integrateSeqAtSite(ops1, site2);
+        assertEquals("AXCY", site2.lookup());
+    }
+    
+     
+     @Test
+    public void testConcurrencyScenarioWithDelInsert() throws IncorrectTraceException {
+        TTFMCMergeAlgorithm site1 = new TTFMCMergeAlgorithm(1);
+        TTFMCMergeAlgorithm site2 = new TTFMCMergeAlgorithm(2);
+
+        List<Operation> ops0 = duplicate(site1.localInsert(insert(0, "ABC")));
+        integrateSeqAtSite(ops0, site2);
+
+        List<Operation> ops2 = duplicate(site2.localInsert(insert(2, "X")));
+        assertEquals("ABXC", site2.lookup());
+        List<Operation> ops22 = duplicate(site2.localDelete(delete(2, 1)));
+        assertEquals("ABC", site2.lookup());
+        
+        List<Operation> ops1 = duplicate(site1.localDelete(delete(0, 1)));
+        assertEquals("BC", site1.lookup());
+
+        integrateSeqAtSite(ops2, site1);
+        assertEquals("BXC", site1.lookup());
+        
+        integrateSeqAtSite(ops22, site1);
+        assertEquals("BC", site1.lookup());
+        
+        integrateSeqAtSite(ops1, site2);
+        assertEquals("BC", site2.lookup());
+    }
+
 
     @Test
     public void testTP() throws Exception {

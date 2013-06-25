@@ -513,6 +513,61 @@ public class TTFSOCT2Test {
         integrateSeqAtSite(ops2, site1);
         assertEquals("A12BXC", site1.lookup());
         integrateSeqAtSite(ops2b, site1);
+        assertEquals("A1234BXC", site1.lookup());
+    }
+    
+    
+     @Test
+    public void testPartialConcurrencyScenarioWithDelInsert() throws IncorrectTraceException {
+        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(1);
+        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(2);
+
+        List<Operation> ops0 = duplicate(site1.localInsert(insert(0, "ABC")));
+        integrateSeqAtSite(ops0, site2);
+
+        List<Operation> ops2 = duplicate(site2.localInsert(insert(1, "X")));
+        assertEquals("AXBC", site2.lookup());
+        List<Operation> ops22 = duplicate(site2.localInsert(insert(4, "Y")));
+        assertEquals("AXBCY", site2.lookup());
+        
+        List<Operation> ops1 = duplicate(site1.localDelete(delete(1, 1)));
+        assertEquals("AC", site1.lookup());
+
+        integrateSeqAtSite(ops2, site1);
+        assertEquals("AXC", site1.lookup());
+        
+        integrateSeqAtSite(ops22, site1);
+        assertEquals("AXCY", site1.lookup());
+        
+        integrateSeqAtSite(ops1, site2);
+        assertEquals("AXCY", site2.lookup());
+    }
+    
+     
+     @Test
+    public void testConcurrencyScenarioWithDelInsert() throws IncorrectTraceException {
+        TTFMergeAlgorithm site1 = new TTFMergeAlgorithm(1);
+        TTFMergeAlgorithm site2 = new TTFMergeAlgorithm(2);
+
+        List<Operation> ops0 = duplicate(site1.localInsert(insert(0, "ABC")));
+        integrateSeqAtSite(ops0, site2);
+
+        List<Operation> ops2 = duplicate(site2.localInsert(insert(2, "X")));
+        assertEquals("ABXC", site2.lookup());
+        List<Operation> ops22 = duplicate(site2.localDelete(delete(2, 1)));
+        assertEquals("ABC", site2.lookup());
+        
+        List<Operation> ops1 = duplicate(site1.localDelete(delete(0, 1)));
+        assertEquals("BC", site1.lookup());
+
+        integrateSeqAtSite(ops2, site1);
+        assertEquals("BXC", site1.lookup());
+        
+        integrateSeqAtSite(ops22, site1);
+        assertEquals("BC", site1.lookup());
+        
+        integrateSeqAtSite(ops1, site2);
+        assertEquals("BC", site2.lookup());
     }
 
     @Test
