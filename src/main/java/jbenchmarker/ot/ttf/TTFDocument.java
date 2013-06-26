@@ -44,6 +44,10 @@ public class TTFDocument<T> implements Document {
     public TTFDocument() {
         this.model = new ArrayList<TTFChar<T>>();
     }
+    
+    public List<TTFChar<T>> getModel() {
+        return model;
+    }
 
     /**
      * Return document without invisible character

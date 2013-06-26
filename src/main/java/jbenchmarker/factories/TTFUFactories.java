@@ -23,6 +23,8 @@ import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.ot.soct2.*;
 import jbenchmarker.ot.ttf.MC.TTFMCDocument;
 import jbenchmarker.ot.ttf.MC.TTFMCTransformations;
+import jbenchmarker.ot.ttf.MC.TTFMCUndoDocument;
+import jbenchmarker.ot.ttf.MC.TTFUndoMergeAlgorithm;
 import jbenchmarker.ot.ttf.TTFDocument;
 import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
 import jbenchmarker.ot.ttf.TTFTransformations;
@@ -59,6 +61,14 @@ import jbenchmarker.ot.ttf.update.TTFUTransformations;
         @Override
         public TTFMergeAlgorithm create(int siteId) {
             return new TTFMergeAlgorithm(new TTFMCDocument(), siteId,
+                    new SOCT2(siteId, new SOCT2Log(new TTFMCTransformations()), new PreemptiveGarbageCollector(50)));
+        }
+    }
+    
+    static public class MergeCleanUndo extends ReplicaFactory {
+        @Override
+        public TTFUndoMergeAlgorithm create(int siteId) {
+            return new TTFUndoMergeAlgorithm(new TTFMCUndoDocument(), siteId,
                     new SOCT2(siteId, new SOCT2Log(new TTFMCTransformations()), new PreemptiveGarbageCollector(50)));
         }
     }
