@@ -82,6 +82,32 @@ public class TTFMCTest {
        // integrateSeqAtSite(ops1, site2);
        // assertEquals("axyzbc", site2.lookup());
     }
+    
+     @Test
+    public void testPartialConcurrent() throws IncorrectTraceException {
+        TTFMCMergeAlgorithm site0 = new TTFMCMergeAlgorithm(0);
+        TTFMCMergeAlgorithm site1 = new TTFMCMergeAlgorithm(1);
+        TTFMCMergeAlgorithm site2 = new TTFMCMergeAlgorithm(2);
+        
+        List<Operation> ops0 = duplicate(site0.localInsert(insert(0, "abc")));
+        assertEquals("abc", site0.lookup());
+        
+        List<Operation> ops1 = duplicate(site1.localInsert(insert(0, "xyz")));
+        assertEquals("xyz", site1.lookup());
+        
+        List<Operation> ops2 = duplicate(site2.localInsert(insert(0, "abc")));
+        assertEquals("abc", site2.lookup());
+        
+        integrateSeqAtSite(ops1, site0);
+        assertEquals("abcxyz", site0.lookup());
+        integrateSeqAtSite(ops2, site0);
+        assertEquals("abcxyz", site0.lookup());
+        
+        integrateSeqAtSite(ops0, site1);
+        assertEquals("abcxyz", site1.lookup());
+        integrateSeqAtSite(ops2, site1);
+        assertEquals("abcxyz", site1.lookup());
+    }
 
     //=======================Generic test====================
     @Test
