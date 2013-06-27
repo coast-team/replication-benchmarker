@@ -19,7 +19,6 @@
 package crdt.tree.wordtree;
 
 import collect.HashTree;
-import collect.Node;
 import collect.Tree;
 import collect.UnorderedNode;
 import crdt.CRDTMessage;
@@ -27,7 +26,6 @@ import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.set.CRDTSet;
 import crdt.tree.CRDTUnorderedTree;
-import java.io.Serializable;
 import java.util.*;
 
 /**

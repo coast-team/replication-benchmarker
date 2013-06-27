@@ -71,7 +71,7 @@ public class GitTrace implements Trace {
     private PatchCRUD patchCRUD;
     private List<Commit> initCommit;
     private static final DiffAlgorithm diffAlgorithm = GitExtraction.defaultDiffAlgorithm;
-    static final boolean DEBUG = false;
+    static final boolean DEBUG = true;
     static public int UpdBefore = 0, MoveBefore = 0, MergeBefore=0, returnStat =0;
     private final boolean detectMoveAndUpdate;
     private final int updateThresold;

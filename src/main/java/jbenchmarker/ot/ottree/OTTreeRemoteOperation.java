@@ -95,6 +95,38 @@ public class OTTreeRemoteOperation<T> implements Operation{
     public String toString() {
         return "OTTreeRemoteOperation{" + "path=" + path + ", contain=" + contain + ", siteId=" + siteId + ", type=" + type + '}';
     }
-    
-    
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + (this.path != null ? this.path.hashCode() : 0);
+        hash = 29 * hash + (this.contain != null ? this.contain.hashCode() : 0);
+        hash = 29 * hash + this.siteId;
+        hash = 29 * hash + (this.type != null ? this.type.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final OTTreeRemoteOperation<T> other = (OTTreeRemoteOperation<T>) obj;
+        if (this.path != other.path && (this.path == null || !this.path.equals(other.path))) {
+            return false;
+        }
+        if (this.contain != other.contain && (this.contain == null || !this.contain.equals(other.contain))) {
+            return false;
+        }
+        if (this.siteId != other.siteId) {
+            return false;
+        }
+        if (this.type != other.type) {
+            return false;
+        }
+        return true;
+    }
 }

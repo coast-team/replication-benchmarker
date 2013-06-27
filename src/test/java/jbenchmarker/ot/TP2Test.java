@@ -103,13 +103,10 @@ public class TP2Test {
                 for (Operation op1 : ops[i]) {
                     for (Operation op2 : ops[i]) {
                         Operation res1;
-                        res1 = ot.transpose(ot.transpose(op, op1), ot.transpose(op2, op1));
+                        res1 = ot.transpose(ot.transpose(op.clone(), op1), ot.transpose(op2.clone(), op1));
                         Operation res2;
-                        res2 = ot.transpose(ot.transpose(op, op2), ot.transpose(op1, op2));
-                        if (res1 != res2) {
-                            fail("TP2 Fail : ot:" + ot + " " + res1 + "!=" + res2 + " op: " + op + " op1: " + op1 + " op2:" + op2);
-                        }
-                        //assertEquals(res1,res2);
+                        res2 = ot.transpose(ot.transpose(op.clone(), op2), ot.transpose(op1.clone(), op2));
+                        assertEquals("TP2 Fail : ot:" + ot + "  op: " + op + " op1: " + op1 + " op2:" + op2, res1, res2);
                     }
                 }
             }

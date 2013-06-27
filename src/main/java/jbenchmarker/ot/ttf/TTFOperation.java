@@ -149,4 +149,38 @@ public class TTFOperation<T> implements Operation, Serializable {
         sb.append(')');
         return sb.toString();
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 71 * hash + this.pos;
+        hash = 71 * hash + (this.content != null ? this.content.hashCode() : 0);
+        hash = 71 * hash + (this.type != null ? this.type.hashCode() : 0);
+        hash = 71 * hash + this.siteId;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TTFOperation<T> other = (TTFOperation<T>) obj;
+        if (this.pos != other.pos) {
+            return false;
+        }
+        if (this.content != other.content && (this.content == null || !this.content.equals(other.content))) {
+            return false;
+        }
+        if (this.type != other.type) {
+            return false;
+        }
+        if (this.siteId != other.siteId) {
+            return false;
+        }
+        return true;
+    }
 }

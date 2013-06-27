@@ -179,12 +179,12 @@ public class CausalDispatcherSetsAndTreesTest {
     //bug
     @Test
     public void testRunLogootTree() throws IncorrectTraceException, PreconditionException, IOException {
-        for (Factory<CRDT> sf : set) {
+        while (true) {for (Factory<CRDT> sf : set) {
             for (Factory<WordPolicy> pf : policy) {
-                //System.out.println(new WordTree(sf, pf));
+                System.out.println(new WordTree(sf, pf));
                 testRun(new WordTree(sf, pf), 500, 20, treeop);
             }
-       }
+       }}
     }
 
     @Ignore

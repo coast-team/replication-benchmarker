@@ -44,10 +44,10 @@ public class TTFMCMergeAlgorithm<T> extends TTFMergeAlgorithm{
     @Override
     protected TTFOperation insertOperation(int pos, Object content) {
         //Debug =============================
-        if(this.getDoc().getModel().size()>pos){
+        /*if(this.getDoc().getModel().size()>pos){
         TTFVisibilityChar o = (TTFVisibilityChar) this.getDoc().getChar(pos);
         if(o.getChar().toString().equals(content.toString()) && !o.isVisible()) nbrRedo++;
-        }
+        }*/
         //======================================
         return new TTFOperation(SequenceOperation.OpType.insert, pos, content, getReplicaNumber());
     }

@@ -82,5 +82,38 @@ public class OTSetOperations<Element> implements Operation {
     public String toString() {
         return "OTSetOperations{" + "type=" + type + ", noped=" + noped + ", e=" + e + ", siteId=" + siteId + '}';
     }
-   
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 73 * hash + (this.type != null ? this.type.hashCode() : 0);
+        hash = 73 * hash + (this.noped != null ? this.noped.hashCode() : 0);
+        hash = 73 * hash + (this.e != null ? this.e.hashCode() : 0);
+        hash = 73 * hash + this.siteId;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final OTSetOperations<Element> other = (OTSetOperations<Element>) obj;
+        if (this.type != other.type) {
+            return false;
+        }
+        if (this.noped != other.noped) {
+            return false;
+        }
+        if (this.e != other.e && (this.e == null || !this.e.equals(other.e))) {
+            return false;
+        }
+        if (this.siteId != other.siteId) {
+            return false;
+        }
+        return true;
+    }
 }
