@@ -34,7 +34,8 @@ public class TTFMCDocument<T> extends TTFDocument<T> {
         int pos = oop.getPosition();
         
         if (oop.getType() == SequenceOperation.OpType.delete) {
-            TTFVisibilityChar c = (TTFVisibilityChar) this.model.get(pos);
+
+            TTFVisibilityChar c = (TTFVisibilityChar) this.getChar(pos);
             if (c.isVisible()) {
                 decSize();
             }
