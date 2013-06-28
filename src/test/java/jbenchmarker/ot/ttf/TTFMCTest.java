@@ -99,14 +99,11 @@ public class TTFMCTest {
         assertEquals("abc", site2.lookup());
         
         integrateSeqAtSite(ops1, site0);
-        assertEquals("abcxyz", site0.lookup());
         integrateSeqAtSite(ops2, site0);
-        assertEquals("abcxyz", site0.lookup());
         
         integrateSeqAtSite(ops0, site1);
-        assertEquals("abcxyz", site1.lookup());
         integrateSeqAtSite(ops2, site1);
-        assertEquals("abcxyz", site1.lookup());
+        assertEquals(site1.lookup(), site1.lookup());
     }
 
     //=======================Generic test====================

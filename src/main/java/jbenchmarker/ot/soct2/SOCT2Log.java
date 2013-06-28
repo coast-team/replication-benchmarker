@@ -26,6 +26,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import crdt.Operation;
+import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.SequenceOperation.OpType;
+import jbenchmarker.ot.ttf.TTFOperation;
 
 /**
  *  This object is a log of Soct2. It splits the history the process to transform new operation
@@ -35,6 +38,7 @@ import crdt.Operation;
 public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, Serializable, Factory<SOCT2Log<Op>> {
 
     protected SOCT2TranformationInterface<Op> transforme;
+    public int nbrInsConcur,nbrInsDelConcur,nbrDelDelConcur;
     
     /**
      * Construct a new log with this transformations.
@@ -42,6 +46,9 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
      */
     public SOCT2Log(SOCT2TranformationInterface t){
         this.transforme=t;
+        nbrInsConcur=0;
+        nbrInsDelConcur=0;
+        nbrDelDelConcur=0;
     }
     
     void setTransforme(SOCT2TranformationInterface<Op> transforme) {
@@ -85,6 +92,8 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
      * @return return the transformed operation
      */
     public Op merge(OTMessage<Op> message) {
+        //System.out.println("Operation : "+(TTFOperation)message.getOperation());
+        
         int separationIndex = separatePrecedingAndConcurrentOperations(message.getClock(), 0);
         
         return placeOperation(message, separationIndex);   
@@ -93,6 +102,7 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
     protected Op placeOperation(OTMessage<Op> message, int separationIndex) {  
         Op opt = message.getOperation();
         for (int i = separationIndex; i < this.operations.size(); i++) {
+            computation(opt, operations.get(i).getOperation());
             opt = transforme.transpose(opt, operations.get(i).getOperation());
         }
         operations.add(message);
@@ -151,5 +161,19 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
 
     Collection<OTMessage<Op>> begin(int garbagePoint) {
         return operations.subList(0, garbagePoint);
+    }
+    
+    void computation(Op o1, Op o2)
+    {
+        TTFOperation op1=(TTFOperation) o1;
+        TTFOperation op2=(TTFOperation) o2;
+        if (op1.getType().equals(OpType.insert) && op2.getType().equals(OpType.insert)) {
+            nbrInsConcur++;
+        } else if (op1.getType().equals(OpType.insert) && op2.getType().equals(OpType.delete)
+                || op1.getType().equals(OpType.delete) && op2.getType().equals(OpType.insert)) {
+            nbrInsDelConcur++;
+        } else if (op1.getType().equals(OpType.delete) && op2.getType().equals(OpType.delete)) {
+            nbrDelDelConcur++;
+        }
     }
 }

@@ -1,20 +1,20 @@
 /**
  * Replication Benchmarker
- * https://github.com/score-team/replication-benchmarker/
- * Copyright (C) 2013 LORIA / Inria / SCORE Team
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2013
+ * LORIA / Inria / SCORE Team
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package jbenchmarker.ot.ttf;
 
@@ -31,6 +31,7 @@ import jbenchmarker.ot.soct2.OTMessage;
 import jbenchmarker.ot.soct2.OTReplica;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
+import jbenchmarker.ot.ttf.MC.TTFMCDocument;
 
 /**
  * This TTF Merge Algorithm uses SOCT2 algorithm with TTF method
@@ -39,7 +40,7 @@ import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
  */
 public class TTFMergeAlgorithm extends MergeAlgorithm implements OTReplica<String, TTFOperation> {
 
-    final private OTAlgorithm<TTFOperation> otAlgo;
+    final protected OTAlgorithm<TTFOperation> otAlgo;
 
     public OTAlgorithm<TTFOperation> getOtAlgo() {
         return otAlgo;
@@ -57,10 +58,11 @@ public class TTFMergeAlgorithm extends MergeAlgorithm implements OTReplica<Strin
         this.otAlgo = otAlgo.create();
         setReplicaNumber(siteId);
     }
-    
+
     /**
      * Default SOCT2 Factory
-     **/
+     *
+     */
     public TTFMergeAlgorithm(int siteId) {
         this(new TTFDocument(), siteId, new SOCT2<TTFOperation>(new TTFTransformations(), siteId, null));
         setReplicaNumber(siteId);
@@ -69,7 +71,7 @@ public class TTFMergeAlgorithm extends MergeAlgorithm implements OTReplica<Strin
     public TTFMergeAlgorithm(Factory<OTAlgorithm<TTFOperation>> otAlgo) {
         this(new TTFDocument(), 0, otAlgo);
     }
-    
+
     /**
      * @return Vector Clock of site
      */
@@ -80,11 +82,11 @@ public class TTFMergeAlgorithm extends MergeAlgorithm implements OTReplica<Strin
     protected TTFOperation deleteOperation(int pos) {
         return new TTFOperation(SequenceOperation.OpType.delete, pos, getReplicaNumber());
     }
-    
+
     protected TTFOperation insertOperation(int pos, Object content) {
         return new TTFOperation(SequenceOperation.OpType.insert, pos, content, getReplicaNumber());
     }
-    
+
     /*
      * This integrate local modifications and generate message to another
      * replicas
@@ -122,51 +124,6 @@ public class TTFMergeAlgorithm extends MergeAlgorithm implements OTReplica<Strin
         return generatedOperations;
     }
 
-//    @Override
-//    public List<Operation> generateLocal(SequenceOperation opt) throws IncorrectTraceException {
-//        TTFDocument doc = (TTFDocument) this.getDoc();
-//        List<Operation> generatedOperations = new ArrayList<Operation>();
-//
-//        int mpos = doc.viewToModel(opt.getPosition());
-//        switch (opt.getType()) {
-//            case del:
-//                int visibleIndex = 0;
-//                for (int i = 0; i < opt.getLenghOfADel(); i++) {
-//                    // TODO: could be improved with an iterator on only visible characters
-//                    while (!doc.getChar(mpos + visibleIndex).isVisible()) {
-//                        visibleIndex++;
-//                    }
-//                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.del, mpos + visibleIndex, getReplicaNumber());
-//                    generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
-//                    doc.apply(op);
-//                }
-//                break;
-//            case ins:
-//                for (int i = 0; i < opt.getContent().size(); i++) {
-//                    TTFOperation op = new TTFOperation(SequenceOperation.OpType.ins,
-//                            mpos + i,
-//                            opt.getContent().get(i),
-//                            getReplicaNumber());
-//                    generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op), opt));
-//                    doc.apply(op);
-//                }
-//                break;
-//            case unsupported:
-//                UnsupportedOperation op = UnsupportedOperation.create(opt);
-//                //this.siteVC.inc(this.getReplicaNumber());
-//                generatedOperations.add(op);
-//                break;
-//            case update:
-//                break;
-//        }
-//        return generatedOperations;
-//    }
-
-    /**
-     * Make a new mergeAlgorithm with 0 as site id.
-     *
-     * @return new TTFMergeAlgorithm
-     */
     @Override
     public CRDT<String> create() {
         return new TTFMergeAlgorithm(new TTFDocument(), 0, otAlgo);
@@ -179,11 +136,23 @@ public class TTFMergeAlgorithm extends MergeAlgorithm implements OTReplica<Strin
     protected void integrateRemote(crdt.Operation message) throws IncorrectTraceException {
         integrateOneOperation(((TTFSequenceMessage) message).getSoct2Message());
     }
-
-
+    
     private void integrateOneOperation(OTMessage mess) {
-        Operation op = otAlgo.integrateRemote(mess);
+        
+        Operation op = otAlgo.integrateRemote(mess);        
+        //=======================================================
+        computation();
+        if (((TTFOperation) op).getType() == SequenceOperation.OpType.noop) {
+            nbrCleanMerge++;
+        }
+        //=======================================================
         this.getDoc().apply(op);
+    }
+    
+    private void computation() {
+        this.nbrInsConcur = otAlgo.getLog().nbrInsConcur;
+        this.nbrInsDelConcur = otAlgo.getLog().nbrInsDelConcur;
+        this.nbrDelDelConcur = otAlgo.getLog().nbrDelDelConcur;
     }
 
     @Override
@@ -196,4 +165,5 @@ public class TTFMergeAlgorithm extends MergeAlgorithm implements OTReplica<Strin
     public SOCT2TranformationInterface<TTFOperation> getTransformation() {
         return otAlgo.getTransformation();
     }
+    
 }

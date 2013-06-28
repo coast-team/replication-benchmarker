@@ -37,7 +37,7 @@ public class TTFMCTransformations implements SOCT2TranformationInterface<TTFOper
                 op1.setType(OpType.noop);
                 return op1;
             } else if (op1.getPosition() > op2.getPosition()
-                    || (op1.getPosition() == op2.getPosition() && op1.getSiteId() > op2.getSiteId())) {
+                    || (op1.getPosition() == op2.getPosition() && op1.getChar().hashCode()> op2.getChar().hashCode())) {
                 op1.setPosition(op1.getPosition() + 1);
                 return op1;
             }
@@ -60,7 +60,7 @@ public class TTFMCTransformations implements SOCT2TranformationInterface<TTFOper
     public TTFOperation transposeBackward(TTFOperation op1, TTFOperation op2) {
         if (op1.getType() == OpType.insert && op2.getType() == OpType.insert) {
             if (op1.getPosition() > op2.getPosition()
-                    || (op1.getPosition() == op2.getPosition() && op1.getSiteId() > op2.getSiteId())) {
+                    || (op1.getPosition() == op2.getPosition() && op1.getChar().hashCode()> op2.getChar().hashCode())) {
                 op1.setPosition(op1.getPosition() - 1);
                 return op1;
             }

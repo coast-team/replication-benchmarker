@@ -55,22 +55,22 @@ public class TTFUDocumentTest {
 
         model = new TTFDoc(c('a'), h('b'), c('c'));
         assertEquals(0, model.viewToModel(0));
-        assertEquals(2, model.viewToModel(1));
+        assertEquals(1, model.viewToModel(1));
         assertEquals(3, model.viewToModel(2));
 
         model = new TTFDoc(h('a'), c('b'), c('c'));
-        assertEquals(1, model.viewToModel(0));
+        assertEquals(0, model.viewToModel(0));
         assertEquals(2, model.viewToModel(1));
         assertEquals(3, model.viewToModel(2));
 
         model = new TTFDoc(c('a'), c('b'), h('c'));
         assertEquals(0, model.viewToModel(0));
         assertEquals(1, model.viewToModel(1));
-        assertEquals(3, model.viewToModel(2));
+        assertEquals(2, model.viewToModel(2));
 
         model = new TTFDoc(c('a'), h('b'), h('c'), c('d'));
         assertEquals(0, model.viewToModel(0));
-        assertEquals(3, model.viewToModel(1));
+        assertEquals(1, model.viewToModel(1));
         assertEquals(4, model.viewToModel(2));
     }
 

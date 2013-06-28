@@ -16,13 +16,12 @@ import jbenchmarker.ot.ttf.TTFVisibilityChar;
  *
  * @author score
  */
-public class TTFMCMergeAlgorithm<T> extends TTFMergeAlgorithm{
-    
-    
+public class TTFMCMergeAlgorithm<T> extends TTFMergeAlgorithm {
+
     public TTFMCMergeAlgorithm(TTFMCDocument doc, int siteId, Factory<OTAlgorithm<TTFOperation>> otAlgo) {
         super(doc, siteId, otAlgo);
     }
-    
+
     public TTFMCMergeAlgorithm(int siteId) {
         this(new TTFMCDocument(), siteId, new SOCT2<TTFOperation>(new TTFMCTransformations(), siteId, null));
     }
@@ -35,22 +34,30 @@ public class TTFMCMergeAlgorithm<T> extends TTFMergeAlgorithm{
     public TTFMCDocument getDoc() {
         return (TTFMCDocument) super.getDoc();
     }
-    
+
     @Override
     protected TTFOperation deleteOperation(int pos) {
         return new TTFOperation(SequenceOperation.OpType.delete, pos, getReplicaNumber());
     }
-    
+
     @Override
     protected TTFOperation insertOperation(int pos, Object content) {
         //Debug =============================
-        /*if(this.getDoc().getModel().size()>pos){
-        TTFVisibilityChar o = (TTFVisibilityChar) this.getDoc().getChar(pos);
-        if(o.getChar().toString().equals(content.toString()) && !o.isVisible()) nbrRedo++;
-        }*/
-        //======================================
+        int i = pos;
+        boolean exit = false;
+        if (this.getDoc().getModel().size() > i) {
+            TTFVisibilityChar o = (TTFVisibilityChar) this.getDoc().getChar(i);
+            while (!o.isVisible() && !exit) {
+                if (o.getChar().toString().equals(content.toString())) {
+                    nbrRedo++;
+                    exit = true;
+
+                }
+                i++;
+                o = (TTFVisibilityChar) this.getDoc().getChar(i);
+            }
+        }
+        //=============================
         return new TTFOperation(SequenceOperation.OpType.insert, pos, content, getReplicaNumber());
     }
-    
-    
 }

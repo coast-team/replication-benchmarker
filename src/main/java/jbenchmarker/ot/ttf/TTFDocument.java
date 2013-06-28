@@ -127,8 +127,7 @@ public class TTFDocument<T> implements Document {
         int positionInModel = 0;
         int visibleCharacterCount = 0;
 
-        while (positionInModel < this.model.size()
-                && (visibleCharacterCount < positionInView || (!this.model.get(positionInModel).isVisible()))) {
+        while (positionInModel < this.model.size() && visibleCharacterCount < positionInView) {
             if (this.model.get(positionInModel).isVisible()) {
                 visibleCharacterCount++;
             }

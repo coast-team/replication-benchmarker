@@ -54,7 +54,7 @@ public class CausalSimulator extends Simulator {
     private SizeCalculator serializer;
     private int passiveReplica = 1;
     private boolean debugInformation=true;
-
+    public int nbRedo, nbMClean, delConcur, insConcur, insDelConcur;
     public CausalSimulator(Factory<? extends CRDT> rf) {
         super(rf);
         this.serializer = new StandardSizeCalculator(true);
@@ -233,7 +233,7 @@ public class CausalSimulator extends Simulator {
             }
 
             CRDT localReplica = this.getReplicas().get(r);
-
+            
             if (localReplica == null) {
                 localReplica = this.newReplica(r);
                 clocks.put(r, new VectorClock());
@@ -295,6 +295,11 @@ public class CausalSimulator extends Simulator {
             clocks.get(r).inc(r);
             globalClock.inc(r);
             ifSerializ();
+            nbRedo = localReplica.nbrRedo;
+            nbMClean = localReplica.nbrCleanMerge;
+            delConcur=  localReplica.nbrDelDelConcur;
+            insConcur= localReplica.nbrInsConcur;
+            insDelConcur = localReplica.nbrInsDelConcur;
         }
         ifSerializ();
 
@@ -311,6 +316,7 @@ public class CausalSimulator extends Simulator {
             }
             play(r, vc, concurrentOps);
         }
+        
         
 
     }

@@ -69,6 +69,7 @@ public class CausalDispatcherSequenceTest {
         new TTFUFactories.NoUpdate(),
         new TTFUFactories.Update(),
         new TTFUFactories.DelWins(),
+        new TTFUFactories.MergeClean(),
     };
     int scale = 100;
 
@@ -93,7 +94,7 @@ public class CausalDispatcherSequenceTest {
 //        Factory f = new TTFFactories.WithGC3();
 //        Factory f = new TTFUMergeAlgorithm(0);        
 //        Factory f = new TTFFactories.WithoutGCFactory();
-        Factory f = new WootUFactory();
+        Factory f = new TTFUFactories.MergeClean();
         CausalDispatcherSetsAndTreesTest.testRunX(f, 20, 1000, 10, StandardSeqOpProfile.WITH_UPDATE);
     }
 

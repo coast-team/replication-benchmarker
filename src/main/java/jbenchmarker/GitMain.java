@@ -95,6 +95,7 @@ public final class GitMain extends Experience {
         int m = 0, sumRever=0;
         boolean memOk = false;
         double serMem = 0;
+        int nbRedo =0, nbMergeClean=0, insConcur=0, delConcur=0, delInsConcur=0;
         //System.out.println("Path;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
         String statr = "";
         String file = createName(args);
@@ -153,11 +154,17 @@ public final class GitMain extends Experience {
                         CausalSimulator cd = new CausalSimulator(rf, stat, stat ? nbserializ : 0, stat);
                         cd.setWriter(save ? new TraceObjectWriter("trace") : null);
                         
-                     //  try {
+                       try {
                             cd.run(trace);
-                     //  } catch (RuntimeException e) {
-                     //   fileCrashed.add(path);                  
-                     //}
+                       } catch (RuntimeException e) {
+                        fileCrashed.add(path);
+                  
+                     }
+                       nbRedo += cd.nbRedo;
+                       nbMergeClean += cd.nbMClean;
+                       insConcur += cd.insConcur;
+                       delConcur += cd.delConcur;
+                       delInsConcur += cd.insDelConcur;
                       /*  if (trace.commitRevert != null) {
                             System.out.println("---" + trace.commitRevert.size() + "---");
                             sumRever += trace.commitRevert.size();
@@ -284,9 +291,13 @@ public final class GitMain extends Experience {
                     }
                 }
         }
-        System.out.println("Number total of revert : "+sumRever);
+        System.out.println("Number total of Redo;" + nbRedo);
+        System.out.println("Number total of MergeClean : " + nbMergeClean);
+        System.out.println("Number total InsConcur : " + insConcur);
+        System.out.println("Number total DelConcur : " + delConcur);
+        System.out.println("Number total InsDelConcur : " + delInsConcur);
         if (fileCrashed.size() > 0) {
-            System.out.println("\n\nNumber of file crashed :" + fileCrashed.size());
+            System.out.println("\n\nNumber of file crashed;" + fileCrashed.size());
             for (String f : fileCrashed) {
                 System.out.println("-" + f);
             }

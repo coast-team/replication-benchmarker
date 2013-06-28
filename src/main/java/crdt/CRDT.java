@@ -30,8 +30,13 @@ import jbenchmarker.core.LocalOperation;
 public abstract class CRDT<L> extends Observable implements Factory<CRDT<L>>, Serializable, Replica<L> {
 
     private int replicaNumber;
-
+    public int nbrCleanMerge, nbrRedo, nbrInsConcur, nbrInsDelConcur, nbrDelDelConcur;
     public CRDT(int replicaNumber) {
+        nbrCleanMerge = 0;
+        nbrRedo=0;
+        nbrInsConcur=0;
+        nbrInsDelConcur=0;
+        nbrDelDelConcur=0;
         this.replicaNumber = replicaNumber;
     }
 
