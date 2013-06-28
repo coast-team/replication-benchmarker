@@ -16,45 +16,45 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.ot.ttf.update;
+package jbenchmarker.ot.ttf.MC;
 
-import jbenchmarker.ot.ttf.*;
-import java.util.ArrayList;
 import crdt.Operation;
-import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.SequenceOperation.OpType;
+import jbenchmarker.ot.ttf.TTFDocument;
+import jbenchmarker.ot.ttf.TTFOperation;
 
+    
 /**
- * This is TTF document sequence of character
- *
- * @param <T> Type of character
+ * A TTFdocument with visibility characters. 
+ * Insert operation creates a 1 visibility character and undo shift visibility.
  * @author urso
  */
-public class TTFUDocument<T> extends TTFDocument<T> {
-
-    /**
-     * Make new TTF document
-     */
-    public TTFUDocument() {
-        this.model = new ArrayList<TTFChar<T>>();
+public class TTFUndoDocument<T> extends TTFDocument<T>{
+    
+    public TTFUndoDocument() {
+        super();
     }
-
+        
     /*
      * Apply an operation to document.
      */
     @Override
     public void apply(Operation op) {
-        TTFOperationWithId<T> oop = (TTFOperationWithId<T>) op;
+        TTFOperation oop = (TTFOperation) op;
         int pos = oop.getPosition();
 
-            if (oop.getType() == SequenceOperation.OpType.update) {
-                TTFUpdateChar c = (TTFUpdateChar) this.model.get(pos);
-                if (c.isVisible() && oop.getContent() == null) {
-                    decSize();
-                }
-                c.set(oop.getContent(), oop.getSiteId());
-            } else if (oop.getType() == SequenceOperation.OpType.insert) { 
-                this.model.add(pos, new TTFUpdateChar<T>(oop.getContent(), oop.getSiteId()));
+        if (oop.getType() == OpType.insert) {
+            this.model.add(pos, new TTFUndoVisibilityChar(oop.getContent()));
+            incSize();
+        } else { // undo
+            TTFUndoVisibilityChar c = (TTFUndoVisibilityChar) this.model.get(pos);
+            boolean wasVisible = c.isVisible();
+            c.changeVisibility((Integer) oop.getContent());
+            if (!wasVisible && c.isVisible()) {
                 incSize();
+            } else if (wasVisible && !c.isVisible()) {
+                decSize();
             }
         }
+    }
 }

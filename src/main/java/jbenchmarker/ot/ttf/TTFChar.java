@@ -30,7 +30,7 @@ public interface TTFChar<T> extends Serializable {
      * return the current character
      * @return character
      */
-    T getChar();
+    T getContent();
 
     /**
      * check the visibility of character

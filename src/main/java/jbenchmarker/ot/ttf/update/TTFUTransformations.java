@@ -22,6 +22,7 @@ import java.io.Serializable;
 import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 import jbenchmarker.ot.ttf.TTFOperation;
+import jbenchmarker.ot.ttf.TTFOperationWithId;
 
 /**
  * Is transformation and backward transformation for TTF model including updates.
@@ -29,10 +30,10 @@ import jbenchmarker.ot.ttf.TTFOperation;
  * Concurrent updates are managed using site id priority.
  * @author oster urso
  */
-public class TTFUTransformations implements SOCT2TranformationInterface<TTFOperation>, Serializable {
+public class TTFUTransformations implements SOCT2TranformationInterface<TTFOperationWithId>, Serializable {
 
     @Override
-    public TTFOperation transpose(TTFOperation op1, TTFOperation op2) {
+    public TTFOperationWithId transpose(TTFOperationWithId op1, TTFOperationWithId op2) {
         if (op1.getType() == OpType.insert && op2.getType() == OpType.insert) {
             if (op1.getPosition() > op2.getPosition()
                     || (op1.getPosition() == op2.getPosition() && op1.getSiteId() > op2.getSiteId())) {
@@ -55,7 +56,7 @@ public class TTFUTransformations implements SOCT2TranformationInterface<TTFOpera
     }
 
     @Override
-    public TTFOperation transposeBackward(TTFOperation op1, TTFOperation op2) {
+    public TTFOperationWithId transposeBackward(TTFOperationWithId op1, TTFOperationWithId op2) {
         if (op1.getType() == OpType.insert && op2.getType() == OpType.insert) {
             if (op1.getPosition() > op2.getPosition()
                     || (op1.getPosition() == op2.getPosition() && op1.getSiteId() > op2.getSiteId())) {

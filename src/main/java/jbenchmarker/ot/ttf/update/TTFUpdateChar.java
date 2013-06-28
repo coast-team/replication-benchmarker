@@ -64,7 +64,7 @@ public class TTFUpdateChar<T> implements TTFChar<T> {
      *
      * @return character
      */
-    public T getChar() {
+    public T getContent() {
         return this.character;
     }
 

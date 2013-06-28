@@ -59,7 +59,7 @@ public class TTFDocument<T> implements Document {
         StringBuilder sb = new StringBuilder();
         for (TTFChar c : this.model) {
             if (c.isVisible()) {
-                sb.append(c.getChar());
+                sb.append(c.getContent());
             }
         }
         return sb.toString();
@@ -101,7 +101,7 @@ public class TTFDocument<T> implements Document {
             }
             c.hide();
         } else {
-            this.model.add(pos, new TTFVisibilityChar(oop.getChar()));
+            this.model.add(pos, new TTFVisibilityChar(oop.getContent()));
             incSize();
         }
     }

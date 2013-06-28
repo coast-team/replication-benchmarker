@@ -34,7 +34,7 @@ public interface OTAlgorithm<O extends Operation> extends Factory<OTAlgorithm<O>
      * @param op The operation
      * @return Soct2Message with vector clock.
      */
-    OTMessage estampileMessage(O op);
+    OTMessage estampileMessage(Operation op);
 
     /**
      * @return return log object

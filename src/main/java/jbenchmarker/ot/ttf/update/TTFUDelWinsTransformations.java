@@ -22,6 +22,7 @@ import java.io.Serializable;
 import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 import jbenchmarker.ot.ttf.TTFOperation;
+import jbenchmarker.ot.ttf.TTFOperationWithId;
 
 /**
  * Is transformation and backward transformation for TTF model including uodates.
@@ -30,10 +31,10 @@ import jbenchmarker.ot.ttf.TTFOperation;
  * 
  * @author oster urso
  */
-public class TTFUDelWinsTransformations implements SOCT2TranformationInterface<TTFOperation>, Serializable {
+public class TTFUDelWinsTransformations implements SOCT2TranformationInterface<TTFOperationWithId>, Serializable {
 
     @Override
-    public TTFOperation transpose(TTFOperation op1, TTFOperation op2) {
+    public TTFOperationWithId transpose(TTFOperationWithId op1, TTFOperationWithId op2) {
         if (op1.getType() == OpType.insert && op2.getType() == OpType.insert) {
             if (op1.getPosition() > op2.getPosition()
                     || (op1.getPosition() == op2.getPosition() && op1.getSiteId() > op2.getSiteId())) {
@@ -48,7 +49,7 @@ public class TTFUDelWinsTransformations implements SOCT2TranformationInterface<T
             return op1;
         } else if (op1.getType() == OpType.update && op2.getType() == OpType.update) {
             if (op1.getPosition() == op2.getPosition()
-                    && (op1.getChar() != null && (op2.getSiteId() > op1.getSiteId() || op2.getChar() == null))) {
+                    && (op1.getContent() != null && (op2.getSiteId() > op1.getSiteId() || op2.getContent() == null))) {
                 op1.setType(OpType.noop);
             }
             return op1;
@@ -57,7 +58,7 @@ public class TTFUDelWinsTransformations implements SOCT2TranformationInterface<T
     }
 
     @Override
-    public TTFOperation transposeBackward(TTFOperation op1, TTFOperation op2) {
+    public TTFOperationWithId transposeBackward(TTFOperationWithId op1, TTFOperationWithId op2) {
         if (op1.getType() == OpType.insert && op2.getType() == OpType.insert) {
             if (op1.getPosition() > op2.getPosition()
                     || (op1.getPosition() == op2.getPosition() && op1.getSiteId() > op2.getSiteId())) {
@@ -72,7 +73,7 @@ public class TTFUDelWinsTransformations implements SOCT2TranformationInterface<T
             return op1;
         } else if (op1.getType() == OpType.noop && op2.getType() == OpType.update) {
             if (op1.getPosition() == op2.getPosition()
-                    && (op1.getChar() != null && (op2.getSiteId() > op1.getSiteId() || op2.getChar() == null))) {
+                    && (op1.getContent() != null && (op2.getSiteId() > op1.getSiteId() || op2.getContent() == null))) {
                 op1.setType(OpType.update);
             }
             return op1;

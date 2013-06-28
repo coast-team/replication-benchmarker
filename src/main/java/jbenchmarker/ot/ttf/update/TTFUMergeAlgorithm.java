@@ -35,7 +35,7 @@ import jbenchmarker.ot.soct2.SOCT2;
  *
  * @author urso
  */
-public class TTFUMergeAlgorithm extends TTFMergeAlgorithm {
+public class TTFUMergeAlgorithm extends TTFMergeAlgorithm<TTFOperationWithId> {
 
     /**
      * Make new TTFMerge algorithm with docuement (TTFDocument) and site id or
@@ -44,15 +44,15 @@ public class TTFUMergeAlgorithm extends TTFMergeAlgorithm {
      * @param doc TTF Document
      * @param siteId SiteID
      */
-    public TTFUMergeAlgorithm(TTFUDocument doc, int siteId, Factory<OTAlgorithm<TTFOperation>> otAlgo) {
+    public TTFUMergeAlgorithm(TTFUDocument doc, int siteId, Factory<OTAlgorithm<TTFOperationWithId>> otAlgo) {
         super(doc, siteId, otAlgo);
     }
     
     public TTFUMergeAlgorithm(int siteId) {
-        this(new TTFUDocument(), siteId, new SOCT2<TTFOperation>(new TTFUTransformations(), siteId, null));
+        this(new TTFUDocument(), siteId, new SOCT2<TTFOperationWithId>(new TTFUTransformations(), siteId, null));
     }
 
-    public TTFUMergeAlgorithm(Factory<OTAlgorithm<TTFOperation>> otAlgo) {
+    public TTFUMergeAlgorithm(Factory<OTAlgorithm<TTFOperationWithId>> otAlgo) {
         this(new TTFUDocument(), 0, otAlgo);
     }
 
@@ -62,12 +62,12 @@ public class TTFUMergeAlgorithm extends TTFMergeAlgorithm {
     }
 
     @Override
-    protected TTFOperation deleteOperation(int pos) {
-        return new TTFOperation(OpType.update, pos, null, getReplicaNumber());
+    protected TTFOperationWithId deleteOperation(int pos) {
+        return new TTFOperationWithId(OpType.update, pos, null, getReplicaNumber());
     }
 
-    private TTFOperation updateOperation(int pos, Object value) {
-        return new TTFOperation(OpType.update, pos, value, getReplicaNumber());
+    private TTFOperationWithId updateOperation(int pos, Object value) {
+        return new TTFOperationWithId(OpType.update, pos, value, getReplicaNumber());
     }
     
     @Override
@@ -80,14 +80,14 @@ public class TTFUMergeAlgorithm extends TTFMergeAlgorithm {
             while (!getDoc().getChar(mpos).isVisible()) {
                 ++mpos;
             }
-            TTFOperation op = updateOperation(mpos, i < opt.getContent().size() ? opt.getContent().get(i) : null);
+            Operation op = updateOperation(mpos, i < opt.getContent().size() ? opt.getContent().get(i) : null);
             generatedOperations.add(new TTFSequenceMessage(getOtAlgo().estampileMessage(op)));
             getDoc().apply(op);
             ++i; 
             ++mpos;
         }
         while (i < opt.getContent().size()) {
-            TTFOperation op = insertOperation(mpos, opt.getContent().get(i));
+            Operation op = insertOperation(mpos, opt.getContent().get(i));
             generatedOperations.add(new TTFSequenceMessage(getOtAlgo().estampileMessage(op)));
             getDoc().apply(op);
             ++i;            

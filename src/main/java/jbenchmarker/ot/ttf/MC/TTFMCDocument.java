@@ -18,7 +18,7 @@ import jbenchmarker.ot.ttf.TTFVisibilityChar;
  */
 public class TTFMCDocument<T> extends TTFDocument<T> {
     
-        /**
+    /**
      * Make new TTF document
      */
     public TTFMCDocument() {
@@ -34,14 +34,13 @@ public class TTFMCDocument<T> extends TTFDocument<T> {
         int pos = oop.getPosition();
         
         if (oop.getType() == SequenceOperation.OpType.delete) {
-
             TTFVisibilityChar c = (TTFVisibilityChar) this.getChar(pos);
             if (c.isVisible()) {
                 decSize();
             }
             c.hide();
         } else if(oop.getType() == SequenceOperation.OpType.insert){
-            this.model.add(pos, new TTFVisibilityChar(oop.getChar()));
+            this.model.add(pos, new TTFVisibilityChar(oop.getContent()));
             incSize();
         }
     }

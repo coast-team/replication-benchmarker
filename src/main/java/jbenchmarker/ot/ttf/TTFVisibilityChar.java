@@ -60,7 +60,7 @@ public class TTFVisibilityChar<T> implements TTFChar<T>{
      * @return character
      */
     @Override
-    public T getChar() {
+    public T getContent() {
         return this.character;
     }
 

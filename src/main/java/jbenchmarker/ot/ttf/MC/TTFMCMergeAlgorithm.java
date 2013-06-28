@@ -16,7 +16,8 @@ import jbenchmarker.ot.ttf.TTFVisibilityChar;
  *
  * @author score
  */
-public class TTFMCMergeAlgorithm<T> extends TTFMergeAlgorithm {
+
+public class TTFMCMergeAlgorithm extends TTFMergeAlgorithm<TTFOperation> {
 
     public TTFMCMergeAlgorithm(TTFMCDocument doc, int siteId, Factory<OTAlgorithm<TTFOperation>> otAlgo) {
         super(doc, siteId, otAlgo);
@@ -37,7 +38,7 @@ public class TTFMCMergeAlgorithm<T> extends TTFMergeAlgorithm {
 
     @Override
     protected TTFOperation deleteOperation(int pos) {
-        return new TTFOperation(SequenceOperation.OpType.delete, pos, getReplicaNumber());
+        return new TTFOperation(SequenceOperation.OpType.delete, pos, null);
     }
 
     @Override
@@ -48,7 +49,7 @@ public class TTFMCMergeAlgorithm<T> extends TTFMergeAlgorithm {
         if (this.getDoc().getModel().size() > i) {
             TTFVisibilityChar o = (TTFVisibilityChar) this.getDoc().getChar(i);
             while (!o.isVisible() && !exit) {
-                if (o.getChar().toString().equals(content.toString())) {
+                if (o.getContent().toString().equals(content.toString())) {
                     nbrRedo++;
                     exit = true;
 
@@ -58,6 +59,6 @@ public class TTFMCMergeAlgorithm<T> extends TTFMergeAlgorithm {
             }
         }
         //=============================
-        return new TTFOperation(SequenceOperation.OpType.insert, pos, content, getReplicaNumber());
+        return new TTFOperation(SequenceOperation.OpType.insert, pos, content);
     }
 }

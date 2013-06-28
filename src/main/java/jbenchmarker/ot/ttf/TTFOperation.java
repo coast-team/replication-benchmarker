@@ -34,15 +34,6 @@ public class TTFOperation<T> implements Operation, Serializable {
     private int pos;
     private T content;
     private OpType type;
-    private int siteId;
-
-    /**
-     *
-     * @return site id or replicat number
-     */
-    public int getSiteId() {
-        return siteId;
-    }
 
     /**
      * make TTF Operation
@@ -52,33 +43,10 @@ public class TTFOperation<T> implements Operation, Serializable {
      * @param content Character
      * @param siteId Id site or replicat which sent this operation
      */
-    public TTFOperation(OpType type, int pos, T content, int siteId) {
+    public TTFOperation(OpType type, int pos, T content) {
         this.pos = pos;
         this.type = type;
         this.content = content;
-        this.siteId = siteId;
-    }
-
-    /**
-     * make TTF Operation without content (Deletion)
-     *
-     * @param type Del or unsupported
-     * @param pos Position obsolute
-     * @param siteId Id site or replicat which sent this operation
-     */
-    public TTFOperation(OpType type, int pos, int siteId) {
-        this.pos = pos;
-        this.type = type;
-        this.siteId = siteId;
-    }
-
-    /**
-     * Make operation with type only For futur uses
-     *
-     * @param t Type of operation
-     */
-    public TTFOperation(OpType t) {
-        this.type = t;
     }
 
     /**
@@ -115,7 +83,7 @@ public class TTFOperation<T> implements Operation, Serializable {
     /**
      * @return Character of operation
      */
-    public T getChar() {
+    public T getContent() {
         return this.content;
     }
 
@@ -126,7 +94,7 @@ public class TTFOperation<T> implements Operation, Serializable {
      */
     @Override
     public TTFOperation<T> clone() {
-        return new TTFOperation(this.getType(), this.getPosition(), this.content, siteId);
+        return new TTFOperation(this.getType(), this.getPosition(), this.content);
     }
 
     /**
@@ -143,8 +111,6 @@ public class TTFOperation<T> implements Operation, Serializable {
 //        if (OpType.insert == this.getType()) {
             sb.append(',');
             sb.append(this.content);
-            sb.append(',');
-            sb.append(this.siteId);
 //        }
         sb.append(')');
         return sb.toString();
@@ -156,7 +122,6 @@ public class TTFOperation<T> implements Operation, Serializable {
         hash = 71 * hash + this.pos;
         hash = 71 * hash + (this.content != null ? this.content.hashCode() : 0);
         hash = 71 * hash + (this.type != null ? this.type.hashCode() : 0);
-        hash = 71 * hash + this.siteId;
         return hash;
     }
 
@@ -176,9 +141,6 @@ public class TTFOperation<T> implements Operation, Serializable {
             return false;
         }
         if (this.type != other.type) {
-            return false;
-        }
-        if (this.siteId != other.siteId) {
             return false;
         }
         return true;

@@ -121,7 +121,7 @@ public class SOCT2 <O extends Operation> implements OTAlgorithm<O>, Serializable
      * @return Soct2Message with vector clock.
      */
     @Override
-    public OTMessage estampileMessage(O op) {
+    public OTMessage estampileMessage(Operation op) {
         this.siteVC.inc(this.replicaNumber);
         OTMessage ret = new OTMessage(new VectorClock(siteVC), replicaNumber, op);
         //this.siteVC.inc(this.siteId); For garbage collection
