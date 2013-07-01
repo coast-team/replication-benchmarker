@@ -48,7 +48,7 @@ public class TTFUpdateTest {
         assertEquals(1, ops.size());
         OTMessage<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.insert, opg.getOperation().getType());
-        assertEquals('b', opg.getOperation().getContent());
+        assertEquals('b', opg.getOperation().getChar());
         assertEquals(0, opg.getOperation().getPosition());
         assertEquals("[<0,1>]", vcToString(opg.getClock()));
         assertEquals("b", merger.lookup());
@@ -57,7 +57,7 @@ public class TTFUpdateTest {
         ops = merger.localInsert(insert(0, "a"));
         assertEquals(1, ops.size());
         opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
-        assertEquals('a', opg.getOperation().getContent());
+        assertEquals('a', opg.getOperation().getChar());
         assertEquals(0, opg.getOperation().getPosition());
         assertEquals("[<0,2>]", vcToString(opg.getClock()));
         assertEquals("ab", merger.lookup());
@@ -65,7 +65,7 @@ public class TTFUpdateTest {
         ops = merger.localInsert(insert(2, "c"));
         assertEquals(1, ops.size());
         opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
-        assertEquals('c', opg.getOperation().getContent());
+        assertEquals('c', opg.getOperation().getChar());
         assertEquals("[<0,3>]", vcToString(opg.getClock()));
         assertEquals(2, opg.getOperation().getPosition());
         assertEquals("abc", merger.lookup());
@@ -81,17 +81,17 @@ public class TTFUpdateTest {
 
         OTMessage<TTFOperation> opg = ((TTFSequenceMessage) ops.get(0)).getSoct2Message();
         assertEquals(OpType.insert, opg.getOperation().getType());
-        assertEquals('a', opg.getOperation().getContent());
+        assertEquals('a', opg.getOperation().getChar());
         assertEquals(0, opg.getOperation().getPosition());
         assertEquals("[<0,1>]", vcToString(opg.getClock()));
 
         opg = ((TTFSequenceMessage) ops.get(1)).getSoct2Message();
-        assertEquals('b', opg.getOperation().getContent());
+        assertEquals('b', opg.getOperation().getChar());
         assertEquals(1, opg.getOperation().getPosition());
         assertEquals("[<0,2>]", vcToString(opg.getClock()));
 
         opg = ((TTFSequenceMessage) ops.get(2)).getSoct2Message();
-        assertEquals('c', opg.getOperation().getContent());
+        assertEquals('c', opg.getOperation().getChar());
         assertEquals("[<0,3>]", vcToString(opg.getClock()));
         assertEquals(2, opg.getOperation().getPosition());
 
@@ -570,10 +570,20 @@ public class TTFUpdateTest {
     }
 
     public static TTFSequenceMessage TTFSequenceMessageFrom(SequenceOperation opt, int rep, VectorClock vc) {
-        TTFOperation op = new TTFOperationWithId(opt.getType(), opt.getPosition(), opt.getContent().get(0), rep);
+        TTFOperation op;
+        if (opt.getType() == OpType.insert) {
+            op = new TTFOperation(opt.getType(), opt.getPosition(), opt.getContent().get(0), rep);
+        } else {
+            op = new TTFOperation(OpType.update, opt.getPosition(), null, rep);
+
+        }
+
         OTMessage smess = new OTMessage(vc, rep, op);
         TTFSequenceMessage mess = new TTFSequenceMessage(smess);
         return mess;
+
+
+
     }
 
     public static List<Operation> duplicate(List<Operation> list) {
