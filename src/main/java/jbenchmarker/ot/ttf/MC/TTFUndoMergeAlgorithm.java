@@ -19,9 +19,9 @@
 package jbenchmarker.ot.ttf.MC;
 
 import crdt.Factory;
-import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.ot.soct2.OTAlgorithm;
+import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.ttf.TTFDocument;
 import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
 import jbenchmarker.ot.ttf.TTFOperation;
@@ -37,6 +37,10 @@ public class TTFUndoMergeAlgorithm extends TTFMergeAlgorithm<TTFOperation> {
         super(doc, siteId, otAlgo);
     }
 
+    public TTFUndoMergeAlgorithm(int siteId) {
+        this(new TTFUndoDocument(), siteId, new SOCT2<TTFOperation>(new TTFUndoTransformations(), siteId, null));
+    }
+
     protected int getVisibility(int pos) {
         return ((TTFUndoVisibilityChar) getDoc().getChar(pos)).getVisibility();
     }
@@ -48,7 +52,14 @@ public class TTFUndoMergeAlgorithm extends TTFMergeAlgorithm<TTFOperation> {
 
     @Override
     protected TTFOperation insertOperation(int pos, Object content) {
-        if (!getDoc().getChar(pos).isVisible() && getDoc().getChar(pos).getContent().equals(content)) {
+        if (getDoc().modelSize() > pos) {
+            while (pos < getDoc().modelSize() && !getDoc().getChar(pos).isVisible()
+                    && !getDoc().getChar(pos).getContent().equals(content)) {
+                ++pos;
+            }
+        }
+        if (pos < getDoc().modelSize() && !getDoc().getChar(pos).isVisible()
+                    && getDoc().getChar(pos).getContent().equals(content)) {
             return new TTFOperation(OpType.undo, pos, 1 - getVisibility(pos));
         } else {
             return new TTFOperation(OpType.insert, pos, content);

@@ -144,4 +144,11 @@ public class TTFDocument<T> implements Document {
     public int viewLength() {
         return size;
     }
+
+    /**
+     * Size of the model (including tombstones).
+     */
+    public int modelSize() {
+        return model.size();
+    }
 }

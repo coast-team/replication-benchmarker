@@ -18,10 +18,16 @@
  */
 package jbenchmarker.ot;
 
+import crdt.CRDT;
 import crdt.CRDTMessage;
 import java.util.Arrays;
 import crdt.Operation;
-import jbenchmarker.core.SequenceOperation;
+import crdt.OperationBasedOneMessage;
+import java.lang.reflect.Constructor;
+import java.util.LinkedList;
+import java.util.List;
+import jbenchmarker.core.Document;
+import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.ot.otset.AddWinTransformation;
 import jbenchmarker.ot.otset.DelWinTransformation;
 import jbenchmarker.ot.otset.OTSet;
@@ -34,8 +40,10 @@ import jbenchmarker.ot.soct2.SOCT2TranformationInterface;
 import jbenchmarker.ot.soct2.OTReplica;
 import jbenchmarker.ot.ttf.MC.TTFMCMergeAlgorithm;
 import jbenchmarker.ot.ttf.MC.TTFMCTransformations;
+import jbenchmarker.ot.ttf.MC.TTFUndoTransformations;
 import jbenchmarker.ot.ttf.TTFMergeAlgorithm;
 import jbenchmarker.ot.ttf.TTFOperation;
+import jbenchmarker.ot.ttf.TTFOperationWithId;
 import jbenchmarker.ot.ttf.TTFTransformations;
 import jbenchmarker.ot.ttf.update.TTFUDelWinsTransformations;
 import jbenchmarker.ot.ttf.update.TTFUMergeAlgorithm;
@@ -64,35 +72,35 @@ public class TP2Test {
         {new OTSetOperations(OTSetOperations.OpType.Add, 1, 1),
             new OTSetOperations(OTSetOperations.OpType.Del, 1, 0)
         },
-        {new TTFOperation(SequenceOperation.OpType.delete, 1, 1),
-            new TTFOperation(SequenceOperation.OpType.insert, 1, 2),},
-        {new TTFOperation(SequenceOperation.OpType.update, 1, 1),
-            new TTFOperation(SequenceOperation.OpType.noop, 1, 2),
-            new TTFOperation(SequenceOperation.OpType.insert, 1, 3),
-            new TTFOperation(SequenceOperation.OpType.update, 2, 4),
-            new TTFOperation(SequenceOperation.OpType.noop, 2, 5),
-            new TTFOperation(SequenceOperation.OpType.insert, 2, 6),},
-        {new TTFOperation(SequenceOperation.OpType.update, 1, null, 1),
-            new TTFOperation(SequenceOperation.OpType.update, 1, 0, 2),
-            new TTFOperation(SequenceOperation.OpType.noop, 1, 3),
-            new TTFOperation(SequenceOperation.OpType.insert, 1, 4),
-            new TTFOperation(SequenceOperation.OpType.update, 2, null, 5),
-            new TTFOperation(SequenceOperation.OpType.update, 1, 0, 6),
-            new TTFOperation(SequenceOperation.OpType.noop, 2, 7),
-            new TTFOperation(SequenceOperation.OpType.insert, 2, 8),},
+        {new TTFOperationWithId(OpType.delete, 1, null, 1),
+            new TTFOperationWithId(OpType.insert, 1, 'x', 2),},
+        {new TTFOperationWithId(OpType.update, 1, 'x', 1),
+            new TTFOperationWithId(OpType.noop, 1, 'y', 2),
+            new TTFOperationWithId(OpType.insert, 1, 'y', 3),
+            new TTFOperationWithId(OpType.update, 2, 'z', 4),
+            new TTFOperationWithId(OpType.noop, 2, 'x', 5),
+            new TTFOperationWithId(OpType.insert, 2, 'x', 6),},
+        {new TTFOperationWithId(OpType.update, 1, null, 1),
+            new TTFOperationWithId(OpType.update, 1, 0, 2),
+            new TTFOperationWithId(OpType.noop, 1, 'x', 3),
+            new TTFOperationWithId(OpType.insert, 1, 'x', 4),
+            new TTFOperationWithId(OpType.update, 2, null, 5),
+            new TTFOperationWithId(OpType.update, 1, 0, 6),
+            new TTFOperationWithId(OpType.noop, 2, 'y', 7),
+            new TTFOperationWithId(OpType.insert, 2, 'y', 8),},
         {new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0}), 'a', 0, OTTreeRemoteOperation.OpType.ins),
             new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0}), 'b', 1, OTTreeRemoteOperation.OpType.ins),
             new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0, 0}), 'b', 2, OTTreeRemoteOperation.OpType.ins),
             new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0, 1}), 'e', 3, OTTreeRemoteOperation.OpType.ins),
             new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0, 2}), 'c', 4, OTTreeRemoteOperation.OpType.ins),
             new OTTreeRemoteOperation(Arrays.asList(new Integer[]{0, 2}), 'd', 5, OTTreeRemoteOperation.OpType.ins),},
-        {new TTFOperation(SequenceOperation.OpType.insert, 3, 'x', 1),
-            new TTFOperation(SequenceOperation.OpType.insert, 3, 'x', 2),
-            new TTFOperation(SequenceOperation.OpType.insert, 3, 'y', 3),
-            new TTFOperation(SequenceOperation.OpType.insert, 3, 'z', 4),
-            new TTFOperation(SequenceOperation.OpType.insert, 3, 'y', 5),
-            new TTFOperation(SequenceOperation.OpType.insert, 3, 'x', 6),
-            new TTFOperation(SequenceOperation.OpType.noop, 2, 7),}
+        {new TTFOperation(OpType.insert, 3, 'x'),
+            new TTFOperation(OpType.insert, 3, 'x'),
+            new TTFOperation(OpType.insert, 3, 'y'),
+            new TTFOperation(OpType.insert, 3, 'z'),
+            new TTFOperation(OpType.insert, 3, 'y'),
+            new TTFOperation(OpType.insert, 3, 'x'),
+            new TTFOperation(OpType.noop, 3, 'x'),}
     };
 
     @Test
@@ -111,5 +119,72 @@ public class TP2Test {
                 }
             }
         }
+    }
+    
+    
+    
+    //CRDT[] replicas = { set(), ttf(), ttfu(), ttfmc(), ttfundo(), };
+    Class operations[] = { OTSetOperations.class, TTFOperationWithId.class, TTFOperationWithId.class, 
+        TTFOperation.class, TTFOperation.class, };
+    Object arg[][][] = { {{OTSetOperations.OpType.Add, OTSetOperations.OpType.Del}, {0, 1, 2}, {0, 1, 2}},
+        {{OpType.delete, OpType.insert}, {0, 1, 2},  {'x', 'y', 'z'}, {0, 1, 2}},
+        {{OpType.insert, OpType.update, OpType.noop}, {0, 1, 2},  {'x', 'y', 'z'}, {0, 1, 2}},
+        {{OpType.insert, OpType.delete, OpType.noop}, {0, 1, 2},  {'x', 'y', 'z'}},
+        {{OpType.insert, OpType.undo, OpType.noop}, {0, 1, 2},  {'x', 'y', 'z'}},
+    };
+    SOCT2TranformationInterface transformations[] = {new AddWinTransformation(), new DelWinTransformation(),
+        new TTFTransformations(), 
+        new TTFUTransformations(), new TTFUDelWinsTransformations(), 
+        new TTFMCTransformations(), 
+        new TTFUndoTransformations(), };
+    int []type = {0, 0, 1, 2, 2, 3, 4};
+    
+    
+    
+    @Test
+    public void newTP2() throws Exception {
+        for (int i = 0; i < transformations.length; i++) {
+            SOCT2TranformationInterface<Operation> ot = transformations[i];
+            Constructor c = operations[type[i]].getConstructors()[0];
+            List<Operation> ops = new LinkedList<Operation>();
+            launch(c, arg[type[i]], ops, null, 0);
+            for (Operation op : ops) {
+                for (Operation op1 : ops) {
+                    for (Operation op2 : ops) {
+                        Operation res1;
+                        res1 = ot.transpose(ot.transpose(op.clone(), op1), ot.transpose(op2.clone(), op1));
+                        Operation res2;
+                        res2 = ot.transpose(ot.transpose(op.clone(), op2), ot.transpose(op1.clone(), op2));
+                        assertEquals("TP2 Fail : ot:" + ot + "  op: " + op + " op1: " + op1 + " op2:" + op2, res1, res2);
+                    }
+                }
+            }
+        }
+    }
+
+    private void launch(Constructor cons, Object[][] par, List<Operation> ops, Object params[], int i) throws Exception {
+        if (i == par.length) {
+            ops.add((Operation) cons.newInstance(params));
+            return;
+        }
+        for (int j = 0; j < par[i].length; ++j) {
+            if (params == null) {
+                params = new Object[par.length];
+            }
+            params[i] = par[i][j];
+            launch(cons, par, ops, params, i+1);
+        }
+    }
+
+    void apply(CRDT s, Operation o) {
+        s.applyRemote(new OperationBasedOneMessage(o));
+    }
+    
+    private CRDT set() {
+        OTSet s = new OTSet(new SOCT2(new AddWinTransformation()));
+        apply(s, new OTSetOperations(OTSetOperations.OpType.Add, 1, 1));
+        apply(s, new OTSetOperations(OTSetOperations.OpType.Add, 2, 0));
+        apply(s, new OTSetOperations(OTSetOperations.OpType.Del, 2, 0));
+        return s;
     }
 }

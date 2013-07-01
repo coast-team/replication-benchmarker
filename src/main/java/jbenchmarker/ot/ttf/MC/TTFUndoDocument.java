@@ -46,7 +46,7 @@ public class TTFUndoDocument<T> extends TTFDocument<T>{
         if (oop.getType() == OpType.insert) {
             this.model.add(pos, new TTFUndoVisibilityChar(oop.getContent()));
             incSize();
-        } else { // undo
+        } else if (oop.getType() == OpType.undo) { // undo
             TTFUndoVisibilityChar c = (TTFUndoVisibilityChar) this.model.get(pos);
             boolean wasVisible = c.isVisible();
             c.changeVisibility((Integer) oop.getContent());

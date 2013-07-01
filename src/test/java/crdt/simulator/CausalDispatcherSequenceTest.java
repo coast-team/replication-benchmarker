@@ -70,6 +70,8 @@ public class CausalDispatcherSequenceTest {
         new TTFUFactories.Update(),
         new TTFUFactories.DelWins(),
         new TTFUFactories.MergeClean(),
+        new TTFFactories.Undo(),
+        new TTFFactories.UndoPGG(),
     };
     int scale = 100;
 
