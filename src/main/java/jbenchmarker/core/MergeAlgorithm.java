@@ -103,7 +103,7 @@ public abstract class MergeAlgorithm extends CRDT<String> implements Serializabl
                 return null;
             default:
                 return null;
-                //mthrow new IncorrectTraceException("Unsupported operation : " + opt);
+                //throw new IncorrectTraceException("Unsupported operation : " + opt);
         }
     }
 
