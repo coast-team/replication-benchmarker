@@ -43,7 +43,7 @@ public class LogootSplitOFactory extends ReplicaFactory {
     public LogootSplitOFactory() {
         this.type = TypeDoc.String;
     }
-    
+
     @Override
     public MergeAlgorithm create(int r) {
         switch (type) {
@@ -52,5 +52,13 @@ public class LogootSplitOFactory extends ReplicaFactory {
             default:
                 return new LogootSAlgo(new LogootSDocumentD(), r);
         }
+    }
+
+    public static class Ropes extends LogootSplitOFactory {
+
+        public Ropes() {
+            this.type= TypeDoc.Ropes;
+        }
+        
     }
 }
