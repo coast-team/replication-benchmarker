@@ -24,7 +24,6 @@ import crdt.OperationBasedOneMessage;
 import crdt.PreconditionException;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
-import crdt.simulator.random.ProgressTrace;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.StandardSeqOpProfile;
 import java.util.Arrays;
@@ -37,6 +36,7 @@ import jbenchmarker.logootsplitO.LogootSRopes.RopesNodes;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Ignore;
 
 /**
  *
@@ -198,7 +198,7 @@ public class LogootSRopesTest {
         alg2.applyRemote(l.pollLast());
 
         alg2.applyRemote(l.pollLast());
-        System.out.println(((LogootSRopes) alg2.getLDoc()).root.toString());
+        //System.out.println(((LogootSRopes) alg2.getLDoc()).root.toString());
         alg2.applyRemote(l.pollLast());
         root = ((LogootSRopes) alg2.getLDoc()).root;
         next = root.getRight();
@@ -313,13 +313,13 @@ public class LogootSRopesTest {
 
         alg2.applyRemote(op5);
         alg3.applyRemote(op6);
-        System.out.println(((LogootSRopes) alg1.getLDoc()).root.viewRec());
+        /*System.out.println(((LogootSRopes) alg1.getLDoc()).root.viewRec());
         System.out.println(((LogootSRopes) alg2.getLDoc()).root.viewRec());
-        System.out.println(((LogootSRopes) alg3.getLDoc()).root.viewRec());
+        System.out.println(((LogootSRopes) alg3.getLDoc()).root.viewRec());*/
         /*LinkedList l1=browse(alg1);
          LinkedList l2=browse(alg2);
          LinkedList l3=browse(alg3);*/
-        scoreChecks(alg1, alg2, alg3);
+        assert(scoreChecks(alg1, alg2, alg3));
         assertEquals(alg1.lookup(), alg2.lookup());
         assertEquals(alg2.lookup(), alg3.lookup());
 
@@ -342,40 +342,48 @@ public class LogootSRopesTest {
         browsT(node.getRight(), list);
     }
 
-    static void scoreCheck(LogootSAlgo alg) {
+    static boolean scoreCheck(LogootSAlgo alg) {
         RopesNodes node = ((LogootSRopes) alg.getLDoc()).root;
         LinkedList<RopesNodes> ret = new LinkedList<RopesNodes>();
-        scoreCheckT(node, ret);
+        return scoreCheckT(node, ret);
     }
 
-    static void scoreCheckT(RopesNodes node, LinkedList<RopesNodes> list) {
+    static boolean scoreCheckT(RopesNodes node, LinkedList<RopesNodes> list) {
         if (node == null) {
-            return;
+            return true;
         }
+        
+        boolean ret=true;
         list.add(node);
         scoreCheckT(node.getLeft(), list);
         scoreCheckT(node.getRight(), list);
         int nodeinsub = 1 + node.getNodesInSubtree(0) + node.getNodesInSubtree(1);
         if (node.getNodesInSubtree() != nodeinsub) {
+            ret=false;
             System.err.println("error number node : " + node.getNodesInSubtree() + "<>" + nodeinsub + " " + list);
         }
         nodeinsub = node.str.size() + node.getSizeNodeAndChildren(0) + node.getSizeNodeAndChildren(1);
         if (node.getSizeNodeAndChildren() != nodeinsub) {
             System.err.println("error lenght : " + node.getSizeNodeAndChildren() + "<>" + nodeinsub + " " + list);
+            ret=false;
+            
         }
         list.removeLast();
-
+        return ret;
     }
 
-    static void scoreChecks(LogootSAlgo... a) {
+    static boolean scoreChecks(LogootSAlgo... a) {
+        boolean ret=true;
         for (int i = 0; i < a.length; i++) {
 
-            System.err.println("\n\n==alg" + (i + 1) + "==\n");
-            System.out.println(((LogootSRopes) a[i].getLDoc()).root.viewRec());
-            scoreCheck(a[i]);
+            /*System.err.println("\n\n==alg" + (i + 1) + "==\n");
+            System.out.println(((LogootSRopes) a[i].getLDoc()).root.viewRec());*/
+            ret&=scoreCheck(a[i]);
         }
+        return ret;
     }
-
+    
+    @Ignore
     @Test
     public void testRnd() throws PreconditionException {
         CRDTMessage op1 = alg1.insert(0, "test");
@@ -537,9 +545,9 @@ public class LogootSRopesTest {
     }
     @Test
     public void testGC() throws Exception {
-        Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.5, 4, 5.0), 0.1, 10, 3.0, 13);
+        Trace trace = new RandomTrace(42000, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.5, 4, 5.0), 0.1, 10, 3.0, 13);
         CausalSimulator cd = new CausalSimulator(new LogootSplitOFactory(LogootSplitOFactory.TypeDoc.Ropes));
-        cd.run(new ProgressTrace(trace,4200L));
+        cd.run(trace);
         alg1 = (LogootSAlgo) cd.getReplicas().get(new Integer(1));
         alg2 = (LogootSAlgo) cd.getReplicas().get(new Integer(2));
         alg3 = (LogootSAlgo) cd.getReplicas().get(new Integer(3));
