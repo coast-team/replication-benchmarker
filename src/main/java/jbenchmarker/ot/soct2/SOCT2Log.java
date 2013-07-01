@@ -102,7 +102,7 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
     protected Op placeOperation(OTMessage<Op> message, int separationIndex) {  
         Op opt = message.getOperation();
         for (int i = separationIndex; i < this.operations.size(); i++) {
-            computation(opt, operations.get(i).getOperation());
+            //computation(opt, operations.get(i).getOperation());
             opt = transforme.transpose(opt, operations.get(i).getOperation());
         }
         operations.add(message);
@@ -163,10 +163,9 @@ public class SOCT2Log<Op extends Operation> implements Iterable<OTMessage<Op>>, 
         return operations.subList(0, garbagePoint);
     }
     
-    void computation(Op o1, Op o2)
-    {
-        TTFOperation op1=(TTFOperation) o1;
-        TTFOperation op2=(TTFOperation) o2;
+    void computation(Op o1, Op o2) {
+        TTFOperation op1 = (TTFOperation) o1;
+        TTFOperation op2 = (TTFOperation) o2;
         if (op1.getType().equals(OpType.insert) && op2.getType().equals(OpType.insert)) {
             nbrInsConcur++;
         } else if (op1.getType().equals(OpType.insert) && op2.getType().equals(OpType.delete)
