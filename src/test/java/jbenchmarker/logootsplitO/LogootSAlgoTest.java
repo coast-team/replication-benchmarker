@@ -102,9 +102,6 @@ public class LogootSAlgoTest {
         CRDTMessage op1 = alg1.insert(0, "Test1234");
         assertEquals("Test1234", alg1.lookup());
 
-
-
-
         CRDTMessage op2 = alg1.insert(5, "haha");
         assertEquals("Test1haha234", alg1.lookup());
 
@@ -279,7 +276,7 @@ public class LogootSAlgoTest {
     @Test
     public void testGC() throws Exception {
         Trace trace = new RandomTrace(4200, RandomTrace.FLAT, new StandardSeqOpProfile(0.8, 0.1, 40, 5.0), 0.1, 10, 3.0, 13);
-        CausalSimulator cd = new CausalSimulator(new LogootSplitOFactory());
+        CausalSimulator cd = new CausalSimulator(new LogootSplitOFactory(LogootSplitOFactory.TypeDoc.String));
         cd.run(trace);
         alg1 = (LogootSAlgo) cd.getReplicas().get(new Integer(1));
         alg2 = (LogootSAlgo) cd.getReplicas().get(new Integer(2));
@@ -296,8 +293,8 @@ public class LogootSAlgoTest {
         assertEquals(0, ((LogootSDocumentD) alg2.getLDoc()).getMapBaseToBlock().size());
         assertEquals(0, ((LogootSDocumentD) alg3.getLDoc()).getMapBaseToBlock().size());
         assertEquals(0, ((LogootSDocumentD) alg1.getLDoc()).getList().size());
-        assertEquals(0, ((LogootSDocumentD) alg1.getLDoc()).getList().size());
-        assertEquals(0, ((LogootSDocumentD) alg1.getLDoc()).getList().size());
+        assertEquals(0, ((LogootSDocumentD) alg2.getLDoc()).getList().size());
+        assertEquals(0, ((LogootSDocumentD) alg3.getLDoc()).getList().size());
 
 
 

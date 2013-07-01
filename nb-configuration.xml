@@ -12,11 +12,14 @@ Without this configuration present, some functionality in the IDE may be limited
             <configuration id="Git" profiles=""/>
             <configuration id="GitMove" profiles=""/>
             <configuration id="GitWalkerDiff" profiles=""/>
+            <configuration id="StringSim" profiles=""/>
+            <configuration id="StringSim2" profiles=""/>
             <configuration id="TraceViewer" profiles=""/>
             <configuration id="TreeSimFrom" profiles=""/>
             <configuration id="run ABT G1 " profiles=""/>
+            <configuration id="treeSim3" profiles=""/>
             <configuration id="treesim" profiles=""/>
-            <configuration id="Git Analyze" profiles=""/>
+            <configuration id="StringSimEtherpad" profiles=""/>
         </configurations>
     </config-data>
 </project-shared-configuration>

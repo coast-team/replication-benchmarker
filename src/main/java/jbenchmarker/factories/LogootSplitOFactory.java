@@ -22,16 +22,35 @@ import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.logootsplitO.LogootSAlgo;
 import jbenchmarker.logootsplitO.LogootSDocumentD;
+import jbenchmarker.logootsplitO.LogootSRopes;
 
 /**
  *
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
-public class LogootSplitOFactory extends ReplicaFactory{
+public class LogootSplitOFactory extends ReplicaFactory {
 
-    @Override
-    public MergeAlgorithm create(int r) {
-        return new LogootSAlgo(new LogootSDocumentD(), r);
+    static public enum TypeDoc {
+
+        Ropes, String
+    };
+    TypeDoc type;
+
+    public LogootSplitOFactory(TypeDoc type) {
+        this.type = type;
+    }
+
+    public LogootSplitOFactory() {
+        this.type = TypeDoc.String;
     }
     
+    @Override
+    public MergeAlgorithm create(int r) {
+        switch (type) {
+            case Ropes:
+                return new LogootSAlgo(new LogootSRopes(), r);
+            default:
+                return new LogootSAlgo(new LogootSDocumentD(), r);
+        }
+    }
 }

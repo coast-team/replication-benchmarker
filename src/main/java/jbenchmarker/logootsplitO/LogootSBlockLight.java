@@ -27,7 +27,9 @@ import java.util.List;
  * @author Stephane Martin <stephane@stephanemartin.fr>
  */
 public class LogootSBlockLight<T> extends LogootSBlock<T> implements Serializable{
-
+    /*int lastOffset=0;
+    int firstOffset=0;
+    * */
     int nbElement=0;
     public LogootSBlockLight(IdentifierInterval id, int list) {
         super(id);
@@ -71,5 +73,11 @@ public class LogootSBlockLight<T> extends LogootSBlock<T> implements Serializabl
         return nbElement;
     }
 
+    @Override
+    public String toString() {
+        return "{" + nbElement +","+this.id+(isMine()?"mine":"its") +"}";
+    }
+
+    
     
 }

@@ -18,13 +18,13 @@
  */
 package jbenchmarker.logootsplitO;
 
+import crdt.Operation;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import crdt.Operation;
 
 /**
  *
@@ -33,7 +33,7 @@ import crdt.Operation;
 public class LogootSDocumentD implements LogootSDoc, Serializable {
 
     private int clock = 0;
-    private HashMap<List<Integer>, LogootSBlock> mapBaseToBlock = new HashMap<List<Integer>, LogootSBlock>(); //for test
+    private HashMap<List<Integer>, LogootSBlockLight> mapBaseToBlock = new HashMap<List<Integer>, LogootSBlockLight>(); //for test
     private ArrayList<LinkBlock> list = new ArrayList<LinkBlock>();//dichotomic ready
     private StringBuilder view = new StringBuilder();
     private int replicaNumber = 0;
@@ -45,10 +45,10 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
 
     public static class LinkBlock implements Comparable, Serializable {
 
-        LogootSBlock block;
+        LogootSBlockLight<Object> block;
         int offset;
 
-        public LinkBlock(LogootSBlock block, int offset) {
+        public LinkBlock(LogootSBlockLight block, int offset) {
             this.block = block;
             this.offset = offset;
         }
@@ -111,7 +111,7 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
     }
 
     /**
-     * Count diff with offset 0
+     * 
      *
      * @param l
      * @param l2
@@ -140,7 +140,7 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
      * @param block
      * @return inserted block
      */
-    public void addBlock(LogootSBlock block, int begin, List elem) {
+    public void addBlock(LogootSBlockLight block, int begin, List elem) {
 
         int offset = begin;
         int pos = 0;
@@ -169,7 +169,7 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
 
     }
 
-   private ArrayList makeOffsets(LogootSBlock block, int offset, List o) {
+   private ArrayList makeOffsets(LogootSBlockLight block, int offset, List o) {
         ArrayList l = new ArrayList(o.size());
         for (int i = 0; i < o.size(); i++) {
             l.add(new LinkBlock(block, offset++));
@@ -195,7 +195,7 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
         return ret;
     }
 
-    private void add(int pos, LogootSBlock block, int offset, List o) {
+    private void add(int pos, LogootSBlockLight block, int offset, List o) {
 
         list.addAll(pos, makeOffsets(block, offset, o));
 
@@ -206,7 +206,7 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
 
     @Override
     public void addBlock(Identifier id, List l) {
-        LogootSBlock block = mapBaseToBlock.get(id.base);
+        LogootSBlockLight block = mapBaseToBlock.get(id.base);
         IdentifierInterval idi = new IdentifierInterval(id.base, id.last, id.last + l.size() - 1);
         if (block == null) {
             block = new LogootSBlockLight(idi, l.size());//TODO build factory
@@ -283,14 +283,14 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
         LinkBlock after = pos < list.size() ? list.get(pos) : null;
         LinkBlock before = pos > 0 ? list.get(pos - 1) : null;
         int offset;
-        LogootSBlock block;
-        if (after != null && before == null && after.block.mine && after.block.getId().begin - l.size() > Integer.MIN_VALUE) {// Block in position is mine
+        LogootSBlockLight block;
+        if (after != null && after.block.id.begin==after.offset && after.block.mine && after.block.getId().begin - l.size() > Integer.MIN_VALUE) {// Block in position is mine
             //add before block
             block = after.block;
             //offset = after.offset;
             offset = block.id.begin - l.size();
             block.addBlock(offset, l);
-        } else if (before != null && after == null && before.block.mine && before.block.getId().end + l.size() < Integer.MAX_VALUE) {
+        } else if (before != null && before.block.id.end==before.offset && before.block.mine && before.block.getId().end + l.size() < Integer.MAX_VALUE) {
             //add after block
             block = before.block;
             offset = block.id.end+1;
@@ -383,7 +383,7 @@ public class LogootSDocumentD implements LogootSDoc, Serializable {
         return view;
     }
 
-    public HashMap<List<Integer>, LogootSBlock> getMapBaseToBlock() {
+    public HashMap<List<Integer>, LogootSBlockLight> getMapBaseToBlock() {
         return mapBaseToBlock;
     }
 }

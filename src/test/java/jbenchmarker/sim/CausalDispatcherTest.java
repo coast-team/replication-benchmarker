@@ -43,11 +43,16 @@ public class CausalDispatcherTest {
     static public void assertConsistency(Simulator sim, Trace trace) throws Exception {
         sim.run(trace);
         Object referenceView = null;
+        CRDT referenceCRDT = null;
         for (final CRDT replica : sim.getReplicas().values()) {
             final Object view = replica.lookup();
             if (referenceView == null) {
                 referenceView = view;
+                referenceCRDT = replica;
             } else {
+                if (!referenceView.equals(view)) {
+                    System.out.println("");
+                }
                 assertEquals(referenceView, view);
             }
         }

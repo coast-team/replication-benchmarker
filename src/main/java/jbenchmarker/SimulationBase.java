@@ -58,7 +58,7 @@ import org.kohsuke.args4j.Option;
  */
 public abstract class SimulationBase {
 
-    protected int baseSerializ = 1;
+    
     protected int totalDuration = 0;
     protected CmdLineParser parser;
     protected TraceParam traceP = new SimulationBase.TraceParam(0.1, 5, 10, 5);
@@ -76,8 +76,10 @@ public abstract class SimulationBase {
     /**
      * Arg4J arguments
      */
-    @Option(name = "--avg", usage = "time average in res files (default 100)")
+    @Option(name = "--avg", usage = "nb average in res files (default 100)")
     int base = 100;
+    @Option(name = "--avgSerialize", usage = "Nb average in res files (default 1)")
+    protected int baseSerializ = 1;
     @Option(name = "-S", usage = "kind of mem mesures format (default is overHead)")
     Serialization serialization = Serialization.OverHead;
     @Option(name = "-t", usage = "trace file used for experimentation", metaVar = "TraceFile")

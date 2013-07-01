@@ -56,7 +56,7 @@ public class LogootSDocumentDTest {
     public void testSomeMethod() {
     }
     
-    static LogootSBlock[] getFromMap(HashMap<List<Integer>, LogootSBlock> map){
+    static LogootSBlock[] getFromMap(HashMap<List<Integer>, LogootSBlockLight> map){
         
         return map.values().toArray(new  LogootSBlock[map.size()]);
         
@@ -137,6 +137,14 @@ public class LogootSDocumentDTest {
     @Test
     public void maxOffsetTest(){
         Identifier id1=new Identifier(Arrays.asList(0,0,9,0),0);
+        Identifier id2=new Identifier(Arrays.asList(0,0,9,0,7,1),0);
+        int max= LogootSDocumentD.maxOffsetBeforeNex(id1,id2,12);
+        assertEquals(7, max);
+        
+    }
+    @Test
+    public void maxOffsetTest2(){
+        Identifier id1=new Identifier(Arrays.asList(0,0,9,0),3);
         Identifier id2=new Identifier(Arrays.asList(0,0,9,0,7,1),0);
         int max= LogootSDocumentD.maxOffsetBeforeNex(id1,id2,12);
         assertEquals(7, max);

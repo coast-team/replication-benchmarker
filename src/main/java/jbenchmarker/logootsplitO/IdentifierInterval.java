@@ -43,6 +43,9 @@ public class IdentifierInterval implements Serializable {
     public Identifier getBeginId(){
         return new Identifier(base,begin);
     }
+    public Identifier getEndId(){
+        return new Identifier(base,end);
+    }
     public int getBegin() {
         return begin;
     }
