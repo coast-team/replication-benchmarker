@@ -22,6 +22,7 @@
 package jbenchmarker.trace.git.model;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.List;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
@@ -71,11 +72,11 @@ public class Patch implements Serializable{
      * @param commit
      * @param listEdit 
      */
-    public Patch(Commit commit, List<String> paths, List<byte[]> raws) {       
+    public Patch(Commit commit, List<String> paths, List<byte[]> raws) throws UnsupportedEncodingException {       
         this.paths = paths;
         this.contents = new LinkedList<String>();
         for (byte[] b : raws) {
-            String c = new String(b);
+            String c = new String(b, "UTF8");
             this.contents.add(c.endsWith("\n") ? c : c.concat("\n"));
         }
         this.id = commit.getId() + CONTENT;
