@@ -30,11 +30,11 @@ public class TTFUndoTest {
         TTFUndoMergeAlgorithm site0 = new TTFUndoMergeAlgorithm(0);
         site0.localInsert(insert(0, "abcd"));
         site0.localDelete(delete(1, 2));
-        site0.localInsert(insert(1, "c"));
-        assertEquals("acd", site0.lookup());
-        assertEquals(4, site0.getDoc().modelSize());
-    }
-    
+        site0.localInsert(insert(1, "cx"));
+        assertEquals("acxd", site0.lookup());
+        assertEquals(5, site0.getDoc().modelSize());
+    }   
+        
     @Test
     public void testSimpleMergeClean1() throws IncorrectTraceException {
         TTFUndoMergeAlgorithm site0 = new TTFUndoMergeAlgorithm(0);

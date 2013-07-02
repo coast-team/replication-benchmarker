@@ -47,11 +47,6 @@ public class TTFMCTransformations implements SOCT2TranformationInterface<TTFOper
                 op1.setPosition(op1.getPosition() + 1);
                 return op1;
             }
-        } else if (op1.getType() == OpType.delete && op2.getType() == OpType.insert) {
-            if (op1.getPosition() >= op2.getPosition()) {
-                op1.setPosition(op1.getPosition() + 1);
-                return op1;
-            }
         }
         return op1;
     }
@@ -78,7 +73,6 @@ public class TTFMCTransformations implements SOCT2TranformationInterface<TTFOper
                 return op1;
             }
         }
-
         return op1;
     }
 }

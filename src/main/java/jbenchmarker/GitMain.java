@@ -92,10 +92,10 @@ public final class GitMain extends Experience {
 
         System.out.println("*** Total number of files : " + paths.size());
         double[] memory = new double[paths.size()];
-        int m = 0, sumRever=0;
+        int m = 0, sumRever = 0;
         boolean memOk = false;
         double serMem = 0;
-        int nbRedo =0, nbMergeClean=0, insConcur=0, delConcur=0, delInsConcur=0;
+        int nbRedo = 0, nbMergeClean = 0, insConcur = 0, delConcur = 0, delInsConcur = 0;
         //System.out.println("Path;Num;Replicas;Merges;Merge Blocks;Merge Size;Commits;Ins Blocks;Del Blocks;Upd Blocks;Ins Size;Del Size");
         String statr = "";
         String file = createName(args);
@@ -134,162 +134,162 @@ public final class GitMain extends Experience {
         int nbserializ = Integer.parseInt(args[args.length - 4]);
         CouchConnector cc = new CouchConnector(dbURL);
         for (String path : paths.subList(i, end)) {
-                if (!onlyMerge || gotMerge(gitdir, path)) {
-                    System.out.print(path + ';' + ++i + ';');
-                    long ltime[][] = null, mem[][] = null, rtime[][] = null;
-                    int cop = 0, uop = 0, nbReplica = 0, mop = 0;
-                    int minCop = 0, minUop = 0, minMop = 0;
+            if (!onlyMerge || gotMerge(gitdir, path)) {
+                System.out.print(path + ';' + ++i + ';');
+                long ltime[][] = null, mem[][] = null, rtime[][] = null;
+                int cop = 0, uop = 0, nbReplica = 0, mop = 0;
+                int minCop = 0, minUop = 0, minMop = 0;
 
-                    int nbBlockMerge = 0, mergeSize = 0, nbInsBlock = 0,
-                            nbDelBlock = 0, insertSize = 0, deleteSize = 0,
-                            nbUpdBlock = 0, nbMerge = 0, nbCommit = 0;
+                int nbBlockMerge = 0, mergeSize = 0, nbInsBlock = 0,
+                        nbDelBlock = 0, insertSize = 0, deleteSize = 0,
+                        nbUpdBlock = 0, nbMerge = 0, nbCommit = 0;
 
-                    int nbrIns = 0, nbrDel = 0;
-                    int sizeMsg = 0;
-                    boolean oneclean = clean;
-                    for (int k = 0; k < nbrExec; k++) {
-                        GitTrace trace = dmau ? GitTrace.createWithMoves(gitdir, cc, path, oneclean, updateThresold, moveThresold)
-                                : GitTrace.create(gitdir, cc, path, oneclean);
-                        oneclean = false;
-                        CausalSimulator cd = new CausalSimulator(rf, stat, stat ? nbserializ : 0, stat);
-                        cd.setWriter(save ? new TraceObjectWriter("trace") : null);
-                        
-                       try {
-                            cd.run(trace);
-                       } catch (RuntimeException e) {
+                int nbrIns = 0, nbrDel = 0;
+                int sizeMsg = 0;
+                boolean oneclean = clean;
+                for (int k = 0; k < nbrExec; k++) {
+                    GitTrace trace = dmau ? GitTrace.createWithMoves(gitdir, cc, path, oneclean, updateThresold, moveThresold)
+                            : GitTrace.create(gitdir, cc, path, oneclean);
+                    oneclean = false;
+                    CausalSimulator cd = new CausalSimulator(rf, stat, stat ? nbserializ : 0, stat);
+                    cd.setWriter(save ? new TraceObjectWriter("trace") : null);
+
+                    try {
+                        cd.run(trace);
+                    } catch (RuntimeException e) {
                         fileCrashed.add(path);
-                  
-                     }
-                       nbRedo += cd.nbRedo;
-                       nbMergeClean += cd.nbMClean;
-                       insConcur += cd.insConcur;
-                       delConcur += cd.delConcur;
-                       delInsConcur += cd.insDelConcur;
-                      /*  if (trace.commitRevert != null) {
-                            System.out.println("---" + trace.commitRevert.size() + "---");
-                            sumRever += trace.commitRevert.size();
-                        }*/
-                        if (k == 0 && stat) {
-                            cop = cd.getRemoteTimes().size();
-                            uop = cd.getGenerationTimes().size();
-                            mop = cd.getMemUsed().size();
-                            nbReplica = cd.replicas.keySet().size();
-                            ltime = new long[nb][uop];
-                            rtime = new long[nb][cop];
-                            mem = new long[nb][mop];
-                            minCop = cop;
-                            minUop = uop;
-                            minMop = mop;
-                            nbMerge = trace.nbMerge;
-                            nbCommit = trace.nbCommit;
-                        }
-
-                        if (cd.replicas.keySet().isEmpty()) {
-                            break;
-                        }
-
-                        if (!stat) {
-                            statr = "" + cd.replicas.keySet().size()
-                                    + ';' + trace.UpdBefore + ';' + trace.MoveBefore + ';' + trace.MergeBefore
-                                    + ';' + trace.nbUpdBlock + ';' + trace.nbMove
-                                    + ';' + trace.nbMerge + ';' + trace.nbBlockMerge
-                                    + ';' + trace.mergeSize
-                                    + ';' + trace.nbCommit + ';'
-                                    + trace.nbInsBlock + ';' + trace.nbDelBlock
-                                    + ';' + trace.nbUpdBlock + ';'
-                                    + trace.insertSize + ';' + trace.deleteSize;
-
-                            System.out.println(statr);
-                            result.add(path + ';' + i + ';' + statr);
-                        }
-
-
-                        if (nbReplica == 0) {
-                            break;
-                        }
-
-                        if (stat) {
-                            nbBlockMerge += trace.nbBlockMerge;
-                            mergeSize += trace.mergeSize;
-                            nbInsBlock += trace.nbInsBlock;
-                            nbDelBlock += trace.nbDelBlock;
-                            nbUpdBlock += trace.nbUpdBlock;
-                            insertSize += trace.insertSize;
-                            deleteSize += trace.deleteSize;
-                            /*nbrIns += cd.getnbrIns();
-                             nbrDel += cd.getnbrDel();*/
-                            sizeMsg += this.serializ(cd.getGenHistory());
-
-                            minCop = minCop > cd.getRemoteTimes().size() ? cd.getRemoteTimes().size() : minCop;
-                            minUop = minUop > cd.getGenerationTimes().size() ? cd.getGenerationTimes().size() : minUop;
-                            minMop = minMop > cd.getMemUsed().size() ? cd.getMemUsed().size() : minMop;
-
-                            toArrayLong(ltime[k], cd.getGenerationTimes());
-                            toArrayLong(rtime[k], cd.getRemoteTimes());
-
-                            if (k == 0 || args[args.length - 1].contains("Logoot")) {
-                                toArrayLong(mem[k], cd.getMemUsed());
-                            }
-
-                            for (int j = 0; j < minCop - 1; j++) {
-                                if (nbReplica > 1) {
-                                    rtime[k][j] /= nbReplica - 1;
-                                }
-                            }
-                        }
-
-                        Iterator<Integer> a = cd.replicas.keySet().iterator();
-                        if (a.hasNext()) {
-                            int r = a.next();
-                            serMem += StandardSizeCalculator.sizeOf(cd.replicas.get(r));
-                            memOk = true;
-                        }
-
-                        trace = null;
-                        cd = null;
                     }
 
-                    if (memOk) {
-                        memory[m] = serMem / nbrExec;
-                        serMem = 0;
-                        m++;
-                        memOk = false;
+                    nbRedo += cd.nbRedo;
+                    nbMergeClean += cd.nbMClean;
+                    insConcur += cd.insConcur;
+                    delConcur += cd.delConcur;
+                    delInsConcur += cd.insDelConcur;
+                    /*  if (trace.commitRevert != null) {
+                     System.out.println("---" + trace.commitRevert.size() + "---");
+                     sumRever += trace.commitRevert.size();
+                     }*/
+                    if (k == 0 && stat) {
+                        cop = cd.getRemoteTimes().size();
+                        uop = cd.getGenerationTimes().size();
+                        mop = cd.getMemUsed().size();
+                        nbReplica = cd.replicas.keySet().size();
+                        ltime = new long[nb][uop];
+                        rtime = new long[nb][cop];
+                        mem = new long[nb][mop];
+                        minCop = cop;
+                        minUop = uop;
+                        minMop = mop;
+                        nbMerge = trace.nbMerge;
+                        nbCommit = trace.nbCommit;
+                    }
+
+                    if (cd.replicas.keySet().isEmpty()) {
+                        break;
+                    }
+
+                    if (!stat) {
+                        statr = "" + cd.replicas.keySet().size()
+                                + ';' + trace.UpdBefore + ';' + trace.MoveBefore + ';' + trace.MergeBefore
+                                + ';' + trace.nbUpdBlock + ';' + trace.nbMove
+                                + ';' + trace.nbMerge + ';' + trace.nbBlockMerge
+                                + ';' + trace.mergeSize
+                                + ';' + trace.nbCommit + ';'
+                                + trace.nbInsBlock + ';' + trace.nbDelBlock
+                                + ';' + trace.nbUpdBlock + ';'
+                                + trace.insertSize + ';' + trace.deleteSize;
+
+                        System.out.println(statr);
+                        result.add(path + ';' + i + ';' + statr);
+                    }
+
+
+                    if (nbReplica == 0) {
+                        break;
                     }
 
                     if (stat) {
-                        statr = "" + nbReplica + ';' + nbMerge + ';' + nbBlockMerge / nbrExec
-                                + ';' + mergeSize / nbrExec + ';' + nbCommit + ';'
-                                + nbInsBlock / nbrExec + ';' + nbDelBlock / nbrExec
-                                + ';' + nbUpdBlock / nbrExec + ';'
-                                + insertSize / nbrExec + ';' + deleteSize / nbrExec + ';'
-                                + nbrIns / nbrExec + ';' + nbrDel / nbrExec;
+                        nbBlockMerge += trace.nbBlockMerge;
+                        mergeSize += trace.mergeSize;
+                        nbInsBlock += trace.nbInsBlock;
+                        nbDelBlock += trace.nbDelBlock;
+                        nbUpdBlock += trace.nbUpdBlock;
+                        insertSize += trace.insertSize;
+                        deleteSize += trace.deleteSize;
+                        /*nbrIns += cd.getnbrIns();
+                         nbrDel += cd.getnbrDel();*/
+                        sizeMsg += this.serializ(cd.getGenHistory());
 
+                        minCop = minCop > cd.getRemoteTimes().size() ? cd.getRemoteTimes().size() : minCop;
+                        minUop = minUop > cd.getGenerationTimes().size() ? cd.getGenerationTimes().size() : minUop;
+                        minMop = minMop > cd.getMemUsed().size() ? cd.getMemUsed().size() : minMop;
 
-                        double thresold = 2.0;
-                        if (nbrExec > 1) {
-                            computeAverage(ltime, thresold, minUop);
-                            computeAverage(rtime, thresold, minCop);
-                            if (args[args.length - 1].contains("Logoot")) {
-                                computeAverage(mem, thresold, minMop);
-                            }
+                        toArrayLong(ltime[k], cd.getGenerationTimes());
+                        toArrayLong(rtime[k], cd.getRemoteTimes());
+
+                        if (k == 0 || args[args.length - 1].contains("Logoot")) {
+                            toArrayLong(mem[k], cd.getMemUsed());
                         }
 
-                        int nbrLigne = (insertSize + deleteSize) / nbrExec;
-
-                        long avgGen = calcul(ltime, minUop, "gen", file, "avg");
-                        long somGen = calcul(ltime, minUop, "gen", file, "sum");
-                        long avgUsr = calcul(rtime, minCop, "usr", file, "avg");
-                        long somUsr = calcul(rtime, minCop, "usr", file, "sum");
-                        long avgMem = calcul(mem, minMop, "mem", file, "avg");
-                        long sumMem = calcul(mem, minMop, "mem", file, "sum");
-
-                        statr = statr + ';' + nbrLigne + ';' + minCop + ';' + somGen + ';' + avgGen
-                                + ';' + somUsr + ';' + avgUsr + ';' + sumMem + ';' + avgMem + ';' + sizeMsg / nbrExec;
-
-                        result.add(path + ';' + i + ';' + statr);
-                        System.out.println(statr);
+                        for (int j = 0; j < minCop - 1; j++) {
+                            if (nbReplica > 1) {
+                                rtime[k][j] /= nbReplica - 1;
+                            }
+                        }
                     }
+
+                    Iterator<Integer> a = cd.replicas.keySet().iterator();
+                    if (a.hasNext()) {
+                        int r = a.next();
+                        serMem += StandardSizeCalculator.sizeOf(cd.replicas.get(r));
+                        memOk = true;
+                    }
+
+                    trace = null;
+                    cd = null;
                 }
+
+                if (memOk) {
+                    memory[m] = serMem / nbrExec;
+                    serMem = 0;
+                    m++;
+                    memOk = false;
+                }
+
+                if (stat) {
+                    statr = "" + nbReplica + ';' + nbMerge + ';' + nbBlockMerge / nbrExec
+                            + ';' + mergeSize / nbrExec + ';' + nbCommit + ';'
+                            + nbInsBlock / nbrExec + ';' + nbDelBlock / nbrExec
+                            + ';' + nbUpdBlock / nbrExec + ';'
+                            + insertSize / nbrExec + ';' + deleteSize / nbrExec + ';'
+                            + nbrIns / nbrExec + ';' + nbrDel / nbrExec;
+
+
+                    double thresold = 2.0;
+                    if (nbrExec > 1) {
+                        computeAverage(ltime, thresold, minUop);
+                        computeAverage(rtime, thresold, minCop);
+                        if (args[args.length - 1].contains("Logoot")) {
+                            computeAverage(mem, thresold, minMop);
+                        }
+                    }
+
+                    int nbrLigne = (insertSize + deleteSize) / nbrExec;
+
+                    long avgGen = calcul(ltime, minUop, "gen", file, "avg");
+                    long somGen = calcul(ltime, minUop, "gen", file, "sum");
+                    long avgUsr = calcul(rtime, minCop, "usr", file, "avg");
+                    long somUsr = calcul(rtime, minCop, "usr", file, "sum");
+                    long avgMem = calcul(mem, minMop, "mem", file, "avg");
+                    long sumMem = calcul(mem, minMop, "mem", file, "sum");
+
+                    statr = statr + ';' + nbrLigne + ';' + minCop + ';' + somGen + ';' + avgGen
+                            + ';' + somUsr + ';' + avgUsr + ';' + sumMem + ';' + avgMem + ';' + sizeMsg / nbrExec;
+
+                    result.add(path + ';' + i + ';' + statr);
+                    System.out.println(statr);
+                }
+            }
         }
         System.out.println("Number total of Redo;" + nbRedo);
         System.out.println("Number total of MergeClean : " + nbMergeClean);

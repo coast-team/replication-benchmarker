@@ -121,7 +121,8 @@ public class TTFMergeAlgorithm<O extends TTFOperation> extends MergeAlgorithm im
 
         int mpos = doc.viewToModel(opt.getPosition());
         for (int i = 0; i < opt.getContent().size(); i++) {
-            Operation op = insertOperation(mpos + i, opt.getContent().get(i));
+            TTFOperation op = insertOperation(mpos, opt.getContent().get(i));
+            mpos = op.getPosition() + 1;
             generatedOperations.add(new TTFSequenceMessage(otAlgo.estampileMessage(op)));
             doc.apply(op);
         }

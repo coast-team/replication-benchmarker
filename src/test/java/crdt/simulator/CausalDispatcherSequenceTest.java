@@ -96,7 +96,7 @@ public class CausalDispatcherSequenceTest {
 //        Factory f = new TTFFactories.WithGC3();
 //        Factory f = new TTFUMergeAlgorithm(0);        
 //        Factory f = new TTFFactories.WithoutGCFactory();
-        Factory f = new TTFUFactories.MergeClean();
+        Factory f = new TTFFactories.Undo();
         CausalDispatcherSetsAndTreesTest.testRunX(f, 20, 1000, 10, StandardSeqOpProfile.WITH_UPDATE);
     }
 

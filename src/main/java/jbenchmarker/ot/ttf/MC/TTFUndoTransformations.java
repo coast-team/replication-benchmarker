@@ -37,17 +37,12 @@ public class TTFUndoTransformations implements SOCT2TranformationInterface<TTFOp
                 op1.setType(OpType.noop);
                 return op1;
             } else if (op1.getPosition() > op2.getPosition()
-                    || (op1.getPosition() == op2.getPosition() && op1.getContent().hashCode()> op2.getContent().hashCode())) {
+                    || (op1.getPosition() == op2.getPosition() && op1.getContent().hashCode() > op2.getContent().hashCode())) {
                 op1.setPosition(op1.getPosition() + 1);
                 return op1;
             }
         } else if ((op1.getType() == OpType.noop || op1.getType() == OpType.undo)
                 && op2.getType() == OpType.insert) {
-            if (op1.getPosition() >= op2.getPosition()) {
-                op1.setPosition(op1.getPosition() + 1);
-                return op1;
-            }
-        } else if (op1.getType() == OpType.undo && op2.getType() == OpType.insert) {
             if (op1.getPosition() >= op2.getPosition()) {
                 op1.setPosition(op1.getPosition() + 1);
                 return op1;
@@ -60,7 +55,7 @@ public class TTFUndoTransformations implements SOCT2TranformationInterface<TTFOp
     public TTFOperation transposeBackward(TTFOperation op1, TTFOperation op2) {
         if (op1.getType() == OpType.insert && op2.getType() == OpType.insert) {
             if (op1.getPosition() > op2.getPosition()
-                    || (op1.getPosition() == op2.getPosition() && op1.getContent().hashCode()> op2.getContent().hashCode())) {
+                    || (op1.getPosition() == op2.getPosition() && op1.getContent().hashCode() > op2.getContent().hashCode())) {
                 op1.setPosition(op1.getPosition() - 1);
                 return op1;
             }
@@ -78,7 +73,6 @@ public class TTFUndoTransformations implements SOCT2TranformationInterface<TTFOp
                 return op1;
             }
         }
-
         return op1;
     }
 }
