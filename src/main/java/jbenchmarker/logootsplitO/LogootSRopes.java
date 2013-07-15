@@ -54,11 +54,11 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
     @Override
     public void addBlock(Identifier id, List<T> str) {
 //        //size += str.size();
-//        LinkedList l2;//= new LinkedList();
-//       /* if (scoreCheckT(root, l2)) {
-//         System.out.println("\n\n" + root.viewRec());
-//         System.out.println(l2);
-//         }*/
+        //LinkedList l2 = new LinkedList();
+        /*if (!scoreCheckT(root, l2)) {
+            System.out.println("\n\n" + root.viewRec());
+            System.out.println(l2);
+        }*/
 //        LinkedList path42 = searchErr();
 //        assert (path42 == null);
 
@@ -70,12 +70,12 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
         } else {
             addBlock(idi, str, root);
         }
-//        l2 = new LinkedList();
-//
-//        if (scoreCheckT(root, l2)) {
-//            System.out.println("\n\n" + root.viewRec());
-//            System.out.println(l2);
-//        }
+       // l2 = new LinkedList();
+
+      /*  if (!scoreCheckT(root, l2)) {
+            System.out.println("\n\n" + root.viewRec());
+            System.out.println(l2);
+        }*/
     }
 
     void addBlock(IdentifierInterval idi, List<T> str, RopesNodes from) {
@@ -113,11 +113,13 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
                     break;
                 case B2insideB1: // split b1 the node to insert
                     //int split2 = maxOffsetBeforeNex(id, node.getIdBegin(), str.size() + id.last - 1);
+                    //boolean mod = false;
                     int split2 = /*Math.min(idi.getEnd(), */ ihi.getNextOffset()/*)*/;
                     List ls = str.subList(0, split2 + 1 - idi.getBegin());
                     IdentifierInterval idi1 = new IdentifierInterval(idi.base, idi.getBegin(), split2);
                     if (from.getLeft() == null) {
                         from.setLeft(new RopesNodes(ls, idi1.getBegin(), getBlock(idi1)));
+                        //mod = true;
                     } else {
                         addBlock(idi1, ls, from.getLeft());
                     }
@@ -125,10 +127,16 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
                     idi1 = new IdentifierInterval(idi.base, split2 + 1, idi.end);
                     if (from.getRight() == null) {
                         from.setRight(new RopesNodes(ls, idi1.getBegin(), getBlock(idi1)));
+                        //mod = true;
                     } else {
                         addBlock(idi1, ls, from.getRight());
                     }
-                    return;
+                    //if (mod) {
+                        con = false;
+                        break;
+                    /*} else {
+                        return;
+                    }*/
                 case B1concatB2: //node to insert concat the node
                     if (from.getLeft() != null) {
                         path2 = (LinkedList) path.clone();
@@ -136,10 +144,10 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
                         getXest(RopesNodes.RIGHT, path2);
 
                         split = from.getIdBegin().minOffsetAfterPrev(path2.getLast().getIdEnd(), idi.getBegin());
-                        List l = str.subList(split + 1 - idi.getBegin(), str.size());
+                        List l = new ArrayList(str.subList(split + 1 - idi.getBegin(), str.size()));
                         from.appendBegin(l);
-                        ascendentUpdate(path, 0, l.size());
-                        str = str.subList(0, split + 1 - idi.getBegin());
+                        ascendentUpdate(path, l.size());
+                        str = new ArrayList(str.subList(0, split + 1 - idi.getBegin()));
                         idi = new IdentifierInterval(idi.base, idi.begin, split);
 
                         //check if previous is smaller or not
@@ -150,7 +158,7 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
                         }
                     } else {
                         from.appendBegin(str);
-                        ascendentUpdate(path, 0, str.size());
+                        ascendentUpdate(path, str.size());
                         return;
                     }
 
@@ -164,11 +172,11 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
                         getXest(RopesNodes.LEFT, path2);
 
                         split = from.getIdEnd().maxOffsetBeforeNex(path2.getLast().getIdBegin(), idi.getEnd());
-                        List l = str.subList(0, split + 1 - idi.getBegin());
+                        List l = new ArrayList(str.subList(0, split + 1 - idi.getBegin()));
                         from.appendEnd(l);
-                        ascendentUpdate(path, 0, l.size());
-                        str = str.subList(split + 1 - idi.getBegin(), str.size());
-                        idi = new IdentifierInterval(idi.base, split+1, idi.end);
+                        ascendentUpdate(path, l.size());
+                        str = new ArrayList(str.subList(split + 1 - idi.getBegin(), str.size()));
+                        idi = new IdentifierInterval(idi.base, split + 1, idi.end);
                         if (idi.end >= idi.begin) {
                             from = from.getRight();
                         } else {
@@ -176,7 +184,7 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
                         }
                     } else {
                         from.appendEnd(str);
-                        ascendentUpdate(path, 0, str.size());
+                        ascendentUpdate(path, str.size());
                         return;
                     }
 
@@ -214,7 +222,11 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
 
     @Override
     public LogootSOp insertLocal(int pos, List l) {
-
+       /* LinkedList l2 = new LinkedList();
+        if (!scoreCheckT(root, l2)) {
+            System.out.println("\n\n" + root.viewRec());
+            System.out.println(l2);
+        }*/
         if (root == null) {//empty tree
             root = mkNode(null, null, l);
             root.block.setMine(true);
@@ -230,7 +242,7 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
                 RopesNodes n = getXest(RopesNodes.LEFT, path);
                 if (n.isAppendableBefore()) {
                     Identifier id = n.appendBegin(l);
-                    ascendentUpdate(path, 0, l.size());
+                    ascendentUpdate(path, l.size());
                     return new LogootSOpAdd(id, l);
                 } else {//add node
                     newNode = mkNode(null, n.getIdBegin(), l);
@@ -244,7 +256,7 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
                 RopesNodes n = getXest(RopesNodes.RIGHT, path);
                 if (n.isAppendableAfter()) {//append
                     Identifier id = n.appendEnd(l);
-                    ascendentUpdate(path, 0, l.size());
+                    ascendentUpdate(path, l.size());
                     return new LogootSOpAdd(id, l);
                 } else {//add at end
                     newNode = mkNode(n.getIdEnd(), null, l);
@@ -267,7 +279,7 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
                     if (inPos.getNode().isAppendableBefore() && inPos.getNode().getIdBegin().hasPlaceBefore(prev.getNode().getIdEnd(), l.size())) {//append before
                         //     System.out.println("Append before");
                         Identifier id = inPos.getNode().appendBegin(l);
-                        ascendentUpdate(inPos.path, 0, l.size());
+                        ascendentUpdate(inPos.path, l.size());
                         //   path42 = searchErr();
                         // assert (path42 == null);
 
@@ -277,7 +289,7 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
                         if (prev.getNode().isAppendableAfter() && prev.getNode().getIdEnd().hasPlaceAfter(inPos.getNode().getIdBegin(), l.size())) {//append after
                             //   System.out.println("Append after");
                             Identifier id = prev.getNode().appendEnd(l);
-                            ascendentUpdate(prev.path, 0, l.size());
+                            ascendentUpdate(prev.path, l.size());
                             // path42 = searchErr();
                             // assert (path42 == null);
 
@@ -328,6 +340,38 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
         }
     }
 
+   /* static boolean scoreCheckT(RopesNodes node, LinkedList<RopesNodes> list) {
+        if (node == null) {
+            return true;
+        }
+
+        boolean ret = true;
+        list.add(node);
+        ret &= scoreCheckT(node.getLeft(), list);
+        ret &= scoreCheckT(node.getRight(), list);
+
+        int nodeinsub = node.str.size() + node.getSizeNodeAndChildren(0) + node.getSizeNodeAndChildren(1);
+        if (node.getSizeNodeAndChildren() != nodeinsub) {
+            System.err.println("error lenght : " + node.getSizeNodeAndChildren() + "<>" + nodeinsub + " " + list);
+            ret = false;
+
+        }
+        nodeinsub = 1 + Math.max(node.getSubtreeHeigh(0), node.getSubtreeHeigh(1));
+        if (node.getHeighOfTree() != nodeinsub) {
+            System.err.println("error height : " + node.getHeighOfTree() + "<>" + nodeinsub + " " + list);
+            ret = false;
+        }
+
+
+        int bal = node.balanceScore();
+        if (Math.abs(bal) > 1) {
+            System.err.println("Balance broken " + bal + ":" + node.getSubtreeHeigh(1) + " vs " + node.getSubtreeHeigh(0) + " " + list);
+            ret = false;
+//            assertTrue("fuck",false);
+        }
+        list.removeLast();
+        return ret;
+    }*/
 //    public LinkedList searchErr() {
 //        LinkedList path = new LinkedList();
 //        if (searchErr(root, path)) {
@@ -373,6 +417,7 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
      }
 
      */
+
     RopesNodes getXest(int i, RopesNodes n) {
         while (n.getChild(i) != null) {
             n = n.getChild(i);
@@ -423,15 +468,25 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
         return null;
     }
 
-    void ascendentUpdate(LinkedList<RopesNodes> path, int node, int string) {
+    /**
+     *
+     * @param path the value of path
+     * @param string the value of string
+     */
+    void ascendentUpdate(LinkedList<RopesNodes> path, int string) {
         Iterator<RopesNodes> it = path.descendingIterator();
         while (it.hasNext()) {
-            it.next().addNums(node, string);
+            it.next().addString(string);
         }
     }
 
     @Override
     public LogootSOp delLocal(int begin, int end) {
+       /* LinkedList l2 = new LinkedList();
+        if (!scoreCheckT(root, l2)) {
+            System.out.println("\n\n" + root.viewRec());
+            System.out.println(l2);
+        }*/
 //        LinkedList l = new LinkedList();
 //        if (scoreCheckT(root, l)) {
 //            System.out.println("\n\n" + root.viewRec());
@@ -460,11 +515,11 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
                 delNode(start.getPath());
                 //assert (i - this.view().length() == en - be + 1);
                 //this.ascendentUpdate(start.path, 1, en-be);
-            } else if (r != null) {
+            } else if (r != null) {//node has been splited
                 start.path.add(r);
                 balance(start.path);
             } else {
-                this.ascendentUpdate(start.path, 0, be - en - 1);
+                this.ascendentUpdate(start.path, be - en - 1);
             }
 
 
@@ -549,28 +604,59 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
     void balance(LinkedList<RopesNodes> path) {
 //        LinkedList path42 = searchErr();
 //        assert (path42 == null);
-        Iterator<RopesNodes> it = path.descendingIterator();
-        RopesNodes node = it.hasNext() ? it.next() : null;
-        RopesNodes father = it.hasNext() ? it.next() : null;
+        /*System.out.println("\n\n");
+        System.out.println(root != null ? root.viewRec() : "null");*/
+        //Iterator<RopesNodes> it = path.descendingIterator();
+        
+        LinkedList<RopesNodes> path2=/*new LinkedList(*/path;//);
+        
+        
+        /*RopesNodes node = it.hasNext() ? it.next() : null;
+        RopesNodes father = it.hasNext() ? it.next() : null;*/
+        RopesNodes node = path2.isEmpty()?null:path2.removeLast();
+        RopesNodes father = path2.isEmpty()?null:path2.getLast();
         while (node != null) {
             node.sumDirectChildren();
             int balance = node.balanceScore();
-            if (balance >= 2) {
-                if (node.getRight() != null && node.getRight().balanceScore() == -1) {
-                    rotateRL(node, father);
-                } else {
-                    rotateLeft(node, father);
+            //System.out.println("node" + node + " balance:" + balance);
+            while (Math.abs(balance) >= 2) {
+                
+                    
+                if (balance >= 2) {
+                    if (node.getRight() != null && node.getRight().balanceScore() <= -1) {
+                       // System.out.println("double left");
+                        /*node =*/ father=rotateRL(node, father);//double left
+                    } else {
+                        //System.out.println("left");
+                        /*node =*/ father=rotateLeft(node, father);
+                    }
+                } else /*if (balance <= -2)*/ {
+                    if (node.getLeft() != null && node.getLeft().balanceScore() >= 1) {
+                        //System.out.println("double Right");
+                        /*node =*/ father=rotateLR(node, father);//Double right
+                    } else {
+                        //System.out.println("Right");
+                        /*node =*/ father=rotateRight(node, father);
+                    }
                 }
-            } else if (balance <= -2) {
-                if (node.getLeft() != null && node.getLeft().balanceScore() == 1) {
-                    rotateLR(node, father);
-                } else {
-                    rotateRight(node, father);
-                }
+                path2.addLast(father);
+                balance = node.balanceScore();
+                /*System.out.println("new"+balance+" "+node);
+                System.out.println(root.viewRec());*/
             }
-            node = father;
-            father = it.hasNext() ? it.next() : null;
+            
+            
+            node = path2.isEmpty()?null:path2.removeLast();
+            
+            father = path2.isEmpty()?null:path2.getLast();
+            //father = it.hasNext() ? it.next() : null;
         }
+        /*LinkedList path42 = new LinkedList();
+        if (!scoreCheckT(this.root, path42)) {
+            System.out.println(root != null ? root.viewRec() : "null");
+            System.out.println("oops");
+            assert (false);
+        }*/
 //        path42 = searchErr();
 //        assert (path42 == null);
     }
@@ -624,6 +710,11 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
 //            System.out.println("\n\n" + root.viewRec());
 //            System.out.println(l2);
 //        }
+       /* LinkedList l2 = new LinkedList();
+        if (!scoreCheckT(root, l2)) {
+            System.out.println("\n\n" + root.viewRec());
+            System.out.println(l2);
+        }*/
         while (true) {
             LinkedList<RopesNodes> path = new LinkedList<RopesNodes>();
             // LinkedList<RopesNodes> path = ;
@@ -648,7 +739,7 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
                     balance(path);
 
                 } else {
-                    ascendentUpdate(path, 0, id.getBegin() - end - 1);
+                    ascendentUpdate(path, id.getBegin() - end - 1);
                 }
                 if (end == id.end) {
                     break;
@@ -735,9 +826,9 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
 //        list.add(node);
 //        ret = scoreCheckT(node.getLeft(), list);
 //        ret |= scoreCheckT(node.getRight(), list);
-//        int nodeinsub = 1 + node.getNodesInSubtree(0) + node.getNodesInSubtree(1);
-//        if (node.getNodesInSubtree() != nodeinsub) {
-//            System.err.println("error number node : " + node.getNodesInSubtree() + "<>" + nodeinsub + " " + node.str);
+//        int nodeinsub = 1 + node.getSubtreeHeigh(0) + node.getSubtreeHeigh(1);
+//        if (node.getSubtreeHeigh() != nodeinsub) {
+//            System.err.println("error number node : " + node.getSubtreeHeigh() + "<>" + nodeinsub + " " + node.str);
 //            ret = true;
 //        }
 //        nodeinsub = node.str.size() + node.getSizeNodeAndChildren(0) + node.getSizeNodeAndChildren(1);
@@ -751,13 +842,6 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
     @Override
     public int viewLength() {
         int ret = root == null ? 0 : root.sizeNodeAndChildren;
-//        if (ret != view().length()) {
-//            System.out.println(root.viewRec());
-//            System.out.println("");
-//            scoreCheckT(root, new LinkedList());
-//            assert (false);
-//        }
-
         return ret;
     }
 
@@ -774,7 +858,7 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
         public static int LEFT = 0;
         public static int RIGHT = 1;
         private RopesNodes[] childrenLeftRight = new RopesNodes[2];
-        private int nodesInSubtree = 1;
+        private int height = 1;
         private int sizeNodeAndChildren = 0;
         /**
          * String info
@@ -805,8 +889,11 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
             }
         }
 
-        public void addNums(int node, int string) {
-            this.nodesInSubtree += node;
+        /**
+         *
+         * @param string the value of string
+         */
+        public void addString(int string) {
             this.sizeNodeAndChildren += string;
         }
 
@@ -841,24 +928,24 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
             }
             RopesNodes ret = null;
             if (end == this.offset + str.size() - 1) {
-                this.str = str.subList(0, begin - offset);
+                this.str = new ArrayList(str.subList(0, begin - offset));
             } else if (begin == this.offset) {
-                this.str = str.subList(end - offset + 1, str.size());
+                this.str = new ArrayList(str.subList(end - offset + 1, str.size()));
                 offset = end + 1;
             } else {
                 ret = this.split(end - offset + 1);
-                str = str.subList(0, begin - offset);
+                str = new ArrayList(str.subList(0, begin - offset));
             }
             return ret;
         }
 
         public RopesNodes split(int size) {
-            this.nodesInSubtree++;
+            this.height++;
             RopesNodes n = new RopesNodes(new ArrayList(str.subList(size, str.size())), offset + size, block, false);
             this.str = new ArrayList(str.subList(0, size));
             if (this.childrenLeftRight[RIGHT] != null) {
                 n.childrenLeftRight[RIGHT] = this.childrenLeftRight[RIGHT];
-                n.nodesInSubtree += n.childrenLeftRight[RIGHT].nodesInSubtree + 1;
+                n.height += n.childrenLeftRight[RIGHT].height + 1;
                 n.sizeNodeAndChildren += n.childrenLeftRight[RIGHT].sizeNodeAndChildren;
             }
             this.childrenLeftRight[RIGHT] = n;
@@ -867,10 +954,10 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
 
         public RopesNodes split(int size, RopesNodes node) {
 
-            this.nodesInSubtree++;
+            this.height++;
             RopesNodes n = split(size);
             n.childrenLeftRight[LEFT] = node;
-            n.nodesInSubtree++;
+            n.height++;
             return n;
         }
 
@@ -899,13 +986,13 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
         }
 
         public void sumDirectChildren() {
-            nodesInSubtree = getNodesInSubtree(LEFT) + getNodesInSubtree(RIGHT) + 1;
+            height = Math.max(getSubtreeHeigh(LEFT), getSubtreeHeigh(RIGHT)) + 1;
             sizeNodeAndChildren = getSizeNodeAndChildren(LEFT) + getSizeNodeAndChildren(RIGHT) + str.size();
         }
 
-        public int getNodesInSubtree(int i) {
+        public int getSubtreeHeigh(int i) {
             RopesNodes s = childrenLeftRight[i];
-            return s == null ? 0 : s.nodesInSubtree;
+            return s == null ? 0 : s.height;
         }
 
         public int getSizeNodeAndChildren(int i) {
@@ -913,12 +1000,12 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
             return s == null ? 0 : s.sizeNodeAndChildren;
         }
 
-        public int getNodesInSubtree() {
-            return nodesInSubtree;
+        public int getHeighOfTree() {
+            return height;
         }
 
         public void setChildrens(int childrens) {
-            this.nodesInSubtree = childrens;
+            this.height = childrens;
         }
 
         public int getSizeNodeAndChildren() {
@@ -934,7 +1021,7 @@ public class LogootSRopes<T> implements LogootSDoc<T>, Serializable {
         }
 
         public int balanceScore() {
-            return getNodesInSubtree(RIGHT) - getNodesInSubtree(LEFT);
+            return getSubtreeHeigh(RIGHT) - getSubtreeHeigh(LEFT);
         }
 
         public void become(RopesNodes node) {

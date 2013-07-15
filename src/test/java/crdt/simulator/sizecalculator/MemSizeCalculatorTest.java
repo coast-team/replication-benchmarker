@@ -54,7 +54,6 @@ public class MemSizeCalculatorTest {
         long full = MemSizeCalculator.sizeOf(str_t);
         assertTrue("not deep", empty < fullSame);
         assertTrue("impossible", fullSame < full);
-        System.out.println(empty + " " + fullSame + " " + full);
     }
 
     @Test

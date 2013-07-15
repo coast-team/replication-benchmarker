@@ -31,6 +31,7 @@ public class ProgressBar {
     public ProgressBar(long max) {
         this.max = max;
         pas = max / 100;
+        pas= pas <=0?1:pas;
     }
 
     public void progress(long c) {
