@@ -34,6 +34,7 @@ import java.util.List;
  * @author Stephane Martin <stephane.martin@loria.fr>
  */
 public class SimulationWorker {
+     
     
     
     static int base = 100;
