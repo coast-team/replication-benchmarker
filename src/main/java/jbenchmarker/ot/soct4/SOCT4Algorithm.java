@@ -287,7 +287,7 @@ public class SOCT4Algorithm<T extends Serializable & Comparable<T>> implements
 	 * @return
 	 */
 	public String getLocalAtomSequenceToString() {
-		List<SequenceOperation<T>> atoms = new LinkedList<>();
+		List<SequenceOperation<T>> atoms = new LinkedList();
 		StringBuilder string = new StringBuilder();
 		// for (Atom<T> a : atomList) {
 		// string.append(a.toString());
