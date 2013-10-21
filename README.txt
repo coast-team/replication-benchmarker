@@ -20,9 +20,9 @@ used in collaborative applications.
 - your(s)
 
 * You run it on a trace (a list of operations) that can be
-- extracted form a XML file jbenchmarker.trace.TraceGenerator
+- extracted from a XML file jbenchmarker.trace.TraceGenerator
 - generated randomly crdt.simulator.random.RandomTrace
-- extracted form git repository jbenchmarker.trace.git.GitTrace
+- extracted from git repository jbenchmarker.trace.git.GitTrace
 To use git extraction you a need a CouchDB instance accessible.
 
 * You get the result with Simulator methods :
