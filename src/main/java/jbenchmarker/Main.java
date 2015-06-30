@@ -26,7 +26,7 @@ public class Main {
 
             if(args.length<1){
             System.err.println("Arguments for Git experiment :::::::::: ");
-             System.err.println("- Factory to run git main");
+            System.err.println("- Factory to run git main");
             System.err.println("- git directory ");
             System.err.println("- file [optional] path or number (default : all files)");
             System.err.println("- --save [optional] Store traces");
