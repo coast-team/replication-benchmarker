@@ -49,19 +49,17 @@ public class RgaSMain {
 		RgaSNode node4 = new RgaSNode(s3v4,null,null,input("hijklmn"),false);
 		RgaSNode node5 = new RgaSNode(s3v5,null,null,input("opq"),false);
 
-		/*
 		RgaSTree tree5 = new RgaSTree(node1, null, null);
-		RgaSTree tree4 = new RgaSTree(node2, tree2, tree3)
-		RgaSTree tree3 = new RgaSTree(node1, tree2, tree3)
-		RgaSTree tree2 = new RgaSTree(node1, tree2, tree3)
-		RgaSTree tree1 = new RgaSTree(node1, tree2, tree3)
-*/
+		RgaSTree tree4 = new RgaSTree(node4, null, null);
+		RgaSTree tree3 = new RgaSTree(node2, tree5, null);
+		RgaSTree tree2 = new RgaSTree(node5, tree4, null);
+		RgaSTree tree1 = new RgaSTree(node3, tree3, tree2);
+
 		rgadoc.getHead().setNext(node1);
 		node1.setNext(node2);
 		node2.setNext(node3);
 		node3.setNext(node4);
 		node4.setNext(node5);
-		
 		
 		System.out.println(rgadoc.view());
 		System.out.println(rgadoc.viewWithSeparator());

@@ -28,6 +28,7 @@ public class RgaSTree {
 		return tree;
 	}
 	
+	public String 
 	
 	public RgaSNode getRoot() {
 		return root;

@@ -183,8 +183,7 @@ public final class TraceMain extends Experience {
         if (j < 0) {
             j = args[2].length();
         }
-        System.out.println(n+"-"+args[2]);
-        System.out.println(i+"-"+j);
+
         return n + "-" + args[2].substring(i + 1, j);
     }
 }
