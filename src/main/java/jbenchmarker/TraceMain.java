@@ -181,8 +181,9 @@ public final class TraceMain extends Experience {
         }
 
         if (j < 0) {
-            j = args[1].length();
+            j = args[2].length();
         }
+
         return n + "-" + args[2].substring(i + 1, j);
     }
 }
