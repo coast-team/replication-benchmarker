@@ -3,9 +3,6 @@ package jbenchmarker.factories;
 
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.logoot.BoundaryListStrategy;
-import jbenchmarker.logoot.LogootDocument;
-import jbenchmarker.logoot.LogootMerge;
 import jbenchmarker.rgasplit.*;
 
 

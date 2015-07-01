@@ -20,10 +20,10 @@ package jbenchmarker.factories;
 
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.rga.RGADocument;
-import jbenchmarker.rga.RGAMerge;
+import jbenchmarker.rgafloat.RGADocument;
+import jbenchmarker.rgafloat.RGAMerge;
 
-public class RGAFactory extends ReplicaFactory {
+public class RGAFFactory extends ReplicaFactory {
 
     @Override
 	public MergeAlgorithm create(int r) {
