@@ -70,10 +70,8 @@ public class RGADocument<T> implements Document {
             } else {
                 prev = hash.get(rgaop.getS4VPos());
             }           
-            BigDecimal after = nextPosition(prev), 
-                    before = previousPosition(prev);
             RGANode n = remoteInsert(prev,  rgaop);
-            n.setPosition(middle(before, after));
+            n.setPosition(middle(previousPosition(n), nextPosition(n)));
             localOrder.add(findLocal(n.getPosition()), n);
         }
     }

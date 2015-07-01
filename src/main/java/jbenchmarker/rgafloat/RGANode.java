@@ -90,7 +90,7 @@ public class RGANode<T> implements Serializable {
     }
     
     public RGANode getLastVisible() {
-        RGANode node = this;
+        RGANode node = last;
         while (node != null && !node.isVisible()) {
             node = node.last;
         }
@@ -118,6 +118,4 @@ public class RGANode<T> implements Serializable {
         hash = 89 * hash + (this.key != null ? this.key.hashCode() : 0);
         return hash;
     }
-
-
 }
