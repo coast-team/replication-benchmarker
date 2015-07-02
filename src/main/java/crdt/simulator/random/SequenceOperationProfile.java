@@ -30,6 +30,7 @@ import jbenchmarker.core.LocalOperation;
  * A profile that generates operation.
  * T is either a character or a string 
  * @author urso
+ * @param <T>
  */
 public abstract class SequenceOperationProfile<T> implements OperationProfile {
     protected final RandomGauss r = new RandomGauss();

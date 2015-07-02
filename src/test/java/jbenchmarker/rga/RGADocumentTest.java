@@ -44,7 +44,7 @@ public class RGADocumentTest {
 	@Test
 	public void testRunRGA() throws IncorrectTraceException, PreconditionException, IOException {
 		StandardDiffProfile SMALL = new StandardDiffProfile(0.1, 0.8, 0.8, 20, 3.0, 4, 3);
-		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFactory.ShortList<String>(), 500, 500, SMALL);
+		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFactory(), 500, 500, SMALL);
 	}
 	
 }

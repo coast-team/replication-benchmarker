@@ -1,6 +1,5 @@
-package jbenchmarker.rgabigdecimal;
+package jbenchmarker.rgalocal;
 
-import jbenchmarker.rgabigdecimal.RGAMerge;
 import static org.junit.Assert.*;
 import java.io.IOException;
 import jbenchmarker.core.MergeAlgorithm;
@@ -12,10 +11,9 @@ import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.random.StandardDiffProfile;
-import jbenchmarker.factories.RGAFFactory;
+import crdt.simulator.random.StandardSeqOpProfile;
 
-
-public class RGAMultipleInsertionDeletionUpdate {
+public class RGAMergeTest {
 
 	private static final int REPLICA_ID = 7;
 	private RGAMerge replica;
@@ -143,7 +141,6 @@ public class RGAMultipleInsertionDeletionUpdate {
 	
 	@Test
 	public void testRun() throws IncorrectTraceException, PreconditionException, IOException {
-		StandardDiffProfile SMALL = new StandardDiffProfile(0.7, 0.7, 0.9, 10, 1, 10, 3);
-		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFFactory.ShortList<String>(), 600, 600, SMALL);
+		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFFactory(), 100, 5000, StandardSeqOpProfile.BASIC);
 	}
 }

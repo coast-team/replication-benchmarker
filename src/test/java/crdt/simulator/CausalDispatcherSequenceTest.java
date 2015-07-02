@@ -18,6 +18,7 @@
  */
 package crdt.simulator;
 
+import jbenchmarker.factories.RGAFactory;
 import crdt.CRDT;
 import crdt.Factory;
 import crdt.PreconditionException;

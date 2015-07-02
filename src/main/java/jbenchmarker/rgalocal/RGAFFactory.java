@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.factories;
+package jbenchmarker.rgalocal;
 
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.rgabigdecimal.RGADocument;
-import jbenchmarker.rgabigdecimal.RGAMerge;
 
 public class RGAFFactory extends ReplicaFactory {
 
@@ -33,12 +31,5 @@ public class RGAFFactory extends ReplicaFactory {
 
 	static RGADocument createDoc(int r, int base) {
 		return new RGADocument();
-	}
-
-	public static class ShortList<T> extends ReplicaFactory {
-		@Override
-		public RGAMerge create(int r) {         
-			return new RGAMerge(createDoc(r, 16), r);
-		}
 	}
 }
