@@ -1,10 +1,9 @@
-package jbenchmarker.rgasplit;
+package jbenchmarker.rgalocal;
 
 import static org.junit.Assert.*;
 import java.io.IOException;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.factories.RgaSFactory;
 import org.junit.Before;
 import org.junit.Test;
 import crdt.CRDTMessage;
@@ -14,15 +13,14 @@ import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.random.StandardDiffProfile;
 import crdt.simulator.random.StandardSeqOpProfile;
 
-
-public class RgaSMultipleInsertionDeletionUpdate {
+public class RGAMergeTest {
 
 	private static final int REPLICA_ID = 7;
-	private RgaSMerge replica;
+	private RGAMerge replica;
 
 	@Before
 	public void setUp() throws Exception {
-		replica = (RgaSMerge) new RgaSFactory().create(REPLICA_ID);
+		replica = (RGAMerge) new RGAFFactory().create(REPLICA_ID);
 	}
 
 	@Test
@@ -54,7 +52,7 @@ public class RgaSMultipleInsertionDeletionUpdate {
 		replica.applyLocal(SequenceOperation.insert(7, "7"));
 		assertEquals("ab2cdef7ghij", replica.lookup());
 
-		MergeAlgorithm replica2 = (MergeAlgorithm) new RgaSFactory().create();
+		MergeAlgorithm replica2 = (MergeAlgorithm) new RGAFFactory().create();
 		replica2.setReplicaNumber(2);
 		m1.execute(replica2);
 		assertEquals(content, replica2.lookup());
@@ -82,7 +80,7 @@ public class RgaSMultipleInsertionDeletionUpdate {
 		CRDTMessage m4 = replica.applyLocal(SequenceOperation.delete(3, 8));
 		assertEquals("ab23ij", replica.lookup());
 
-		MergeAlgorithm replica2 = (MergeAlgorithm) new RgaSFactory().create();
+		MergeAlgorithm replica2 = (MergeAlgorithm) new RGAFFactory().create();
 		replica2.setReplicaNumber(2);
 		m1.execute(replica2);
 		m2.execute(replica2);
@@ -109,7 +107,7 @@ public class RgaSMultipleInsertionDeletionUpdate {
 		CRDTMessage m4 = replica.applyLocal(SequenceOperation.replace(1, 10,"test"));
 		assertEquals("atestj", replica.lookup());
 
-		MergeAlgorithm replica2 = (MergeAlgorithm) new RgaSFactory().create();
+		MergeAlgorithm replica2 = (MergeAlgorithm) new RGAFFactory().create();
 		replica2.setReplicaNumber(2);
 		m1.execute(replica2);
 		m2.execute(replica2);
@@ -131,7 +129,7 @@ public class RgaSMultipleInsertionDeletionUpdate {
 		replica.applyLocal(SequenceOperation.replace(2, 4, "27"));
 		assertEquals("ab27ghij", replica.lookup());
 
-		MergeAlgorithm replica2 = (MergeAlgorithm) new RgaSFactory().create();
+		MergeAlgorithm replica2 = (MergeAlgorithm) new RGAFFactory().create();
 		replica2.setReplicaNumber(2);
 		m1.execute(replica2);
 		CRDTMessage m2 = replica2.applyLocal(SequenceOperation.replace(1, 8, "test"));
@@ -142,9 +140,7 @@ public class RgaSMultipleInsertionDeletionUpdate {
 
 	
 	@Test
-	public void testRunRgaSplit() throws IncorrectTraceException, PreconditionException, IOException {
-		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RgaSFactory(), 600, 600, StandardSeqOpProfile.BASIC);
+	public void testRun() throws IncorrectTraceException, PreconditionException, IOException {
+		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFFactory(), 600, 600, StandardSeqOpProfile.BASIC);
 	}
-
-
 }

@@ -19,24 +19,12 @@
 package jbenchmarker.rga;
 
 import crdt.Factory;
-import crdt.Operation;
 import crdt.PreconditionException;
 import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.random.StandardDiffProfile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.factories.RGAFactory;
-import jbenchmarker.factories.RgaSFactory;
-
-import org.junit.Test;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -56,7 +44,7 @@ public class RGADocumentTest {
 	@Test
 	public void testRunRGA() throws IncorrectTraceException, PreconditionException, IOException {
 		StandardDiffProfile SMALL = new StandardDiffProfile(0.1, 0.8, 0.8, 20, 3.0, 4, 3);
-		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFactory.ShortList<String>(), 500, 500, SMALL);
+		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFactory(), 500, 500, SMALL);
 	}
 	
 }

@@ -26,9 +26,7 @@ public class RgaSTree {
 			tree=tree.rigthSon;
 		}
 		return tree;
-	}
-	
-	public String 
+	}	
 	
 	public RgaSNode getRoot() {
 		return root;
