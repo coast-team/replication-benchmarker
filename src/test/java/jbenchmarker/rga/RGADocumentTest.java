@@ -19,24 +19,12 @@
 package jbenchmarker.rga;
 
 import crdt.Factory;
-import crdt.Operation;
 import crdt.PreconditionException;
 import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.random.StandardDiffProfile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import jbenchmarker.trace.TraceGenerator;
-import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.factories.RGAFactory;
-import jbenchmarker.factories.RgaSFactory;
-
-import org.junit.Test;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

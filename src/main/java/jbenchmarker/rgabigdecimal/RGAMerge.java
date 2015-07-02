@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.rgafloat;
+package jbenchmarker.rgabigdecimal;
 
 import crdt.CRDT;
 import java.util.List;
@@ -28,10 +28,12 @@ import crdt.Operation;
 import crdt.simulator.IncorrectTraceException;
 import java.math.BigDecimal;
 import jbenchmarker.core.SequenceOperation;
-import static jbenchmarker.rgafloat.RGADocument.middle;
+import static jbenchmarker.rgabigdecimal.RGADocument.middle;
 
 /**
- *
+ * RGA with local table of BigDecimal position identifiers.
+ * Converge but not efficient. 
+ * 
  * @author Roh, urso
  */
 public class RGAMerge extends MergeAlgorithm {

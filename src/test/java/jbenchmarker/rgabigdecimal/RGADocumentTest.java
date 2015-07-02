@@ -1,5 +1,7 @@
-package jbenchmarker.rgafloat;
+package jbenchmarker.rgabigdecimal;
 
+import jbenchmarker.rgabigdecimal.RGADocument;
+import jbenchmarker.rgabigdecimal.RGAMerge;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;

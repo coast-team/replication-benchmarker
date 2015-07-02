@@ -20,8 +20,8 @@ package jbenchmarker.factories;
 
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.rgafloat.RGADocument;
-import jbenchmarker.rgafloat.RGAMerge;
+import jbenchmarker.rgabigdecimal.RGADocument;
+import jbenchmarker.rgabigdecimal.RGAMerge;
 
 public class RGAFFactory extends ReplicaFactory {
 

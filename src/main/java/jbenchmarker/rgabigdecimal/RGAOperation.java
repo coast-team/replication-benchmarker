@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.rgafloat;
+package jbenchmarker.rgabigdecimal;
 
 import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;

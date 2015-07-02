@@ -1,5 +1,6 @@
-package jbenchmarker.rgafloat;
+package jbenchmarker.rgabigdecimal;
 
+import jbenchmarker.rgabigdecimal.RGAMerge;
 import static org.junit.Assert.*;
 import java.io.IOException;
 import jbenchmarker.core.MergeAlgorithm;
@@ -141,10 +142,8 @@ public class RGAMultipleInsertionDeletionUpdate {
 
 	
 	@Test
-	public void testRunRGAplit() throws IncorrectTraceException, PreconditionException, IOException {
+	public void testRun() throws IncorrectTraceException, PreconditionException, IOException {
 		StandardDiffProfile SMALL = new StandardDiffProfile(0.7, 0.7, 0.9, 10, 1, 10, 3);
 		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFFactory.ShortList<String>(), 600, 600, SMALL);
 	}
-
-
 }
