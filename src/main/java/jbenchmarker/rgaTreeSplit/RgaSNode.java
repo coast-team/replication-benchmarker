@@ -9,7 +9,16 @@ public class RgaSNode<T> implements Serializable {
 	private RgaSS3Vector key;		 
 	private RgaSNode next;
 	private RgaSNode link;
+	private RgaSTree tree;
 	
+	public RgaSTree getTree() {
+		return tree;
+	}
+
+	public void setTree(RgaSTree tree) {
+		this.tree = tree;
+	}
+
 	private List<T> content;
 	private int size;
 	private boolean tomb;	//used for visible and tombstone purging if null, then not tombstone 
