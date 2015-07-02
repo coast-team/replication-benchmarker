@@ -61,7 +61,6 @@ public class RgaSMerge extends MergeAlgorithm {
 
 		Position position = rgadoc.find(so.getPosition());
 		
-		System.out.println("MERGEEEE: " + position);
 
 		if (so.getPosition() == 0) {
 			s3vpos = null;

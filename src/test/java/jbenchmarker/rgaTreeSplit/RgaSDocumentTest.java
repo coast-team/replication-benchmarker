@@ -169,7 +169,7 @@ public class RgaSDocumentTest {
 	@Test
 	public void testRemoteInsert() throws PreconditionException {    
 		
-		System.out.println("\n\nINSERT");
+		
 		replica.applyLocal(SequenceOperation.insert(0, "abcdejk"));
 		assertEquals("Insertion du contenu initial", "abcdejk", replica.lookup());
 
@@ -178,7 +178,7 @@ public class RgaSDocumentTest {
 
 		
 		replica.applyLocal(SequenceOperation.insert(5, "hi"));
-		System.out.println("\nENDINSERT\n\n");
+	
 		assertEquals("Insertion au milieu","abcfghidejk", replica.lookup());
 		
 		
@@ -194,13 +194,16 @@ public class RgaSDocumentTest {
 	public void testRemoteDelete() throws PreconditionException {
 		replica.applyLocal(SequenceOperation.insert(0,"abcdefghijklmnopq"));
 		assertEquals("Insertion du contenu","abcdefghijklmnopq", replica.lookup());
-		
+		System.out.println("\n\nINSERT1");
 		replica.applyLocal(SequenceOperation.delete(1, 4));
 		assertEquals("Suppression en début","afghijklmnopq", replica.lookup());
 
+		System.out.println("\n\nINSERT2");
+		
 		replica.applyLocal(SequenceOperation.delete(5, 8));
 		assertEquals("Suppression au milieu","afghi", replica.lookup());
 
+		System.out.println("\nENDINSERT\n\n");
 		replica.applyLocal(SequenceOperation.delete(1, 3));
 		assertEquals("Suppression au milieu","ai", replica.lookup());
 		

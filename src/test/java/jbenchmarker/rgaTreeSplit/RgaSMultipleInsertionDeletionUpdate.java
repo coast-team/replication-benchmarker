@@ -149,7 +149,7 @@ public class RgaSMultipleInsertionDeletionUpdate {
 	@Test
 	public void testRunRgaSplit() throws IncorrectTraceException, PreconditionException, IOException {
 		StandardDiffProfile SMALL = new StandardDiffProfile(0, 1, 0.9, 5, 1, 1, 1);
-		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RgaTreeSplitFactory.ShortList<String>(), 6000, 5, SMALL);
+		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RgaTreeSplitFactory.ShortList<String>(), 600, 600, SMALL);
 	}
 
 

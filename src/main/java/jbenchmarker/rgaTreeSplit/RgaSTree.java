@@ -23,8 +23,8 @@ public class RgaSTree {
 		
 		this.root=root;
 		this.root.setTree(this);
-		this.leftSon=leftSon;
-		this.rightSon=rightSon;
+		this.setLeftSon(leftSon);
+		this.setRightSon(rightSon);
 		if (leftSon!=null) a=leftSon.size();
 		if (rightSon!=null) b=rightSon.size();
 		size= a+b+this.getRoot().size();
@@ -57,7 +57,7 @@ public class RgaSTree {
 
 	public void setLeftSon(RgaSTree leftSon) {
 		this.leftSon = leftSon;
-		leftSon.setFather(this);
+		if (leftSon!=null) leftSon.setFather(this);
 	}
 
 	public RgaSTree getRightSon() {
@@ -66,9 +66,49 @@ public class RgaSTree {
 
 	public void setRightSon(RgaSTree rightSon) {
 		this.rightSon = rightSon;
-		rightSon.setFather(this);
+		if (rightSon!=null) rightSon.setFather(this);
 	}
 
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((leftSon == null) ? 0 : leftSon.hashCode());
+		result = prime * result
+				+ ((rightSon == null) ? 0 : rightSon.hashCode());
+		result = prime * result + ((root == null) ? 0 : root.hashCode());
+		return result;
+	}
+
+	
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RgaSTree other = (RgaSTree) obj;
+		if (leftSon == null) {
+			if (other.leftSon != null)
+				return false;
+		} else if (!leftSon.equals(other.leftSon))
+			return false;
+		if (rightSon == null) {
+			if (other.rightSon != null)
+				return false;
+		} else if (!rightSon.equals(other.rightSon))
+			return false;
+		if (root == null) {
+			if (other.root != null)
+				return false;
+		} else if (!root.equals(other.root))
+			return false;
+		return true;
+	}
 
 	public int size() {
 		return size;
