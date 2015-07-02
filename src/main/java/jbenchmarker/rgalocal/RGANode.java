@@ -28,7 +28,7 @@ public class RGANode<T> implements Serializable {
 
     private RGAS2Vector key;	 
     private T content;
-    private RGANode next, last;
+    private RGANode next;
 
     private long position;
 
@@ -71,27 +71,11 @@ public class RGANode<T> implements Serializable {
     public RGANode getNext() {
         return next;
     }
-
-    public RGANode getLast() {
-        return last;
-    }
-
-    public void setLast(RGANode last) {
-        this.last = last;
-    }
     
     public RGANode getNextVisible() {
         RGANode node = next;
         while (node != null && !node.isVisible()) {
             node = node.next;
-        }
-        return node;
-    }
-    
-    public RGANode getLastVisible() {
-        RGANode node = last;
-        while (node != null && !node.isVisible()) {
-            node = node.last;
         }
         return node;
     }

@@ -18,7 +18,6 @@
  */
 package jbenchmarker.rgalocal;
 
-
 import collect.RangeList;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceOperation;
@@ -30,12 +29,13 @@ import java.util.List;
 import static jbenchmarker.rgalocal.RGAMerge.MAGIC;
 
 /**
+ * Handles double local identifiers
  *
  * @author Roh, urso
  */
 public class RGADocument<T> implements Document {
 
-    public static final long MAX = Long.MAX_VALUE/2, MIN = Long.MIN_VALUE/2;
+    public static final long MAX = Long.MAX_VALUE / 2, MIN = Long.MIN_VALUE / 2;
     private final HashMap<RGAS2Vector, RGANode<T>> hash;
     private final RangeList<RGANode<T>> localOrder;
     private final RGANode head;
@@ -63,7 +63,7 @@ public class RGADocument<T> implements Document {
         if (rgaop.getType() == SequenceOperation.OpType.delete) {
             boolean wasVisible = remoteDelete(rgaop);
             if (wasVisible) {
-                localOrder.remove(findLocal(hash.get(rgaop.getS4VPos()).getPosition()));
+                localOrder.remove(findLocal(hash.get(rgaop.getS4VPos())));
             }
         } else {
             RGANode prev;
@@ -71,10 +71,13 @@ public class RGADocument<T> implements Document {
                 prev = head;
             } else {
                 prev = hash.get(rgaop.getS4VPos());
-            }           
-            RGANode n = remoteInsert(prev,  rgaop);
-            n.setPosition(middle(previousPosition(n), nextPosition(n)));
-            localOrder.add(findLocal(n.getPosition()), n);
+            }
+            RGANode node = remoteInsert(prev, rgaop), next = node.getNextVisible();
+            long nextPos = next == null ? MAX : next.getPosition();
+            int afterPos = next == null ? localOrder.size() : findLocal(next);
+            long prevPos = afterPos == 0 ? MIN : localOrder.get(afterPos-1).getPosition();
+            node.setPosition(middle(prevPos, nextPos));
+            localOrder.add(afterPos, node);
         }
     }
 
@@ -97,11 +100,8 @@ public class RGADocument<T> implements Document {
         }
 
         newnd.setNext(next);
-        newnd.setLast(prev);
         prev.setNext(newnd);
-        if (next != null) {
-            next.setLast(newnd);
-        }
+        
         hash.put(op.getS4VTms(), newnd);
         return newnd;
     }
@@ -114,7 +114,7 @@ public class RGADocument<T> implements Document {
         }
         wasVisible = node.isVisible();
         node.makeTombstone();
-        
+
         return wasVisible;
     }
 
@@ -130,7 +130,7 @@ public class RGADocument<T> implements Document {
         if (v == 0) {
             return head;
         } else {
-            return localOrder.get(v-1);
+            return localOrder.get(v - 1);
         }
     }
 
@@ -141,6 +141,7 @@ public class RGADocument<T> implements Document {
 
     /**
      * Add a list of nodes in the local order table.
+     *
      * @param i position
      * @param ln nodes
      */
@@ -150,6 +151,7 @@ public class RGADocument<T> implements Document {
 
     /**
      * Remove a range of nodes from the local order table.
+     *
      * @param p position
      * @param offset number of nodes
      */
@@ -158,64 +160,40 @@ public class RGADocument<T> implements Document {
     }
 
     /**
-     * Next position to be taken into account after a node 
-     * @param prev the node
-     * @return the position of the next visible node. ONE if none
-     */
-    private long nextPosition(RGANode prev) {
-        prev = prev.getNextVisible();
-        if (prev == null) {
-            return MAX;
-        } else {
-            return prev.getPosition();
-        }            
-    }
-    
-    /**
-     * Previous position to be taken into account after a node 
-     * @param prev the node
-     * @return the position of the previous visible node. ZERO if none
-     */
-    private long previousPosition(RGANode prev) {
-        prev = prev.getLastVisible();
-        if (prev == null) {
-            return MIN;
-        } else {
-            return prev.getPosition();
-        } 
-    }
-    
-    /**
-     * Dichotomic search to find a position in the local order table. 
+     * Search an existing node in the local order table. Dichotomic search +
+     * verification to handles collisions
+     *
      * @param pos the position
      * @return the lower index with a position greater or equal pos.
      */
-    private int findLocal(long pos) {
+    private int findLocal(RGANode<T> node) {
+        long pos = node.getPosition();
         int startIndex = 0, endIndex = localOrder.size(), middleIndex;
-        while (startIndex < endIndex) {
+        do {
             middleIndex = startIndex + (endIndex - startIndex) / 2;
-            long c = localOrder.get(middleIndex).getPosition() - pos;
-            if (c == 0) {
-                return middleIndex;
-            } else if (c < 0) {
+            if (localOrder.get(middleIndex).getPosition() < pos) {
                 startIndex = middleIndex + 1;
             } else {
                 endIndex = middleIndex;
             }
-        } 
-        return startIndex;
+        } while (localOrder.get(middleIndex).getPosition() != pos);
+        int index = middleIndex;
+        while (!localOrder.get(index).equals(node)
+                && index < localOrder.size() - 1
+                && localOrder.get(index + 1).getPosition() == pos) {
+            ++index;
+        }
+        if (localOrder.get(index).equals(node)) {
+            return index;
+        }
+        index = middleIndex - 1;
+        while (!localOrder.get(index).equals(node)) { // must be somewhere
+            --index;
+        }
+        return index;
     }
 
-    /**
-     * Middle of two bigdecimal 
-     * @param a A
-     * @param b B (B > A)
-     * @return (A + (B - A) / 2) 
-     */
-    public static BigDecimal middle(BigDecimal a, BigDecimal b) {
-        return a.add(b.subtract(a).divide(BigDecimal.valueOf(2)));
-    }
     public static long middle(long a, long b) {
-        return a+((b-a)/(2+MAGIC));
+        return a + ((b - a) / (2 + MAGIC));
     }
 }

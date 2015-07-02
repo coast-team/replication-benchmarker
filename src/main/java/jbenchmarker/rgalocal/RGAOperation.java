@@ -18,7 +18,6 @@
  */
 package jbenchmarker.rgalocal;
 
-import jbenchmarker.rgabigdecimal.*;
 import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
@@ -32,7 +31,6 @@ public class RGAOperation<T> implements Operation {
     private RGAS2Vector s4vpos;
     private RGAS2Vector s4vtms;
     private T content;
-    private int intpos;
     private OpType type;
 
     public RGAOperation() {
@@ -49,16 +47,15 @@ public class RGAOperation<T> implements Operation {
         }
         String s4va = s4vpos == null ? "null" : s4vpos.toString();
         String s4vb = s4vtms == null ? "null" : s4vtms.toString();
-        ret += intpos + "," + s4vpos + ") with " + s4vtms;
+        ret += s4vpos + ") with " + s4vtms;
 
         return ret;
     }
 
-    public RGAOperation(OpType type, int pos, RGAS2Vector s4vpos, T c, RGAS2Vector s4vtms) {
+    public RGAOperation(OpType type, RGAS2Vector s4vpos, T c, RGAS2Vector s4vtms) {
         this.type = type;
         this.s4vpos = s4vpos;
         this.s4vtms = s4vtms;
-        this.intpos = pos;
         this.content = c;
         this.type = type;
     }
@@ -67,18 +64,14 @@ public class RGAOperation<T> implements Operation {
      * for insert
      */
     public RGAOperation(int pos, RGAS2Vector s4vpos, T c, RGAS2Vector s4vtms) {
-        this(OpType.insert, pos, s4vpos, c, s4vtms);
+        this(OpType.insert, s4vpos, c, s4vtms);
     }
 
     /*
      * for delete
      */
     public RGAOperation(int pos, RGAS2Vector s4vpos, RGAS2Vector s4vtms) {
-        this(OpType.delete, pos, s4vpos, null, s4vtms);
-    }
-
-    public int getIntPos() {
-        return this.intpos;
+        this(OpType.delete, s4vpos, null, s4vtms);
     }
 
     public RGAS2Vector getS4VPos() {
@@ -99,7 +92,7 @@ public class RGAOperation<T> implements Operation {
 
     @Override
     public Operation clone() {
-        return new RGAOperation(type, intpos,
+        return new RGAOperation(type, 
                 s4vpos == null ? s4vpos : s4vpos.clone(), content,
                 s4vtms == null ? s4vtms : s4vtms.clone());
     }
