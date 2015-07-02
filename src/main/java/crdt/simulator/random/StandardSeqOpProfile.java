@@ -33,6 +33,7 @@ public class StandardSeqOpProfile extends SequenceOperationProfile<Character> {
     protected final int avgBlockSize;
 
     static final public StandardSeqOpProfile BASIC = new StandardSeqOpProfile(0.8, 0.1, 50, 5.0);
+    static final public StandardSeqOpProfile HEAVY_BLOCK = new StandardSeqOpProfile(0.8, 0.8, 100, 10.0);
     static final public StandardSeqOpProfile WITHOUT_BLOCK = new StandardSeqOpProfile(0.8, 0, 0, 0);
     static final public StandardSeqOpProfile ONLY_BLOCK = new StandardSeqOpProfile(0.8, 1, 50, 5.0);
     static final public StandardSeqOpProfile ALL_INS  = new StandardSeqOpProfile(1, 0.1, 50, 5.0);    

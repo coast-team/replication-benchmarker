@@ -24,7 +24,6 @@ import jbenchmarker.core.SequenceOperation;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import crdt.Operation;
-import java.math.BigDecimal;
 import java.util.List;
 import static jbenchmarker.rgalocal.RGAMerge.MAGIC;
 
@@ -39,9 +38,11 @@ public class RGADocument<T> implements Document {
     private final HashMap<RGAS2Vector, RGANode<T>> hash;
     private final RangeList<RGANode<T>> localOrder;
     private final RGANode head;
+    int collision;
 
     public RGADocument() {
         super();
+        collision = 0;
         head = new RGANode();
         head.setPosition(MIN);
         hash = new HashMap<RGAS2Vector, RGANode<T>>();
@@ -75,10 +76,25 @@ public class RGADocument<T> implements Document {
             RGANode node = remoteInsert(prev, rgaop), next = node.getNextVisible();
             long nextPos = next == null ? MAX : next.getPosition();
             int afterPos = next == null ? localOrder.size() : findLocal(next);
-            long prevPos = afterPos == 0 ? MIN : localOrder.get(afterPos-1).getPosition();
+            long prevPos = afterPos == 0 ? MIN : localOrder.get(afterPos - 1).getPosition();
             node.setPosition(middle(prevPos, nextPos));
             localOrder.add(afterPos, node);
         }
+        if (collision > localOrder.size()) {
+            rebalance();
+        }
+    }
+
+    /**
+     * Rebalance the table
+     */
+    void rebalance() {
+        long step = Long.MAX_VALUE / (localOrder.size() * MAGIC), pos = MIN;
+        for (RGANode<T> n : localOrder) {
+            pos += step;
+            n.setPosition(pos);
+        }
+        collision = 0;
     }
 
     RGANode remoteInsert(RGANode prev, RGAOperation op) {
@@ -101,7 +117,7 @@ public class RGADocument<T> implements Document {
 
         newnd.setNext(next);
         prev.setNext(newnd);
-        
+
         hash.put(op.getS4VTms(), newnd);
         return newnd;
     }
@@ -182,6 +198,7 @@ public class RGADocument<T> implements Document {
                 && index < localOrder.size() - 1
                 && localOrder.get(index + 1).getPosition() == pos) {
             ++index;
+            ++collision;
         }
         if (localOrder.get(index).equals(node)) {
             return index;
@@ -189,11 +206,12 @@ public class RGADocument<T> implements Document {
         index = middleIndex - 1;
         while (!localOrder.get(index).equals(node)) { // must be somewhere
             --index;
+            ++collision;
         }
         return index;
     }
 
     public static long middle(long a, long b) {
-        return a + ((b - a) / (2 + MAGIC));
+        return a + ((b - a) / (2 * MAGIC));
     }
 }

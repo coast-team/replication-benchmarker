@@ -73,7 +73,7 @@ public class RGAMerge extends MergeAlgorithm {
             after = rgadoc.getVisibleNode(p+1).getPosition();
         }     
         
-        long pos = before.getPosition(), step = (after - pos) / (offset + MAGIC);  
+        long pos = before.getPosition(), step = (after - pos) / (offset * MAGIC);  
         s4vpos = before.getKey();
         List<RGANode> ln = new ArrayList();
         for (int i = 0; i < offset; i++) {

@@ -21,7 +21,6 @@ package jbenchmarker.rga;
 import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.simulator.IncorrectTraceException;
-import crdt.simulator.random.StandardDiffProfile;
 import crdt.simulator.random.StandardSeqOpProfile;
 import java.io.IOException;
 import jbenchmarker.core.SequenceOperation;
@@ -77,6 +76,6 @@ public class RGAMergeTest {
 
     @Test
     public void testRun() throws IncorrectTraceException, PreconditionException, IOException {
-        crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFactory(), 600, 600, StandardSeqOpProfile.BASIC);
+        crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFactory(), 500, 500, StandardSeqOpProfile.BASIC);
     }
 }
