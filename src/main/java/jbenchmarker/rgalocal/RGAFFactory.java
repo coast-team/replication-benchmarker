@@ -16,35 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.rga;
+package jbenchmarker.rgalocal;
 
-import crdt.Factory;
-import crdt.PreconditionException;
-import crdt.simulator.IncorrectTraceException;
-import crdt.simulator.random.StandardDiffProfile;
+import jbenchmarker.core.MergeAlgorithm;
+import jbenchmarker.core.ReplicaFactory;
 
-import java.io.IOException;
-import jbenchmarker.factories.RGAFactory;
-import org.junit.Test;
+public class RGAFFactory extends ReplicaFactory {
 
-import static org.junit.Assert.*;
-
-public class RGADocumentTest {
-
-
-//
-	@Test
-	public void testview() 	{
-		System.out.println("Test RGADocument ...");
-		RGADocument doc = new RGADocument();
-
-		assertEquals("", doc.view());
+    @Override
+	public MergeAlgorithm create(int r) {
+		return new RGAMerge(new RGADocument(), r);
 	}
-	
-	@Test
-	public void testRunRGA() throws IncorrectTraceException, PreconditionException, IOException {
-		StandardDiffProfile SMALL = new StandardDiffProfile(0.1, 0.8, 0.8, 20, 3.0, 4, 3);
-		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFactory(), 500, 500, SMALL);
+    
+
+	static RGADocument createDoc(int r, int base) {
+		return new RGADocument();
 	}
-	
 }

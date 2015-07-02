@@ -34,8 +34,7 @@ public class RgaSTree {
 	public RgaSTree clone(){
 		return new RgaSTree(root, leftSon, rightSon, size);
 	}
-	
-	
+
 	public RgaSTree getFather() {
 		return father;
 	}
