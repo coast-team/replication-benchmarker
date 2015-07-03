@@ -1,7 +1,9 @@
 package jbenchmarker.rgaTreeSplit;
 
 import java.util.ArrayList;
+
 import jbenchmarker.factories.RgaTreeSplitFactory;
+
 import java.util.List;
 
 import crdt.simulator.IncorrectTraceException;
@@ -134,8 +136,25 @@ public class RgaSMainTest {
 		apply(rgadoc, so23, merge0, true);
 		apply(rgadoc, so24, merge0, true);
 		apply(rgadoc, so25, merge0, true);
-		 
-
+		
+		rgadoc.viewTree(rgadoc.getRoot());
+		rgadoc.viewTreeWithSeparator(rgadoc.getRoot(),0);
+		System.out.println(rgadoc.getNodeNumberInTree() ); 
+		System.out.println(rgadoc.getHeight() ); 
+		System.out.println(rgadoc.createNodeList(new ArrayList(), rgadoc.getRoot())); 
+		System.out.println(rgadoc.createNodeList(new ArrayList(), rgadoc.getRoot()).size()); 
+		
+		/*
+		List<RgaSNode> content = rgadoc.createNodeList(new ArrayList(), rgadoc.getRoot());
+		rgadoc.createBalancedTree(rgadoc.getRoot(), content,  0, content.size());
+		rgadoc.addGoodSize(rgadoc.getRoot());
+		
+		rgadoc.viewTree(rgadoc.getRoot());
+		System.out.println("\n");
+		rgadoc.viewTreeWithSeparator(rgadoc.getRoot(),0);
+		System.out.println(rgadoc.getNodeNumberInTree() ); 
+		System.out.println(rgadoc.getHeight() ); 
+		*/
 
 
 

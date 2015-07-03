@@ -7,7 +7,13 @@ public class RgaSTree {
 	private RgaSTree leftSon;
 	private RgaSTree rightSon;
 	private int size;
-
+	
+	
+	RgaSTree (){
+		this(null, null, null ,0);
+	}
+	
+	
 	RgaSTree (RgaSNode root, RgaSTree leftSon, RgaSTree rightSon, int size){
 		this.root=root;
 		this.root.setTree(this);
@@ -20,7 +26,7 @@ public class RgaSTree {
 	RgaSTree (RgaSNode root, RgaSTree leftSon, RgaSTree rightSon){
 		int a = 0;
 		int b = 0;
-		
+
 		this.root=root;
 		this.root.setTree(this);
 		this.setLeftSon(leftSon);
@@ -30,7 +36,7 @@ public class RgaSTree {
 		size= a+b+this.getRoot().size();
 
 	}
-	
+
 	public RgaSTree clone(){
 		return new RgaSTree(root, leftSon, rightSon, size);
 	}
@@ -81,7 +87,7 @@ public class RgaSTree {
 		return result;
 	}
 
-	
+
 
 	@Override
 	public boolean equals(Object obj) {
@@ -122,9 +128,14 @@ public class RgaSTree {
 		if (this.getRightSon()==null) return 0;
 		else return this.getRightSon().size();
 	}
-	
+
 	public int getLeftSize(){
 		if (this.getLeftSon()==null) return 0;
 		else return this.getLeftSon().size();
 	}
+
+	
+	
+
+
 }

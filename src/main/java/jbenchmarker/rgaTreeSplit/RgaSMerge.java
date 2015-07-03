@@ -4,6 +4,7 @@ import crdt.CRDT;
 
 import java.util.List;
 import java.util.ArrayList;
+
 import collect.VectorClock;
 import jbenchmarker.core.MergeAlgorithm;
 import crdt.Operation;
@@ -58,7 +59,7 @@ public class RgaSMerge extends MergeAlgorithm {
 		RgaSDocument rgadoc = (RgaSDocument) (this.getDoc());
 		RgaSS3Vector s3vtms, s3vpos = null;
 		RgaSOperation rgaop;
-
+				
 		Position position = rgadoc.find(so.getPosition());
 
 		if (so.getPosition() <= 0 || rgadoc.getRoot()==null) {
@@ -90,7 +91,7 @@ public class RgaSMerge extends MergeAlgorithm {
 		int start = so.getPosition();
 		int end = so.getPosition() + so.getLenghOfADel();
 		Position positionStart, positionEnd ;
-		
+				
 		positionStart = rgadoc.find(so.getPosition()+1);    //rgadoc.getPosition(rgadoc.getHead(),start);
 		node = positionStart.node;
 		
