@@ -30,7 +30,7 @@ public class RgaSNode<T> implements Serializable {
 	 *		Constructors
 	 */
 
-	public RgaSNode(RgaSS3Vector key, RgaSNode next, RgaSNode link, List<T> c, boolean tomb) {
+	public RgaSNode(RgaSS3Vector key, RgaSNode next, RgaSNode link, List<T> c, boolean tomb, RgaSTree tree) {
 		this.key = key;
 		this.next = next;
 		this.link = link;
@@ -38,23 +38,24 @@ public class RgaSNode<T> implements Serializable {
 		if (content!=null) this.size = c.size();
 		else this.size=0;
 		this.tomb = tomb;
+		this.tree=tree;
 	}
 
 	public RgaSNode() {
-		this(null, null, null, null, true);
+		this(null, null, null, null, true,null);
 	}
 
 	public RgaSNode(RgaSS3Vector s3v, List<T> c) {
-		this(s3v, null, null, c, false);
+		this(s3v, null, null, c, false,null);
 	}
 
 	public RgaSNode(RgaSNode n, List<T> c, int offset) {
-		this(n.key.clone(), n.next, n.link, c, n.tomb);
+		this(n.key.clone(), n.next, n.link, c, n.tomb, n.tree);
 		this.key.setOffset(offset);
 	}
 
 	public RgaSNode clone(){
-		return new RgaSNode(key, next, link, content, tomb);
+		return new RgaSNode(key, next, link, content, tomb, tree);
 	}
 
 

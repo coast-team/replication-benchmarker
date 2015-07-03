@@ -60,9 +60,8 @@ public class RgaSMerge extends MergeAlgorithm {
 		RgaSOperation rgaop;
 
 		Position position = rgadoc.find(so.getPosition());
-		
 
-		if (so.getPosition() == 0) {
+		if (so.getPosition() <= 0 || rgadoc.getRoot()==null) {
 			s3vpos = null;
 		} else {
 			s3vpos = position.node.getKey().clone();
@@ -92,20 +91,19 @@ public class RgaSMerge extends MergeAlgorithm {
 		int end = so.getPosition() + so.getLenghOfADel();
 		Position positionStart, positionEnd ;
 		
-		positionStart = rgadoc.getPosition(rgadoc.getHead(),start);
+		positionStart = rgadoc.find(so.getPosition()+1);    //rgadoc.getPosition(rgadoc.getHead(),start);
 		node = positionStart.node;
 		
-		positionEnd = rgadoc.getPosition(node,end-start+positionStart.offset);
+		positionEnd = rgadoc.find(so.getPosition() +  so.getLenghOfADel());     //rgadoc.getPosition(node,end-start+positionStart.offset);
 		target = positionEnd.node;
 
-		
+
 		if (node.equals(target)){
 			rgaop = new RgaSOperation(node.getKey().clone(),positionStart.offset, positionEnd.offset,0,0);
 			rgadoc.apply(rgaop);
 			lop.add(rgaop);
 
 		} else {
-			
 			rgaop = new RgaSOperation(node.getKey().clone(), positionStart.offset, node.size(),0,0);
 			rgadoc.apply(rgaop);
 			lop.add(rgaop);

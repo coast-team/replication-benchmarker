@@ -29,12 +29,13 @@ public class RgaSMainTest {
 		}
 		if (bool){
 			//System.out.println("HASH : " +rgadoc.getHash());
-			//System.out.println(rgadoc.viewWithSeparator());
-			System.out.println(rgadoc.viewLength());
-			System.out.println(rgadoc.view());
-		//	rgadoc.viewTree(rgadoc.getRoot());
+			System.out.println("ListedChain with sep: "+rgadoc.viewWithSeparator());
+			System.out.println("Size of doc: "+rgadoc.viewLength());
+			System.out.println("ListedChain view: "+rgadoc.view());
+			System.out.print("Tree view: ");
+			rgadoc.viewTree(rgadoc.getRoot());
 			System.out.println("\n");
-			//rgadoc.viewTreeWithSeparator(rgadoc.getRoot(),0);
+			rgadoc.viewTreeWithSeparator(rgadoc.getRoot(),0);
 			System.out.println("\n\n");
 		}
 	}
@@ -56,7 +57,7 @@ public class RgaSMainTest {
 		SequenceOperation so3 = new SequenceOperation (OpType.insert, 10, 0, c);
 		SequenceOperation so4 = new SequenceOperation (OpType.delete, 3, 8, c);
 
-		
+
 		apply(rgadoc, so1, merge0, true);
 		apply(rgadoc, so2, merge0, true);
 		apply(rgadoc, so3, merge0, true);
@@ -127,16 +128,20 @@ public class RgaSMainTest {
 		apply(rgadoc, so17, merge0, true);
 		apply(rgadoc, so18, merge0, true);
 		apply(rgadoc, so19, merge0, true);
-		System.out.println(rgadoc.getRoot().getRoot());
 		apply(rgadoc, so20, merge0, true);
-		
-	
 		apply(rgadoc, so21, merge0, true);
 		apply(rgadoc, so22, merge0, true);
 		apply(rgadoc, so23, merge0, true);
 		apply(rgadoc, so24, merge0, true);
 		apply(rgadoc, so25, merge0, true);
-		/**/
+		 
+
+
+
+
+
+
+
 	}
 
 }

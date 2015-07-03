@@ -58,9 +58,9 @@ public class RgaSDocumentTest {
 		RgaSS3Vector s3v1 = new RgaSS3Vector(0,1,0);
 		RgaSS3Vector s3v2 = new RgaSS3Vector(0,2,0);
 		RgaSS3Vector s3v3 = new RgaSS3Vector(0,3,0);
-		RgaSNode node1 = new RgaSNode(s3v1,null,null,input("abcdef"),false);
-		RgaSNode node2 = new RgaSNode(s3v2,null,null,input("ghijkl"),false);
-		RgaSNode node3 = new RgaSNode(s3v3,null,null,input("mnopq"),false);
+		RgaSNode node1 = new RgaSNode(s3v1,null,null,input("abcdef"),false, null);
+		RgaSNode node2 = new RgaSNode(s3v2,null,null,input("ghijkl"),false, null);
+		RgaSNode node3 = new RgaSNode(s3v3,null,null,input("mnopq"),false, null);
 
 		rgadoc.getHead().setNext(node1);
 		node1.setNext(node2);
@@ -97,11 +97,11 @@ public class RgaSDocumentTest {
 		RgaSS3Vector s3v3 = new RgaSS3Vector(0,3,5);
 		RgaSS3Vector s3v4 = new RgaSS3Vector(0,4,7);
 		RgaSS3Vector s3v5 = new RgaSS3Vector(0,5,14);
-		RgaSNode node1 = new RgaSNode(s3v1,null,null,input("ab"),false);
-		RgaSNode node2 = new RgaSNode(s3v2,null,null,input("cde"),false);
-		RgaSNode node3 = new RgaSNode(s3v3,null,null,input("fg"),false);
-		RgaSNode node4 = new RgaSNode(s3v4,null,null,input("hijklmn"),false);
-		RgaSNode node5 = new RgaSNode(s3v5,null,null,input("opq"),false);
+		RgaSNode node1 = new RgaSNode(s3v1,null,null,input("ab"),false, null);
+		RgaSNode node2 = new RgaSNode(s3v2,null,null,input("cde"),false, null);
+		RgaSNode node3 = new RgaSNode(s3v3,null,null,input("fg"),false, null);
+		RgaSNode node4 = new RgaSNode(s3v4,null,null,input("hijklmn"),false, null);
+		RgaSNode node5 = new RgaSNode(s3v5,null,null,input("opq"),false, null);
 
 
 		rgadoc.getHead().setNext(node1);
