@@ -157,6 +157,7 @@ public abstract class Experience<T> {
         }
     }
    
+   
     public void writeTofile(String file, List<String> s) throws IOException {
 
         for (int i = 0; i < s.size(); i++) {

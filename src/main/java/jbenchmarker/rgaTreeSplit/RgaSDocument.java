@@ -31,11 +31,8 @@ public class RgaSDocument<T> implements Document {
 	private RgaSNode head;
 	private RgaSTree root;
 	private int size = 0;
-
 	private int nodeNumberInTree=0;
 	private int height = 0;
-
-
 
 
 	public RgaSDocument() {
@@ -68,7 +65,6 @@ public class RgaSDocument<T> implements Document {
 		RgaSNode node, next=null;
 		RgaSS3Vector s3v = op.getS3vtms();
 		RgaSNode nodeTree = null;
-
 
 		if (op.getS3vpos() == null) {
 			node = head;
@@ -268,8 +264,8 @@ public class RgaSDocument<T> implements Document {
 
 
 
-	
-	
+
+
 	/*
 	 * 
 	 *   TREE
@@ -278,9 +274,10 @@ public class RgaSDocument<T> implements Document {
 
 
 	public Position find(int pos){
-		
+
 		RgaSTree tree = root;
 
+		//System.out.println("HERE: "+ pos+ ", " + this.viewLength());
 		if (pos<=0 || root == null){
 			return new Position(null, 0);
 		} 
@@ -302,7 +299,7 @@ public class RgaSDocument<T> implements Document {
 			return new Position(tree.getRoot(), pos-(tree.size()-tree.getRightSize()-tree.getRoot().size()));
 		}
 	}
-
+	
 
 
 	public void insert(int pos, RgaSNode nodePos, RgaSNode newnd){
@@ -348,16 +345,21 @@ public class RgaSDocument<T> implements Document {
 			newTree=newTree.getFather();
 			newTree.setSize(newTree.size()+newnd.size());
 		}
-		
+
 		nodeNumberInTree++;
 		if (i>height) height=i;
+		//System.out.println(height +", "+ nodeNumberInTree);
 		
-		if (-height>100* Math.log(nodeNumberInTree)){
+		/*
+		if (height> 3*Math.log(nodeNumberInTree)){
+			
 			List<RgaSNode> content = createNodeList(new ArrayList(), getRoot());
 			createBalancedTree(getRoot(), content,  0, content.size());
 			addGoodSize(getRoot());
+			height=0;
+			nodeNumberInTree= content.size();
 		}
-
+	*/
 	}
 
 	public void delete(RgaSNode nodeDel){
@@ -427,11 +429,14 @@ public class RgaSDocument<T> implements Document {
 			father.setSize(father.size()-sizeDel);
 		}
 
-		if (i==height) height--;
 		nodeNumberInTree--;
+		if (i==height) {
+			height--;
+		}
+		
 	}
 
-	
+
 	public List createNodeList(List list, RgaSTree tree){
 
 		if (tree.getLeftSon()!=null){
@@ -446,7 +451,6 @@ public class RgaSDocument<T> implements Document {
 
 	public void createBalancedTree(RgaSTree tree, final List<RgaSNode> content, final int begin, final int length) {
 
-		this.height=0;
 		// Invariant: leftSubtree + rightSubtree + 1 = length
 		final int leftSubtree = (length - 1) / 2;
 		final int rightSubtree = length - 1 - leftSubtree;
@@ -466,7 +470,6 @@ public class RgaSDocument<T> implements Document {
 			tree.setRightSon(rightChildren);
 			createBalancedTree(rightChildren, content, begin + leftSubtree + 1, rightSubtree);	
 		}
-		tree=root;
 	}
 
 
@@ -486,10 +489,10 @@ public class RgaSDocument<T> implements Document {
 	}
 
 
-	
-	
-	
-	
+
+
+
+
 	public RgaSTree findMostLeft(RgaSTree tree, int i){
 
 		while (tree.getLeftSon()!=null){
@@ -535,23 +538,23 @@ public class RgaSDocument<T> implements Document {
 	}
 
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public HashMap<RgaSS3Vector, RgaSNode> getHash() {
 		return hash;
 	}
@@ -574,7 +577,7 @@ public class RgaSDocument<T> implements Document {
 	public void setRoot(RgaSTree root) {
 		this.root = root;
 	}
-	
+
 
 	public int getNodeNumberInTree() {
 		return nodeNumberInTree;

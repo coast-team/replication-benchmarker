@@ -131,14 +131,18 @@ public final class TraceMain extends Experience {
         sum = sum / nbReplica;
         sum = sum / nbExec;
 
+        String fileName = createName(args);
+        
         if (sizeMessage) {
             System.out.println("Size of message is :" + sizemsg / nbExec);
+            writeTofile("result"+args[2], "Bandwidth in : " + sizemsg / nbExec + " octet");
         }
 
-        System.out.println("average execution time in : " + (sum / Math.pow(10, 6)) + " Mili-second");
+        System.out.println("Average execution time in : " + (sum / Math.pow(10, 6)) + " Mili-second");
+        writeTofile("result"+args[2], "Total execution time in : " + (sum / Math.pow(10, 6)) + " Mili-second");
 
 
-        String fileName = createName(args);
+     
 
         if (nbExec > 1) {
             computeAverage(ltime, thresold, minUop);
@@ -154,7 +158,13 @@ public final class TraceMain extends Experience {
 
     }
 
-    @Override
+    public TraceMain() {
+		// TODO Auto-generated constructor stub
+	}
+
+
+
+	@Override
     String createName(String[] args) {
         int i = args[2].lastIndexOf('/'), j = args[2].lastIndexOf('.'),
                 k = args[1].lastIndexOf('.'), l = args[1].lastIndexOf("Factory");
