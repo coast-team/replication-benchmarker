@@ -87,7 +87,7 @@ public class RgaSDocument<T> implements Document {
 
 		nodeTree=node;
 		if(!node.equals(head) && !node.isVisible()) nodeTree=nodeTree.getNextVisible();
-		insertInLocalTree(op.getPos(), nodeTree,newnd);
+		insertInLocalTree(nodeTree,newnd);
 
 		newnd.setNext(next);
 		node.setNext(newnd);
@@ -193,15 +193,15 @@ public class RgaSDocument<T> implements Document {
 		}
 	}
 
-	public void insertInLocalTree(int pos, RgaSNode nodePos, RgaSNode newnd){
+	public void insertInLocalTree( RgaSNode nodePos, RgaSNode newnd){
 		RgaSTree tree = (nodePos== null) ? null : nodePos.getTree();
 		RgaSTree newTree = new RgaSTree(newnd, null, null);
 
-		if (pos==0 || nodePos==null || nodePos.equals(head)){
+		if (root==null || (nodePos!=null && nodePos.equals(head))){
 			if (root==null)	root=newTree;
 			else findMostLeft(root, 0).setLeftSon(newTree);
 
-		} else if (pos == this.viewLength()){
+		} else if (nodePos==null ){
 			findMostRight(root, 0).setRightSon(newTree);
 
 		} else {

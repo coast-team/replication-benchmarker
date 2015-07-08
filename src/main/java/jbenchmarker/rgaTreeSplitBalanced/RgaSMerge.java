@@ -10,16 +10,18 @@ import jbenchmarker.core.MergeAlgorithm;
 import crdt.Operation;
 import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.rgaTreeSplitBalanced.RgaSDocument;
+import jbenchmarker.rgaTreeSplitBalanced.RgaSNode;
+import jbenchmarker.rgaTreeSplitBalanced.RgaSOperation;
+import jbenchmarker.rgaTreeSplitBalanced.RgaSS3Vector;
 import jbenchmarker.rgaTreeSplitBalanced.RgaSDocument.Position;
 
 
 
 public class RgaSMerge extends MergeAlgorithm {
 
-	private VectorClock siteVC;
+private VectorClock siteVC;
 
-	
-	
 	
 	public RgaSMerge(RgaSDocument doc, int siteID) {
 		super(doc, siteID);
@@ -38,8 +40,6 @@ public class RgaSMerge extends MergeAlgorithm {
 	}
 
 	
-	
-	
 	@Override
 	protected void integrateRemote(crdt.Operation message) throws IncorrectTraceException {
 		RgaSOperation rgaop = (RgaSOperation) message;
@@ -49,9 +49,6 @@ public class RgaSMerge extends MergeAlgorithm {
 	}
 
 	
-	
-	
-	
 	@Override
 	protected List<? extends Operation> localInsert(SequenceOperation so) throws IncorrectTraceException {
 
@@ -60,7 +57,7 @@ public class RgaSMerge extends MergeAlgorithm {
 		RgaSS3Vector s3vtms, s3vpos = null;
 		RgaSOperation rgaop;
 				
-		Position position = rgadoc.find(so.getPosition());
+		Position position = rgadoc.findPosInLocalTree(so.getPosition());
 
 		if (so.getPosition() <= 0 || rgadoc.getRoot()==null) {
 			s3vpos = null;
@@ -79,25 +76,18 @@ public class RgaSMerge extends MergeAlgorithm {
 	}
 
 
-
 	@Override
 	protected List<Operation> localDelete(SequenceOperation so) throws IncorrectTraceException {
 
 		List<Operation> lop = new ArrayList<Operation>();
 		RgaSDocument rgadoc = (RgaSDocument) (this.getDoc());
 		RgaSOperation rgaop;
-		RgaSNode node, target;
 
-		int start = so.getPosition();
-		int end = so.getPosition() + so.getLenghOfADel();
-		Position positionStart, positionEnd ;
-				
-		positionStart = rgadoc.find(so.getPosition()+1);    //rgadoc.getPosition(rgadoc.getHead(),start);
-		node = positionStart.node;
+		Position positionStart = rgadoc.findPosInLocalTree(so.getPosition()+1);    //rgadoc.getPosition(rgadoc.getHead(),start);
+		Position positionEnd = rgadoc.findPosInLocalTree(so.getPosition() +  so.getLenghOfADel());     //rgadoc.getPosition(node,end-start+positionStart.offset);
 		
-		positionEnd = rgadoc.find(so.getPosition() +  so.getLenghOfADel());     //rgadoc.getPosition(node,end-start+positionStart.offset);
-		target = positionEnd.node;
-
+		RgaSNode node = positionStart.node;
+		RgaSNode target = positionEnd.node;
 
 		if (node.equals(target)){
 			rgaop = new RgaSOperation(node.getKey().clone(),positionStart.offset, positionEnd.offset,0,0);

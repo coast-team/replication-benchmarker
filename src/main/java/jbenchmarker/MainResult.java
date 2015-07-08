@@ -21,15 +21,15 @@ public class MainResult {
 
 	public static void main(String[] args) throws Exception {
 
-		long duration = 5500;
+		long duration = 20000;
 		double perIns = 0.8;
-		double perBlock = 0.6;
-		int avgBlockSize = 10;
-		double sdvBlockSize = 10;
+		double perBlock = 0.1;
+		int avgBlockSize = 20;
+		double sdvBlockSize = 1;
 		double probability = 1;
-		long delay = 5;
+		long delay = 1;
 		double sdv = 1;
-		int replicas = 20;
+		int replicas = 7;
 		
 		
 		writeTofile("result"+args[2], "RESULT FOR : " + args[2] + "\n\n");
@@ -107,7 +107,7 @@ public class MainResult {
 			ExperienceFactory ef = (ExperienceFactory) Class.forName(args[0]).newInstance();
 			ef.create(args);
 
-			String filePath = "/home/score/git/replication-benchmarker/";
+			String filePath = System.getProperty("user.dir")+"\\";
 
 			System.out.println("Average local execution time in :   " + getAverage(filePath+fileName+ "-gen.res")+ " Nano-second");
 			writeTofile("result"+args[2], getAverage(filePath+fileName+ "-gen.res") + "	");
