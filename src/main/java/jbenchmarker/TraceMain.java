@@ -135,11 +135,11 @@ public final class TraceMain extends Experience {
         
         if (sizeMessage) {
             System.out.println("Size of message is :" + sizemsg / nbExec);
-            writeTofile("result"+args[2], "Bandwidth in : " + sizemsg / nbExec + " octet");
+            writeTofile("result"+args[2], sizemsg / nbExec + "	");
         }
 
         System.out.println("Average execution time in : " + (sum / Math.pow(10, 6)) + " Mili-second");
-        writeTofile("result"+args[2], "Total execution time in : " + (sum / Math.pow(10, 6)) + " Mili-second");
+        writeTofile("result"+args[2], sum / Math.pow(10, 6) +"	");
 
 
      

@@ -1,4 +1,4 @@
-package jbenchmarker.rgaTreeSplit;
+package jbenchmarker.rgaTreeSplitBalanced;
 
 import java.util.ArrayList;
 
@@ -35,9 +35,9 @@ public class RgaSMainTest {
 			System.out.println("Size of doc: "+rgadoc.viewLength());
 			System.out.println("ListedChain view: "+rgadoc.view());
 			System.out.print("Tree view: ");
-			rgadoc.treeView(rgadoc.getRoot());
+			rgadoc.viewTree(rgadoc.getRoot());
 			System.out.println("\n");
-			rgadoc.treeViewWithSeparator(rgadoc.getRoot(),0);
+			rgadoc.viewTreeWithSeparator(rgadoc.getRoot(),0);
 			System.out.println("\n\n");
 		}
 	}
@@ -137,6 +137,29 @@ public class RgaSMainTest {
 		apply(rgadoc, so24, merge0, true);
 		apply(rgadoc, so25, merge0, true);
 		
+		rgadoc.viewTree(rgadoc.getRoot());
+		rgadoc.viewTreeWithSeparator(rgadoc.getRoot(),0);
+		System.out.println(rgadoc.getNodeNumberInTree() ); 
+		System.out.println(rgadoc.getHeight() ); 
+		System.out.println(rgadoc.createNodeList(new ArrayList(), rgadoc.getRoot())); 
+		System.out.println(rgadoc.createNodeList(new ArrayList(), rgadoc.getRoot()).size()); 
+		
+		/*
+		List<RgaSNode> content = rgadoc.createNodeList(new ArrayList(), rgadoc.getRoot());
+		rgadoc.createBalancedTree(rgadoc.getRoot(), content,  0, content.size());
+		rgadoc.addGoodSize(rgadoc.getRoot());
+		
+		rgadoc.viewTree(rgadoc.getRoot());
+		System.out.println("\n");
+		rgadoc.viewTreeWithSeparator(rgadoc.getRoot(),0);
+		System.out.println(rgadoc.getNodeNumberInTree() ); 
+		System.out.println(rgadoc.getHeight() ); 
+		*/
+
+
+
+
+
 
 	}
 

@@ -21,30 +21,29 @@ public class MainResult {
 
 	public static void main(String[] args) throws Exception {
 
-
-		
-/*
-		long duration = 10000;
+		long duration = 5500;
 		double perIns = 0.8;
-		double perBlock = 0.4;
-		int avgBlockSize = 100;
+		double perBlock = 0.6;
+		int avgBlockSize = 10;
 		double sdvBlockSize = 10;
-		double probability = 0.9;
-		long delay = 1;
+		double probability = 1;
+		long delay = 5;
 		double sdv = 1;
-		int replicas = 10;
+		int replicas = 20;
+		
 		
 		writeTofile("result"+args[2], "RESULT FOR : " + args[2] + "\n\n");
 		
-		writeTofile("result"+args[2], "Duration : " + duration);
-		writeTofile("result"+args[2], "% of insertions : " + perIns);
-		writeTofile("result"+args[2], "% of Blocks : " + perBlock);
-		writeTofile("result"+args[2], "Average size of blocks : " + avgBlockSize);
-		writeTofile("result"+args[2], "Sdv size of blocks : " + sdvBlockSize);
-		writeTofile("result"+args[2], "Probability : " + probability );
-		writeTofile("result"+args[2], "Delay : " + delay);
-		writeTofile("result"+args[2], "Sdv : " + sdv);
-		writeTofile("result"+args[2], "Number of replicas : " + replicas);
+		writeTofile("result"+args[2], "		Nb execution :	" + args[3] + "\n");
+		writeTofile("result"+args[2], "		Duration :	" + duration + "\n");
+		writeTofile("result"+args[2], "		% of insertions :	" + perIns+ "\n");
+		writeTofile("result"+args[2], "		% of Blocks :	" + perBlock+ "\n");
+		writeTofile("result"+args[2], "		Avg blockSize :	 " + avgBlockSize+ "\n");
+		writeTofile("result"+args[2], "		Sdv blockSize :	 " + sdvBlockSize+ "\n");
+		writeTofile("result"+args[2], "		Probability :	" + probability + "\n");
+		writeTofile("result"+args[2], "		Delay :	" + delay+ "\n");
+		writeTofile("result"+args[2], "		Sdv :	" + sdv+ "\n");
+		writeTofile("result"+args[2], "		Number of replicas :	" + replicas+ "\n");
 
 
 		
@@ -57,7 +56,7 @@ public class MainResult {
 
 
 		cd.run(trace); //create Trace
-*/
+
 
 		if(args.length<1){
 			System.err.println("Arguments for Git experiment :::::::::: ");
@@ -81,17 +80,21 @@ public class MainResult {
 			System.err.println("- Save traces ? (0 don't save, else save)");
 		}
 
-		String[] factories = new String[8];
-		factories[6] = "jbenchmarker.factories.TreedocFactory";
-		factories[7] = "jbenchmarker.factories.WootFactories$WootHFactory";
+		String[] factories = new String[9];
+		
+		factories[0] = "jbenchmarker.factories.RgaTreeSplitFactory";
+		factories[1] = "jbenchmarker.factories.RgaTreeSplitBalancedFactory";  // doesn't work
 		factories[2] = "jbenchmarker.factories.RGAFactory";
 		factories[3] = "jbenchmarker.factories.RGAFFactory";
 		factories[4] = "jbenchmarker.factories.RgaSFactory";
-		factories[5] = "jbenchmarker.factories.RgaTreeSplitFactory";
-		factories[0] = "jbenchmarker.factories.LogootSFactory";
-		factories[1] = "jbenchmarker.factories.LogootSplitOFactory";
-
-
+		factories[5] = "jbenchmarker.factories.LogootSFactory";
+		factories[6] = "jbenchmarker.factories.LogootSplitOFactory";
+		factories[7] = "jbenchmarker.factories.TreedocFactory";
+		factories[8] = "jbenchmarker.factories.WootFactories$WootHFactory";
+		
+		
+		writeTofile("result"+args[2],"\n\nName	Bandwith (o)	Total execution time (ms)	Average local execution time (ns)	Average remote execution time (ns)	Memory (o)\n");
+		
 		for (int i=0; i<factories.length ; i++ ){
 			args[1]=factories[i];
 
@@ -99,7 +102,7 @@ public class MainResult {
 			String fileName = tracemain.createName(args);
 
 			System.out.println("\n\n-----------------------\n"+fileName+"\n");
-			writeTofile("result"+args[2], "\n-----------------------\n"+fileName+"\n");
+			writeTofile("result"+args[2],fileName.substring(0,fileName.length() - (args[2].length()+1)) +"	");
 
 			ExperienceFactory ef = (ExperienceFactory) Class.forName(args[0]).newInstance();
 			ef.create(args);
@@ -107,14 +110,32 @@ public class MainResult {
 			String filePath = "/home/score/git/replication-benchmarker/";
 
 			System.out.println("Average local execution time in :   " + getAverage(filePath+fileName+ "-gen.res")+ " Nano-second");
-			writeTofile("result"+args[2], "Average local execution time  :   " + getAverage(filePath+fileName+ "-gen.res") + " Nano-second");
+			writeTofile("result"+args[2], getAverage(filePath+fileName+ "-gen.res") + "	");
 
 			System.out.println("Average remote execution time in :   " + getAverage(filePath+fileName+ "-usr.res")+ " Nano-second");
-			writeTofile("result"+args[2], "Average remote execution time :   " + getAverage(filePath+fileName+ "-usr.res") + " Nano-second");
+			writeTofile("result"+args[2], getAverage(filePath+fileName+ "-usr.res")+ "	" );
 
 			System.out.println("Memory :   " + getAverageMem(filePath+fileName+ "-mem.res",10));
-			writeTofile("result"+args[2], "Memory used in :   " + getAverageMem(filePath+fileName+ "-mem.res",10) + " octet");
+			writeTofile("result"+args[2], getAverageMem(filePath+fileName+ "-mem.res",10)+ "\n");
 		}
+		
+		
+		Scanner scanner=new Scanner(new File("result"+args[2]+".csv"));
+		StringBuilder s = new StringBuilder();
+		while (scanner.hasNextLine()) {
+			String line = scanner.nextLine();
+			line=line.replace(".",",");
+			s.append(line+"\n");
+		}
+		
+		FileWriter local = new FileWriter("result"+args[2]+ ".csv", false);
+
+		local.write(s.toString());
+
+		if (local != null) {
+			local.close();
+		}
+		
 	}
 
 
@@ -181,7 +202,7 @@ public class MainResult {
 	public static void writeTofile(String file, String s) throws IOException {
 		FileWriter local = new FileWriter(file + ".csv", true);
 
-		local.write(s + "\n");
+		local.write(s);
 
 		if (local != null) {
 			local.close();
