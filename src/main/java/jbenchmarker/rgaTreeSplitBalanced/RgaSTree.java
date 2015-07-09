@@ -20,11 +20,19 @@ public class RgaSTree {
 	 */
 
 	RgaSTree (){
-
-
 		this.root=null;
 		this.setLeftSon(null);
 		this.setRightSon(null);
+	}
+
+	RgaSTree (RgaSNode root, RgaSTree leftSon, RgaSTree rightSon, RgaSTree father, int size){
+		this.root=root;
+		this.root.setTree(this);
+		this.setLeftSon(leftSon);
+		this.setRightSon(rightSon);
+		this.father=father;
+		this.size=size;
+
 	}
 
 	RgaSTree (RgaSNode root, RgaSTree leftSon, RgaSTree rightSon){
@@ -40,13 +48,16 @@ public class RgaSTree {
 		size= a+b+this.getRoot().size();
 	}
 
+	public RgaSTree clone(){
+		return new RgaSTree(root, leftSon, rightSon, father, size);
+	}
 
 	/*
 	 *		Getters & Setters
 	 */
 
 	public int getRootSize(){
-		if (!this.getRoot().isVisible()){
+		if (this.getRoot()==null || !this.getRoot().isVisible()){
 			return 0;
 		} else {
 			return this.getRoot().size();

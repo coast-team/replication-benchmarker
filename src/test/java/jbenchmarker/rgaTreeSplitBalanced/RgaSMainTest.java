@@ -34,8 +34,8 @@ public class RgaSMainTest {
 			System.out.println("ListedChain with sep: "+rgadoc.viewWithSeparator());
 			System.out.println("Size of doc: "+rgadoc.viewLength());
 			System.out.println("ListedChain view: "+rgadoc.view());
-			System.out.print("Tree view: ");
-		
+			System.out.print("Tree view: " +rgadoc.treeView(new StringBuilder(), rgadoc.getRoot())+"\n\n");
+			rgadoc.treeViewWithSeparator(rgadoc.getRoot(),0);
 			System.out.println("\n\n");
 		}
 	}

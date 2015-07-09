@@ -24,7 +24,8 @@ public class RgaSDocument<T> implements Document {
 	private RgaSNode head;
 	private RgaSTree root;
 	private int size = 0;
-	int nbOp=0;
+	private int nodeNumberInTree=0;
+	private int nbOp=0;
 
 	public RgaSDocument() {
 		super();
@@ -51,13 +52,10 @@ public class RgaSDocument<T> implements Document {
 			remoteInsert(rgaop);
 		}
 
-		//System.out.println("VERIFFFFFFF: "+!view().equals(treeView("",root)));
 		nbOp++;
-		
 		if (nbOp%10000==5000){
-			System.out.println("here");
-			List<RgaSNode> content = createNodeList();
-			createBalancedTree(getRoot(), content,  0, content.size());
+			List<RgaSNode> content = createNodeList(new ArrayList(), getRoot());
+			createBalancedTree(new RgaSTree(), content,  0, content.size());
 			addGoodSize(getRoot());
 		}
 	}
@@ -158,6 +156,7 @@ public class RgaSDocument<T> implements Document {
 				RgaSTree treeEnd = new RgaSTree(end, null, node.getTree().getRightSon());
 				node.getTree().setRoot(node);
 				node.getTree().setRightSon(treeEnd);
+				nodeNumberInTree++;
 			}
 		}
 	}
@@ -172,7 +171,7 @@ public class RgaSDocument<T> implements Document {
 
 	public Position findPosInLocalTree(int pos){	
 		RgaSTree tree = root;
-		
+		int POS = pos;
 		if (pos<=0 || root == null){
 			return new Position(null, 0);
 		} 
@@ -190,27 +189,12 @@ public class RgaSDocument<T> implements Document {
 					pos-=tree.getLeftSize()+tree.getRoot().size();
 					tree=tree.getRightSon();
 				}
+
 			}	
 			return new Position(tree.getRoot(), pos-(tree.size()-tree.getRightSize()-tree.getRoot().size()));
 		}
 	}
 
-
-	public List exploreTree(List i, RgaSTree tree){
-
-		if (tree.getLeftSon()!=null){
-			exploreTree(i,tree.getLeftSon());
-		}
-
-
-		i.add(tree.getRoot());
-
-		if (tree.getRightSon()!=null){
-			exploreTree(i,tree.getRightSon());
-		}
-
-		return i;
-	}
 
 	public void insertInLocalTree(RgaSNode nodePos, RgaSNode newnd){
 		RgaSTree tree = (nodePos== null) ? null : nodePos.getTree();
@@ -233,7 +217,7 @@ public class RgaSDocument<T> implements Document {
 			newTree.setSize(newTree.size()+newnd.size());
 			newTree=newTree.getFather();
 		}
-
+		nodeNumberInTree++;
 	}
 
 	public void deleteInLocalTree(RgaSNode nodeDel){
@@ -279,6 +263,8 @@ public class RgaSDocument<T> implements Document {
 				else father.setRightSon(tree.getRightSon());
 			}
 		}
+
+		nodeNumberInTree--;
 
 		while (father!=null){  // soutract the size of the deleted node in all fathers and grandfathers 
 			father.setSize(father.size()-nodeDel.size());
@@ -340,13 +326,13 @@ public class RgaSDocument<T> implements Document {
 		}
 	}
 
-	public String treeView(String s,RgaSTree tree){
+	public String treeView(StringBuilder buf,RgaSTree tree){
 		if (tree!=null){
-			if (tree.getLeftSon()!=null) treeView(s,tree.getLeftSon());
-			s+=tree.getRoot().getContentAsString();
-			if (tree.getRightSon()!=null) treeView(s,tree.getRightSon());
+			if (tree.getLeftSon()!=null) treeView(buf,tree.getLeftSon());
+			buf.append(tree.getRoot().getContentAsString());
+			if (tree.getRightSon()!=null) treeView(buf,tree.getRightSon());
 		}
-		return s;
+		return buf.toString();
 	}
 
 
@@ -436,26 +422,29 @@ public class RgaSDocument<T> implements Document {
 		return root;
 	}
 
-	public List createNodeList(){
 
-		RgaSNode node = head;
-		List list = new ArrayList();
-		while (node!=null){
-			if (node.isVisible()){
-				list.add(node);
-			}
-			node=node.getNextVisible();
-		}	
+	public List createNodeList(List list, RgaSTree tree){
 
+		if (tree.getLeftSon()!=null){
+			createNodeList(list, tree.getLeftSon());
+		}
+
+		list.add(tree.getRoot());
+		tree.setSize(0);
+
+		if (tree.getRightSon()!=null){
+			createNodeList(list, tree.getRightSon());
+		}
 
 		return list;
+
 	}
 
 	public void createBalancedTree(RgaSTree tree, final List<RgaSNode> content, final int begin, final int length) {
 
-		if (tree!=null){
-			// Invariant: leftSubtree + rightSubtree + 1 = length
-			final int leftSubtree = (length -1) / 2;
+		if (tree!=null && !content.isEmpty()){
+
+			final int leftSubtree = (length - 1) / 2 ;
 			final int rightSubtree = length -1 - leftSubtree;
 
 			if (leftSubtree > 0) {
@@ -463,6 +452,7 @@ public class RgaSDocument<T> implements Document {
 				tree.setLeftSon(leftChildren);
 				createBalancedTree(leftChildren, content, begin, leftSubtree);
 			}
+
 
 			content.get(begin + leftSubtree).setTree(tree);
 			tree.setRoot(content.get(begin + leftSubtree));
@@ -474,24 +464,25 @@ public class RgaSDocument<T> implements Document {
 				tree.setRightSon(rightChildren);
 				createBalancedTree(rightChildren, content, begin + leftSubtree + 1, rightSubtree);	
 			}
-
-			root=tree;
+			root = tree;
 		}
+
 	}
 
 
 	public void addGoodSize(RgaSTree tree){
+		if (tree!=null){
+			if (tree.getLeftSon()!=null){
+				addGoodSize(tree.getLeftSon());
+				tree.setSize(tree.size()+tree.getLeftSize());
+			}
 
-		if (tree.getLeftSon()!=null){
-			addGoodSize(tree.getLeftSon());
-			tree.setSize(tree.size()+tree.getLeftSize());
-		}
+			tree.setSize(tree.size()+tree.getRootSize());
 
-		tree.setSize(tree.size()+tree.getRootSize());
-
-		if (tree.getRightSon()!=null){
-			addGoodSize(tree.getRightSon());
-			tree.setSize(tree.size()+tree.getRightSize());
+			if (tree.getRightSon()!=null){
+				addGoodSize(tree.getRightSon());
+				tree.setSize(tree.size()+tree.getRightSize());
+			}
 		}
 
 	}
