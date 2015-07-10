@@ -84,7 +84,7 @@ public class RGAMerge extends MergeAlgorithm {
             }
             node = rgadoc.remoteInsert(node, s4vtms, opt.getContent().get(i));
             pos += step;
-            before.setPosition(pos);
+            node.setPosition(pos);
             ln.add(node);
         }
         rgadoc.addLocal(p, ln);

@@ -160,7 +160,7 @@ public class CausalSimulator extends Simulator {
      * @return time in nanoseconds.
      */
     public double getRemoteAvg() {
-        return remoteSum / ((double) getNbLocalOp());
+        return (remoteSum / ((double) getNbLocalOp())) / (genHistory.size() - 1);
     }
 
     //Viewer view =null; /*new DiagSequence(20);*/

@@ -113,7 +113,7 @@ public class RGAMergeTest {
         m3.execute(replica2);
         CRDTMessage m5 = replica2.applyLocal(SequenceOperation.insert(4, "01"));
         m4.execute(replica2);
-        assertEquals("atest01j", replica2.lookup());
+        assertEquals("a01testj", replica2.lookup());
 
         m5.execute(replica);
         assertEquals("atest01j", replica.lookup());

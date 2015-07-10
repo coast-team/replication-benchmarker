@@ -1,8 +1,5 @@
 package jbenchmarker.rgalocal;
 
-import jbenchmarker.rgalocal.RGAMerge;
-import jbenchmarker.rgalocal.RGADocument;
-import jbenchmarker.rgalocal.RGAFFactory;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
