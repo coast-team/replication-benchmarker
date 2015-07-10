@@ -101,11 +101,4 @@ public class RGANode<T> implements Serializable {
         hash = 89 * hash + (this.key != null ? this.key.hashCode() : 0);
         return hash;
     }
-
-    @Override
-    public String toString() {
-        return "RGANode{"+ key + ", T=" + content + ", pos=" + position + '}';
-    }
-    
-    
 }

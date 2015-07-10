@@ -150,12 +150,13 @@ public abstract class Experience<T> {
    public void writeTofile(String file, String s) throws IOException {
         FileWriter local = new FileWriter(file + ".csv", true);
 
-        local.write(s + "\n");
+        local.write(s);
 
         if (local != null) {
             local.close();
         }
     }
+   
    
     public void writeTofile(String file, List<String> s) throws IOException {
 

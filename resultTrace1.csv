@@ -1,0 +1,21 @@
+RESULT FOR : Trace1
+
+		Nb execution :	3
+		Duration :	10000
+		% of insertions :	0,9
+		% of Blocks :	0,4
+		Avg blockSize :	 20
+		Sdv blockSize :	 3,0
+		Probability :	1,0
+		Delay :	1
+		Sdv :	1,0
+		Number of replicas :	20
+
+
+Name	Bandwith (o)	Total execution time (ms)	Average local execution time (ns)	Average remote execution time (ns)	Memory (o)
+LogootSplitO	1935744	143,728958	11354,8438	13841,9735	0,0
+Treedoc	3525722	34,046418	5828,0698	3213,0576	0,0
+RGA	5949461	370,513524	727943,9417	2107,8316	0,0
+RgaS	1209902	132,730551	262238,0147	749,2074	0,0
+RgaTreeSplit	1377672	14,117082	3205,3775	1321,4961	0,0
+RgaTreeSplitBalanced	1377696	14,338074	3474,015	1242,5099	0,0

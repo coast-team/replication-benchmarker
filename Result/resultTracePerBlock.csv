@@ -1,0 +1,84 @@
+RESULT FOR : TracePerBlock
+
+		Nb execution :	3
+		Duration :	10000
+		% of insertions :	0,9
+		% of Blocks :	0,0
+		Avg blockSize :	 20
+		Sdv blockSize :	 3,0
+		Probability :	1,0
+		Delay :	1
+		Sdv :	1,0
+		Number of replicas :	20
+
+
+Name	Bandwith (o)	Total execution time (ms)	Average local execution time (ns)	Average remote execution time (ns)	Memory (o)
+LogootSplitO	838270	34,834281	2862,4992	3156,119	0,0
+Treedoc	2166857	13,892945	3062,2606	1279,7196	0,0
+RGA	706859	41,446323	79781,1552	352,5664	0,0
+RgaS	774221	65,78132	128639,733	453,2998	0,0
+RgaTreeSplit	854248	8,473632	2048,8613	781,3528	0,0
+RgaTreeSplitBalanced	854272	8,541445	1976,5187	776,2973	0,0
+RESULT FOR : TracePerBlock
+
+		Nb execution :	3
+		Duration :	10000
+		% of insertions :	0,9
+		% of Blocks :	0,4
+		Avg blockSize :	 20
+		Sdv blockSize :	 3,0
+		Probability :	1,0
+		Delay :	1
+		Sdv :	1,0
+		Number of replicas :	20
+
+
+Name	Bandwith (o)	Total execution time (ms)	Average local execution time (ns)	Average remote execution time (ns)	Memory (o)
+LogootSplitO	1871180	137,021965	10870,5855	13893,3454	0,0
+Treedoc	3341574	29,966409	5365,5082	2872,8083	0,0
+RGA	6010935	363,137741	719750,6014	2132,3186	0,0
+RgaS	1211728	126,1073	248587,3997	777,8311	0,0
+RgaTreeSplit	2063388	45,145322	57771,8207	1837,2889	0,0
+RgaTreeSplitBalanced	2063412	41,768293	56079,7512	1578,5029	0,0
+RESULT FOR : TracePerBlock
+
+		Nb execution :	3
+		Duration :	10000
+		% of insertions :	0,9
+		% of Blocks :	0,7
+		Avg blockSize :	 20
+		Sdv blockSize :	 3,0
+		Probability :	1,0
+		Delay :	1
+		Sdv :	1,0
+		Number of replicas :	20
+
+
+Name	Bandwith (o)	Total execution time (ms)	Average local execution time (ns)	Average remote execution time (ns)	Memory (o)
+LogootSplitO	2315525	242,273384	20452,6122	24083,0588	0,0
+Treedoc	4957713	42,13236	7024,6937	4070,2946	0,0
+RGA	9943664	372,482388	710508,615	3590,8854	0,0
+RgaS	1476103	112,670362	221309,2726	759,4724	0,0
+RgaTreeSplit	2403454	42,293403	55147,296	1681,7172	0,0
+RgaTreeSplitBalanced	2403478	41,018971	54567,4198	1577,2327	0,0
+RESULT FOR : TracePerBlock
+
+		Nb execution :	3
+		Duration :	10000
+		% of insertions :	0,9
+		% of Blocks :	1,0
+		Avg blockSize :	 20
+		Sdv blockSize :	 3,0
+		Probability :	1,0
+		Delay :	1
+		Sdv :	1,0
+		Number of replicas :	20
+
+
+Name	Bandwith (o)	Total execution time (ms)	Average local execution time (ns)	Average remote execution time (ns)	Memory (o)
+LogootSplitO	2452762	301,330008	26888,6468	30341,5029	0,0
+Treedoc	5519149	47,042955	7471,6342	4568,2685	0,0
+RGA	13869548	388,249644	725630,3941	4492,0987	0,0
+RgaS	1733565	136,849031	271793,8225	775,5441	0,0
+RgaTreeSplit	1943556	16,981764	3618,0675	1596,3518	0,0
+RgaTreeSplitBalanced	1943580	14,945443	2896,4167	1412,9256	0,0

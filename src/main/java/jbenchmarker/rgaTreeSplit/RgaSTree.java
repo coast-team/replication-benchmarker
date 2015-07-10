@@ -1,32 +1,39 @@
 package jbenchmarker.rgaTreeSplit;
 
 public class RgaSTree {
-	
+
 	private RgaSNode root;
+	
+	private RgaSTree father;
 	private RgaSTree leftSon;
-	private RgaSTree rigthSon;
+	private RgaSTree rightSon;
+	
 	private int size;
 	
-	RgaSTree (RgaSNode root, RgaSTree leftSon, RgaSTree rigthSon){
+	
+	
+	/*
+	 *		Constructors
+	 */
+	
+	RgaSTree (RgaSNode root, RgaSTree leftSon, RgaSTree rightSon){
+		int a = 0;
+		int b = 0;
+
 		this.root=root;
-		this.leftSon=leftSon;
-		this.rigthSon=rigthSon;
-		
+		this.root.setTree(this);
+		this.setLeftSon(leftSon);
+		this.setRightSon(rightSon);
+		if (leftSon!=null) a=leftSon.size();
+		if (rightSon!=null) b=rightSon.size();
+		size= a+b+this.getRoot().size();
 	}
 	
-	public RgaSTree findMostLeft(RgaSTree tree){
-		while (tree.leftSon!=null){
-			tree=tree.leftSon;
-		}
-		return tree;
-	}
 	
-	public RgaSTree findMostRigth(RgaSTree tree){
-		while (tree.rigthSon!=null){
-			tree=tree.rigthSon;
-		}
-		return tree;
-	}	
+	/*
+	 *		Getters & Setters
+	 */
+
 	
 	public RgaSNode getRoot() {
 		return root;
@@ -36,28 +43,49 @@ public class RgaSTree {
 		this.root = root;
 	}
 	
+
+	public RgaSTree getFather() {
+		return father;
+	}
+	
+	public void setFather(RgaSTree father) {
+		this.father = father;
+	}	
+
 	public RgaSTree getLeftSon() {
 		return leftSon;
 	}
-	
+
 	public void setLeftSon(RgaSTree leftSon) {
 		this.leftSon = leftSon;
+		if (leftSon!=null) leftSon.setFather(this);
 	}
-	
-	public RgaSTree getRigthSon() {
-		return rigthSon;
+
+	public RgaSTree getRightSon() {
+		return rightSon;
 	}
-	
-	public void setRigthSon(RgaSTree rigthSon) {
-		this.rigthSon = rigthSon;
+
+	public void setRightSon(RgaSTree rightSon) {
+		this.rightSon = rightSon;
+		if (rightSon!=null) rightSon.setFather(this);
 	}
-	
+
 	public int size() {
 		return size;
 	}
-	
+
 	public void setSize(int size) {
 		this.size = size;
 	}
-	
+
+	public int getRightSize(){
+		if (this.getRightSon()==null) return 0;
+		else return this.getRightSon().size();
+	}
+
+	public int getLeftSize(){
+		if (this.getLeftSon()==null) return 0;
+		else return this.getLeftSon().size();
+	}
+
 }

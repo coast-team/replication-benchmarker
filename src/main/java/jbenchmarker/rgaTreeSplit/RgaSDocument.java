@@ -2,6 +2,8 @@ package jbenchmarker.rgaTreeSplit;
 
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.treedoc.TreedocNode;
+import jbenchmarker.treedoc.TreedocIdentifier.EdgeDirection;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +12,17 @@ import java.util.ArrayList;
 
 
 
+
+
+
+
+
+
+
+
+
+
+import java.util.NoSuchElementException;
 
 import crdt.Operation;
 
@@ -21,8 +34,6 @@ public class RgaSDocument<T> implements Document {
 	private RgaSTree root;
 	private int size = 0;
 
-
-
 	public RgaSDocument() {
 		super();
 		head = new RgaSNode();
@@ -30,14 +41,16 @@ public class RgaSDocument<T> implements Document {
 	}
 
 
-
-
 	/* Methods to apply each type of remote operations:
 	 * 
-	 * Insertion, Deletion && Split
+	 * apply
+	 * remoteInsert
+	 * remoteDelete:
+	 * remoteSplit
 	 */
 
 	public void apply(Operation op) {
+
 		RgaSOperation rgaop = (RgaSOperation) op;
 
 		if (rgaop.getType() == SequenceOperation.OpType.delete) {
@@ -48,16 +61,16 @@ public class RgaSDocument<T> implements Document {
 	}
 
 	private void remoteInsert(RgaSOperation op) {
-
 		RgaSNode newnd = new RgaSNode(op.getS3vtms(), op.getContent());
 		RgaSNode node, next=null;
 		RgaSS3Vector s3v = op.getS3vtms();
+		RgaSNode nodeTree = null;
 
 		if (op.getS3vpos() == null) {
 			node = head;
 
 		} else {
-			int offsetAbs = op.getOffset1()+op.getS3vpos().getOffset()+1;  // du au -1 du get position
+			int offsetAbs = op.getOffset1()+op.getS3vpos().getOffset();
 			node = hash.get(op.getS3vpos());
 			node = findGoodNode(node, offsetAbs);
 			remoteSplit(node, offsetAbs);
@@ -72,6 +85,10 @@ public class RgaSDocument<T> implements Document {
 			next = next.getNext();
 		}
 
+		nodeTree=node;
+		if(!node.equals(head) && !node.isVisible()) nodeTree=nodeTree.getNextVisible();
+		insertInLocalTree(nodeTree,newnd);
+
 		newnd.setNext(next);
 		node.setNext(newnd);
 		hash.put(op.getS3vtms(), newnd);
@@ -79,10 +96,8 @@ public class RgaSDocument<T> implements Document {
 	}
 
 	private void remoteDelete(RgaSOperation op) {
-
-		int offsetAbs1 = op.getOffset1()+op.getS3vpos().getOffset();
-		int offsetRel1 = op.getOffset1();
-
+		int offsetAbs1 = op.getOffset1()+op.getS3vpos().getOffset()-1;
+		int offsetRel1 = op.getOffset1()-1;
 		int offsetAbs2 = op.getOffset2()+op.getS3vpos().getOffset();
 		int offsetRel2 = op.getOffset2();
 
@@ -95,31 +110,37 @@ public class RgaSDocument<T> implements Document {
 		}
 
 		while (node.getOffset() + node.size() < offsetAbs2){
-			if (node.isVisible()) size-=node.size();
+			if (node.isVisible()){
+				size-=node.size();
+				deleteInLocalTree(node);
+			}
 			node.makeTombstone();
 			node=node.getLink();
 		}
 
 		if (offsetRel2>0){
 			remoteSplit(node,offsetAbs2);
-			if (node.isVisible()) size-=node.size();
+			if (node.isVisible()){
+				size-=node.size();
+				deleteInLocalTree(node);	
+			}
 			node.makeTombstone();	
 		}
 	}
 
 	public void remoteSplit(RgaSNode node, int offsetAbs) {
-
+		RgaSNode end=null;
 		if (offsetAbs-node.getOffset()>0 && node.size()-offsetAbs+node.getOffset()>0){
 
 			List<T> a= null;
 			List<T> b = null;
-			
+
 			if (node.isVisible()){
 				a = node.getContent().subList(0,offsetAbs-node.getOffset());
 				b = node.getContent().subList(offsetAbs-node.getOffset(),node.size());
 			}
-			
-			RgaSNode end = new RgaSNode(node.clone(), b, offsetAbs);
+
+			end = new RgaSNode(node.clone(), b, offsetAbs);
 			end.setSize(node.size()-offsetAbs+node.getOffset());
 			end.setNext(node.getNext());
 
@@ -130,17 +151,128 @@ public class RgaSDocument<T> implements Document {
 
 			hash.put(node.getKey(), node);			
 			hash.put(end.getKey(), end);	
+
+			if (node.isVisible()){
+				RgaSTree treeEnd = new RgaSTree(end, null, node.getTree().getRightSon());
+				node.getTree().setRoot(node);
+				node.getTree().setRightSon(treeEnd);
+			}
 		}
 	}
 
 
+	/* Methods to apply each type of local operations:
+	 * 
+	 * findPosInLocalTree
+	 * insertInLocalTree
+	 * deleteInLocalTree
+	 */
 
+	public Position findPosInLocalTree(int pos){	
+		RgaSTree tree = root;
+
+		if (pos<=0 || root == null){
+			return new Position(null, 0);
+		} 
+		else if (pos>=this.viewLength()){
+			tree=findMostRight(tree,0);
+			return new Position(tree.getRoot(), tree.getRoot().size());
+		}
+		else {
+			while (!(tree.size()-tree.getRightSize()-tree.getRoot().size()< pos && pos <= tree.size()-tree.getRightSize())){
+				if (pos<=tree.size()-tree.getRightSize()-tree.getRoot().size()){
+					tree=tree.getLeftSon();
+				}
+
+				else {
+					pos-=tree.getLeftSize()+tree.getRoot().size();
+					tree=tree.getRightSon();
+				}
+			}	
+			return new Position(tree.getRoot(), pos-(tree.size()-tree.getRightSize()-tree.getRoot().size()));
+		}
+	}
+
+	public void insertInLocalTree( RgaSNode nodePos, RgaSNode newnd){
+		RgaSTree tree = (nodePos== null) ? null : nodePos.getTree();
+		RgaSTree newTree = new RgaSTree(newnd, null, null);
+
+		if (root==null || (nodePos!=null && nodePos.equals(head))){
+			if (root==null)	root=newTree;
+			else findMostLeft(root, 0).setLeftSon(newTree);
+
+		} else if (nodePos==null ){
+			findMostRight(root, 0).setRightSon(newTree);
+
+		} else {
+			if (tree.getRightSon()== null) tree.setRightSon(newTree);
+			else findMostLeft(tree.getRightSon(),0).setLeftSon(newTree);
+		}
+
+		while (newTree.getFather()!=null){ // add the size of the inserted node in all fathers and grandfathers
+			newTree=newTree.getFather();
+			newTree.setSize(newTree.size()+newnd.size());
+
+		}
+	}
+
+	public void deleteInLocalTree(RgaSNode nodeDel){
+		RgaSTree tree = nodeDel.getTree(), father = null;
+		boolean isRoot = (tree.equals(this.root)) ? true : false;
+		boolean hasRightSon = (tree.getRightSon()!=null) ? true: false;
+		boolean hasLeftSon = (tree.getLeftSon()!=null) ? true: false;
+		boolean isLeaf = (!hasRightSon && !hasLeftSon) ? true: false;
+		boolean isLeftSon = false;
+
+		if (!isRoot){
+			father = tree.getFather();
+			if (father.getLeftSon()==null);
+			else if (father.getLeftSon().equals(tree)) isLeftSon = true;
+		}
+
+		if (isRoot){    // if the tree is the root, so...
+			if (isLeaf) root = null;
+			else if (hasLeftSon && !hasRightSon) root=root.getLeftSon();
+			else if (!hasLeftSon && hasRightSon) root=root.getRightSon();
+			else {
+				findMostLeft(tree.getRightSon(), root.getLeftSon().size()).setLeftSon(root.getLeftSon());
+				root=root.getRightSon();
+			}
+			
+		} else if (isLeaf){     // else if it is a leaf, so...
+			if (isLeftSon)father.setLeftSon(null);
+			else father.setRightSon(null);
+			
+		} else {   // else ...
+			if (!hasRightSon){
+				if (isLeftSon) father.setLeftSon(tree.getLeftSon());
+				else father.setRightSon(tree.getLeftSon());
+				
+			} else if (!hasLeftSon){
+				if (isLeftSon) father.setLeftSon(tree.getRightSon());
+				else father.setRightSon(tree.getRightSon());
+				
+			} else {
+				RgaSTree tree2 = findMostLeft(tree.getRightSon(), tree.getLeftSon().size());
+				tree2.setLeftSon(tree.getLeftSon());
+				if (isLeftSon) father.setLeftSon(tree.getRightSon());
+				else father.setRightSon(tree.getRightSon());
+			}
+		}
+
+		while (father!=null){  // soutract the size of the deleted node in all fathers and grandfathers 
+			father.setSize(father.size()-nodeDel.size());
+			father=father.getFather();
+		}
+	}
 
 
 	/* Methods to display the view of the document
 	 * 
 	 *  view(): normal view of the document, without separator between each node
 	 *  viewWithSeparator(): view with separators between each node for debugging
+	 *  treeView(): normal view of the local tree, without separator between each node
+	 *  treeViewWithSeparator(): view of the local tree with separators between each node for debugging
 	 */
 
 	@Override
@@ -174,18 +306,66 @@ public class RgaSDocument<T> implements Document {
 		return s.toString();
 	}
 
+	public void treeViewWithSeparator(RgaSTree tree, int profondeur){
+
+		if (tree!=null){
+			if (tree.getLeftSon()!=null) treeViewWithSeparator(tree.getLeftSon(),profondeur + 1);
+			for (int i=0; i < profondeur; i++){
+				System.out.print("   ");
+			}
+
+			System.out.println("-->"+ tree.getRoot().getContentAsString()+", " +tree.size());
+
+			if (tree.getRightSon()!=null) treeViewWithSeparator(tree.getRightSon(),profondeur + 1);
+		}
+	}
+
+	public void treeView(RgaSTree tree){
+		if (tree!=null){
+			if (tree.getLeftSon()!=null) treeView(tree.getLeftSon());
+			System.out.print(tree.getRoot().getContentAsString());
+			if (tree.getRightSon()!=null) treeView(tree.getRightSon());
+		}
+	}
 
 
+	/* 
+	 * 
+	 *  other methods used in local and remote operations
+	 */
+
+	public RgaSNode findGoodNode(RgaSNode target, int off){
+
+		while (target.getOffset() + target.size() < off){
+			target=target.getLink();
+		}
+		return target;
+	}
 
 
+	public RgaSTree findMostLeft(RgaSTree tree, int i){
 
-	// Obtenir des objets de la classe Position
+		while (tree.getLeftSon()!=null){
+			tree.setSize(tree.size()+i);
+			tree=tree.getLeftSon();
+		}
+		tree.setSize(tree.size()+i);
+		return tree;
+	}
+
+	public RgaSTree findMostRight(RgaSTree tree, int i){
+
+		while (tree.getRightSon()!=null){
+			tree.setSize(tree.size()+i);
+			tree=tree.getRightSon();
+		}
+		tree.setSize(tree.size()+i);
+		return tree;
+	}
 
 	protected class Position {
-
 		protected RgaSNode node;
 		protected int offset;
-
 
 		public Position(RgaSNode n, int offset) {
 			this.node= n;
@@ -216,20 +396,6 @@ public class RgaSDocument<T> implements Document {
 		}
 	}
 
-
-
-
-	public RgaSNode findGoodNode(RgaSNode target, int off){
-
-		while (target.getOffset() + target.size() < off){
-			target=target.getLink();
-		}
-
-		return target;
-	}
-
-
-
 	public HashMap<RgaSS3Vector, RgaSNode> getHash() {
 		return hash;
 	}
@@ -244,16 +410,9 @@ public class RgaSDocument<T> implements Document {
 
 		return size;
 	}
-	
+
 	public RgaSTree getRoot() {
 		return root;
 	}
-
-	public void setRoot(RgaSTree root) {
-		this.root = root;
-	}
-
-
-
 
 }
