@@ -13,7 +13,7 @@ import crdt.PreconditionException;
 import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.random.StandardDiffProfile;
 import crdt.simulator.random.StandardSeqOpProfile;
-
+import jbenchmarker.rgalocal.RGAFFactory;
 
 public class RgaSMultipleInsertionDeletionUpdate {
 
