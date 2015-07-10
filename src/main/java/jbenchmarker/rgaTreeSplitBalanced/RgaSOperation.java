@@ -1,4 +1,4 @@
-package jbenchmarker.rgaTreeSplit;
+package jbenchmarker.rgaTreeSplitBalanced;
 
 import crdt.Operation;
 import jbenchmarker.core.SequenceOperation;

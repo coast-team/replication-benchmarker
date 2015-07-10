@@ -1,21 +1,40 @@
-package jbenchmarker.rgaTreeSplit;
+package jbenchmarker.rgaTreeSplitBalanced;
+
+import jbenchmarker.rgaTreeSplitBalanced.RgaSNode;
 
 public class RgaSTree {
 
+
 	private RgaSNode root;
-	
+
 	private RgaSTree father;
 	private RgaSTree leftSon;
 	private RgaSTree rightSon;
-	
+
 	private int size;
-	
-	
-	
+
+
+
 	/*
 	 *		Constructors
 	 */
-	
+
+	RgaSTree (){
+		this.root=null;
+		this.setLeftSon(null);
+		this.setRightSon(null);
+	}
+
+	RgaSTree (RgaSNode root, RgaSTree leftSon, RgaSTree rightSon, RgaSTree father, int size){
+		this.root=root;
+		this.root.setTree(this);
+		this.setLeftSon(leftSon);
+		this.setRightSon(rightSon);
+		this.father=father;
+		this.size=size;
+
+	}
+
 	RgaSTree (RgaSNode root, RgaSTree leftSon, RgaSTree rightSon){
 		int a = 0;
 		int b = 0;
@@ -28,26 +47,35 @@ public class RgaSTree {
 		if (rightSon!=null) b=rightSon.size();
 		size= a+b+this.getRoot().size();
 	}
-	
-	
+
+	public RgaSTree clone(){
+		return new RgaSTree(root, leftSon, rightSon, father, size);
+	}
+
 	/*
 	 *		Getters & Setters
 	 */
 
-	
+	public int getRootSize(){
+		if (this.getRoot()==null || !this.getRoot().isVisible()){
+			return 0;
+		} else {
+			return this.getRoot().size();
+		}
+	}
 	public RgaSNode getRoot() {
 		return root;
 	}
-	
+
 	public void setRoot(RgaSNode root) {
 		this.root = root;
 	}
-	
+
 
 	public RgaSTree getFather() {
 		return father;
 	}
-	
+
 	public void setFather(RgaSTree father) {
 		this.father = father;
 	}	

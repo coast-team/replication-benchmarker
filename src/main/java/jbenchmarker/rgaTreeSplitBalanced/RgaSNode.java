@@ -1,4 +1,4 @@
-package jbenchmarker.rgaTreeSplit;
+package jbenchmarker.rgaTreeSplitBalanced;
 
 import java.io.Serializable;
 import java.util.List;

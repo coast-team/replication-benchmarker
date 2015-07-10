@@ -46,7 +46,7 @@ public class CausalSimulator extends Simulator {
     HashSet<CRDTMessage> setOp;
     private Map<Integer, List<TraceOperation>> history;
     private Map<Integer, List<CRDTMessage>> genHistory;
-    private long localSum = 0L, remoteSum = 0L;
+    private long localSum = 0L, nbLocal = 0L, remoteSum = 0L, nbRemote = 0L;
     private int nbrTrace = 0;
     TraceStore writer = null;
     private HashMap<TraceOperation, Integer> orderTrace;
@@ -142,11 +142,20 @@ public class CausalSimulator extends Simulator {
      * @return number.
      */
     public long getNbLocalOp() {
-        return genTime.size();
+        return nbLocal;
     }
 
     /**
-     * The whole time taken by applying remote operations.
+     * The number of remote operations.
+     *
+     * @return number.
+     */
+    public long getNbRemote() {
+        return nbRemote;
+    }
+
+    /**
+     * The whole time taken by appying remote operations.
      *
      * @return time in nanoseconds.
      */
@@ -155,7 +164,7 @@ public class CausalSimulator extends Simulator {
     }
 
     /**
-     * The average time taken by applying remote operations.
+     * The average time taken by appying remote operations.
      *
      * @return time in nanoseconds.
      */
@@ -170,7 +179,9 @@ public class CausalSimulator extends Simulator {
      */
     public void clearStat() {
         localSum = 0L;
+        nbLocal = 0L;
         remoteSum = 0L;
+        nbRemote = 0L;
     }
 
     public TraceStore getWriter() {
@@ -277,6 +288,7 @@ public class CausalSimulator extends Simulator {
             }
 //System.out.println("After Generation --- Replica: "+opt.getReplica()+", VC : "+opt.getVectorClock()+"LocalOperation : "+op+"\n Observe : "+localReplica.lookup());
 
+            nbLocal++;
             final CRDTMessage msg = m.clone();
 
             genHistory.get(r).add(msg);
@@ -351,6 +363,7 @@ public class CausalSimulator extends Simulator {
                 remoteTime.set(num, remoteTime.get(num) + after - before);
                 //stat(t, after - tmp, 1);
             }
+            nbRemote++;
             vc.inc(e);
         }
     }

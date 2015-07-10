@@ -1,4 +1,4 @@
-package jbenchmarker.rgaTreeSplit;
+package jbenchmarker.rgaTreeSplitBalanced;
 
 import crdt.CRDT;
 
@@ -10,13 +10,17 @@ import jbenchmarker.core.MergeAlgorithm;
 import crdt.Operation;
 import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.rgaTreeSplit.RgaSDocument.Position;
+import jbenchmarker.rgaTreeSplitBalanced.RgaSDocument;
+import jbenchmarker.rgaTreeSplitBalanced.RgaSNode;
+import jbenchmarker.rgaTreeSplitBalanced.RgaSOperation;
+import jbenchmarker.rgaTreeSplitBalanced.RgaSS3Vector;
+import jbenchmarker.rgaTreeSplitBalanced.RgaSDocument.Position;
 
 
 
 public class RgaSMerge extends MergeAlgorithm {
 
-	private VectorClock siteVC;
+private VectorClock siteVC;
 
 	
 	public RgaSMerge(RgaSDocument doc, int siteID) {
