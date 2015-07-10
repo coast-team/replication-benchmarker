@@ -21,22 +21,22 @@ public class MainResult {
 
 	public static void main(String[] args) throws Exception {
 
-		int[] tab = new int[4];
-		tab[0] = 10;
-		tab[1] = 20;
-		tab[2] = 50;
-		tab[3] = 100;
+		double[] tab = new double[4];
+		tab[0] = 0.7;
+		tab[1] = 0.9;
+		tab[2] = 0.95;
+		tab[3] = 1;
 
 		for (int j=0; j<tab.length; j++){
 			long duration = 10000;
-			double perIns = 0.9;
+			double perIns = tab[j];
 			double perBlock = 0.4;
 			int avgBlockSize = 20;
 			double sdvBlockSize = 3;
 			double probability = 1;
 			long delay = 1;
 			double sdv = 1;
-			int replicas = tab[j];
+			int replicas = 20;
 
 
 			writeTofile("result"+args[2], "RESULT FOR : " + args[2] + "\n\n");
