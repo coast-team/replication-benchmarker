@@ -24,7 +24,7 @@ import jbenchmarker.core.SequenceOperation;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import crdt.Operation;
-import java.math.BigDecimal;
+import java.util.LinkedList;
 import java.util.List;
 import static jbenchmarker.rgalocal.RGAMerge.MAGIC;
 
@@ -39,9 +39,11 @@ public class RGADocument<T> implements Document {
     private final HashMap<RGAS2Vector, RGANode<T>> hash;
     private final RangeList<RGANode<T>> localOrder;
     private final RGANode head;
+    int collision;
 
     public RGADocument() {
         super();
+        collision = 0;
         head = new RGANode();
         head.setPosition(MIN);
         hash = new HashMap<RGAS2Vector, RGANode<T>>();
@@ -59,7 +61,7 @@ public class RGADocument<T> implements Document {
 
     @Override
     public void apply(Operation op) {
-        RGAOperation rgaop = (RGAOperation) op;
+        RGAOperation<T> rgaop = (RGAOperation) op;
         if (rgaop.getType() == SequenceOperation.OpType.delete) {
             boolean wasVisible = remoteDelete(rgaop);
             if (wasVisible) {
@@ -72,19 +74,45 @@ public class RGADocument<T> implements Document {
             } else {
                 prev = hash.get(rgaop.getS4VPos());
             }
-            RGANode node = remoteInsert(prev, rgaop), next = node.getNextVisible();
+            List<RGANode<T>> news = new LinkedList<RGANode<T>>();
+            RGANode node = prev;
+            RGAS2Vector v = rgaop.getS4VTms();
+            for (T e : rgaop.getBlock()) {
+                node = remoteInsert(node, v, e);
+                news.add(node);
+                v = v.follower();
+            }
+            RGANode next = node.getNextVisible();
             long nextPos = next == null ? MAX : next.getPosition();
-            int afterPos = next == null ? localOrder.size() : findLocal(next);
-            long prevPos = afterPos == 0 ? MIN : localOrder.get(afterPos-1).getPosition();
-            node.setPosition(middle(prevPos, nextPos));
-            localOrder.add(afterPos, node);
+            int index = next == null ? localOrder.size() : findLocal(next);
+            long prevPos = index == 0 ? MIN : localOrder.get(index - 1).getPosition(), 
+                    step = (nextPos - prevPos) / (rgaop.getBlock().size() * MAGIC);  
+            for (RGANode n : news) {
+                prevPos += step;
+                n.setPosition(prevPos);
+            }
+            localOrder.addAll(index, news);
+        }
+        if (collision > localOrder.size()) {
+            rebalance();
         }
     }
 
-    RGANode remoteInsert(RGANode prev, RGAOperation op) {
-        RGANode newnd = new RGANode(op.getS4VTms(), op.getContent());
+    /**
+     * Rebalance the table
+     */
+    void rebalance() {
+        long step = Long.MAX_VALUE / (localOrder.size() * MAGIC), pos = MIN;
+        for (RGANode<T> n : localOrder) {
+            pos += step;
+            n.setPosition(pos);
+        }
+        collision = 0;
+    }
+
+    RGANode remoteInsert(RGANode prev, RGAS2Vector s4v, T content) {
+        RGANode newnd = new RGANode(s4v, content);
         RGANode next;
-        RGAS2Vector s4v = op.getS4VTms();
 
         if (prev == null) {
             throw new NoSuchElementException("RemoteInsert");
@@ -101,8 +129,8 @@ public class RGADocument<T> implements Document {
 
         newnd.setNext(next);
         prev.setNext(newnd);
-        
-        hash.put(op.getS4VTms(), newnd);
+
+        hash.put(s4v, newnd);
         return newnd;
     }
 
@@ -182,6 +210,7 @@ public class RGADocument<T> implements Document {
                 && index < localOrder.size() - 1
                 && localOrder.get(index + 1).getPosition() == pos) {
             ++index;
+            ++collision;
         }
         if (localOrder.get(index).equals(node)) {
             return index;
@@ -189,11 +218,12 @@ public class RGADocument<T> implements Document {
         index = middleIndex - 1;
         while (!localOrder.get(index).equals(node)) { // must be somewhere
             --index;
+            ++collision;
         }
         return index;
     }
 
     public static long middle(long a, long b) {
-        return a + ((b - a) / (2 + MAGIC));
+        return a + ((b - a) / (2 * MAGIC));
     }
 }

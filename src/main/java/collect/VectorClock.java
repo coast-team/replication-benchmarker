@@ -82,6 +82,13 @@ public class VectorClock extends HashMap<Integer, Integer> {
     }
 
     /*
+     * Increment an entry by n.
+     */
+    public void incN(int r, int n) {
+        put(r, getSafe(r) + n);
+    }
+    
+    /*
      * Returns the entry for replica r. 0 if none.
      */
     public int getSafe(int r) {

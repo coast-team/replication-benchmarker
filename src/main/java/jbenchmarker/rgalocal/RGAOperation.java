@@ -19,6 +19,8 @@
 package jbenchmarker.rgalocal;
 
 import crdt.Operation;
+import java.util.LinkedList;
+import java.util.List;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 
@@ -30,7 +32,8 @@ public class RGAOperation<T> implements Operation {
 
     private RGAS2Vector s4vpos;
     private RGAS2Vector s4vtms;
-    private T content;
+    private List<T> block;
+
     private OpType type;
 
     public RGAOperation() {
@@ -43,7 +46,7 @@ public class RGAOperation<T> implements Operation {
         if (getType() == SequenceOperation.OpType.delete) {
             ret += "del(";
         } else {
-            ret += "ins(\'" + content + "\',";
+            ret += "ins(\'" + block + "\',";
         }
         String s4va = s4vpos == null ? "null" : s4vpos.toString();
         String s4vb = s4vtms == null ? "null" : s4vtms.toString();
@@ -52,26 +55,31 @@ public class RGAOperation<T> implements Operation {
         return ret;
     }
 
-    public RGAOperation(OpType type, RGAS2Vector s4vpos, T c, RGAS2Vector s4vtms) {
-        this.type = type;
+    public RGAOperation(OpType type, RGAS2Vector s4vpos, RGAS2Vector s4vtms, List<T> block) {
         this.s4vpos = s4vpos;
         this.s4vtms = s4vtms;
-        this.content = c;
+        this.block = block;
         this.type = type;
     }
-
+    
     /*
-     * for insert
+     * for block insert
      */
-    public RGAOperation(int pos, RGAS2Vector s4vpos, T c, RGAS2Vector s4vtms) {
-        this(OpType.insert, s4vpos, c, s4vtms);
+    public RGAOperation(RGAS2Vector s4vpos, List<T> block, RGAS2Vector s4vtms) {
+        this.type = OpType.insert;
+        this.s4vpos = s4vpos;
+        this.s4vtms = s4vtms;
+        this.block = block;
     }
-
+    
     /*
      * for delete
      */
-    public RGAOperation(int pos, RGAS2Vector s4vpos, RGAS2Vector s4vtms) {
-        this(OpType.delete, s4vpos, null, s4vtms);
+    public RGAOperation(RGAS2Vector s4vpos) {
+        this.type = OpType.delete;
+        this.s4vpos = s4vpos;
+        this.s4vtms = null;
+        this.block = null;
     }
 
     public RGAS2Vector getS4VPos() {
@@ -82,8 +90,8 @@ public class RGAOperation<T> implements Operation {
         return this.s4vtms;
     }
 
-    public T getContent() {
-        return this.content;
+    public List<T> getBlock() {
+        return block;
     }
 
     public OpType getType() {
@@ -93,8 +101,10 @@ public class RGAOperation<T> implements Operation {
     @Override
     public Operation clone() {
         return new RGAOperation(type, 
-                s4vpos == null ? s4vpos : s4vpos.clone(), content,
-                s4vtms == null ? s4vtms : s4vtms.clone());
+                s4vpos == null ? s4vpos : s4vpos.clone(),
+                s4vtms == null ? s4vtms : s4vtms.clone(),
+                block == null ? block : new LinkedList(block)
+        );
     }
 
     int getReplica() {
