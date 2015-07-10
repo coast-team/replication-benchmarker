@@ -26,6 +26,7 @@ import jbenchmarker.core.Document;
 import jbenchmarker.core.MergeAlgorithm;
 import crdt.Operation;
 import crdt.simulator.IncorrectTraceException;
+import java.util.LinkedList;
 import jbenchmarker.core.SequenceOperation;
 import static jbenchmarker.rgalocal.RGADocument.MAX;
 
@@ -49,7 +50,7 @@ public class RGAMerge extends MergeAlgorithm {
     protected void integrateRemote(crdt.Operation message) throws IncorrectTraceException {
         RGAOperation rgaop = (RGAOperation) message;
         RGADocument rgadoc = (RGADocument) (this.getDoc());
-        this.siteVC.inc(rgaop.getReplica());
+        this.siteVC.inc(rgaop.getReplica()); // TO FIX
         rgadoc.apply(rgaop);
     }
 
@@ -57,9 +58,8 @@ public class RGAMerge extends MergeAlgorithm {
     protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
         List<Operation> lop = new ArrayList<Operation>();
         RGADocument rgadoc = (RGADocument) (this.getDoc());
-        RGAS2Vector s4vtms, s4vpos;
-        RGAOperation rgaop;
-        RGANode before;
+        RGAS2Vector s4vtms, first = null;
+        RGANode before, node;
         long after;
 
         int p = opt.getPosition();
@@ -74,21 +74,22 @@ public class RGAMerge extends MergeAlgorithm {
         }     
         
         long pos = before.getPosition(), step = (after - pos) / (offset * MAGIC);  
-        s4vpos = before.getKey();
+        node = before;
         List<RGANode> ln = new ArrayList();
         for (int i = 0; i < offset; i++) {
             this.siteVC.inc(this.getReplicaNumber());
             s4vtms = new RGAS2Vector(this.getReplicaNumber(), this.siteVC);
-            rgaop = new RGAOperation(p + i, s4vpos, opt.getContent().get(i), s4vtms);
-            s4vpos = s4vtms; // The s4v of the current insert becomes the s4vpos of next insert.
-            lop.add(rgaop);
-            before = rgadoc.remoteInsert(before, rgaop);
+            if (first == null) {
+                first = s4vtms;
+            }
+            node = rgadoc.remoteInsert(node, s4vtms, opt.getContent().get(i));
             pos += step;
             before.setPosition(pos);
-            ln.add(before);
+            ln.add(node);
         }
         rgadoc.addLocal(p, ln);
         
+        lop.add(new RGAOperation(before.getKey(), opt.getContent(), first));
         return lop;
     }
 
@@ -107,9 +108,7 @@ public class RGAMerge extends MergeAlgorithm {
         target = rgadoc.getVisibleNode(p + 1);
 
         for (int i = 0; i < offset; i++) {
-            this.siteVC.inc(this.getReplicaNumber());
-            s4vtms = new RGAS2Vector(this.getReplicaNumber(), this.siteVC);
-            rgaop = new RGAOperation(p + 1, target.getKey(), s4vtms);
+            rgaop = new RGAOperation(target.getKey());
             target = target.getNextVisible();
             lop.add(rgaop);
             rgadoc.remoteDelete(rgaop);

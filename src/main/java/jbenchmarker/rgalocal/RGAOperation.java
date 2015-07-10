@@ -19,6 +19,7 @@
 package jbenchmarker.rgalocal;
 
 import crdt.Operation;
+import java.util.List;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
 
@@ -31,6 +32,8 @@ public class RGAOperation<T> implements Operation {
     private RGAS2Vector s4vpos;
     private RGAS2Vector s4vtms;
     private T content;
+    private List<T> block;
+
     private OpType type;
 
     public RGAOperation() {
@@ -59,19 +62,22 @@ public class RGAOperation<T> implements Operation {
         this.content = c;
         this.type = type;
     }
-
+    
     /*
-     * for insert
+     * for block insert
      */
-    public RGAOperation(int pos, RGAS2Vector s4vpos, T c, RGAS2Vector s4vtms) {
-        this(OpType.insert, s4vpos, c, s4vtms);
+    public RGAOperation(RGAS2Vector s4vpos, List<T> block, RGAS2Vector s4vtms) {
+        this.type = OpType.insert;
+        this.s4vpos = s4vpos;
+        this.s4vtms = s4vtms;
+        this.block = block;
     }
-
+    
     /*
      * for delete
      */
-    public RGAOperation(int pos, RGAS2Vector s4vpos, RGAS2Vector s4vtms) {
-        this(OpType.delete, s4vpos, null, s4vtms);
+    public RGAOperation(RGAS2Vector s4vtms) {
+        this(OpType.delete, null, null, s4vtms);
     }
 
     public RGAS2Vector getS4VPos() {
@@ -82,6 +88,10 @@ public class RGAOperation<T> implements Operation {
         return this.s4vtms;
     }
 
+    public List<T> getBlock() {
+        return block;
+    }
+        
     public T getContent() {
         return this.content;
     }

@@ -13,6 +13,7 @@ import crdt.PreconditionException;
 import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.random.StandardDiffProfile;
 import crdt.simulator.random.StandardSeqOpProfile;
+import org.junit.Ignore;
 
 public class RGAMergeTest {
 
@@ -135,9 +136,9 @@ public class RGAMergeTest {
         assertEquals("atest27j", replica.lookup());
     }
 
-    @Test
+    @Ignore@Test
     public void testRun() throws IncorrectTraceException, PreconditionException, IOException {
-        CRDT r = crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFFactory(), 100, 2000, StandardSeqOpProfile.HEAVY_BLOCK);
+        CRDT r = crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFFactory(), 500, 500, StandardSeqOpProfile.BASIC);
         System.out.println("collisions : " + ((RGADocument) ((RGAMerge) r).getDoc()).collision);
     }
 }

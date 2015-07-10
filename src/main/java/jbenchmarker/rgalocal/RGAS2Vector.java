@@ -33,14 +33,14 @@ public class RGAS2Vector implements Comparable<RGAS2Vector>, Serializable {
     public static final int BEFORE = -1;
     protected int sid;
     protected int sum;
-
-    public RGAS2Vector(int ssn, int sid, VectorClock vc) {
+    
+    RGAS2Vector(int sid, int sum) {
         this.sid = sid;
-        this.sum = vc.getSum();
+        this.sum = sum;
     }
-
+    
     public RGAS2Vector(int sid, VectorClock vc) {
-        this(0, sid, vc);
+        this(sid, vc.getSum());
     }
 
     @Override
@@ -64,11 +64,6 @@ public class RGAS2Vector implements Comparable<RGAS2Vector>, Serializable {
                 return EQUAL;
             }
         }
-    }
-
-    public RGAS2Vector(int sid, int sum) {
-        this.sid = sid;
-        this.sum = sum;
     }
 
     public RGAS2Vector clone() {
@@ -99,5 +94,9 @@ public class RGAS2Vector implements Comparable<RGAS2Vector>, Serializable {
         hash = 79 * hash + this.sid;
         hash = 79 * hash + this.sum;
         return hash;
+    }
+    
+    public RGAS2Vector follower() {
+        return new RGAS2Vector(sid, sum+1);
     }
 }

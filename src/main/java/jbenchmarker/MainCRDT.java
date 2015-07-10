@@ -305,7 +305,6 @@ public class MainCRDT {
             timeLocal += cd.getLocalTimeSum();
             nbLocal += cd.getNbLocalOp();
             timeRemote += cd.getRemoteSum();
-            nbRemote += cd.getNbRemote();
         }
 
         public long getRemoteAvg() {

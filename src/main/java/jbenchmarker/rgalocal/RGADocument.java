@@ -24,6 +24,7 @@ import jbenchmarker.core.SequenceOperation;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import crdt.Operation;
+import java.util.LinkedList;
 import java.util.List;
 import static jbenchmarker.rgalocal.RGAMerge.MAGIC;
 
@@ -60,11 +61,11 @@ public class RGADocument<T> implements Document {
 
     @Override
     public void apply(Operation op) {
-        RGAOperation rgaop = (RGAOperation) op;
+        RGAOperation<T> rgaop = (RGAOperation) op;
         if (rgaop.getType() == SequenceOperation.OpType.delete) {
             boolean wasVisible = remoteDelete(rgaop);
             if (wasVisible) {
-                localOrder.remove(findLocal(hash.get(rgaop.getS4VPos())));
+                localOrder.remove(findLocal(hash.get(rgaop.getS4VTms())));
             }
         } else {
             RGANode prev;
@@ -73,12 +74,24 @@ public class RGADocument<T> implements Document {
             } else {
                 prev = hash.get(rgaop.getS4VPos());
             }
-            RGANode node = remoteInsert(prev, rgaop), next = node.getNextVisible();
+            List<RGANode<T>> news = new LinkedList<RGANode<T>>();
+            RGANode node = prev;
+            RGAS2Vector v = rgaop.getS4VTms();
+            for (T e : rgaop.getBlock()) {
+                node = remoteInsert(node, v, e);
+                news.add(node);
+                v = v.follower();
+            }
+            RGANode next = node.getNextVisible();
             long nextPos = next == null ? MAX : next.getPosition();
-            int afterPos = next == null ? localOrder.size() : findLocal(next);
-            long prevPos = afterPos == 0 ? MIN : localOrder.get(afterPos - 1).getPosition();
-            node.setPosition(middle(prevPos, nextPos));
-            localOrder.add(afterPos, node);
+            int index = next == null ? localOrder.size() : findLocal(next);
+            long prevPos = index == 0 ? MIN : localOrder.get(index - 1).getPosition(), 
+                    step = (nextPos - prevPos) / (rgaop.getBlock().size() * MAGIC);  
+            for (RGANode n : news) {
+                prevPos += step;
+                n.setPosition(prevPos);
+            }
+            localOrder.addAll(index, news);
         }
         if (collision > localOrder.size()) {
             rebalance();
@@ -97,10 +110,9 @@ public class RGADocument<T> implements Document {
         collision = 0;
     }
 
-    RGANode remoteInsert(RGANode prev, RGAOperation op) {
-        RGANode newnd = new RGANode(op.getS4VTms(), op.getContent());
+    RGANode remoteInsert(RGANode prev, RGAS2Vector s4v, T content) {
+        RGANode newnd = new RGANode(s4v, content);
         RGANode next;
-        RGAS2Vector s4v = op.getS4VTms();
 
         if (prev == null) {
             throw new NoSuchElementException("RemoteInsert");
@@ -118,15 +130,15 @@ public class RGADocument<T> implements Document {
         newnd.setNext(next);
         prev.setNext(newnd);
 
-        hash.put(op.getS4VTms(), newnd);
+        hash.put(s4v, newnd);
         return newnd;
     }
 
     boolean remoteDelete(RGAOperation op) {
         boolean wasVisible;
-        RGANode node = hash.get(op.getS4VPos());
+        RGANode node = hash.get(op.getS4VTms());
         if (node == null) {
-            throw new NoSuchElementException("Cannot find" + op.getS4VPos());
+            throw new NoSuchElementException("Cannot find" + op.getS4VTms());
         }
         wasVisible = node.isVisible();
         node.makeTombstone();
