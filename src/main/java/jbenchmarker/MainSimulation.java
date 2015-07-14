@@ -18,6 +18,8 @@
  */
 package jbenchmarker;
 
+import java.io.File;
+
 import crdt.CRDT;
 import crdt.Factory;
 import crdt.simulator.CausalSimulator;
@@ -31,52 +33,58 @@ import crdt.simulator.random.StandardSeqOpProfile;
  */
 public class MainSimulation {
 
-    static int base = 100;
-    static int baseSerializ = 1;
-    static public void main(String[] args) throws Exception {
+	static int base = 100;
+	static int baseSerializ = 1;
+	static public void main(String[] args) throws Exception {
 
-        if (args.length < 12) {
-            System.err.println("Arguments :");
-            System.err.println("- Factory :  import crdt.Factory<CRDT> implementation ");
-            System.err.println("- Number of execu : ");
-            System.err.println("- duration : ");
-            System.err.println("- perIns : ");
-            System.err.println("- perBlock : ");
-            System.err.println("- avgBlockSize : ");
-            System.err.println("- sdvBlockSize : ");
-            System.err.println("- probability : ");
-            System.err.println("- delay : ");
-            System.err.println("- sdv : ");
-            System.err.println("- replicas : ");
-            System.err.println("- name File : ");
-            System.exit(1);
-        }
-        Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[0]).newInstance();
-        
-        int nbExec = Integer.valueOf(args[1]);
-        int nb = 1;
-        if (nbExec > 1) {
-            nb = nbExec + 1;
-        }
-        long duration = Long.valueOf(args[2]);
-        double perIns = Double.valueOf(args[3]);
-        double perBlock = Double.valueOf(args[4]);
-        int avgBlockSize = Integer.valueOf(args[5]);
-        double sdvBlockSize = Double.valueOf(args[6]);
-        double probability = Double.valueOf(args[7]);
-        long delay = Long.valueOf(args[8]);
-        double sdv = Double.valueOf(args[9]);
-        int replicas = Integer.valueOf(args[10]);
+		if (args.length < 12) {
+			System.err.println("Arguments :");
+			System.err.println("- Factory :  import crdt.Factory<CRDT> implementation ");
+			System.err.println("- Number of execu : ");
+			System.err.println("- duration : ");
+			System.err.println("- perIns : ");
+			System.err.println("- perBlock : ");
+			System.err.println("- avgBlockSize : ");
+			System.err.println("- sdvBlockSize : ");
+			System.err.println("- probability : ");
+			System.err.println("- delay : ");
+			System.err.println("- sdv : ");
+			System.err.println("- replicas : ");
+			System.err.println("- name File : ");
+			System.exit(1);
+		}
+		Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[0]).newInstance();
 
-        String nameUsr = args[11];
-            
-            Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
-                    new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
-            CausalSimulator cd = new CausalSimulator(rf, false,  0, false);
-            cd.setWriter(new TraceObjectWriter(nameUsr));
+		int nbExec = Integer.valueOf(args[1]);
+		int nb = 1;
+		if (nbExec > 1) {
+			nb = nbExec + 1;
+		}
+		long duration = Long.valueOf(args[2]);
+		double perIns = Double.valueOf(args[3]);
+		double perBlock = Double.valueOf(args[4]);
+		int avgBlockSize = Integer.valueOf(args[5]);
+		double sdvBlockSize = Double.valueOf(args[6]);
+		double probability = Double.valueOf(args[7]);
+		long delay = Long.valueOf(args[8]);
+		double sdv = Double.valueOf(args[9]);
+		int replicas = Integer.valueOf(args[10]);
+
+		String nameUsr = args[11];
+		String repPath = System.getProperty("user.dir")+ File.separator+"ResultTest" + File.separator;
+
+		if(!new File(repPath).exists())
+		{
+			new File(repPath).mkdirs();
+		}
+
+		Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
+				new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
+		CausalSimulator cd = new CausalSimulator(rf, false,  0, false);
+		cd.setWriter(new TraceObjectWriter(repPath+nameUsr));
 
 
-            cd.run(trace); //create Trace
+		cd.run(trace); //create Trace
 
-    }
+	}
 }

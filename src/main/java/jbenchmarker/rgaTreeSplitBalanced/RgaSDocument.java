@@ -50,14 +50,7 @@ public class RgaSDocument<T> implements Document {
 			remoteDelete(rgaop);
 		} else {
 			remoteInsert(rgaop);
-		}
-
-		nbOp++;
-		if (nbOp%10000==5000){
-			List<RgaSNode> content = createNodeList(new ArrayList(), getRoot());
-			createBalancedTree(new RgaSTree(), content,  0, content.size());
-			addGoodSize(getRoot());
-		}
+		}		
 	}
 
 	private void remoteInsert(RgaSOperation op) {
@@ -218,6 +211,15 @@ public class RgaSDocument<T> implements Document {
 			newTree=newTree.getFather();
 		}
 		nodeNumberInTree++;
+		nbOp++;
+		
+		if (nbOp >(3*nodeNumberInTree+1)/(0.44*Math.log(nodeNumberInTree+1)/Math.log(2))){
+			//System.out.println("I'm come in! " + nodeNumberInTree +", " + nbOp);
+			nbOp=0;
+			List<RgaSNode> content = createNodeList(new ArrayList(), getRoot());
+			createBalancedTree(new RgaSTree(), content,  0, content.size());
+			addGoodSize(getRoot());
+		}
 	}
 
 	public void deleteInLocalTree(RgaSNode nodeDel){
@@ -424,18 +426,19 @@ public class RgaSDocument<T> implements Document {
 
 
 	public List createNodeList(List list, RgaSTree tree){
+		if (tree!=null){
+			if (tree.getLeftSon()!=null){
+				createNodeList(list, tree.getLeftSon());
+			}
 
-		if (tree.getLeftSon()!=null){
-			createNodeList(list, tree.getLeftSon());
+			list.add(tree.getRoot());
+
+
+			if (tree.getRightSon()!=null){
+				createNodeList(list, tree.getRightSon());
+			}
+			tree=null;
 		}
-
-		list.add(tree.getRoot());
-		tree.setSize(0);
-
-		if (tree.getRightSon()!=null){
-			createNodeList(list, tree.getRightSon());
-		}
-
 		return list;
 
 	}
