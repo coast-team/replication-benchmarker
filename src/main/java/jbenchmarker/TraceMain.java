@@ -147,11 +147,11 @@ public final class TraceMain extends Experience {
 			}
 		}
 
-		String repPath = new File(args[2]).getParentFile().getParent()+File.separator;
-		String repPath1 = new File(args[2]).getParent()+File.separator;
+		//String repPath_ResultTest = new File(args[2]).getParentFile().getParent()+File.separator;
+		String repPath_RT_T = new File(args[2]).getParent()+File.separator;
 		args[2]= new File(args[2]).getName();
 		String fileName = createName(args);
-		String repPath2 = repPath1 + fileName+File.separator;
+		String repPath_RT_T_Tk = repPath_RT_T + fileName + File.separator;
 		
 	
 		
@@ -159,40 +159,40 @@ public final class TraceMain extends Experience {
 		
 		
 		
-		if(!new File(repPath2).exists())
+		if(!new File(repPath_RT_T_Tk).exists())
 		{
-			new File(repPath2).mkdirs();
+			new File(repPath_RT_T_Tk).mkdirs();
 		}
 		
 		
-		writeToFile(ltime, repPath2+fileName, "gen");
-		writeToFile(rtime, repPath2+fileName, "usr");
-		writeToFile(mem, repPath2+fileName, "mem");		
+		writeToFile(ltime, repPath_RT_T_Tk + fileName, "gen");
+		writeToFile(rtime, repPath_RT_T_Tk + fileName, "usr");
+		writeToFile(mem, repPath_RT_T_Tk + fileName, "mem");		
 
 
 		
 		
-		writeTofile(repPath1+args[2],fileName.substring(0,fileName.length() - (args[2].length()+1)) +"	");
+		writeTofile(repPath_RT_T+args[2],fileName.substring(0,fileName.length() - (args[2].length()+1)) +"	");
 		
 		System.out.println("Average execution time in : " + (sum / Math.pow(10, 6)) + " Mili-second");
-		writeTofile(repPath1+args[2], sum / Math.pow(10, 6) +"	");
+		writeTofile(repPath_RT_T+args[2], sum / Math.pow(10, 6) +"	");
 
-		System.out.println("Average local execution time in :   " + getAverage(repPath2+fileName +  "-gen.res")+ " Nano-second");
-		writeTofile(repPath1+args[2], getAverage(repPath2+fileName+ "-gen.res") + "	");
+		System.out.println("Average local execution time in :   " + getAverage(repPath_RT_T_Tk+fileName +  "-gen.res")+ " Nano-second");
+		writeTofile(repPath_RT_T+args[2], getAverage(repPath_RT_T_Tk+fileName+ "-gen.res") + "	");
 
-		System.out.println("Average remote execution time in :   " + getAverage(repPath2+fileName+ "-usr.res")+ " Nano-second");
-		writeTofile(repPath1+args[2], getAverage(repPath2+fileName+ "-usr.res")+ "	" );
+		System.out.println("Average remote execution time in :   " + getAverage(repPath_RT_T_Tk+fileName+ "-usr.res")+ " Nano-second");
+		writeTofile(repPath_RT_T+args[2], getAverage(repPath_RT_T_Tk+fileName+ "-usr.res")+ "	" );
 
 		if (sizeMessage) {
 			System.out.println("Bandwidth is :" + sizemsg / nbExec);
-			writeTofile(repPath1+args[2], sizemsg / nbExec + "	");
+			writeTofile(repPath_RT_T+args[2], sizemsg / nbExec + "	");
 		}
 
-		System.out.println("Memory :   " + getAverageMem(repPath2+fileName + "-mem.res",10));
-		writeTofile(repPath1+args[2], getAverageMem(repPath2+fileName + "-mem.res",10)+ "\n");
+		System.out.println("Memory :   " + getAverageMem(repPath_RT_T_Tk+fileName + "-mem.res",10));
+		writeTofile(repPath_RT_T+args[2], getAverageMem( repPath_RT_T_Tk + fileName + "-mem.res",10)+ "\n");
 
 		
-		args[2]= repPath1 + args[2];
+		args[2]= repPath_RT_T + args[2];
 	}
 
 	public TraceMain() {

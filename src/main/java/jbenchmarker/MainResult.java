@@ -1,14 +1,11 @@
 
 package jbenchmarker;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.StringTokenizer;
-
 import crdt.CRDT;
 import crdt.Factory;
 import crdt.simulator.CausalSimulator;
@@ -18,16 +15,33 @@ import crdt.simulator.random.StandardSeqOpProfile;
 import crdt.simulator.tracestorage.TraceObjectWriter;
 import jbenchmarker.factories.ExperienceFactory;
 
+
+
 public class MainResult {
 
+	
+	// 7 7000 0.8 0.15 100 1 0.1 5 1 10 "realized on coast-team's computer"
+	// 4 5000 0.8 0.05 625 5 0.1 10 4 15 "Test realized on coast-team's computer"
+	
+	/*
+	 * launch in command line
+	 
+	 cd git/replication-benchmarker/
+	 mvn exec:java -Dexec.mainClass=jbenchmarker.MainResult -Dexec.args="jbenchmarker.factories.TraceFactory  jbenchmarker.factories.RgaTreeSplitFactory TraceTest  3 2 0 0 1 0 1 7 1000 0.8 0.15 10 1 0.1 5 1 10 'realized on Grid 5000'"
+	
+	 */
+	
+	
 	public static void main(String[] args) throws Exception {
 
 		
 		/*
-		 *  Check that list of argument is correct
+		 *  Check that list of arguments is correct
 		 */
-		if (args.length < 19) {
-			System.err.println("Arguments : Factory Trace [nb_exec [thresold]]");
+		if (args.length < 20) {
+			
+			System.err.println("Arguments : Factory Trace [nb_exec [thresold]]\n");
+			
 			System.err.println("- Factory to run trace main");
 			System.err.println("- Factory : a jbenchmaker.core.ReplicaFactory implementation ");
 			System.err.println("- Trace : a file of a trace ");
@@ -35,12 +49,14 @@ public class MainResult {
 			System.err.println("- thresold : the proportional thresold for not counting a result in times the average (default 2.0)");
 			System.err.println("- number of serialization");
 			System.err.println("- Save traces ? (0 don't save, else save)");
-			System.err.println("- Calcule Time execution ? (0 don't calcul, else calcule)");//make it bool
-			System.err.println("- Serialization with overhead ? (0 don't store, else store)");//make it bool
-			System.err.println("- Compute size of messages ? (0 don't store, else store)");//make it bool
+			System.err.println("- Calcule Time execution ? (0 don't calcul, else calcule)");
+			System.err.println("- Serialization with overhead ? (0 don't store, else store)");
+			System.err.println("- Compute size of messages ? (0 don't store, else store)");
 			System.err.println("- Number of trace execution ?");
 
-			System.err.println("\n Caracteristics of traces : \n");			
+			
+			System.err.println("\n\n Caracteristics of traces : \n");			
+			
 			System.err.println("- Duration ? ");
 			System.err.println("- perIns ? ");
 			System.err.println("- avgBlockSize ? ");
@@ -50,7 +66,7 @@ public class MainResult {
 			System.err.println("- sdv ? ");
 			System.err.println("- replicas ? ");
 
-			System.err.println("- Comments about the test (which computer is used, what is the target of the test...). It is a String.");
+			System.err.println("\n- Comments about the test (which computer is used, what is the target of the test...). It is a String.");
 
 			System.exit(1);
 		}
@@ -63,14 +79,16 @@ public class MainResult {
 		if(new File(System.getProperty("user.dir")+ File.separator+"ResultTest" + File.separator+args[2].toString()+File.separator).exists())
 		{
 			throw new Exception("Le dossier " + System.getProperty("user.dir")+ File.separator+"ResultTest" + File.separator+args[2].toString()+File.separator 
-					+" existe déjà. Veuiller changer le nom de la trace donné dans les arguments ou déplacer/renommer/supprimer le dossier éxistant.");	
+					+" existe deja. Veuiller changer le nom de la trace donne dans les arguments ou deplacer/renommer/supprimer le dossier existant.");	
 		}
 		
 
 		/*
-		 *  Parameterize each variable contains in the list of arguments 
+		 *  Parameterize each variable contained in the list of arguments 
 		 */
 		
+		
+		String traceName = args[2];
 		int nbExec = Integer.parseInt(args[3]);
 		int nbTraceExec = Integer.parseInt(args[10]);
 		long duration = Long.parseLong(args[11]);
@@ -82,47 +100,55 @@ public class MainResult {
 		long delay = Long.parseLong(args[17]);
 		double sdv = Double.parseDouble(args[18]);
 		int replicas = Integer.parseInt(args[19]);
+		String comment = args[20];
 
+
+		/*
+		 *  Choose factories that you want to test
+		 */
 		
-		ArrayList factories = new ArrayList<String>();		
+		ArrayList<String> factories = new ArrayList<String>();		
+		factories.add("jbenchmarker.factories.LogootSFactory");
 		factories.add("jbenchmarker.factories.LogootSplitOFactory");
-		factories.add("jbenchmarker.factories.TreedocFactory");
-		//factories.add("jbenchmarker.factories.RGAFactory");
+		factories.add("jbenchmarker.factories.RGAFactory");
+		factories.add("jbenchmarker.factories.RGAFFactory");
 		factories.add("jbenchmarker.factories.RgaSFactory");
-		//factories.add("jbenchmarker.factories.RgaTreeSplitFactory");
+		factories.add("jbenchmarker.factories.RgaTreeSplitFactory");
 		factories.add("jbenchmarker.factories.RgaTreeSplitBalancedFactory");
-		//factories.add("jbenchmarker.factories.RGAFFactory");
-		// factories.add("jbenchmarker.factories.LogootSFactory");
-		//factories.add("jbenchmarker.factories.WootFactories$WootHFactory");
+		factories.add("jbenchmarker.factories.TreedocFactory");
+		factories.add("jbenchmarker.factories.WootFactories$WootHFactory");
+		
+		
 
 		
-		String name=args[2].toString();
-		String name1=name;
+		
+		/* 
+		 * write result for all trace executions 
+		 */
+		
 		for (int k=0; k<nbTraceExec; k++){
-
-			args[2]=name1+File.separator+name1+"-"+k;
-			name=name1+"-"+k;
 			String repPath = System.getProperty("user.dir")+ File.separator+"ResultTest" + File.separator;
-			String repPath1 = repPath+args[2]+File.separator;				
-			args[2]=repPath1+name;
+			String repPath1 = repPath+traceName+File.separator+traceName+"-"+k+File.separator;				
+			args[2]=repPath1+traceName+"-"+k;
 			if(!new File(repPath1).exists())
 			{
 				new File(repPath1).mkdirs();
 			}
 
-			writeTofile(repPath1+name, "RESULT FOR : " + name1 + "\n\n");
-			if (args.length>=20) writeTofile(repPath1+name, "Comment : " + args[20] + "\n\n");
-			writeTofile(repPath1+ name, "		Nb of generated traces :	" + nbTraceExec + "\n");
-			writeTofile(repPath1+ name, "		Nb of executions by trace:	" + nbExec + "\n");
-			writeTofile(repPath1+ name, "		Duration :	" + duration + "\n");
-			writeTofile(repPath1+ name, "		% of insertions :	" + perIns+ "\n");
-			writeTofile(repPath1+ name, "		% of Blocks :	" + perBlock+ "\n");
-			writeTofile(repPath1+ name, "		Avg blockSize :	 " + avgBlockSize+ "\n");
-			writeTofile(repPath1+ name, "		Sdv blockSize :	 " + sdvBlockSize+ "\n");
-			writeTofile(repPath1+ name, "		Probability :	" + probability + "\n");
-			writeTofile(repPath1+ name, "		Delay :	" + delay+ "\n");
-			writeTofile(repPath1+ name, "		Sdv :	" + sdv+ "\n");
-			writeTofile(repPath1+ name, "		Number of replicas :	" + replicas+ "\n");
+			writeTofile(repPath1+traceName+"-"+k, "RESULT FOR : " + traceName+"-"+k + "\n\n");
+			writeTofile(repPath1+traceName+"-"+k, "Comment : " + comment + "\n\n");
+			writeTofile(repPath1+ traceName+"-"+k, "		Nb of generated traces :	" + nbTraceExec + "\n");
+			writeTofile(repPath1+ traceName+"-"+k, "		Nb of executions by trace:	" + nbExec + "\n");
+			writeTofile(repPath1+ traceName+"-"+k, "		Duration :	" + duration + "\n");
+			writeTofile(repPath1+ traceName+"-"+k, "		% of insertions :	" + perIns+ "\n");
+			writeTofile(repPath1+ traceName+"-"+k, "		% of Blocks :	" + perBlock+ "\n");
+			writeTofile(repPath1+ traceName+"-"+k, "		Avg blockSize :	 " + avgBlockSize+ "\n");
+			writeTofile(repPath1+ traceName+"-"+k, "		Sdv blockSize :	 " + sdvBlockSize+ "\n");
+			writeTofile(repPath1+ traceName+"-"+k, "		Probability :	" + probability + "\n");
+			writeTofile(repPath1+ traceName+"-"+k, "		Delay :	" + delay+ "\n");
+			writeTofile(repPath1+ traceName+"-"+k, "		Sdv :	" + sdv+ "\n");
+			writeTofile(repPath1+ traceName+"-"+k, "		Number of replicas :	" + replicas+ "\n");
+			writeTofile(repPath1+ traceName+"-"+k,"\n\nName	Total execution time (ms)	Average local execution time (ns)	Average remote execution time (ns)	Bandwidth (o)	Memory (o)\n");
 
 
 			Factory<CRDT> rf = (Factory<CRDT>) Class.forName(args[1]).newInstance();
@@ -130,18 +156,17 @@ public class MainResult {
 					new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
 
 			CausalSimulator cd = new CausalSimulator(rf, false,  0, false);
-			cd.setWriter(new TraceObjectWriter(repPath1+ name));
+			cd.setWriter(new TraceObjectWriter(repPath1+ traceName+"-"+k));
 			cd.run(trace); //create Trace
 
-			writeTofile(repPath1+ name,"\n\nName	Total execution time (ms)	Average local execution time (ns)	Average remote execution time (ns)	Bandwidth (o)	Memory (o)\n");
-
+			
 			for (int i=0; i<factories.size() ; i++ ){
 				args[1]=(String) factories.get(i);
 				ExperienceFactory ef = (ExperienceFactory) Class.forName(args[0]).newInstance();
 				ef.create(args);
 
 
-				Scanner scanner=new Scanner(new File(repPath1+ name+".csv"));
+				Scanner scanner=new Scanner(new File(repPath1+ traceName+"-"+k+".csv"));
 				StringBuilder s1 = new StringBuilder();
 				while (scanner.hasNextLine()) {
 					String line = scanner.nextLine();
@@ -149,13 +174,14 @@ public class MainResult {
 					s1.append(line+"\n");
 				}
 
-				FileWriter local = new FileWriter(repPath1+ name+".csv", false);
+				FileWriter local = new FileWriter(repPath1+ traceName+"-"+k+".csv", false);
 				local.write(s1.toString());
 
 				if (local != null) {
 					local.close();
 				}
 
+				scanner.close();
 			}
 		}
 
@@ -165,59 +191,74 @@ public class MainResult {
 		 */
 
 		String repPath = System.getProperty("user.dir")+ File.separator+"ResultTest" + File.separator;
-		String repPath1 = repPath+name1+File.separator;	
-		writeTofile(repPath+name1+File.separator+name1, "RESULT FOR : " + name1 + "\n\n");
-		if (args.length>=20) writeTofile(repPath+name1+File.separator+name1, "Comment : " + args[20] + "\n\n");
-		writeTofile(repPath+name1+File.separator+name1, "		Nb of generated traces :	" + nbTraceExec + "\n");
-		writeTofile(repPath+name1+File.separator+name1, "		Nb of executions by trace :	" + nbExec + "\n");
-		writeTofile(repPath+name1+File.separator+name1, "		Duration :	" + duration + "\n");
-		writeTofile(repPath+name1+File.separator+name1, "		% of insertions :	" + perIns+ "\n");
-		writeTofile(repPath+name1+File.separator+name1, "		% of Blocks :	" + perBlock+ "\n");
-		writeTofile(repPath+name1+File.separator+name1, "		Avg blockSize :	 " + avgBlockSize+ "\n");
-		writeTofile(repPath+name1+File.separator+name1, "		Sdv blockSize :	 " + sdvBlockSize+ "\n");
-		writeTofile(repPath+name1+File.separator+name1, "		Probability :	" + probability + "\n");
-		writeTofile(repPath+name1+File.separator+name1, "		Delay :	" + delay+ "\n");
-		writeTofile(repPath+name1+File.separator+name1, "		Sdv :	" + sdv+ "\n");
-		writeTofile(repPath+name1+File.separator+name1, "		Number of replicas :	" + replicas+ "\n");
-		writeTofile(repPath+name1+File.separator+name1, "\n\n\nName	Total execution time (ms)	Average local execution time (ns)	Average remote execution time (ns)	Bandwidth (o)	Memory (o)\n");
+		String repPath1 = repPath+traceName+File.separator;	
+		writeTofile(repPath+traceName+File.separator+traceName, "RESUME OF RESULTS FOR : " + traceName + "\n\n");
+		writeTofile(repPath+traceName+File.separator+traceName, "Comment : " + comment + "\n\n");
+		writeTofile(repPath+traceName+File.separator+traceName, "		Nb of generated traces :	" + nbTraceExec + "\n");
+		writeTofile(repPath+traceName+File.separator+traceName, "		Nb of executions by trace :	" + nbExec + "\n");
+		writeTofile(repPath+traceName+File.separator+traceName, "		Duration :	" + duration + "\n");
+		writeTofile(repPath+traceName+File.separator+traceName, "		% of insertions :	" + perIns+ "\n");
+		writeTofile(repPath+traceName+File.separator+traceName, "		% of Blocks :	" + perBlock+ "\n");
+		writeTofile(repPath+traceName+File.separator+traceName, "		Avg blockSize :	 " + avgBlockSize+ "\n");
+		writeTofile(repPath+traceName+File.separator+traceName, "		Sdv blockSize :	 " + sdvBlockSize+ "\n");
+		writeTofile(repPath+traceName+File.separator+traceName, "		Probability :	" + probability + "\n");
+		writeTofile(repPath+traceName+File.separator+traceName, "		Delay :	" + delay+ "\n");
+		writeTofile(repPath+traceName+File.separator+traceName, "		Sdv :	" + sdv+ "\n");
+		writeTofile(repPath+traceName+File.separator+traceName, "		Number of replicas :	" + replicas+ "\n");
+		writeTofile(repPath+traceName+File.separator+traceName, "\n\n\nName	Total execution time (ms)	Average local execution time (ns)	Average remote execution time (ns)	Bandwidth (o)	Memory (o)\n");
 
 		for (int f=0; f<factories.size(); f++){
 			StringBuilder s = new StringBuilder();
-			double a=0;
-			double b=0;
-			double c=0;
-			double d=0;
-			double e=0;
-			String aa ="";
+			double execTime = 0;
+			double localExecTime = 0;
+			double remoteExecTime = 0;
+			double bandwidth = 0;
+			double memory = 0;
+			String algoName ="";
 
 			for (int k=0; k<nbTraceExec; k++){
-				Scanner scanner=new Scanner(new File(repPath1+name1+"-"+k+File.separator+name1+"-"+k+".csv"));
+				Scanner scanner=new Scanner(new File(repPath1+traceName+"-"+k+File.separator+traceName+"-"+k+".csv"));
 				while (scanner.hasNextLine()) {
 					String line = scanner.nextLine();
 					StringTokenizer st = new StringTokenizer(line, "	"); 
-
-					if (st.hasMoreTokens()) aa = st.nextToken().toString();
-					if (st.hasMoreTokens() && ("jbenchmarker.factories."+ aa +"Factory").equals(factories.get(f))){ 
-						a+= Double.parseDouble(st.nextToken().replace(",","."));
-						b+= Double.parseDouble(st.nextToken().replace(",","."));
-						c+= Double.parseDouble(st.nextToken().replace(",","."));
-						d+= Double.parseDouble(st.nextToken().replace(",","."));
-						e+= Double.parseDouble(st.nextToken().replace(",","."));
+					if (st.hasMoreTokens()) algoName = st.nextToken().toString();
+					if (st.hasMoreTokens() && (("jbenchmarker.factories."+ algoName +"Factory").equals(factories.get(f)) || ("jbenchmarker.factories.WootFactories$"+algoName+"Factory").equals(factories.get(f)))){ 
+						execTime += Double.parseDouble(st.nextToken().replace(",","."));
+						localExecTime += Double.parseDouble(st.nextToken().replace(",","."));
+						remoteExecTime += Double.parseDouble(st.nextToken().replace(",","."));
+						bandwidth += Double.parseDouble(st.nextToken().replace(",","."));
+						memory += Double.parseDouble(st.nextToken().replace(",","."));
 						scanner.close();
 						break;
 					}
 				}
 			}
 
-			s.append(aa+"	");
-			s.append((a/nbTraceExec)+"	");
-			s.append((b/nbTraceExec)+"	");
-			s.append((c/nbTraceExec)+"	");
-			s.append((d/nbTraceExec)+"	");
-			s.append((e/nbTraceExec)+"\n");	
-			writeTofile(repPath+name1+File.separator+name1, s.toString().replace(".",","));
-
+			s.append(algoName + "	");
+			s.append((execTime / nbTraceExec)+"	");
+			s.append((localExecTime / nbTraceExec)+"	");
+			s.append((remoteExecTime / nbTraceExec)+"	");
+			s.append((bandwidth / nbTraceExec)+"	");
+			s.append((memory / nbTraceExec)+"\n");	
+			writeTofile(repPath+traceName+File.separator+traceName, s.toString().replace(".",","));
 		}
+		
+
+		Scanner scanner=new Scanner(new File(repPath+traceName+File.separator+traceName+".csv"));
+		StringBuilder s1 = new StringBuilder();
+		while (scanner.hasNextLine()) {
+			String line = scanner.nextLine();
+			line=line.replace(".",",");
+			s1.append(line+"\n");
+		}
+
+		FileWriter local = new FileWriter(repPath+traceName+File.separator+traceName+".csv", false);
+		local.write(s1.toString());
+
+		if (local != null) {
+			local.close();
+		}
+		scanner.close();
 	}
 
 
