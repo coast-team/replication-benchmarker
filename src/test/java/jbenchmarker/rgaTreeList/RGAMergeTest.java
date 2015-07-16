@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.rga;
+package jbenchmarker.rgaTreeList;
 
 import crdt.Factory;
 import crdt.PreconditionException;
@@ -24,7 +24,7 @@ import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.random.StandardSeqOpProfile;
 import java.io.IOException;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.factories.RGAFactory;
+import jbenchmarker.factories.RGATreeListFactory;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -36,7 +36,7 @@ public class RGAMergeTest {
 
     @Before
     public void setUp() throws Exception {
-        replica = (RGAMerge) new RGAFactory().create(REPLICA_ID);
+        replica = (RGAMerge) new RGATreeListFactory().create(REPLICA_ID);
     }
 
     @Test
@@ -50,6 +50,7 @@ public class RGAMergeTest {
         int pos = 3;
         replica.applyLocal(SequenceOperation.insert(0, content));
         assertEquals(content, replica.lookup());
+        System.out.println("END\n\n\n");
         replica.applyLocal(SequenceOperation.insert(pos, c2));
         assertEquals(content.substring(0, pos) + c2 + content.substring(pos), replica.lookup());
     }
@@ -76,6 +77,6 @@ public class RGAMergeTest {
 
     @Test
     public void testRun() throws IncorrectTraceException, PreconditionException, IOException {
-        crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFactory(), 400, 400, StandardSeqOpProfile.BASIC);
+        crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGATreeListFactory(), 400, 400, StandardSeqOpProfile.BASIC);
     }
 }
