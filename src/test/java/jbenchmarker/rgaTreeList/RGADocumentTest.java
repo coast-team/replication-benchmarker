@@ -18,33 +18,83 @@
  */
 package jbenchmarker.rgaTreeList;
 
-import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.simulator.IncorrectTraceException;
-import crdt.simulator.random.StandardDiffProfile;
-
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.core.SequenceOperation.OpType;
 import jbenchmarker.factories.RGATreeListFactory;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import org.junit.Before;
 
 public class RGADocumentTest {
-
-
-//
-	@Test
-	public void testview() 	{
-		System.out.println("Test RGADocument ...");
-		RGADocument doc = new RGADocument();
-
-		assertEquals("", doc.view());
+	static List<String> input(String A){
+		List<String> a= new ArrayList<String>();
+		for (int i=0; i<A.length(); i++){
+			a.add((A.substring(i,i+1)));	
+		}
+		return a;			
 	}
 	
+	static void apply(RGADocument rgadoc, SequenceOperation so, RGAMerge merge) throws IncorrectTraceException{
+		if (so.getType()==OpType.insert){
+			merge.localInsert(so);
+		}
+		else if (so.getType()==OpType.delete){
+			merge.localDelete(so);
+		}
+	}
+
+	private static final int REPLICA_ID = 7;
+	private RGAMerge replica;
+
+	@Before
+	public void setUp() throws Exception {
+		replica = (RGAMerge) new RGATreeListFactory().create(REPLICA_ID);
+	}
+
 	@Test
-	public void testRunRGA() throws IncorrectTraceException, PreconditionException, IOException {
-		StandardDiffProfile SMALL = new StandardDiffProfile(0.1, 0.8, 0.8, 20, 3.0, 4, 3);
-		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGATreeListFactory(), 10, 10, SMALL);
+	public void testEmpty() {
+		assertEquals("", replica.lookup());
+	}
+
+
+	@Test
+	public void testRemoteInsert() throws PreconditionException {     
+		replica.applyLocal(SequenceOperation.insert(0, "abcdejk"));
+		assertEquals("Insertion du contenu initial", "abcdejk", replica.lookup());
+
+		replica.applyLocal(SequenceOperation.insert(3, "fghi"));
+		assertEquals("Insertion au milieu","abcfghidejk", replica.lookup()); 
+
+		replica.applyLocal(SequenceOperation.insert(11, "lmnop"));
+		assertEquals("Insertion à la fin","abcfghidejklmnop", replica.lookup()); 
+
+	}
+
+
+	@Test
+	public void testRemoteDelete() throws PreconditionException {
+		replica.applyLocal(SequenceOperation.insert(0,"abcdefghijklmnopq"));
+		assertEquals("Insertion du contenu","abcdefghijklmnopq", replica.lookup());
+		
+		replica.applyLocal(SequenceOperation.delete(1, 4));
+		assertEquals("Suppression en début","afghijklmnopq", replica.lookup());
+
+		replica.applyLocal(SequenceOperation.delete(5, 8));
+		assertEquals("Suppression au milieu","afghi", replica.lookup());
+
+		replica.applyLocal(SequenceOperation.delete(1, 3));
+		assertEquals("Suppression au milieu","ai", replica.lookup());
+		
+		replica.applyLocal(SequenceOperation.delete(1, 1));
+		assertEquals("Suppression à la fin","a", replica.lookup());
+
+		replica.applyLocal(SequenceOperation.delete(0, 1));
+		assertEquals("Suppression au début","", replica.lookup());
 	}
 	
 }
