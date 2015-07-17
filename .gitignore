@@ -1,4 +1,5 @@
 /target/
 /.settings/
 /RgaSTrace
-/Result
+/ResultTest
+*.class
