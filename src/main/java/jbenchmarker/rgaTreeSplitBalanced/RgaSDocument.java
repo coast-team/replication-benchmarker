@@ -26,6 +26,7 @@ public class RgaSDocument<T> implements Document {
 	private int size = 0;
 	private int nodeNumberInTree=0;
 	private int nbOp=0;
+	private int sumHeight=0;
 
 	public RgaSDocument() {
 		super();
@@ -149,6 +150,14 @@ public class RgaSDocument<T> implements Document {
 				RgaSTree treeEnd = new RgaSTree(end, null, node.getTree().getRightSon());
 				node.getTree().setRoot(node);
 				node.getTree().setRightSon(treeEnd);
+
+				RgaSTree newTree = treeEnd;
+				int i=1;
+				while (newTree!=null){ // add the size of the inserted node in all fathers and grandfathers
+					newTree=newTree.getFather();
+					i++;
+				}
+				sumHeight+=i;
 				nodeNumberInTree++;
 			}
 		}
@@ -206,54 +215,31 @@ public class RgaSDocument<T> implements Document {
 		}
 
 		newTree=newTree.getFather();
+		int i=1;
 		while (newTree!=null){ // add the size of the inserted node in all fathers and grandfathers
 			newTree.setSize(newTree.size()+newnd.size());
 			newTree=newTree.getFather();
+			i++;
 		}
+		sumHeight+=i;
 		nodeNumberInTree++;
 		nbOp++;
-		
-		if (nbOp >(3*nodeNumberInTree+1)/(0.44*Math.log(nodeNumberInTree+1)/Math.log(2))){
-			//System.out.println("I'm come in! " + nodeNumberInTree +", " + nbOp);
+
+		if (nbOp >(nodeNumberInTree)/(0.14*Math.log(nodeNumberInTree)/Math.log(2))){
+
+		//if (sumHeight/ nodeNumberInTree > 2.44*Math.log(nodeNumberInTree+1)/Math.log(2)){
+			System.out.println("I'm come in! " + nodeNumberInTree +", " + nbOp);
 			nbOp=0;
+			//System.out.println("Before balanced: "+ (int) (checkTreeDepth(root,0)+1) + ", " + ((float)checkTreeAverageDepth(root,0)) / nodeNumberInTree+ ", "+ Math.log(nodeNumberInTree+1)/Math.log(2)+ ", "+ nodeNumberInTree);
 			List<RgaSNode> content = createNodeList(new ArrayList(), getRoot());
 			createBalancedTree(new RgaSTree(), content,  0, content.size());
 			addGoodSize(getRoot());
+			//System.out.println("After balanced: "+ (int) (checkTreeDepth(root,0)+1) + ", " + ((float)checkTreeAverageDepth(root,0)) / nodeNumberInTree+ ", "+ Math.log(nodeNumberInTree+1)/Math.log(2)+ ", "+ nodeNumberInTree);
+			//System.out.println();
 		}
+		//}
 	}
-/*
-	public void insertInLocalTree(RgaSNode nodePos, RgaSNode newnd){
-		RgaSTree tree = (nodePos== null) ? null : nodePos.getTree();
-		RgaSTree newTree = new RgaSTree(newnd, null, null);
 
-		if (root==null || (nodePos!=null && nodePos.equals(head))){
-			if (root==null)	root=newTree;
-			else findMostLeft(root, 0).setLeftSon(newTree);
-
-		} else if (nodePos==null){
-			findMostRight(root, 0).setRightSon(newTree);
-
-		} else {
-			if (tree.getRightSon()== null) tree.setRightSon(newTree);
-			else findMostLeft(tree.getRightSon(),0).setLeftSon(newTree);
-		}
-
-		newTree=newTree.getFather();
-		while (newTree!=null){ // add the size of the inserted node in all fathers and grandfathers
-			newTree.setSize(newTree.size()+newnd.size());
-			newTree=newTree.getFather();
-		}
-		nodeNumberInTree++;
-		nbOp++;
-		
-		if (nbOp >(3*nodeNumberInTree+1)/(0.44*Math.log(nodeNumberInTree+1)/Math.log(2))){
-			//System.out.println("I'm come in! " + nodeNumberInTree +", " + nbOp);
-			nbOp=0;
-			List<RgaSNode> content = createNodeList(new ArrayList(), getRoot());
-			createBalancedTree(new RgaSTree(), content,  0, content.size());
-			addGoodSize(getRoot());
-		}
-	}*/
 
 	public void deleteInLocalTree(RgaSNode nodeDel){
 		RgaSTree tree = nodeDel.getTree(), father = null;
@@ -301,11 +287,13 @@ public class RgaSDocument<T> implements Document {
 
 		tree=null;
 		nodeNumberInTree--;
-
+		int i =1;
 		while (father!=null){  // soutract the size of the deleted node in all fathers and grandfathers 
 			father.setSize(father.size()-nodeDel.size());
 			father=father.getFather();
+			i++;
 		}
+		sumHeight-=i;
 	}
 
 
@@ -331,7 +319,7 @@ public class RgaSDocument<T> implements Document {
 		}
 		return s.toString();
 	}*/
-	
+
 	@Override
 	public String view() {
 		return treeView(new StringBuilder(),root);
@@ -527,6 +515,40 @@ public class RgaSDocument<T> implements Document {
 				tree.setSize(tree.size()+tree.getRightSize());
 			}
 		}
-
 	}
+
+	private int checkTreeDepth(RgaSTree tree, int height) {
+		int hright = (tree.getRightSon()== null) ? -1 : checkTreeDepth(tree.getRightSon(), height);
+		int hleft = (tree.getLeftSon() == null ? -1 : checkTreeDepth(tree.getLeftSon(),height));
+		height=Math.max(hright, hleft)+1;
+		return height;
+	}
+
+	private int checkTreeAverageDepth(RgaSTree tree, int height) {
+		if (tree!=null){
+			if (tree.getLeftSon()!=null){
+				height+=treeDepth(tree.getLeftSon());
+				height=checkTreeAverageDepth(tree.getLeftSon(), height);
+
+			}
+			height++;
+			if (tree.getRightSon()!=null){
+				height+=treeDepth(tree.getRightSon());
+				height=checkTreeAverageDepth(tree.getRightSon(),height);
+
+			}
+		}
+		return height;
+	}
+
+	private int treeDepth(RgaSTree tree){
+		int i=0;
+		while (!tree.equals(root)){
+			i++;
+			tree=tree.getFather();
+		}
+		return i;
+	}
+
+
 }

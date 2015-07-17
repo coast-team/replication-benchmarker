@@ -135,6 +135,8 @@ public class TreeList extends AbstractList {
         return listIterator(0);
     }
 
+    
+    
     /**
      * Gets a ListIterator over the list.
      * 
@@ -606,6 +608,7 @@ public class TreeList extends AbstractList {
          */
         private AVLNode removeSelf() {
             if (getRightSubTree() == null && getLeftSubTree() == null) {
+            	this.father=null;
                 return null;
             }
             if (getRightSubTree() == null) {
@@ -613,11 +616,13 @@ public class TreeList extends AbstractList {
                     left.relativePosition += relativePosition + (relativePosition > 0 ? 0 : 1);
                 }
                 left.max().setRight(null, right);
+                this.father=null;
                 return left;
             }
             if (getLeftSubTree() == null) {
                 right.relativePosition += relativePosition - (relativePosition < 0 ? 0 : 1);
                 right.min().setLeft(null, left);
+                this.father=null;
                 return right;
             }
 

@@ -57,6 +57,7 @@ public class RGANode<T> implements Serializable {
 
     public void makeTombstone() {
         this.content = null;
+        this.tree=null;
     }
 
     public void setNext(RGANode nd) {

@@ -101,6 +101,7 @@ public class RgaSNode<T> implements Serializable {
 	public void makeTombstone() {
 		this.tomb = true;
 		this.content = null;
+		this.tree=null;
 	}
 
 	public RgaSNode getNextVisible() {
