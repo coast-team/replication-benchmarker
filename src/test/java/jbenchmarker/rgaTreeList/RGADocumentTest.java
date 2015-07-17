@@ -95,6 +95,15 @@ public class RGADocumentTest {
 
 		replica.applyLocal(SequenceOperation.delete(0, 1));
 		assertEquals("Suppression au début","", replica.lookup());
+        }
+
+	public void test(){
+		TreeList list = new TreeList();
+		for (int i=0; i<15; i++){
+			list.add(new RGANode(null, i));
+		}
+		
+		System.out.println(list);
+		list.treeViewWithSeparator(list.getRoot(),0);
 	}
-	
 }

@@ -59,59 +59,60 @@ public class RGAMerge extends MergeAlgorithm {
 		rgadoc.apply(rgaop);
 	}
 
-	
-	 @Override
-	    protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
-	        List<Operation> lop = new ArrayList<Operation>();
-	        RGADocument rgadoc = (RGADocument) (this.getDoc());
-	        RGAS4Vector s4vtms, first = null;
-	        RGANode before, node;
-	   
-	        int p = opt.getPosition();
 
-	
-	        before = rgadoc.getVisibleNode(p);   
-	        node = before;
-	        List<RGANode> ln = new ArrayList();
-	        for (Object t : opt.getContent()) {
-	            this.siteVC.inc(this.getReplicaNumber());
-	            s4vtms = new RGAS4Vector(this.getReplicaNumber(), this.siteVC);
-	            if (first == null) {
-	                first = s4vtms;
-	            }
-	            node = rgadoc.remoteInsert(node, s4vtms, t);
-	            ln.add(node);
-	        }
-	        rgadoc.addLocal(p, ln);
-	        
-	        lop.add(new RGAOperation(before.getKey(), opt.getContent(), first));
-	        return lop;
-	    }
-	 
-	 
-	  @Override
-	    protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
-	        List<Operation> lop = new ArrayList<Operation>();
-	        RGADocument rgadoc = (RGADocument) (this.getDoc());
-	        RGAOperation rgaop;
-	        RGANode target;
+	@Override
+	protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
+		List<Operation> lop = new ArrayList<Operation>();
+		RGADocument rgadoc = (RGADocument) (this.getDoc());
+		RGAS4Vector s4vtms, first = null;
+		RGANode before, node;
 
-	        int p = opt.getPosition();
-	        int offset;
+		int p = opt.getPosition();
 
-	        offset = opt.getLenghOfADel();
-	        target = rgadoc.getVisibleNode(p+1);
 
-	        for (int i = 0; i < offset; i++) {
-	            rgaop = new RGAOperation(target.getKey());
-	            target = target.getNextVisible();
-	            lop.add(rgaop);
-	            rgadoc.remoteDelete(rgaop);
-	        }
-	        rgadoc.removeLocal(p,offset);
-	        
-	        return lop;
-	    }
+		before = rgadoc.getVisibleNode(p);   
+		node = before;
+		List<RGANode> ln = new ArrayList();
+		for (Object t : opt.getContent()) {
+			this.siteVC.inc(this.getReplicaNumber());
+			s4vtms = new RGAS4Vector(this.getReplicaNumber(), this.siteVC);
+			if (first == null) {
+				first = s4vtms;
+			}
+			node = rgadoc.remoteInsert(node, s4vtms, t);
+			ln.add(node);
+		}
+		rgadoc.addLocal(p, ln);
+
+		lop.add(new RGAOperation(before.getKey(), opt.getContent(), first));
+		return lop;
+	}
+
+
+	@Override
+	protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
+		List<Operation> lop = new ArrayList<Operation>();
+		RGADocument rgadoc = (RGADocument) (this.getDoc());
+		RGAOperation rgaop;
+		RGANode target;
+
+		int p = opt.getPosition();
+		int offset;
+
+		offset = opt.getLenghOfADel();
+		target = rgadoc.getVisibleNode(p+1);
+
+		for (int i = 0; i < offset; i++) {
+				rgaop = new RGAOperation(target.getKey());
+				target = target.getNextVisible();
+				lop.add(rgaop);
+				rgadoc.remoteDelete(rgaop);
+		}
+
+		rgadoc.removeLocal(p,offset);
+
+		return lop;
+	}
 	/*
 	@Override
 	protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
@@ -145,7 +146,7 @@ public class RGAMerge extends MergeAlgorithm {
 
 		lop.add(new RGAOperation(before.getKey(), opt.getContent(), first));
 		return lop;
-		
+
 		this.siteVC.inc(this.getReplicaNumber());
 		s4vtms = new RGAS4Vector(this.getReplicaNumber(), this.siteVC);
 		rgaop = new RGAOperation(p, s4vpos, opt.getContent(), s4vtms);

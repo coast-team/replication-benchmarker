@@ -20,28 +20,27 @@ package jbenchmarker.rgaTreeList;
 
 import java.io.Serializable;
 
+import jbenchmarker.rgaTreeList.TreeList.AVLNode;
+
 /**
  *
  * @author Roh
  */
 public class RGANode<T> implements Serializable {
 
-    private RGAS4Vector key;
-    private RGAS4Vector tomb;	//used for visible and tombstone purging if null, then not tombstone 		 
+    private RGAS4Vector key;	 
     private T content;
     private RGANode next;
+    private AVLNode tree;
+    
+    
 
     public RGANode() {
-        this.key = null;
-        this.next = null;
-        this.tomb = null;
     }
 
     public RGANode(RGAS4Vector s4v, T c) {
         this.key = s4v;
         this.content = c;
-        this.tomb = null;
-        this.next = null;
     }
 
     public RGAS4Vector getKey() {
@@ -51,16 +50,13 @@ public class RGANode<T> implements Serializable {
     public T getContent() {
         return content;
     }
-
+    
     public boolean isVisible() {
-        if (this.tomb == null) {
-            return true;
-        }
-        return false;
+        return content != null;
     }
 
-    public void makeTombstone(RGAS4Vector s4v) {
-        this.tomb = s4v;
+    public void makeTombstone() {
+        this.content = null;
     }
 
     public void setNext(RGANode nd) {
@@ -70,25 +66,23 @@ public class RGANode<T> implements Serializable {
     public RGANode getNext() {
         return next;
     }
+    
+    public AVLNode getTree() {
+ 		return tree;
+ 	}
 
-    public RGAS4Vector getTomb() {
-        return this.tomb;
-    }
-
+ 	public void setTree(AVLNode tree) {
+ 		this.tree = tree;
+ 	}
+    
     public RGANode getNextVisible() {
         RGANode node = next;
         while (node != null && !node.isVisible()) {
-            node = node.getNext();
+            node = node.next;
         }
         return node;
     }
 
-    @Override
-	public String toString() {
-		String Next = next == null ? "null" : next.getKey().toString();
-		return "[" + key + "," + Next + "," + tomb +","  + content + "]";  
-	}
-    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -109,5 +103,15 @@ public class RGANode<T> implements Serializable {
         int hash = 3;
         hash = 89 * hash + (this.key != null ? this.key.hashCode() : 0);
         return hash;
+    }
+
+    /*@Override
+    public String toString() {
+        return "RGANode{" + key + ", T=" + content + "}";
+    }*/
+
+    @Override
+    public String toString() {
+        return content+"";
     }
 }
