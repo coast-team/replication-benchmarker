@@ -2,12 +2,8 @@ package jbenchmarker.rgaTreeSplit;
 
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.treedoc.TreedocNode;
-import jbenchmarker.treedoc.TreedocIdentifier.EdgeDirection;
-
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 
 
 
@@ -85,9 +81,9 @@ public class RgaSDocument<T> implements Document {
 			next = next.getNext();
 		}
 
-		nodeTree=node;
-		if(!node.equals(head) && !node.isVisible()) nodeTree=nodeTree.getNextVisible();
-		insertInLocalTree(nodeTree,newnd);
+		nodeTree=node.getNextVisible();
+		
+		insertInLocalTree( nodeTree,newnd);
 
 		newnd.setNext(next);
 		node.setNext(newnd);
@@ -193,26 +189,27 @@ public class RgaSDocument<T> implements Document {
 		}
 	}
 
-	public void insertInLocalTree( RgaSNode nodePos, RgaSNode newnd){
+	public void insertInLocalTree(RgaSNode nodePos, RgaSNode newnd){
 		RgaSTree tree = (nodePos== null) ? null : nodePos.getTree();
 		RgaSTree newTree = new RgaSTree(newnd, null, null);
 
 		if (root==null || (nodePos!=null && nodePos.equals(head))){
 			if (root==null)	root=newTree;
-			else findMostLeft(root, 0).setLeftSon(newTree);
+			else if (root.getLeftSon()==null) root.setLeftSon(newTree);
+			else findMostRight(root.getLeftSon(), 0).setRightSon(newTree);
 
-		} else if (nodePos==null ){
+		} else if (nodePos==null){
 			findMostRight(root, 0).setRightSon(newTree);
 
 		} else {
-			if (tree.getRightSon()== null) tree.setRightSon(newTree);
-			else findMostLeft(tree.getRightSon(),0).setLeftSon(newTree);
+			if (tree.getLeftSon()== null) tree.setLeftSon(newTree);
+			else findMostRight(tree.getLeftSon(),0).setRightSon(newTree);
 		}
 
-		while (newTree.getFather()!=null){ // add the size of the inserted node in all fathers and grandfathers
-			newTree=newTree.getFather();
+		newTree=newTree.getFather();
+		while (newTree!=null){ // add the size of the inserted node in all fathers and grandfathers
 			newTree.setSize(newTree.size()+newnd.size());
-
+			newTree=newTree.getFather();
 		}
 	}
 
@@ -277,6 +274,11 @@ public class RgaSDocument<T> implements Document {
 
 	@Override
 	public String view() {
+		return treeView(new StringBuilder(),root);
+	}
+	
+	/*@Override
+	public String view() {
 		StringBuilder s = new StringBuilder();
 		RgaSNode node = head.getNext();
 		while (node != null) {
@@ -287,7 +289,7 @@ public class RgaSDocument<T> implements Document {
 			node = node.getNext();
 		}
 		return s.toString();
-	}
+	}*/
 
 	public String viewWithSeparator() {
 		StringBuilder s = new StringBuilder();
@@ -320,12 +322,13 @@ public class RgaSDocument<T> implements Document {
 		}
 	}
 
-	public void treeView(RgaSTree tree){
+	public String treeView(StringBuilder buf,RgaSTree tree){
 		if (tree!=null){
-			if (tree.getLeftSon()!=null) treeView(tree.getLeftSon());
-			System.out.print(tree.getRoot().getContentAsString());
-			if (tree.getRightSon()!=null) treeView(tree.getRightSon());
+			if (tree.getLeftSon()!=null) treeView(buf,tree.getLeftSon());
+			buf.append(tree.getRoot().getContentAsString());
+			if (tree.getRightSon()!=null) treeView(buf,tree.getRightSon());
 		}
+		return buf.toString();
 	}
 
 

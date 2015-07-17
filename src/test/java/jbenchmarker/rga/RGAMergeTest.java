@@ -76,6 +76,6 @@ public class RGAMergeTest {
 
     @Test
     public void testRun() throws IncorrectTraceException, PreconditionException, IOException {
-        crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFactory(), 500, 500, StandardSeqOpProfile.BASIC);
+        crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFactory(), 400, 400, StandardSeqOpProfile.BASIC);
     }
 }

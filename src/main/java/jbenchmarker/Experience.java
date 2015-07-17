@@ -129,7 +129,6 @@ public abstract class Experience<T> {
         public void writeToFile(long[][] data, String fileName, String type) throws IOException {
 
         String nameFile = fileName + '-' + type + ".res";
-        nameFile = nameFile.replaceAll("/", "-");
         BufferedWriter out = new BufferedWriter(new FileWriter(nameFile));
         if (type.equals("mem") && !fileName.contains("Logoot")) {
             for (int op = 0; op < data[0].length; ++op) {

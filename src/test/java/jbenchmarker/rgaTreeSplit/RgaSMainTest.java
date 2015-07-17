@@ -35,7 +35,6 @@ public class RgaSMainTest {
 			System.out.println("Size of doc: "+rgadoc.viewLength());
 			System.out.println("ListedChain view: "+rgadoc.view());
 			System.out.print("Tree view: ");
-			rgadoc.treeView(rgadoc.getRoot());
 			System.out.println("\n");
 			rgadoc.treeViewWithSeparator(rgadoc.getRoot(),0);
 			System.out.println("\n\n");
