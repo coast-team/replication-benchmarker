@@ -16,11 +16,13 @@
  */
 package jbenchmarker.rgaTreeList;
 import java.util.AbstractList;
+
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
+
 import jbenchmarker.rgaTreeList.OrderedIterator;
 
 /**
@@ -74,9 +76,7 @@ public class TreeList extends AbstractList {
         super();
     }
     
-    public void incSize(){
-    	size++;
-    }
+
 
     public void treeViewWithSeparator(AVLNode tree, int profondeur){
 
@@ -92,13 +92,6 @@ public class TreeList extends AbstractList {
 		}
 	}
     
-    public AVLNode getRoot(){
-    	return root;
-    }
-    
-    public void setRoot(AVLNode newRoot){
-    	root= newRoot;
-    }
     
     /**
      * Constructs a new empty list that copies the specified list.
@@ -170,13 +163,34 @@ public class TreeList extends AbstractList {
      * 
      * @return the index of the object, -1 if not found
      */
+
+    
+    public int indexOf(Object object) {
+        if (root == null) {
+            return -1;
+        }
+        
+        int index=0;
+    	RGANode node = (RGANode) object;
+    	AVLNode tree = node.getTree();
+    	
+    	while (!tree.equals(root)){
+    		index+=tree.relativePosition;
+    		tree=tree.getFather();
+    	}
+    	index+=tree.relativePosition;
+        return index;
+    }
+    
+    
+    /*
     public int indexOf(Object object) {
         // override to go 75% faster
         if (root == null) {
             return -1;
         }
         return root.indexOf(object, root.relativePosition);
-    }
+    }*/
 
     /**
      * Searches for the presence of an object in the list.
@@ -287,7 +301,7 @@ public class TreeList extends AbstractList {
      * The Faedelung calculation stores a flag for both the left and right child
      * to indicate if they are a child (false) or a link as in linked list (true).
      */
-    static class AVLNode {
+    public class AVLNode {
         /** The left child node or the predecessor if {@link #leftIsPrevious}.*/
         private AVLNode left;
         /** Flag indicating that left reference is not a subtree but the predecessor. */
@@ -302,8 +316,18 @@ public class TreeList extends AbstractList {
         private int relativePosition;
         /** The stored element. */
         private Object value;
+        
+        private AVLNode father;
 
-        /**
+        public AVLNode getFather() {
+			return father;
+		}
+
+		public void setFather(AVLNode father) {
+			this.father = father;
+		}
+
+		/**
          * Constructs a new node with a relative position.
          * 
          * @param relativePosition  the relative position of the node
@@ -314,34 +338,15 @@ public class TreeList extends AbstractList {
         public AVLNode(int relativePosition, Object obj, AVLNode rightFollower, AVLNode leftFollower) {
             this.relativePosition = relativePosition;
             value = obj;
+            if (value!=null) ((RGANode)value).setTree(this);
             rightIsNext = true;
             leftIsPrevious = true;
             right = rightFollower;
+            if (rightFollower!=null) rightFollower.setFather(this);
             left = leftFollower;
+            if (leftFollower!=null) leftFollower.setFather(this);
         }
 
-        public int getRelativePosition(){
-        	return relativePosition;
-        }
-       
-        public void setRelativePosition(int pos){
-        	relativePosition=pos;
-        }
-        
-        public void setHeight(int h){
-        	height=h;
-        }
-        public AVLNode getRightSon(){
-        	return right;
-        }
-        
-        
-        public AVLNode getLeftSon(){
-        	return left;
-        }
-        public void setRightSon(AVLNode rightSon){
-        	this.right=rightSon;
-        }
         /**
          * Gets the value.
          * 
@@ -358,12 +363,15 @@ public class TreeList extends AbstractList {
          */
         void setValue(Object obj) {
             this.value = obj;
+            if (value!=null) ((RGANode)value).setTree(this);
         }
 
         /**
          * Locate the element with the given index relative to the
          * offset of the parent of this node.
          */
+        
+        
         AVLNode get(int index) {
             int indexRelativeToMe = index - relativePosition;
 
@@ -377,10 +385,28 @@ public class TreeList extends AbstractList {
             }
             return nextNode.get(indexRelativeToMe);
         }
+        
+        
+      
 
         /**
          * Locate the index that contains the specified object.
          */
+
+        int indexOf(Object object, int index) {
+        	index=0;
+        	RGANode node = (RGANode) object;
+        	AVLNode tree = node.getTree();
+        	
+        	while (tree!=null){
+        		index+=tree.relativePosition;
+        		tree=tree.getFather();
+        	}
+            return index;
+        }
+        
+        
+        /*
         int indexOf(Object object, int index) {
             if (getLeftSubTree() != null) {
                 int result = left.indexOf(object, index + left.relativePosition);
@@ -395,7 +421,7 @@ public class TreeList extends AbstractList {
                 return right.indexOf(object, index + right.relativePosition);
             }
             return -1;
-        }
+        }*/
 
         /**
          * Stores the node and its children into the array specified.
@@ -598,27 +624,27 @@ public class TreeList extends AbstractList {
             if (heightRightMinusLeft() > 0) {
                 // more on the right, so delete from the right
                 AVLNode rightMin = right.min();
-                value = rightMin.value;
+                this.setValue(rightMin.value);
                 if (leftIsPrevious) {
-                    left = rightMin.left;
+                    this.setLeft(rightMin.left);
                 }
-                right = right.removeMin();
+                this.setRight(right.removeMin());
                 if (relativePosition < 0) {
                     relativePosition++;
                 }
             } else {
                 // more on the left or equal, so delete from the left
                 AVLNode leftMax = left.max();
-                value = leftMax.value;
+                this.setValue(leftMax.value);
                 if (rightIsNext) {
-                    right = leftMax.right;
+                    this.setRight(leftMax.right);
                 }
                 AVLNode leftPrevious = left.left;
-                left = left.removeMax();
+                this.setLeft(left.removeMax());
                 if (left == null) {
                     // special case where left that was deleted was a double link
                     // only occurs when height difference is equal
-                    left = leftPrevious;
+                    this.setLeft(leftPrevious);
                     leftIsPrevious = true;
                 }
                 if (relativePosition > 0) {
@@ -739,9 +765,16 @@ public class TreeList extends AbstractList {
          * @param node  the new left subtree node
          * @param previous  the previous node in the linked list
          */
+        
+        public void setLeft(AVLNode node) {
+            left =  node;
+            if (left!=null) left.setFather(this);
+        }
+        
         public void setLeft(AVLNode node, AVLNode previous) {
             leftIsPrevious = (node == null);
             left = (leftIsPrevious ? previous : node);
+            if (left!=null) left.setFather(this);
             recalcHeight();
         }
 
@@ -751,9 +784,16 @@ public class TreeList extends AbstractList {
          * @param node  the new left subtree node
          * @param next  the next node in the linked list
          */
+        
+        public void setRight(AVLNode node) {
+            right =  node;
+            if (right!=null) right.setFather(this);
+        }
+        
         public void setRight(AVLNode node, AVLNode next) {
             rightIsNext = (node == null);
             right = (rightIsNext ? next : node);
+            if (right!=null) right.setFather(this);
             recalcHeight();
         }
 
@@ -960,5 +1000,9 @@ public class TreeList extends AbstractList {
             expectedModCount++;
         }
     }
+
+	public AVLNode getRoot() {
+		return root;
+	}
 
 }

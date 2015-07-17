@@ -57,7 +57,6 @@ public class RGAMergeTest {
         replica.applyLocal(SequenceOperation.insert(0, content));
         assertEquals(content, replica.lookup());
         replica.applyLocal(SequenceOperation.insert(pos, c2));
-        System.out.println("END\n\n\n");
         assertEquals(content.substring(0, pos) + c2 + content.substring(pos), replica.lookup());
     }
 
@@ -130,6 +129,7 @@ public class RGAMergeTest {
 	
 	@Test
 	public void testMultipleUpdates() throws PreconditionException {
+		System.out.println("\n\n\nBEGIN");
 		String content = "abcdefghij";
 
 		CRDTMessage m1 = replica.applyLocal(SequenceOperation.insert(0, content));
@@ -156,6 +156,7 @@ public class RGAMergeTest {
 
 	@Test
 	public void testConcurrentUpdate() throws PreconditionException{
+		System.out.println("END\n\n\n");
 		String content = "abcdefghij";
 		CRDTMessage m1 = replica.applyLocal(SequenceOperation.insert(0, content));
 
@@ -185,6 +186,6 @@ public class RGAMergeTest {
 
     @Test
     public void testRun() throws IncorrectTraceException, PreconditionException, IOException {
-        crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGATreeListFactory(), 100, 100, StandardSeqOpProfile.BASIC);
+        crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGATreeListFactory(), 500, 500, StandardSeqOpProfile.BASIC);
     }
 }
