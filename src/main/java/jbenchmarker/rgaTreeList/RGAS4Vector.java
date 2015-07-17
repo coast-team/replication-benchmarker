@@ -45,7 +45,7 @@ public class RGAS4Vector implements Comparable<RGAS4Vector>, Serializable {
 
     @Override
     public String toString() {
-        return "[" + "," + sid + "," + sum + "]";
+        return "[" + sid + "," + sum + "]";
     }
 
     @Override

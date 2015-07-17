@@ -188,8 +188,8 @@ public final class TraceMain extends Experience {
 			writeTofile(repPath_RT_T+args[2], sizemsg / nbExec + "	");
 		}
 
-		System.out.println("Memory :   " + getAverageMem(repPath_RT_T_Tk+fileName + "-mem.res",10));
-		writeTofile(repPath_RT_T+args[2], getAverageMem( repPath_RT_T_Tk + fileName + "-mem.res",10)+ "\n");
+		System.out.println("Memory :   " + getAverageMem(repPath_RT_T_Tk+fileName + "-mem.res",1));
+		writeTofile(repPath_RT_T+args[2], getAverageMem( repPath_RT_T_Tk + fileName + "-mem.res",1)+ "\n");
 
 		
 		args[2]= repPath_RT_T + args[2];

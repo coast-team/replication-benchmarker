@@ -84,6 +84,12 @@ public class RGANode<T> implements Serializable {
     }
 
     @Override
+	public String toString() {
+		String Next = next == null ? "null" : next.getKey().toString();
+		return "[" + key + "," + Next + "," + tomb +","  + content + "]";  
+	}
+    
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;

@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jbenchmarker.core.LocalOperation;
+import jbenchmarker.vladium.*;
 
 /**
  *
@@ -410,16 +411,12 @@ public class CausalSimulator extends Simulator {
                 crdt.lookup();
                 long after=System.nanoTime();
                 sumTimeView += after-before;
-                sumMemory += serializer.serializ(crdt);
+                IObjectProfileNode profile = ObjectProfiler.profile (crdt);
+                sumMemory += profile.size ();
             }
             viewTime.add(new Long(sumTimeView / this.getReplicas().keySet().size()));
             memUsed.add(new Long(sumMemory / this.getReplicas().keySet().size()));
             tour = 0;
-
-            //debug
-            if (debugInformation && memUsed.size() % 10 == 0) {
-                System.out.println("Serialized :" + memUsed.size() * 100 + "x");
-            }
         }
     }
     

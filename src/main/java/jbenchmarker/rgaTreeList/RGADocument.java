@@ -21,6 +21,8 @@ package jbenchmarker.rgaTreeList;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceOperation;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import crdt.Operation;
 
@@ -32,26 +34,22 @@ public class RGADocument<T> implements Document {
 
 	private HashMap<RGAS4Vector, RGANode<T>> hash;
 	private RGANode head;
-	private int size = 0;
-	private TreeList list = new TreeList();
+	private TreeList list;
 	//private RGAPurger	purger;
 
 	public RGADocument() {
 		super();
 		head = new RGANode();
 		hash = new HashMap<RGAS4Vector, RGANode<T>>();
+		list = new TreeList();
 		//purger= new RGAPurger(this);
 	}
 
 	@Override
 	public String view() {
 		StringBuilder s = new StringBuilder();
-		RGANode node = head.getNext();
-		while (node != null) {
-			if (node.isVisible()) {
-				s.append(node.getContent());
-			}
-			node = node.getNext();
+		for (Object n : list) {
+			s.append(((RGANode)n).getContent());
 		}
 		return s.toString();
 	}
@@ -59,19 +57,41 @@ public class RGADocument<T> implements Document {
 	public void apply(Operation op) {
 		RGAOperation rgaop = (RGAOperation) op;
 		if (rgaop.getType() == SequenceOperation.OpType.delete) {
-			RemoteDelete(rgaop);
+			boolean wasVisible = remoteDelete(rgaop);
+			if (wasVisible) {
+				list.remove(hash.get(rgaop.getS4VPos()));
+			}
 		} else {
-			RemoteInsert(rgaop);
+			RGANode prev;
+			if (rgaop.getS4VPos() == null) {
+				prev = head;
+			} else {
+				prev = hash.get(rgaop.getS4VPos());
+			}
+			List<RGANode<T>> news = new LinkedList<RGANode<T>>();
+			RGANode node = prev;
+
+			RGAS4Vector v = rgaop.getS4VTms();
+			for (Object e : rgaop.getBlock()) {
+				node = remoteInsert(node, v, (T)e);
+				news.add(node);
+				v = v.follower();
+			}
+			RGANode next = node.getNextVisible();
+			
+			int index = (next==null) ? list.size() : list.indexOf(next);
+			list.addAll(index, news);
 		}
 	}
 
+	
+	/*
 	private void RemoteInsert(RGAOperation op) {
 		RGANode newnd = new RGANode(op.getS4VTms(), op.getContent());
 		RGANode prev, next;
 		RGAS4Vector s4v = op.getS4VTms();
 		if (op.getS4VPos() == null) {
 			prev = head;
-			list.add(0, newnd);
 		} else {
 			prev = hash.get(op.getS4VPos());
 		}
@@ -88,32 +108,65 @@ public class RGADocument<T> implements Document {
 			next = next.getNext();
 		}
 
+		int p=0;
 
-		int p= op.getIntPos();
-		if ( p >= size) p=size-1;
-		list.add(p+2, newnd);
+		RGANode node = prev.getNextVisible();
+
+		if (node==null) p=p=list.size();
+		else p=list.indexOf(node);
+
+		list.add(p,newnd);
 		newnd.setNext(next);
 		prev.setNext(newnd);
 		hash.put(op.getS4VTms(), newnd);
 		++size;
+	}*/
+
+	public RGANode remoteInsert(RGANode prev, RGAS4Vector s4v, T content) {
+		RGANode newnd = new RGANode(s4v, content);
+		RGANode next;
+
+		if (prev == null) {
+			throw new NoSuchElementException("RemoteInsert");
+		}
+		next = prev.getNext();
+
+		while (next != null) {
+			if (s4v.compareTo(next.getKey()) == RGAS4Vector.AFTER) {
+				break;
+			}
+			prev = next;
+			next = next.getNext();
+		}
+
+		newnd.setNext(next);
+		prev.setNext(newnd);
+		hash.put(s4v, newnd);
+		return newnd;
 	}
 
-	private void RemoteDelete(RGAOperation op) {
+	public boolean remoteDelete(RGAOperation op) {
 		RGANode node = hash.get(op.getS4VPos());
-		int p = op.getIntPos() ;
-		if ( p >= size) p=size-1;
+		boolean wasVisible=false;
 		if (node == null) {
 			throw new NoSuchElementException("Cannot find" + op.getS4VPos());
 		}
-		if (node.isVisible()) { 
-			list.remove(p);
-			--size;
-
-		}
+	    wasVisible= node.isVisible();
 		node.makeTombstone(op.getS4VTms());
-		//	purger.enrol(node);
+		
+		return wasVisible;
 	}
 
+	void removeLocal(int p, int offset) {
+		for (int i=0; i<offset; i++){
+			list.remove(p);
+		}
+	}
+	
+	void addLocal(int i, List<RGANode<T>> ln) {
+		list.addAll(i, ln);
+	}
+	
 	public RGAS4Vector getVisibleS4V(int v) {
 		RGANode node = getVisibleNode(v);
 		if (node == null) {
@@ -124,11 +177,14 @@ public class RGADocument<T> implements Document {
 
 	public RGANode getVisibleNode(int v) {
 		if (list.isEmpty()) return head;
-		else return (RGANode) list.get(v);
+		else return (RGANode) list.get(v-1);
 	}
 
 	@Override
 	public int viewLength() {
-		return size;
+		return list.size();
 	}
+
+
+	
 }
