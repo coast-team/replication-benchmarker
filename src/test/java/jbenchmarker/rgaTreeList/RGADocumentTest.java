@@ -42,6 +42,17 @@ public class RGADocumentTest {
 	}
 	
 	@Test
+	public void test(){
+		TreeList list = new TreeList();
+		for (int i=0; i<15; i++){
+			list.add(new RGANode(null, i));
+		}
+		
+		System.out.println(list);
+		list.treeViewWithSeparator(list.getRoot(),0);
+	}
+	
+	@Test
 	public void testRunRGA() throws IncorrectTraceException, PreconditionException, IOException {
 		StandardDiffProfile SMALL = new StandardDiffProfile(0.1, 0.8, 0.8, 20, 3.0, 4, 3);
 		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGATreeListFactory(), 10, 10, SMALL);

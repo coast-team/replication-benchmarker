@@ -299,6 +299,7 @@ public class RgaSDocument<T> implements Document {
 			}
 		}
 
+		tree=null;
 		nodeNumberInTree--;
 
 		while (father!=null){  // soutract the size of the deleted node in all fathers and grandfathers 
