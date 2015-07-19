@@ -26,7 +26,6 @@ public class RgaSDocument<T> implements Document {
 	private int size = 0;
 	private int nodeNumberInTree=0;
 	private int nbOp=0;
-	private int sumHeight=0;
 
 	public RgaSDocument() {
 		super();
@@ -152,12 +151,6 @@ public class RgaSDocument<T> implements Document {
 				node.getTree().setRightSon(treeEnd);
 
 				RgaSTree newTree = treeEnd;
-				int i=1;
-				while (newTree!=null){ // add the size of the inserted node in all fathers and grandfathers
-					newTree=newTree.getFather();
-					i++;
-				}
-				sumHeight+=i;
 				nodeNumberInTree++;
 			}
 		}
@@ -221,14 +214,13 @@ public class RgaSDocument<T> implements Document {
 			newTree=newTree.getFather();
 			i++;
 		}
-		sumHeight+=i;
 		nodeNumberInTree++;
 		nbOp++;
 
 		if (nbOp >(nodeNumberInTree)/(0.14*Math.log(nodeNumberInTree)/Math.log(2))){
 
 		//if (sumHeight/ nodeNumberInTree > 2.44*Math.log(nodeNumberInTree+1)/Math.log(2)){
-			System.out.println("I'm come in! " + nodeNumberInTree +", " + nbOp);
+			//System.out.println("I'm come in! " + nodeNumberInTree +", " + nbOp);
 			nbOp=0;
 			//System.out.println("Before balanced: "+ (int) (checkTreeDepth(root,0)+1) + ", " + ((float)checkTreeAverageDepth(root,0)) / nodeNumberInTree+ ", "+ Math.log(nodeNumberInTree+1)/Math.log(2)+ ", "+ nodeNumberInTree);
 			List<RgaSNode> content = createNodeList(new ArrayList(), getRoot());
@@ -293,7 +285,6 @@ public class RgaSDocument<T> implements Document {
 			father=father.getFather();
 			i++;
 		}
-		sumHeight-=i;
 	}
 
 

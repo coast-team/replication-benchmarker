@@ -110,6 +110,7 @@ public class RGAMerge extends MergeAlgorithm {
 		}
 
 		rgadoc.removeLocal(p,offset);
+		
 
 		return lop;
 	}
