@@ -23,15 +23,15 @@ import com.panayotis.gnuplot.utils.Debug;
 public class Plot {
 
 	public static void main(String[] args) throws Exception {
-		String fileName = "TraceBlockPer";
-		String abscisseTitle = "% of blocks";
-		File repertory= new File(System.getProperty("user.dir")+ File.separator+"ResultTest");
+		String fileName = "TraceNbOp";
+		String abscisseTitle = "number of executions";
+		File repertory= new File(System.getProperty("user.dir")+ File.separator+"ResultTest1");
 
-		plotAWholeGraph(repertory, fileName, "Average execution time", abscisseTitle, "time (ms)", 1);
-		plotAWholeGraph(repertory, fileName, "Local execution time", abscisseTitle, "time (ns)", 2);
-		plotAWholeGraph(repertory, fileName, "Remote execution time", abscisseTitle, "time (ns)", 3);
-		plotAWholeGraph(repertory, fileName, "Bandwidth (bytes)", abscisseTitle, "bytes", 4);
-		plotAWholeGraph(repertory, fileName, "Memory (bytes)", abscisseTitle, "bytes)", 5);
+		plotAWholeGraph(repertory, fileName, "Average execution time by " +abscisseTitle, abscisseTitle, "Average execution time (ms)", 1);
+		plotAWholeGraph(repertory, fileName, "Local execution time by " +abscisseTitle, abscisseTitle, "Local execution time (ns)", 2);
+		plotAWholeGraph(repertory, fileName, "Remote execution time by " +abscisseTitle, abscisseTitle, "Remote execution time (ns)", 3);
+		plotAWholeGraph(repertory, fileName, "Bandwidth by " +abscisseTitle, abscisseTitle, "Bandwidth (bytes)", 4);
+		plotAWholeGraph(repertory, fileName, "Memory by " +abscisseTitle, abscisseTitle, "Memory (bytes)", 5);
 
 	}
 
@@ -92,6 +92,8 @@ public class Plot {
 
 
 		JavaPlot p = new JavaPlot();
+		p.set("term", "x11 persist");
+		//p.setPersist(false);
 		/*ImageTerminal png = new ImageTerminal();
 		p.setTerminal(png);*/
 
@@ -103,7 +105,7 @@ public class Plot {
 
 
 		p.plot();
-
+		
 /*
 		File file = new File(repertory.getAbsoluteFile() + File.separator + title +"_"+fileName+".png" );
 		try {
