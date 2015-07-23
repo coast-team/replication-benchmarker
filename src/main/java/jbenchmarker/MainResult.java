@@ -108,17 +108,15 @@ public class MainResult {
 		 */
 		
 		ArrayList<String> factories = new ArrayList<String>();		
-		//factories.add("jbenchmarker.factories.LogootFactory");
-		//factories.add("jbenchmarker.factories.LogootSFactory");
-		factories.add("jbenchmarker.factories.LogootSplitOFactory");
+		factories.add("jbenchmarker.factories.LogootSplitAVLFactory");
 		factories.add("jbenchmarker.factories.RGAFactory");
-		//factories.add("jbenchmarker.factories.RGAFFactory");
+		factories.add("jbenchmarker.factories.RGAFFactory");
 		factories.add("jbenchmarker.factories.RGATreeListFactory");
-		//factories.add("jbenchmarker.factories.RgaSFactory");
-		//factories.add("jbenchmarker.factories.RgaTreeSplitFactory");
+		factories.add("jbenchmarker.factories.RgaSFactory");
 		factories.add("jbenchmarker.factories.RgaTreeSplitBalancedFactory");
 		factories.add("jbenchmarker.factories.TreedocFactory");
-		factories.add("jbenchmarker.factories.WootFactories$WootHFactory");
+		//factories.add("jbenchmarker.factories.RgaTreeSplitFactory");
+		//factories.add("jbenchmarker.factories.WootFactories$WootHFactory");
 		
 		
 
