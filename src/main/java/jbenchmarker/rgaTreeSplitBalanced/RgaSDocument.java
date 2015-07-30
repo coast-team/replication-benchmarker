@@ -25,7 +25,9 @@ public class RgaSDocument<T> implements Document {
 	private RgaSTree root;
 	private int size = 0;
 	private int nodeNumberInTree=0;
-	private int nbOp=0;
+	private int tombstoneNumber=0;
+	private int nbIns=0;
+
 
 	public RgaSDocument() {
 		super();
@@ -42,6 +44,7 @@ public class RgaSDocument<T> implements Document {
 	 * remoteSplit
 	 */
 
+
 	public void apply(Operation op) {
 
 		RgaSOperation rgaop = (RgaSOperation) op;
@@ -49,8 +52,16 @@ public class RgaSDocument<T> implements Document {
 		if (rgaop.getType() == SequenceOperation.OpType.delete) {
 			remoteDelete(rgaop);
 		} else {
+			nbIns++;
 			remoteInsert(rgaop);
 		}		
+
+		/*
+		if ( (nbIns) % 400 == 25){
+			//System.out.println("nbIns =" + nbIns +", nbDel =" +nbDel + ", perIns ="+ (float)nbIns/(nbIns+nbDel));
+			System.out.println("visibleNode =" + nodeNumberInTree +", tombstone =" + tombstoneNumber + ", perTomb ="+ (float)tombstoneNumber/( tombstoneNumber + nodeNumberInTree));
+			System.out.println();
+		}*/
 	}
 
 	private void remoteInsert(RgaSOperation op) {
@@ -95,6 +106,7 @@ public class RgaSDocument<T> implements Document {
 		int offsetRel2 = op.getOffset2();
 
 		RgaSNode node = hash.get(op.getS3vpos());
+
 		node=findGoodNode(node, offsetAbs1);
 
 		if (offsetRel1>0){
@@ -105,9 +117,11 @@ public class RgaSDocument<T> implements Document {
 		while (node.getOffset() + node.size() < offsetAbs2){
 			if (node.isVisible()){
 				size-=node.size();
+				tombstoneNumber++;
 				deleteInLocalTree(node);
+				node.makeTombstone();
 			}
-			node.makeTombstone();
+
 			node=node.getLink();
 		}
 
@@ -115,9 +129,12 @@ public class RgaSDocument<T> implements Document {
 			remoteSplit(node,offsetAbs2);
 			if (node.isVisible()){
 				size-=node.size();
-				deleteInLocalTree(node);	
+				deleteInLocalTree(node);
+				tombstoneNumber++;
+				node.makeTombstone();
 			}
-			node.makeTombstone();	
+
+
 		}
 	}
 
@@ -215,21 +232,13 @@ public class RgaSDocument<T> implements Document {
 			i++;
 		}
 		nodeNumberInTree++;
-		nbOp++;
 
-		if (nbOp >(nodeNumberInTree)/(0.14*Math.log(nodeNumberInTree)/Math.log(2))){
-
-		//if (sumHeight/ nodeNumberInTree > 2.44*Math.log(nodeNumberInTree+1)/Math.log(2)){
-			//System.out.println("I'm come in! " + nodeNumberInTree +", " + nbOp);
-			nbOp=0;
-			//System.out.println("Before balanced: "+ (int) (checkTreeDepth(root,0)+1) + ", " + ((float)checkTreeAverageDepth(root,0)) / nodeNumberInTree+ ", "+ Math.log(nodeNumberInTree+1)/Math.log(2)+ ", "+ nodeNumberInTree);
+		if (nodeNumberInTree> 3000 && nbIns >(nodeNumberInTree)/(0.14*Math.log(nodeNumberInTree)/Math.log(2))){
+			nbIns=0;
 			List<RgaSNode> content = createNodeList(new ArrayList(), getRoot());
 			createBalancedTree(new RgaSTree(), content,  0, content.size());
 			addGoodSize(getRoot());
-			//System.out.println("After balanced: "+ (int) (checkTreeDepth(root,0)+1) + ", " + ((float)checkTreeAverageDepth(root,0)) / nodeNumberInTree+ ", "+ Math.log(nodeNumberInTree+1)/Math.log(2)+ ", "+ nodeNumberInTree);
-			//System.out.println();
 		}
-		//}
 	}
 
 

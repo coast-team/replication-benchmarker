@@ -21,7 +21,6 @@ import jbenchmarker.rgaTreeSplitBalanced.RgaSDocument.Position;
 public class RgaSMerge extends MergeAlgorithm {
 
 private VectorClock siteVC;
-
 	
 	public RgaSMerge(RgaSDocument doc, int siteID) {
 		super(doc, siteID);
@@ -68,6 +67,7 @@ private VectorClock siteVC;
 		this.siteVC.inc(this.getReplicaNumber());
 		s3vtms = new RgaSS3Vector(this.getReplicaNumber(), this.siteVC, 0);
 		rgaop = new RgaSOperation(so.getContent(), s3vpos, s3vtms, position.offset, so.getPosition());
+		
 		lop.add(rgaop);
 		rgadoc.apply(rgaop);
 
@@ -82,37 +82,41 @@ private VectorClock siteVC;
 		List<Operation> lop = new ArrayList<Operation>();
 		RgaSDocument rgadoc = (RgaSDocument) (this.getDoc());
 		RgaSOperation rgaop;
-
 		Position positionStart = rgadoc.findPosInLocalTree(so.getPosition()+1);    //rgadoc.getPosition(rgadoc.getHead(),start);
 		Position positionEnd = rgadoc.findPosInLocalTree(so.getPosition() +  so.getLenghOfADel());     //rgadoc.getPosition(node,end-start+positionStart.offset);
-		
+		int i=0;
 		RgaSNode node = positionStart.node;
 		RgaSNode target = positionEnd.node;
 
 		if (node.equals(target)){
-			rgaop = new RgaSOperation(node.getKey().clone(),positionStart.offset, positionEnd.offset,0,0);
+			rgaop = new RgaSOperation(node.getKey().clone(),positionStart.offset, positionEnd.offset);
 			rgadoc.apply(rgaop);
+			i++;
 			lop.add(rgaop);
 
 		} else {
-			rgaop = new RgaSOperation(node.getKey().clone(), positionStart.offset, node.size(),0,0);
+			rgaop = new RgaSOperation(node.getKey().clone(), positionStart.offset, node.size());
 			rgadoc.apply(rgaop);
+			i++;
 			lop.add(rgaop);
 			node=node.getNextVisible();
 
 			while (node!=null && !node.equals(target)){
-				rgaop = new RgaSOperation(node.getKey().clone(), 0, node.size(),0,0);
+				rgaop = new RgaSOperation(node.getKey().clone(), 0, node.size());
 				rgadoc.apply(rgaop);
+				i++;
 				lop.add(rgaop);
 				node=node.getNextVisible();
 			} 	
 
 			if (positionEnd.offset!=0) {
-				rgaop = new RgaSOperation(target.getKey().clone(), 0, positionEnd.offset,0,0);
+				rgaop = new RgaSOperation(target.getKey().clone(), 0, positionEnd.offset);
+				i++;
 				rgadoc.apply(rgaop);
 				lop.add(rgaop);
 			}
 		}
+		
 		return lop;
 	}
 

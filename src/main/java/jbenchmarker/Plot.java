@@ -23,9 +23,10 @@ import com.panayotis.gnuplot.utils.Debug;
 public class Plot {
 
 	public static void main(String[] args) throws Exception {
-		String fileName = "TraceSizeBlock";
-		String abscisseTitle = "size of block";
-		File repertory= new File(System.getProperty("user.dir")+ File.separator+"ResultTest");
+		String fileName = "Trace";
+		String abscisseTitle = "% of insertion";
+		//File repertory= new File(System.getProperty("user.dir")+ File.separator+"ResultTest/ResultLargeBlock");
+		File repertory= new File(System.getProperty("user.dir")+ File.separator+"ResultTest/");
 
 		plotAWholeGraph(repertory, fileName, "Average execution time by " +abscisseTitle, abscisseTitle, "Average execution time (ms)", 1);
 		plotAWholeGraph(repertory, fileName, "Local execution time by " +abscisseTitle, abscisseTitle, "Local execution time (ns)", 2);
@@ -64,13 +65,15 @@ public class Plot {
 
 
 		ArrayList<String> algoList = new ArrayList<String>();
+		//algoList.add("Logoot");
 		algoList.add("LogootSplitAVL");
-		algoList.add("RGA");
-		algoList.add("RGAF");
-		algoList.add("RGATreeList");
-		algoList.add("RgaS");
+		//algoList.add("RGA");
+		//algoList.add("RGAF");
+		//algoList.add("RGATreeList");
+		//algoList.add("RgaS");
 		algoList.add("RgaTreeSplitBalanced");
-		algoList.add("Treedoc");
+		//algoList.add("Treedoc");
+		//algoList.add("WootH");
 	
 
 
@@ -81,7 +84,7 @@ public class Plot {
 				double res = readFileToPlot(repertory.getAbsolutePath()+File.separator+
 						fileList.get(j)+File.separator+fileList.get(j)+".csv", algoList.get(i), k);
 				tab[j][0]= Double.parseDouble(fileList.get(j).replace(fileName,""));
-				tab[j][1]= Math.log(res)/Math.log(10);
+				tab[j][1]= res;
 
 			}
 			dataPlotList.add(tab);

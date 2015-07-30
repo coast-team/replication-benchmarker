@@ -28,7 +28,7 @@ public class RgaSOperation<T> implements Operation {
 	 *		Constructors
 	 */
 
-	public RgaSOperation(OpType type, List<T> c, RgaSS3Vector s3vpos, RgaSS3Vector s3vtms, int off1, int off2, int pos, int length) {
+	public RgaSOperation(OpType type, List<T> c, RgaSS3Vector s3vpos, RgaSS3Vector s3vtms, int off1, int off2, int pos) {
 		this.type = type;
 		this.content = c;
 		this.s3vtms = s3vtms;
@@ -36,21 +36,20 @@ public class RgaSOperation<T> implements Operation {
 		this.offset1 = off1;
 		this.offset2 = off2;
 		this.pos=pos;
-		this.length=length;
 	}
 
 	public RgaSOperation(List<T> c, RgaSS3Vector s3vpos, RgaSS3Vector s3vtms, int off1, int pos ) {
-		this(OpType.insert, c, s3vpos, s3vtms, off1, 0,pos, 0);
+		this(OpType.insert, c, s3vpos, s3vtms, off1, 0,pos);
 	}
 
-	public RgaSOperation(RgaSS3Vector s3vpos, int off1, int off2, int pos, int length) {
-		this(OpType.delete, null, s3vpos, s3vpos, off1, off2, pos, length);
+	public RgaSOperation(RgaSS3Vector s3vpos, int off1, int off2 ) {
+		this(OpType.delete, null, s3vpos, s3vpos, off1, off2, 0);
 	}
 
 	@Override
 	public Operation clone() {
 		return new RgaSOperation(type, content, s3vpos == null ? s3vpos : s3vpos.clone(),
-				s3vtms == null ? s3vtms : s3vtms.clone(), offset1, offset2, pos, length);
+				s3vtms == null ? s3vtms : s3vtms.clone(), offset1, offset2, pos);
 	}
 
 
@@ -66,14 +65,6 @@ public class RgaSOperation<T> implements Operation {
 
 	public void setPos(int pos) {
 		this.pos = pos;
-	}
-
-	public int getLength() {
-		return length;
-	}
-
-	public void setLength(int length) {
-		this.length = length;
 	}
 
 	@Override
