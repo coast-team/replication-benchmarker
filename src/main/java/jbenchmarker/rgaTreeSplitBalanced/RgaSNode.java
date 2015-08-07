@@ -14,9 +14,9 @@ public class RgaSNode<T> implements Serializable {
 	private int size;
 	private boolean tomb;	
 
-	
-	
-	
+
+
+
 
 
 
@@ -54,7 +54,7 @@ public class RgaSNode<T> implements Serializable {
 
 
 
-	
+
 	/*
 	 *		toString, getContentAsString, equals, makeTombstone, getNextVisible, getLinkVisible and hashCode
 	 */
@@ -100,19 +100,23 @@ public class RgaSNode<T> implements Serializable {
 
 	public RgaSNode getNextVisible() {
 		RgaSNode node = next;
+
 		while (node != null && !node.isVisible()) {
 			node = node.getNext();
 		}
+
 		return node;
 	}
+
 	
+
 	public RgaSNode getLinkVisible() {
 		RgaSNode node = next;
 		while (node != null && !node.isVisible()) {
 			node = node.getLink();
 		}
 		return node;
-		
+
 	}
 
 	@Override
@@ -135,12 +139,12 @@ public class RgaSNode<T> implements Serializable {
 	public void setKey(RgaSS3Vector key) {
 		this.key = key;
 	}
-	
+
 	public int getOffset() {
 		if (this.key!=null)	return key.getOffset();
 		else return 0;
 	}
-	
+
 	public void setOffset(int off) {
 		if (this.key!=null) this.key.setOffset(off);
 	}
@@ -192,5 +196,5 @@ public class RgaSNode<T> implements Serializable {
 	public void setTree(RgaSTree tree) {
 		this.tree = tree;
 	}
-  
+
 }

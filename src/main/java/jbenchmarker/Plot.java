@@ -23,10 +23,10 @@ import com.panayotis.gnuplot.utils.Debug;
 public class Plot {
 
 	public static void main(String[] args) throws Exception {
-		String fileName = "Trace";
+		String fileName = "TraceNbOp";
 		String abscisseTitle = "% of insertion";
-		//File repertory= new File(System.getProperty("user.dir")+ File.separator+"ResultTest/ResultLargeBlock");
-		File repertory= new File(System.getProperty("user.dir")+ File.separator+"ResultTest/");
+		File repertory= new File(System.getProperty("user.dir")+ File.separator+"ResultTest/ResultLargeBlock");
+		//File repertory= new File(System.getProperty("user.dir")+ File.separator+"ResultTest/");
 
 		plotAWholeGraph(repertory, fileName, "Average execution time by " +abscisseTitle, abscisseTitle, "Average execution time (ms)", 1);
 		plotAWholeGraph(repertory, fileName, "Local execution time by " +abscisseTitle, abscisseTitle, "Local execution time (ns)", 2);

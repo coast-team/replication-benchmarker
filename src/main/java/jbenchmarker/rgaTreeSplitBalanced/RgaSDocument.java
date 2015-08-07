@@ -2,7 +2,7 @@ package jbenchmarker.rgaTreeSplitBalanced;
 
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.rgaTreeSplitBalanced.RgaSOperation;
+import jbenchmarker.rgaTreeSplitBalanced.RgaSInsertion;
 import jbenchmarker.rgaTreeSplitBalanced.RgaSS3Vector;
 import jbenchmarker.rgaTreeSplitBalanced.RgaSDocument.Position;
 import java.util.HashMap;
@@ -50,21 +50,14 @@ public class RgaSDocument<T> implements Document {
 		RgaSOperation rgaop = (RgaSOperation) op;
 
 		if (rgaop.getType() == SequenceOperation.OpType.delete) {
-			remoteDelete(rgaop);
+			remoteDelete((RgaSDeletion)rgaop);
 		} else {
 			nbIns++;
-			remoteInsert(rgaop);
+			remoteInsert( (RgaSInsertion) rgaop);
 		}		
-
-		/*
-		if ( (nbIns) % 400 == 25){
-			//System.out.println("nbIns =" + nbIns +", nbDel =" +nbDel + ", perIns ="+ (float)nbIns/(nbIns+nbDel));
-			System.out.println("visibleNode =" + nodeNumberInTree +", tombstone =" + tombstoneNumber + ", perTomb ="+ (float)tombstoneNumber/( tombstoneNumber + nodeNumberInTree));
-			System.out.println();
-		}*/
 	}
 
-	private void remoteInsert(RgaSOperation op) {
+	private void remoteInsert(RgaSInsertion op) {
 		RgaSNode newnd = new RgaSNode(op.getS3vtms(), op.getContent());
 		RgaSNode node, next=null;
 		RgaSS3Vector s3v = op.getS3vtms();
@@ -74,10 +67,9 @@ public class RgaSDocument<T> implements Document {
 			node = head;
 
 		} else {
-			int offsetAbs = op.getOffset1()+op.getS3vpos().getOffset();
 			node = hash.get(op.getS3vpos());
-			node = findGoodNode(node, offsetAbs);
-			remoteSplit(node, offsetAbs);
+			node = findGoodNode(node, op.getOffset1());
+			remoteSplit(node, op.getOffset1());
 		}
 
 		next = node.getNext();
@@ -99,22 +91,21 @@ public class RgaSDocument<T> implements Document {
 	}
 
 
-	private void remoteDelete(RgaSOperation op) {
-		int offsetAbs1 = op.getOffset1()+op.getS3vpos().getOffset()-1;
-		int offsetRel1 = op.getOffset1()-1;
-		int offsetAbs2 = op.getOffset2()+op.getS3vpos().getOffset();
-		int offsetRel2 = op.getOffset2();
+	private void remoteDelete(RgaSDeletion op) {
+
+		int offsetRel1 = op.getOffset1()-op.getS3vpos().getOffset();
+		int offsetRel2 = op.getOffset2()-op.getS3vpos().getOffset();
 
 		RgaSNode node = hash.get(op.getS3vpos());
 
-		node=findGoodNode(node, offsetAbs1);
+		node=findGoodNode(node, op.getOffset1());
 
 		if (offsetRel1>0){
-			remoteSplit(node,offsetAbs1);
+			remoteSplit(node,op.getOffset1());
 			node=node.getLink();
 		}
 
-		while (node.getOffset() + node.size() < offsetAbs2){
+		while (node.getOffset() + node.size() < op.getOffset2()){
 			if (node.isVisible()){
 				size-=node.size();
 				tombstoneNumber++;
@@ -126,7 +117,7 @@ public class RgaSDocument<T> implements Document {
 		}
 
 		if (offsetRel2>0){
-			remoteSplit(node,offsetAbs2);
+			remoteSplit(node,op.getOffset2());
 			if (node.isVisible()){
 				size-=node.size();
 				deleteInLocalTree(node);
@@ -183,13 +174,12 @@ public class RgaSDocument<T> implements Document {
 
 	public Position findPosInLocalTree(int pos){	
 		RgaSTree tree = root;
-		int POS = pos;
 		if (pos<=0 || root == null){
 			return new Position(null, 0);
 		} 
 		else if (pos>=this.viewLength()){
 			tree=findMostRight(tree,0);
-			return new Position(tree.getRoot(), tree.getRoot().size());
+			return new Position(tree.getRoot(), tree.getRoot().getOffset());
 		}
 		else {
 			while (!(tree.size()-tree.getRightSize()-tree.getRoot().size()< pos && pos <= tree.size()-tree.getRightSize())){
@@ -203,7 +193,7 @@ public class RgaSDocument<T> implements Document {
 				}
 
 			}	
-			return new Position(tree.getRoot(), pos-(tree.size()-tree.getRightSize()-tree.getRoot().size()));
+			return new Position(tree.getRoot(), pos-(tree.size()-tree.getRightSize()-tree.getRoot().size()) + tree.getRoot().getOffset() );
 		}
 	}
 
@@ -465,6 +455,7 @@ public class RgaSDocument<T> implements Document {
 			if (tree.getRightSon()!=null){
 				createNodeList(list, tree.getRightSon());
 			}
+			tree.getRoot().setTree(null);
 			tree=null;
 		}
 		return list;
@@ -474,7 +465,6 @@ public class RgaSDocument<T> implements Document {
 	public void createBalancedTree(RgaSTree tree, final List<RgaSNode> content, final int begin, final int length) {
 
 		if (tree!=null && !content.isEmpty()){
-
 			final int leftSubtree = (length - 1) / 2 ;
 			final int rightSubtree = length -1 - leftSubtree;
 
