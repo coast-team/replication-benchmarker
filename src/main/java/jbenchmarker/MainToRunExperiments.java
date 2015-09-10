@@ -3,9 +3,14 @@ package jbenchmarker;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
+
 import crdt.CRDT;
 import crdt.Factory;
 import crdt.simulator.CausalSimulator;
@@ -17,32 +22,29 @@ import jbenchmarker.factories.ExperienceFactory;
 
 
 
-public class MainResult {
+public class MainToRunExperiments {
 
-	
-	// 7 7000 0.8 0.15 100 1 0.1 5 1 10 "realized on coast-team's computer"
-	// 4 5000 0.8 0.05 625 5 0.1 10 4 15 "Test realized on coast-team's computer"
-	
 	/*
 	 * launch in command line
-	 
-	 cd git/replication-benchmarker/
-	 mvn exec:java -Dexec.mainClass=jbenchmarker.MainResult -Dexec.args="jbenchmarker.factories.TraceFactory  jbenchmarker.factories.RgaTreeSplitFactory TraceTest  3 2 0 0 1 0 1 7 1000 0.8 0.15 10 1 0.1 5 1 10 'realized on Grid 5000'"
-	
+
+	 jbenchmarker.factories.TraceFactory  jbenchmarker.factories.RgaTreeSplitFactory TraceTest 3 2 0 0 1 0 1 7 1000 0.8 0.15 10 1 0.1 5 1 10 'realized on Grid 5000'
+
 	 */
-	
-	
-	
+
+
+
 	public static void main(String[] args) throws Exception {
 
-		
+
 		/*
 		 *  Check that list of arguments is correct
 		 */
+		ArrayList<String> factories = new ArrayList<String>();
+
 		if (args.length < 20) {
-			
+
 			System.err.println("Arguments : Factory Trace [nb_exec [thresold]]\n");
-			
+
 			System.err.println("- Factory to run trace main");
 			System.err.println("- Factory : a jbenchmaker.core.ReplicaFactory implementation ");
 			System.err.println("- Trace : a file of a trace ");
@@ -55,9 +57,8 @@ public class MainResult {
 			System.err.println("- Compute size of messages ? (0 don't store, else store)");
 			System.err.println("- Number of trace execution ?");
 
-			
 			System.err.println("\n\n Caracteristics of traces : \n");			
-			
+
 			System.err.println("- Duration ? ");
 			System.err.println("- perIns ? ");
 			System.err.println("- avgBlockSize ? ");
@@ -68,27 +69,27 @@ public class MainResult {
 			System.err.println("- replicas ? ");
 
 			System.err.println("\n- Comments about the test (which computer is used, what is the target of the test...). It is a String.");
+			System.err.println("\n- Name of the file containing the factories that mus be used. -optional");
 
 			System.exit(1);
 		}
-		
 
+		
 		/*
 		 *  Check that the folder we want to create doesn't exist already. If it is the case, we throw an exception
 		 */
-		
+
 		if(new File(System.getProperty("user.dir")+ File.separator+"ResultTest" + File.separator+args[2].toString()+File.separator).exists())
 		{
 			throw new Exception("Le dossier " + System.getProperty("user.dir")+ File.separator+"ResultTest" + File.separator+args[2].toString()+File.separator 
 					+" existe deja. Veuiller changer le nom de la trace donne dans les arguments ou deplacer/renommer/supprimer le dossier existant.");	
 		}
 		
-
+		
 		/*
 		 *  Parameterize each variable contained in the list of arguments 
 		 */
-		
-		
+
 		String traceName = args[2];
 		int nbExec = Integer.parseInt(args[3]);
 		int nbTraceExec = Integer.parseInt(args[10]);
@@ -103,31 +104,41 @@ public class MainResult {
 		int replicas = Integer.parseInt(args[19]);
 		String comment = args[20];
 
-
+		
 		/*
-		 *  Choose factories that you want to test
+		 * Put the factories in parameters in the list
 		 */
 		
-		ArrayList<String> factories = new ArrayList<String>();		
-		//factories.add("jbenchmarker.factories.LogootFactory");
+		Scanner Scanner=new Scanner(new File(System.getProperty("user.dir")+File.separator+args[21]));
+		while (Scanner.hasNextLine()) {
+			String line = Scanner.nextLine();
+			if (line.startsWith("jbenchmarker")){
+				factories.add(line);
+			}	
+		}
+		Scanner.close();
+		
+		/*	
+		factories.add("jbenchmarker.factories.LogootFactory");
 		factories.add("jbenchmarker.factories.LogootSplitAVLFactory");
-		//factories.add("jbenchmarker.factories.RGAFactory");
-		//factories.add("jbenchmarker.factories.RGAFFactory");
-		//factories.add("jbenchmarker.factories.RGATreeListFactory");
-		//factories.add("jbenchmarker.factories.RgaSFactory");
+		factories.add("jbenchmarker.factories.RGAFactory");
+		factories.add("jbenchmarker.factories.RGAFFactory");
+		factories.add("jbenchmarker.factories.RGATreeListFactory");
+		factories.add("jbenchmarker.factories.RgaSFactory");
 		factories.add("jbenchmarker.factories.RgaTreeSplitBalancedFactory");
-		//factories.add("jbenchmarker.factories.TreedocFactory");
-		//factories.add("jbenchmarker.factories.RgaTreeSplitFactory");
-		//factories.add("jbenchmarker.factories.WootFactories$WootHFactory");
+		factories.add("jbenchmarker.factories.TreedocFactory");
+		factories.add("jbenchmarker.factories.RgaTreeSplitFactory");
+		factories.add("jbenchmarker.factories.WootFactories$WootHFactory");
+		*/
 		
-		
+		if (factories.isEmpty()){
+			System.out.println("No factories in parameters");
+		}
 
-		
-		
 		/* 
 		 * write result for all trace executions 
 		 */
-		
+
 		for (int k=0; k<nbTraceExec; k++){
 			String repPath = System.getProperty("user.dir")+ File.separator+"ResultTest" + File.separator;
 			String repPath1 = repPath+traceName+File.separator+traceName+"-"+k+File.separator;				
@@ -161,7 +172,7 @@ public class MainResult {
 			cd.setWriter(new TraceObjectWriter(repPath1+ traceName+"-"+k));
 			cd.run(trace); //create Trace
 
-			
+
 			for (int i=0; i<factories.size() ; i++ ){
 				args[1]=(String) factories.get(i);
 				ExperienceFactory ef = (ExperienceFactory) Class.forName(args[0]).newInstance();
@@ -244,7 +255,7 @@ public class MainResult {
 			s.append((memory / nbTraceExec)+"\n");	
 			writeTofile(repPath+traceName+File.separator+traceName, s.toString().replace(".",","));
 		}
-		
+
 
 		Scanner scanner=new Scanner(new File(repPath+traceName+File.separator+traceName+".csv"));
 		StringBuilder s1 = new StringBuilder();

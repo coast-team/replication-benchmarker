@@ -104,6 +104,7 @@ public abstract class AbstractPlot extends PropertiesHolder implements Plot {
      * A convenient method to set the title of this plot
      *
      * @param title The title to use for this plot
+     * @param i 
      */
     public final void setTitle(String title) {
         set("title", "'" + title + "'");

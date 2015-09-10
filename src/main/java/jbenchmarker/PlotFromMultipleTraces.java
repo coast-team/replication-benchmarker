@@ -20,38 +20,55 @@ import com.panayotis.gnuplot.style.Style;
 import com.panayotis.gnuplot.terminal.ImageTerminal;
 import com.panayotis.gnuplot.utils.Debug;
 
-public class Plot {
+public class PlotFromMultipleTraces {
 
 	public static void main(String[] args) throws Exception {
-		String fileName = "TraceNbOp";
-		String abscisseTitle = "% of insertion";
-		File repertory= new File(System.getProperty("user.dir")+ File.separator+"ResultTest/ResultLargeBlock");
-		//File repertory= new File(System.getProperty("user.dir")+ File.separator+"ResultTest/");
-
-		plotAWholeGraph(repertory, fileName, "Average execution time by " +abscisseTitle, abscisseTitle, "Average execution time (ms)", 1);
-		plotAWholeGraph(repertory, fileName, "Local execution time by " +abscisseTitle, abscisseTitle, "Local execution time (ns)", 2);
-		plotAWholeGraph(repertory, fileName, "Remote execution time by " +abscisseTitle, abscisseTitle, "Remote execution time (ns)", 3);
-		plotAWholeGraph(repertory, fileName, "Bandwidth by " +abscisseTitle, abscisseTitle, "Bandwidth (bytes)", 4);
-		plotAWholeGraph(repertory, fileName, "Memory by " +abscisseTitle, abscisseTitle, "Memory (bytes)", 5);
-
+		
+		ArrayList<String> algoList = new ArrayList<String>();
+		//algoList.add("Logoot");
+		//algoList.add("WootH");		
+		algoList.add("RGA");
+		algoList.add("RgaS");
+		algoList.add("RGATreeList");
+		algoList.add("RgaTreeSplitBalanced");
+		algoList.add("LogootS");
+		algoList.add("LogootSplitAVL");
+		algoList.add("Treedoc");
+		
+		String fileName = "TraceBPB";
+		File repertory= new File(System.getProperty("user.dir")+ File.separator+"ResultTest/");
+		String abscisseTitle = "Number of operations";
+		
+		//plotAWholeGraph(repertory, fileName, "Average execution time by " +abscisseTitle, abscisseTitle, "Average execution time (ms)", 1);
+		plotAWholeGraph(algoList, repertory, fileName, "Local performance   -log scale-", abscisseTitle, "Local execution time (ns)", 2);
+		plotAWholeGraph(algoList, repertory, fileName, "Remote performance   -log scale- ", abscisseTitle, "Remote execution time (ns)", 3);
+		plotAWholeGraph(algoList, repertory, fileName, "Bandwidth    -log scale-", abscisseTitle, "Bandwidth (bytes)", 4);
+		plotAWholeGraph(algoList, repertory, fileName, "Memory -log scale-", abscisseTitle, "Memory (bytes)", 5);
 	}
 
 
+	
+	
+	public static void plotAWholeGraph(ArrayList<String> algoList, File repertory, String fileName, String title, String xName, String yName, int k ) throws Exception{
 
-	public static void plotAWholeGraph(File repertory, String fileName, String title, String xName, String yName, int k ) throws Exception{
-
+		/*
+		 * Trier les dossiers dans le bon ordre (que l'on ait bien 1000, 2000, 10000 et non pas 1000, 10000, 2000)
+		 */
 		ArrayList<String> fileList = listRepertoryContent( repertory, fileName);
+		ArrayList<String> fileWithBadConvention = new ArrayList();
 		ArrayList<Integer> sortList = new ArrayList<Integer>();
 		ArrayList<String> fileListSorted= new ArrayList<String>();
-
-
 		for (int i=0; i<fileList.size(); i++){
-			sortList.add(Integer.parseInt(fileList.get(i).replace(fileName, "")));
-		}
-
+			try{
+				sortList.add(Integer.parseInt(fileList.get(i).replace(fileName, "")));
+			} catch(NumberFormatException e){
+				fileWithBadConvention.add(fileList.get(i));
+			} finally {
+				
+			}
+		} 
+		fileList.removeAll(fileWithBadConvention);
 		Collections.sort(sortList);
-
-
 		for (int j=0; j<sortList.size(); j++){
 			for (int i=0; i<fileList.size(); i++){
 				if (sortList.get(j)==Integer.parseInt(fileList.get(i).replace(fileName, ""))){
@@ -59,24 +76,11 @@ public class Plot {
 				}
 			}
 		}
-
 		fileList=fileListSorted;
 
-
-
-		ArrayList<String> algoList = new ArrayList<String>();
-		//algoList.add("Logoot");
-		algoList.add("LogootSplitAVL");
-		//algoList.add("RGA");
-		//algoList.add("RGAF");
-		//algoList.add("RGATreeList");
-		//algoList.add("RgaS");
-		algoList.add("RgaTreeSplitBalanced");
-		//algoList.add("Treedoc");
-		//algoList.add("WootH");
-	
-
-
+		/*
+		 * On trace les courbes
+		 */
 		ArrayList<double[][]> dataPlotList =new ArrayList<double[][]>();
 		for (int i=0; i<algoList.size(); i++){
 			double[][] tab = new double[fileList.size()][2];
@@ -89,46 +93,15 @@ public class Plot {
 			}
 			dataPlotList.add(tab);
 		}
-		System.out.println(fileList);
-		System.out.println(dataPlotList.get(1)[1][0]);
-
-
 		JavaPlot p = new JavaPlot();
-		p.set("term", "x11 persist");
-		//p.setPersist(false);
-		/*ImageTerminal png = new ImageTerminal();
-		p.setTerminal(png);*/
+		//p.set("term", "x11 persist");
 
 		for (int i=0; i<dataPlotList.size();i++){
 			double[][] dataPlot = dataPlotList.get(i);
 			p=plotOneGraph(p, title, xName, yName, dataPlot, algoList.get(i) );
 		}
-
-
-
 		p.plot();
-		
-/*
-		File file = new File(repertory.getAbsoluteFile() + File.separator + title +"_"+fileName+".png" );
-		try {
-			file.createNewFile();
-			png.processOutput(new FileInputStream(file));
-		} catch (FileNotFoundException ex) {
-			System.err.print(ex);
-		} catch (IOException ex) {
-			System.err.print(ex);
-		}
-*/
-	
-		
-		
-		
-	/*	
-		try {
-			ImageIO.write(png.getImage(), "png", file);
-		} catch (IOException ex) {
-			System.err.print(ex);
-		}*/
+
 	}
 
 
@@ -177,20 +150,20 @@ public class Plot {
 
 	private static JavaPlot plotOneGraph(JavaPlot p, String title, String xName, String yName, double[][] dataPlot, String dataName){
 
-		p.setTitle(title, "Arial", 27);
-		p.getAxis("x").setLabel(xName, "Arial", 18);
-		p.getAxis("y").setLabel(yName, "Arial", 18);
-
+		p.setTitle(title, "Arial", 14);
+		p.getAxis("x").setLabel(xName, "Arial", 13);
+		p.getAxis("y").setLabel(yName, "Arial", 13);
+		p.getAxis("y").setLogScale(true);
 		//p.getAxis("x").setBoundaries(0, xBound);
-		//p.getAxis("y").setBoundaries(0, yBound);
+		//p.getAxis("y").setBoundaries(2.5,5.7);
 		p.setKey(JavaPlot.Key.OUTSIDE);
-
 
 		PlotStyle myPlotStyle = new PlotStyle();
 		myPlotStyle.setStyle(Style.LINES);
 		DataSetPlot s = new DataSetPlot(dataPlot);
+		if (dataName=="RgaTreeSplitBalanced") dataName = "RGATreeSplit";
 		s.setTitle(dataName);
-		myPlotStyle.setLineWidth(1);
+		myPlotStyle.setLineWidth(2);
 		s.setPlotStyle(myPlotStyle);
 		p.addPlot(s);
 		return p;

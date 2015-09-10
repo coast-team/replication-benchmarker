@@ -176,7 +176,6 @@ public class TreeList extends AbstractList {
     	AVLNode tree = node.getTree();
     	
     	while (!tree.equals(root)){
-    	
     		index+=tree.relativePosition;
     		tree=tree.getFather();
     	}
@@ -185,14 +184,7 @@ public class TreeList extends AbstractList {
     }
     
     
-    /*
-    public int indexOf(Object object) {
-        // override to go 75% faster
-        if (root == null) {
-            return -1;
-        }
-        return root.indexOf(object, root.relativePosition);
-    }*/
+  
 
     /**
      * Searches for the presence of an object in the list.

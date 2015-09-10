@@ -59,20 +59,16 @@ public class RgaSMerge extends MergeAlgorithm {
 		RgaSS3Vector s3vtms, s3vpos = null;
 		Operation rgaop;
 
+		
 		Position position = rgadoc.findPosInLocalTree(so.getPosition());
-
-		if (so.getPosition() <= 0 || rgadoc.getRoot()==null) {
-			s3vpos = null;
-		} else {
-			s3vpos = position.node.getKey().clone();
-		}
+		s3vpos = position.node.getKey();
 
 		this.siteVC.inc(this.getReplicaNumber());
 		s3vtms = new RgaSS3Vector(this.getReplicaNumber(), this.siteVC, 0);
 		rgaop = new RgaSInsertion(so.getContent(), s3vpos, s3vtms, position.offset);
 
 		lop.add(rgaop);
-		rgadoc.apply(rgaop);
+		rgadoc.insert(position, so.getContent(), s3vtms);
 
 		return lop;
 
@@ -97,25 +93,25 @@ public class RgaSMerge extends MergeAlgorithm {
 
 		if (node.equals(target)){
 			rgaop = new RgaSDeletion(node.getKey().clone(), offsetStart, offsetEnd);
-			rgadoc.apply(rgaop);
+			rgadoc.delete(node, offsetStart, offsetEnd);
 			lop.add(rgaop);
 
 		} else {
 			rgaop = new RgaSDeletion(node.getKey().clone(), positionStart.offset-1, node.size() + node.getOffset());
-			rgadoc.apply(rgaop);
+			rgadoc.delete(node, positionStart.offset-1, node.size() + node.getOffset());
 			lop.add(rgaop);
 			node=node.getNextVisible();
 
 			while (node!=null && !node.equals(target)){
 				rgaop = new RgaSDeletion(node.getKey().clone(), 0, node.size()  + node.getOffset());
-				rgadoc.apply(rgaop);
+				rgadoc.delete(node, 0 , node.size() + node.getOffset());
 				lop.add(rgaop);
 				node=node.getNextVisible();
 			} 	
 
 			if (positionEnd.offset!=0) {
 				rgaop = new RgaSDeletion(target.getKey().clone(), 0, offsetEnd);
-				rgadoc.apply(rgaop);
+				rgadoc.delete(node, 0, offsetEnd);
 				lop.add(rgaop);
 			}
 		}
