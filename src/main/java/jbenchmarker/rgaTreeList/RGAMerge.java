@@ -110,81 +110,11 @@ public class RGAMerge extends MergeAlgorithm {
 		}
 
 		rgadoc.removeLocal(p,offset);
+		
 
 		return lop;
 	}
-	/*
-	@Override
-	protected List<Operation> localInsert(SequenceOperation opt) throws IncorrectTraceException {
-		List<Operation> lop = new ArrayList<Operation>();
-		RGADocument rgadoc = (RGADocument) (this.getDoc());
-		RGAS4Vector s4vtms, s4vpos = null;
-		 RGAS4Vector first = null;
-		RGAOperation rgaop;
-		RGANode target = null;
-
-		int p = opt.getPosition();
-
-		if (p == 0) {
-			s4vpos = null;
-		} else {
-			s4vpos = rgadoc.getVisibleS4V(p); // if head, s4vpos = null; if after tail, s4vpos= the last one. 		
-		}
-
-		for (Object t : opt.getContent()) {
-			this.siteVC.inc(this.getReplicaNumber());
-			s4vtms = new RGAS4Vector(this.getReplicaNumber(), this.siteVC);
-			if (first == null) {
-				first = s4vtms;
-			}
-			node = rgadoc.remoteInsert(node, s4vtms, t);
-			pos += step;
-			node.setPosition(pos);
-			ln.add(node);
-		}
-		rgadoc.addLocal(p, ln);
-
-		lop.add(new RGAOperation(before.getKey(), opt.getContent(), first));
-		return lop;
-
-		this.siteVC.inc(this.getReplicaNumber());
-		s4vtms = new RGAS4Vector(this.getReplicaNumber(), this.siteVC);
-		rgaop = new RGAOperation(p, s4vpos, opt.getContent(), s4vtms);
-		s4vpos = s4vtms; // The s4v of the current insert becomes the s4vpos of next insert.
-		lop.add(rgaop);
-		rgadoc.apply(rgaop);
-		return lop;
-	}
-
-	@Override
-	protected List<Operation> localDelete(SequenceOperation opt) throws IncorrectTraceException {
-		List<Operation> lop = new ArrayList<Operation>();
-		RGADocument rgadoc = (RGADocument) (this.getDoc());
-		RGAS4Vector s4vtms, s4vpos = null;
-		RGAOperation rgaop;
-		RGANode target = null;
-
-		int p = opt.getPosition();
-		int offset;
-
-		offset = opt.getLenghOfADel();
-		target = rgadoc.getVisibleNode(p+1);
-
-		for (int i = 0; i < offset; i++) {
-			if (target!=null){
-				this.siteVC.inc(this.getReplicaNumber());
-				s4vtms = new RGAS4Vector(this.getReplicaNumber(), this.siteVC);
-				rgaop = new RGAOperation(p + 1, target.getKey(), s4vtms);
-				target = target.getNextVisible();
-				lop.add(rgaop);
-				rgadoc.apply(rgaop);
-			}
-			else {break;}
-			//			purger.setLastVC(this.getReplicaNumber(),this.siteVC);
-		}
-
-		return lop;
-	}*/
+	
 
 	@Override
 	public CRDT<String> create() {

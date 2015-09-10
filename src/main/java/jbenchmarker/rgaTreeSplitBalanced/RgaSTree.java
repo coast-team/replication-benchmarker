@@ -6,11 +6,9 @@ public class RgaSTree {
 
 
 	private RgaSNode root;
-
 	private RgaSTree father;
 	private RgaSTree leftSon;
 	private RgaSTree rightSon;
-
 	private int size;
 
 

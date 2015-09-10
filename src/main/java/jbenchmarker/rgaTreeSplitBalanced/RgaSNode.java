@@ -10,18 +10,12 @@ public class RgaSNode<T> implements Serializable {
 	private RgaSNode next;
 	private RgaSNode link;
 	private RgaSTree tree;
-	
-	public RgaSTree getTree() {
-		return tree;
-	}
-
-	public void setTree(RgaSTree tree) {
-		this.tree = tree;
-	}
-
 	private List<T> content;
 	private int size;
-	private boolean tomb;	//used for visible and tombstone purging if null, then not tombstone 
+	private boolean tomb;	
+
+
+
 
 
 
@@ -60,7 +54,7 @@ public class RgaSNode<T> implements Serializable {
 
 
 
-	
+
 	/*
 	 *		toString, getContentAsString, equals, makeTombstone, getNextVisible, getLinkVisible and hashCode
 	 */
@@ -101,23 +95,28 @@ public class RgaSNode<T> implements Serializable {
 	public void makeTombstone() {
 		this.tomb = true;
 		this.content = null;
+		this.tree=null;
 	}
 
 	public RgaSNode getNextVisible() {
 		RgaSNode node = next;
+
 		while (node != null && !node.isVisible()) {
 			node = node.getNext();
 		}
+
 		return node;
 	}
+
 	
+
 	public RgaSNode getLinkVisible() {
 		RgaSNode node = next;
 		while (node != null && !node.isVisible()) {
 			node = node.getLink();
 		}
 		return node;
-		
+
 	}
 
 	@Override
@@ -140,12 +139,12 @@ public class RgaSNode<T> implements Serializable {
 	public void setKey(RgaSS3Vector key) {
 		this.key = key;
 	}
-	
+
 	public int getOffset() {
 		if (this.key!=null)	return key.getOffset();
 		else return 0;
 	}
-	
+
 	public void setOffset(int off) {
 		if (this.key!=null) this.key.setOffset(off);
 	}
@@ -188,6 +187,14 @@ public class RgaSNode<T> implements Serializable {
 
 	public void setTomb(boolean tomb) {
 		this.tomb = tomb;
+	}
+
+	public RgaSTree getTree() {
+		return tree;
+	}
+
+	public void setTree(RgaSTree tree) {
+		this.tree = tree;
 	}
 
 }

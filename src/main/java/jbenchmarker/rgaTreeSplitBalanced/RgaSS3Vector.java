@@ -16,7 +16,7 @@ public class RgaSS3Vector implements Comparable<RgaSS3Vector>, Serializable {
 
 
 
-	
+
 	/*
 	 *		Constructors
 	 */
@@ -26,7 +26,7 @@ public class RgaSS3Vector implements Comparable<RgaSS3Vector>, Serializable {
 		this.sum = sum;
 		this.offset = offset;
 	}
-	
+
 	public RgaSS3Vector(int sid, VectorClock vc, int offset) {
 		this.sid = sid;
 		this.sum = vc.getSum();
@@ -91,17 +91,12 @@ public class RgaSS3Vector implements Comparable<RgaSS3Vector>, Serializable {
 				return AFTER;
 			} else if (this.sid < s3v.sid) {
 				return BEFORE;
-			} else { // this.sid == s3v.sid
-				if (this.offset > s3v.offset) {
-					return AFTER;
-				} else if (this.offset < s3v.offset) {
-					return BEFORE;
-				} else { // this.offset == s3v.offset
-					return EQUAL;
-				}
+			}  else {
+				return EQUAL;
 			}
 		}
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {

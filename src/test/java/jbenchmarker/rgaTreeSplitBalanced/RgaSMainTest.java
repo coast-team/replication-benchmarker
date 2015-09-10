@@ -3,6 +3,8 @@ package jbenchmarker.rgaTreeSplitBalanced;
 import java.util.ArrayList;
 
 import jbenchmarker.factories.RgaTreeSplitFactory;
+import jbenchmarker.vladium.IObjectProfileNode;
+import jbenchmarker.vladium.ObjectProfiler;
 
 import java.util.List;
 
@@ -45,6 +47,36 @@ public class RgaSMainTest {
 		RgaSMerge merge0 = new RgaSMerge(rgadoc,0); 
 		RgaSMerge merge1 = new RgaSMerge(rgadoc,1);
 
+		IObjectProfileNode profile;
+
+		
+		class node{
+			node next;
+			
+			public node(){
+				next=null;
+			}
+			public node(node next){
+				next=next;
+			}
+		}
+		
+		class Node{
+			public Node(){
+			}
+		}
+		node node = new node();
+		profile = ObjectProfiler.profile (node);
+		System.out.println(profile.size ());
+		
+		node node1 = new node(node);
+		profile = ObjectProfiler.profile (node1);
+		System.out.println(profile.size ());
+		
+		Node node2 = new Node();
+		
+		profile = ObjectProfiler.profile (node2);
+		System.out.println(profile.size ());
 		/*
 		List<String> a= input("abcdefghij");
 		List<String> b= input("28");

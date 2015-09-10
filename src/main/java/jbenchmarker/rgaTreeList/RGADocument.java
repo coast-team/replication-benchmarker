@@ -59,6 +59,7 @@ public class RGADocument<T> implements Document {
 			boolean wasVisible = remoteDelete(rgaop);
 			if (wasVisible) {
 				list.remove(list.indexOf(hash.get(rgaop.getS4VPos())));
+				hash.get(rgaop.getS4VPos()).setTree(null);
 			}
 		} else {
 			RGANode prev;
@@ -124,6 +125,7 @@ public class RGADocument<T> implements Document {
 
 	void removeLocal(int p, int offset) {
 		for (int i=0; i<offset; i++){
+			((RGANode)list.get(p)).setTree(null);;
 			list.remove(p);
 		}
 	}

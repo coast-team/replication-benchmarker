@@ -16,7 +16,6 @@
  */
 package jbenchmarker.rgaTreeList;
 import java.util.AbstractList;
-
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -135,6 +134,8 @@ public class TreeList extends AbstractList {
         return listIterator(0);
     }
 
+    
+    
     /**
      * Gets a ListIterator over the list.
      * 
@@ -178,19 +179,12 @@ public class TreeList extends AbstractList {
     		index+=tree.relativePosition;
     		tree=tree.getFather();
     	}
-    	index+=tree.relativePosition;
+    	if (tree!=null) index+=tree.relativePosition;
         return index;
     }
     
     
-    /*
-    public int indexOf(Object object) {
-        // override to go 75% faster
-        if (root == null) {
-            return -1;
-        }
-        return root.indexOf(object, root.relativePosition);
-    }*/
+  
 
     /**
      * Searches for the presence of an object in the list.
@@ -302,7 +296,9 @@ public class TreeList extends AbstractList {
      * to indicate if they are a child (false) or a link as in linked list (true).
      */
     public class AVLNode {
-        /** The left child node or the predecessor if {@link #leftIsPrevious}.*/
+        
+
+		/** The left child node or the predecessor if {@link #leftIsPrevious}.*/
         private AVLNode left;
         /** Flag indicating that left reference is not a subtree but the predecessor. */
         private boolean leftIsPrevious;
@@ -606,6 +602,7 @@ public class TreeList extends AbstractList {
          */
         private AVLNode removeSelf() {
             if (getRightSubTree() == null && getLeftSubTree() == null) {
+            	this.father=null;
                 return null;
             }
             if (getRightSubTree() == null) {
@@ -613,11 +610,13 @@ public class TreeList extends AbstractList {
                     left.relativePosition += relativePosition + (relativePosition > 0 ? 0 : 1);
                 }
                 left.max().setRight(null, right);
+                this.father=null;
                 return left;
             }
             if (getLeftSubTree() == null) {
                 right.relativePosition += relativePosition - (relativePosition < 0 ? 0 : 1);
                 right.min().setLeft(null, left);
+                this.father=null;
                 return right;
             }
 
@@ -796,6 +795,9 @@ public class TreeList extends AbstractList {
             if (right!=null) right.setFather(this);
             recalcHeight();
         }
+        
+ 
+
 
 //      private void checkFaedelung() {
 //          AVLNode maxNode = left.max();
@@ -856,6 +858,10 @@ public class TreeList extends AbstractList {
             return "AVLNode(" + relativePosition + "," + (left != null) + "," + value +
                 "," + (getRightSubTree() != null) + ", faedelung " + rightIsNext + " )";
         }
+
+		private TreeList getOuterType() {
+			return TreeList.this;
+		}
     }
 
     /**
