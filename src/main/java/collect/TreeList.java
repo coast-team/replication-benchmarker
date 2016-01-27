@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package jbenchmarker.rgaTreeList;
+package collect;
 import java.util.AbstractList;
 
 import java.util.Collection;
@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
-import jbenchmarker.rgaTreeList.OrderedIterator;
 
 /**
  * A <code>List</code> implementation that is optimised for fast insertions and
@@ -56,7 +55,7 @@ import jbenchmarker.rgaTreeList.OrderedIterator;
  * @author Joerg Schmuecker
  * @author Stephen Colebourne
  */
-public class TreeList extends AbstractList {
+public class TreeList<T extends TreeNode> extends AbstractList<T> {
 //    add; toArray; iterator; insert; get; indexOf; remove
 //    TreeList = 1260;7360;3080;  160;   170;3400;  170;
 //   ArrayList =  220;1480;1760; 6870;    50;1540; 7200;
@@ -111,7 +110,8 @@ public class TreeList extends AbstractList {
      * @param index  the index to retrieve
      * @return the element at the specified index
      */
-    public Object get(int index) {
+    @Override
+    public T get(int index) {
         checkInterval(index, 0, size() - 1);
         return root.get(index).getValue();
     }
@@ -151,6 +151,7 @@ public class TreeList extends AbstractList {
      * @param fromIndex  the index to start from
      * @return the new iterator
      */
+    @Override
     public ListIterator listIterator(int fromIndex) {
         // override to go 75% faster
         // cannot use EmptyIterator as iterator.add() must work
@@ -161,18 +162,16 @@ public class TreeList extends AbstractList {
     /**
      * Searches for the index of an object in the list.
      * 
+     * @param object
      * @return the index of the object, -1 if not found
      */
-
-    
-    public int indexOf(Object object) {
+    public int indexOf(TreeNode object) {
         if (root == null) {
             return -1;
         }
         
         int index=0;
-    	RGANode node = (RGANode) object;
-    	AVLNode tree = node.getTree();
+    	AVLNode tree = object.getTree();
     	
     	while (!tree.equals(root)){
     		index+=tree.relativePosition;
@@ -197,6 +196,7 @@ public class TreeList extends AbstractList {
      * 
      * @return true if the object is found
      */
+    @Override
     public boolean contains(Object object) {
         return (indexOf(object) >= 0);
     }
@@ -206,6 +206,7 @@ public class TreeList extends AbstractList {
      * 
      * @return the list as an array
      */
+    @Override
     public Object[] toArray() {
         // override to go 20% faster
         Object[] array = new Object[size()];
@@ -222,7 +223,8 @@ public class TreeList extends AbstractList {
      * @param index  the index to add before
      * @param obj  the element to add
      */
-    public void add(int index, Object obj) {
+    @Override
+    public void add(int index, T obj) {
         modCount++;
         checkInterval(index, 0, size());
         if (root == null) {
@@ -241,10 +243,11 @@ public class TreeList extends AbstractList {
      * @return the previous object at that index
      * @throws IndexOutOfBoundsException if the index is invalid
      */
-    public Object set(int index, Object obj) {
+    @Override
+    public T set(int index, T obj) {
         checkInterval(index, 0, size() - 1);
         AVLNode node = root.get(index);
-        Object result = node.value;
+        T result = node.value;
         node.setValue(obj);
         return result;
     }
@@ -255,10 +258,11 @@ public class TreeList extends AbstractList {
      * @param index  the index to remove
      * @return the previous object at that index
      */
-    public Object remove(int index) {
+    @Override
+    public T remove(int index) {
         modCount++;
         checkInterval(index, 0, size() - 1);
-        Object result = get(index);
+        T result = get(index);
         root = root.remove(index);
         size--;
         return result;
@@ -267,6 +271,7 @@ public class TreeList extends AbstractList {
     /**
      * Clears the list, removing all entries.
      */
+    @Override
     public void clear() {
         modCount++;
         root = null;
@@ -315,7 +320,7 @@ public class TreeList extends AbstractList {
         /** The relative position, root holds absolute position. */
         private int relativePosition;
         /** The stored element. */
-        private Object value;
+        private T value;
         
         private AVLNode father;
 
@@ -335,10 +340,12 @@ public class TreeList extends AbstractList {
          * @param rightFollower the node with the value following this one
          * @param leftFollower the node with the value leading this one
          */
-        public AVLNode(int relativePosition, Object obj, AVLNode rightFollower, AVLNode leftFollower) {
+        public AVLNode(int relativePosition, T obj, AVLNode rightFollower, AVLNode leftFollower) {
             this.relativePosition = relativePosition;
             value = obj;
-            if (value!=null) ((RGANode)value).setTree(this);
+            if (value!=null) {
+                value.setTree(this);
+            }
             rightIsNext = true;
             leftIsPrevious = true;
             right = rightFollower;
@@ -352,7 +359,7 @@ public class TreeList extends AbstractList {
          * 
          * @return the value of this node
          */
-        Object getValue() {
+        T getValue() {
             return value;
         }
 
@@ -361,9 +368,11 @@ public class TreeList extends AbstractList {
          * 
          * @param obj  the value to store
          */
-        void setValue(Object obj) {
+        void setValue(T obj) {
             this.value = obj;
-            if (value!=null) ((RGANode)value).setTree(this);
+            if (value!=null) {
+                value.setTree(this);
+            }
         }
 
         /**
@@ -393,10 +402,9 @@ public class TreeList extends AbstractList {
          * Locate the index that contains the specified object.
          */
 
-        int indexOf(Object object, int index) {
+        int indexOf(TreeNode object, int index) {
         	index=0;
-        	RGANode node = (RGANode) object;
-        	AVLNode tree = node.getTree();
+        	AVLNode tree = object.getTree();
         	
         	while (tree!=null){
         		index+=tree.relativePosition;
@@ -470,7 +478,7 @@ public class TreeList extends AbstractList {
          * the parent node.
          * @param obj is the object to be stored in the position.
          */
-        public AVLNode insert(int index, Object obj) {
+        public AVLNode insert(int index, T obj) {
             int indexRelativeToMe = index - relativePosition;
 
             if (indexRelativeToMe <= 0) {
@@ -482,7 +490,7 @@ public class TreeList extends AbstractList {
         
         
 
-        private AVLNode insertOnLeft(int indexRelativeToMe, Object obj) {
+        private AVLNode insertOnLeft(int indexRelativeToMe, T obj) {
             AVLNode ret = this;
 
             if (getLeftSubTree() == null) {
@@ -499,7 +507,7 @@ public class TreeList extends AbstractList {
             return ret;
         }
 
-        private AVLNode insertOnRight(int indexRelativeToMe, Object obj) {
+        private AVLNode insertOnRight(int indexRelativeToMe, T obj) {
             AVLNode ret = this;
 
             if (getRightSubTree() == null) {
@@ -861,7 +869,7 @@ public class TreeList extends AbstractList {
     /**
      * A list iterator over the linked list.
      */
-    static class TreeListIterator implements ListIterator, OrderedIterator {
+    class TreeListIterator implements ListIterator<T>, OrderedIterator<T> {
         /** The parent list */
         protected final TreeList parent;
         /**
@@ -917,11 +925,13 @@ public class TreeList extends AbstractList {
             }
         }
 
+        @Override
         public boolean hasNext() {
             return (nextIndex < parent.size());
         }
 
-        public Object next() {
+        @Override
+        public T next() {
             checkModCount();
             if (!hasNext()) {
                 throw new NoSuchElementException("No element at index " + nextIndex + ".");
@@ -929,7 +939,7 @@ public class TreeList extends AbstractList {
             if (next == null) {
                 next = parent.root.get(nextIndex);
             }
-            Object value = next.getValue();
+            T value = next.getValue();
             current = next;
             currentIndex = nextIndex++;
             next = next.next();
@@ -940,7 +950,7 @@ public class TreeList extends AbstractList {
             return (nextIndex > 0);
         }
 
-        public Object previous() {
+        public T previous() {
             checkModCount();
             if (!hasPrevious()) {
                 throw new NoSuchElementException("Already at start of list.");
@@ -950,7 +960,7 @@ public class TreeList extends AbstractList {
             } else {
                 next = next.previous();
             }
-            Object value = next.getValue();
+            T value = next.getValue();
             current = next;
             currentIndex = --nextIndex;
             return value;
@@ -983,7 +993,8 @@ public class TreeList extends AbstractList {
             expectedModCount++;
         }
 
-        public void set(Object obj) {
+        @Override
+        public void set(T obj) {
             checkModCount();
             if (current == null) {
                 throw new IllegalStateException();
@@ -991,7 +1002,8 @@ public class TreeList extends AbstractList {
             current.setValue(obj);
         }
 
-        public void add(Object obj) {
+        @Override
+        public void add(TreeNode obj) {
             checkModCount();
             parent.add(nextIndex, obj);
             current = null;
@@ -1004,5 +1016,4 @@ public class TreeList extends AbstractList {
 	public AVLNode getRoot() {
 		return root;
 	}
-
 }

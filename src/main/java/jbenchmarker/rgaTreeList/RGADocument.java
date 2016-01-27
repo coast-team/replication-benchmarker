@@ -18,6 +18,7 @@
  */
 package jbenchmarker.rgaTreeList;
 
+import collect.TreeList;
 import jbenchmarker.core.Document;
 import jbenchmarker.core.SequenceOperation;
 import java.util.HashMap;

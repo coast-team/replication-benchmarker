@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package jbenchmarker.rgaTreeList;
+package collect;
 
 import java.util.Iterator;
 
@@ -28,7 +28,7 @@ import java.util.Iterator;
  *
  * @author Stephen Colebourne
  */
-public interface OrderedIterator extends Iterator {
+public interface OrderedIterator<T> extends Iterator<T> {
 
     /**
      * Checks to see if there is a previous element that can be iterated to.

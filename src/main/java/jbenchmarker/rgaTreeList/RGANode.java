@@ -18,15 +18,16 @@
  */
 package jbenchmarker.rgaTreeList;
 
+import collect.TreeList.AVLNode;
+import collect.TreeNode;
 import java.io.Serializable;
 
-import jbenchmarker.rgaTreeList.TreeList.AVLNode;
 
 /**
  *
  * @author Roh
  */
-public class RGANode<T> implements Serializable {
+public class RGANode<T> implements TreeNode, Serializable {
 
     private RGAS4Vector key;	 
     private T content;
@@ -67,13 +68,14 @@ public class RGANode<T> implements Serializable {
         return next;
     }
     
+    @Override
     public AVLNode getTree() {
  		return tree;
- 	}
+    }
 
- 	public void setTree(AVLNode tree) {
- 		this.tree = tree;
- 	}
+    public void setTree(AVLNode tree) {
+ 	this.tree = tree;
+    }
     
     public RGANode getNextVisible() {
         RGANode node = next;
