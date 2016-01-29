@@ -86,7 +86,7 @@ public class LogootTreeMergeTest {
 		replica.applyLocal(SequenceOperation.insert(7, "7"));
 		assertEquals("ab2cdef7ghij", replica.lookup());
 
-		MergeAlgorithm replica2 = (MergeAlgorithm) new RGATreeListFactory().create();
+		MergeAlgorithm replica2 = (MergeAlgorithm) new LogootTreeFactory().create();
 		replica2.setReplicaNumber(2);
 		m1.execute(replica2);
 		assertEquals(content, replica2.lookup());
@@ -114,7 +114,7 @@ public class LogootTreeMergeTest {
 		CRDTMessage m4 = replica.applyLocal(SequenceOperation.delete(3, 8));
 		assertEquals("ab23ij", replica.lookup());
 
-		MergeAlgorithm replica2 = (MergeAlgorithm) new RGATreeListFactory().create();
+		MergeAlgorithm replica2 = (MergeAlgorithm) new LogootTreeFactory().create();
 		replica2.setReplicaNumber(2);
 		m1.execute(replica2);
 		m2.execute(replica2);
@@ -139,21 +139,31 @@ public class LogootTreeMergeTest {
 		CRDTMessage m3 = replica.applyLocal(SequenceOperation.insert(7, "7"));
 		assertEquals("ab2cdef7ghij", replica.lookup());
 
-		CRDTMessage m4 = replica.applyLocal(SequenceOperation.replace(1, 10,"test"));
-		assertEquals("atestj", replica.lookup());
+		CRDTMessage m4 = replica.applyLocal(SequenceOperation.replace(1, 10,"xyz"));
+		assertEquals("axyzj", replica.lookup());
 
-		MergeAlgorithm replica2 = (MergeAlgorithm) new RGATreeListFactory().create();
+		MergeAlgorithm replica2 = (MergeAlgorithm) new LogootTreeFactory().create();
 		replica2.setReplicaNumber(2);
 		m1.execute(replica2);
 		m2.execute(replica2);
 		m3.execute(replica2);
 		CRDTMessage m5 =replica2.applyLocal(SequenceOperation.insert(4, "01"));
-		m4.execute(replica2);
-		assertEquals("atest01j", replica2.lookup()); 
 
 		m5.execute(replica);
-		assertEquals("atest01j", replica.lookup()); 
-	} 
+                assertTrue(replica.lookup().charAt(0) == 'a');
+		assertTrue(replica.lookup().charAt(6) == 'j');
+		assertTrue(replica.lookup().contains("x"));
+		assertTrue(replica.lookup().contains("y"));
+		assertTrue(replica.lookup().contains("z"));
+		assertTrue(replica.lookup().contains("0"));
+		assertTrue(replica.lookup().contains("1"));
+		assertTrue(replica.lookup().indexOf("x") < replica.lookup().indexOf("y"));
+		assertTrue(replica.lookup().indexOf("y") < replica.lookup().indexOf("z"));
+		assertTrue(replica.lookup().indexOf("0") < replica.lookup().indexOf("1"));
+                
+                m4.execute(replica2);
+		assertEquals(replica.lookup(), replica2.lookup()); 
+        } 
 
 
 	@Test
@@ -165,13 +175,23 @@ public class LogootTreeMergeTest {
 		replica.applyLocal(SequenceOperation.replace(2, 4, "27"));
 		assertEquals("ab27ghij", replica.lookup());
 
-		MergeAlgorithm replica2 = (MergeAlgorithm) new RGATreeListFactory().create();
+		MergeAlgorithm replica2 = (MergeAlgorithm) new LogootTreeFactory().create();
 		replica2.setReplicaNumber(2);
 		m1.execute(replica2);
-		CRDTMessage m2 = replica2.applyLocal(SequenceOperation.replace(1, 8, "test"));
+		CRDTMessage m2 = replica2.applyLocal(SequenceOperation.replace(1, 8, "xyz"));
 		m2.execute(replica);
-		assertEquals("atestj", replica2.lookup());
-		assertEquals("atest27j", replica.lookup());
+		assertEquals("axyzj", replica2.lookup());
+		assertEquals(7, replica.lookup().length());
+                assertTrue(replica.lookup().charAt(0) == 'a');
+		assertTrue(replica.lookup().charAt(6) == 'j');
+		assertTrue(replica.lookup().contains("x"));
+		assertTrue(replica.lookup().contains("y"));
+		assertTrue(replica.lookup().contains("z"));
+		assertTrue(replica.lookup().contains("2"));
+		assertTrue(replica.lookup().contains("7"));
+		assertTrue(replica.lookup().indexOf("x") < replica.lookup().indexOf("y"));
+		assertTrue(replica.lookup().indexOf("y") < replica.lookup().indexOf("z"));
+		assertTrue(replica.lookup().indexOf("2") < replica.lookup().indexOf("7"));
 	}
 
     @Test
@@ -183,8 +203,6 @@ public class LogootTreeMergeTest {
         replica.applyLocal(SequenceOperation.delete(pos, off));
         assertEquals(content.substring(0, pos) + content.substring(pos + off), replica.lookup());
     }
-
-    
 
     @Test
     public void testRun() throws IncorrectTraceException, PreconditionException, IOException {
