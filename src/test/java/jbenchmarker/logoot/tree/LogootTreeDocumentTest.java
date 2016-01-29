@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.rgaTreeList;
+package jbenchmarker.logoot.tree;
 
 import collect.TreeList;
 import crdt.PreconditionException;
@@ -25,13 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
-import jbenchmarker.factories.RGATreeListFactory;
+import jbenchmarker.factories.LogootTreeFactory;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 import org.junit.Before;
 
-public class RGADocumentTest {
+public class LogootTreeDocumentTest {
 	static List<String> input(String A){
 		List<String> a= new ArrayList<String>();
 		for (int i=0; i<A.length(); i++){
@@ -40,7 +40,7 @@ public class RGADocumentTest {
 		return a;			
 	}
 	
-	static void apply(RGADocument rgadoc, SequenceOperation so, RGAMerge merge) throws IncorrectTraceException{
+	static void apply(SequenceOperation so, LogootTreeMerge merge) throws IncorrectTraceException{
 		if (so.getType()==OpType.insert){
 			merge.localInsert(so);
 		}
@@ -50,11 +50,11 @@ public class RGADocumentTest {
 	}
 
 	private static final int REPLICA_ID = 7;
-	private RGAMerge replica;
+	private LogootTreeMerge replica;
 
 	@Before
 	public void setUp() throws Exception {
-		replica = (RGAMerge) new RGATreeListFactory().create(REPLICA_ID);
+		replica = (LogootTreeMerge) new LogootTreeFactory().create(REPLICA_ID);
 	}
 
 	@Test
@@ -97,14 +97,4 @@ public class RGADocumentTest {
 		replica.applyLocal(SequenceOperation.delete(0, 1));
 		assertEquals("Suppression au début","", replica.lookup());
         }
-
-	public void test(){
-		TreeList list = new TreeList();
-		for (int i=0; i<15; i++){
-			list.add(new RGANode(null, i));
-		}
-		
-		System.out.println(list);
-		list.treeViewWithSeparator(list.getRoot(),0);
-	}
 }

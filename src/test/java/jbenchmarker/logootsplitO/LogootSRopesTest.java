@@ -21,13 +21,16 @@ package jbenchmarker.logootsplitO;
 
 import crdt.CRDT;
 import crdt.CRDTMessage;
+import crdt.Factory;
 import crdt.OperationBasedOneMessage;
 import crdt.PreconditionException;
 import crdt.simulator.CausalSimulator;
+import crdt.simulator.IncorrectTraceException;
 import crdt.simulator.Trace;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.SequenceOperationStupid;
 import crdt.simulator.random.StandardSeqOpProfile;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -823,4 +826,15 @@ public class LogootSRopesTest {
         assertEquals("[d, e, f]", a.getRight().str.toString());
         assertEquals("abc123456def", alg1.lookup());
     }
+    
+    	@Test
+	public void testRun() throws IncorrectTraceException, PreconditionException, IOException {
+		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) alg1, 500, 500, StandardSeqOpProfile.BASIC);
+	}
+        
+            
+    	@Test
+	public void testRunString() throws IncorrectTraceException, PreconditionException, IOException {
+		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new LogootSplitOFactory(), 500, 500, StandardSeqOpProfile.BASIC);
+	}
 }

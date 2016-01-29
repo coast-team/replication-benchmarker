@@ -50,7 +50,7 @@ public class LogootOperation<T> implements Operation {
         return content;
     }
 
-    static <T> LogootOperation insert(ListIdentifier idf, T cont) {
+    public static <T> LogootOperation insert(ListIdentifier idf, T cont) {
         return new LogootOperation(OpType.insert, idf, cont);
     }
 

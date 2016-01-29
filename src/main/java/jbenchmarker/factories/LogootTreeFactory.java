@@ -16,33 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package jbenchmarker.logoot;
+package jbenchmarker.factories;
 
-import crdt.tree.orderedtree.PositionIdentifier;
-import java.io.Serializable;
+import jbenchmarker.core.ReplicaFactory;
+import jbenchmarker.logoot.BoundaryStrategy;
+import jbenchmarker.logoot.LogootStrategy;
+import jbenchmarker.logoot.tree.LogootTreeDocument;
+import jbenchmarker.logoot.tree.LogootTreeMerge;
 
-/**
- * A logoot identifier.
- * @author urso
- */
-public interface ListIdentifier<T> extends PositionIdentifier, Comparable<T>, Cloneable, Serializable {
-    /**
-     * Length of this growable identifier.
-     * @return  the number of identifiers
-     */
-    int length();
+public class LogootTreeFactory extends ReplicaFactory {
 
-    /**
-     * Replica that generates this identifier.
-     * @return replica of this identifier.
-     */
-    int replica();
- 
-    /**
-     * Clock used to generates this identifier.
-     * @return clock of this identifier
-     */
-    int clock();   
+    @Override
+    public LogootTreeMerge create(int r) {         
+        return new LogootTreeMerge(createDoc(r, 64, 1000000000), r);
+    }
     
-    ListIdentifier clone();
+    static public LogootTreeDocument createDoc(int r, int base, int bound) {
+        LogootStrategy s = new BoundaryStrategy(base, bound);
+        return new LogootTreeDocument(r, s); 
+    }
 }

@@ -1,32 +1,66 @@
-package jbenchmarker.rgalocal;
+/**
+ * Replication Benchmarker
+ * https://github.com/score-team/replication-benchmarker/ Copyright (C) 2013
+ * LORIA / Inria / SCORE Team
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package jbenchmarker.logoot.tree;
 
-import static org.junit.Assert.*;
-import java.io.IOException;
-import jbenchmarker.core.MergeAlgorithm;
-import jbenchmarker.core.SequenceOperation;
-import org.junit.Before;
-import org.junit.Test;
+import jbenchmarker.rgaTreeList.*;
 import crdt.CRDTMessage;
 import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.simulator.IncorrectTraceException;
-import crdt.simulator.random.StandardDiffProfile;
 import crdt.simulator.random.StandardSeqOpProfile;
 
-public class RGAMergeTest {
+import java.io.IOException;
 
-	private static final int REPLICA_ID = 7;
-	private RGAMerge replica;
+import jbenchmarker.core.MergeAlgorithm;
+import jbenchmarker.core.SequenceOperation;
+import jbenchmarker.factories.LogootTreeFactory;
+import jbenchmarker.factories.RGATreeListFactory;
 
-	@Before
-	public void setUp() throws Exception {
-		replica = (RGAMerge) new RGAFFactory().create(REPLICA_ID);
-	}
+import org.junit.Before;
+import org.junit.Test;
 
-	@Test
-	public void testEmpty() {
-		assertEquals("", replica.lookup());
-	}
+import static org.junit.Assert.*;
+
+public class LogootTreeMergeTest {
+
+    private static final int REPLICA_ID = 7;
+    private LogootTreeMerge replica;
+
+    @Before
+    public void setUp() throws Exception {
+        replica = (LogootTreeMerge) new LogootTreeFactory().create(REPLICA_ID);
+    }
+
+    @Test
+    public void testEmptyTree() {
+        assertEquals("", replica.lookup());
+    }
+
+    @Test
+    public void testInsert() throws PreconditionException {
+        String content = "abcdejk", c2 = "fghi";
+        int pos = 3;
+        replica.applyLocal(SequenceOperation.insert(0, content));
+        assertEquals(content, replica.lookup());
+        replica.applyLocal(SequenceOperation.insert(pos, c2));
+        assertEquals(content.substring(0, pos) + c2 + content.substring(pos), replica.lookup());
+    }
 
 	@Test
 	public void testUpdate() throws PreconditionException {
@@ -52,7 +86,7 @@ public class RGAMergeTest {
 		replica.applyLocal(SequenceOperation.insert(7, "7"));
 		assertEquals("ab2cdef7ghij", replica.lookup());
 
-		MergeAlgorithm replica2 = (MergeAlgorithm) new RGAFFactory().create();
+		MergeAlgorithm replica2 = (MergeAlgorithm) new RGATreeListFactory().create();
 		replica2.setReplicaNumber(2);
 		m1.execute(replica2);
 		assertEquals(content, replica2.lookup());
@@ -80,7 +114,7 @@ public class RGAMergeTest {
 		CRDTMessage m4 = replica.applyLocal(SequenceOperation.delete(3, 8));
 		assertEquals("ab23ij", replica.lookup());
 
-		MergeAlgorithm replica2 = (MergeAlgorithm) new RGAFFactory().create();
+		MergeAlgorithm replica2 = (MergeAlgorithm) new RGATreeListFactory().create();
 		replica2.setReplicaNumber(2);
 		m1.execute(replica2);
 		m2.execute(replica2);
@@ -97,6 +131,7 @@ public class RGAMergeTest {
 	
 	@Test
 	public void testMultipleUpdates() throws PreconditionException {
+		System.out.println("\n\n\nBEGIN");
 		String content = "abcdefghij";
 
 		CRDTMessage m1 = replica.applyLocal(SequenceOperation.insert(0, content));
@@ -107,7 +142,7 @@ public class RGAMergeTest {
 		CRDTMessage m4 = replica.applyLocal(SequenceOperation.replace(1, 10,"test"));
 		assertEquals("atestj", replica.lookup());
 
-		MergeAlgorithm replica2 = (MergeAlgorithm) new RGAFFactory().create();
+		MergeAlgorithm replica2 = (MergeAlgorithm) new RGATreeListFactory().create();
 		replica2.setReplicaNumber(2);
 		m1.execute(replica2);
 		m2.execute(replica2);
@@ -123,13 +158,14 @@ public class RGAMergeTest {
 
 	@Test
 	public void testConcurrentUpdate() throws PreconditionException{
+		System.out.println("END\n\n\n");
 		String content = "abcdefghij";
 		CRDTMessage m1 = replica.applyLocal(SequenceOperation.insert(0, content));
 
 		replica.applyLocal(SequenceOperation.replace(2, 4, "27"));
 		assertEquals("ab27ghij", replica.lookup());
 
-		MergeAlgorithm replica2 = (MergeAlgorithm) new RGAFFactory().create();
+		MergeAlgorithm replica2 = (MergeAlgorithm) new RGATreeListFactory().create();
 		replica2.setReplicaNumber(2);
 		m1.execute(replica2);
 		CRDTMessage m2 = replica2.applyLocal(SequenceOperation.replace(1, 8, "test"));
@@ -138,9 +174,20 @@ public class RGAMergeTest {
 		assertEquals("atest27j", replica.lookup());
 	}
 
-	
-	@Test
-	public void testRun() throws IncorrectTraceException, PreconditionException, IOException {
-		crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGAFFactory(), 500, 500, StandardSeqOpProfile.BASIC);
-	}
+    @Test
+    public void testDelete() throws PreconditionException {
+        String content = "abcdefghijk";
+        int pos = 3, off = 4;
+        replica.applyLocal(SequenceOperation.insert(0, content));
+        assertEquals(content, replica.lookup());
+        replica.applyLocal(SequenceOperation.delete(pos, off));
+        assertEquals(content.substring(0, pos) + content.substring(pos + off), replica.lookup());
+    }
+
+    
+
+    @Test
+    public void testRun() throws IncorrectTraceException, PreconditionException, IOException {
+        crdt.simulator.CausalDispatcherSetsAndTreesTest.testRun((Factory) new RGATreeListFactory(), 500, 500, StandardSeqOpProfile.BASIC);
+    }
 }
