@@ -100,7 +100,7 @@ public class RGADocumentTest {
 
 	public void test(){
 		TreeList list = new TreeList();
-		for (int i=0; i<15; i++){
+		for (int i=0; i<8; i++){
 			list.add(new RGANode(null, i));
 		}
 		

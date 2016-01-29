@@ -113,8 +113,8 @@ public class LogootSDocument<T> implements Document {
             list.add(new LogootSInsertion(elements.get(position.index), position.offset, so.getContent(), this, replicaNumber));
         }
         return list;
-
     }
+    
 
     public List<Operation> generateDeletion(SequenceOperation so) {
         int start = so.getPosition();

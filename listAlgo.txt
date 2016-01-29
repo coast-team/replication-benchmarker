@@ -1,0 +1,8 @@
+/*
+* Coucou
+*/
+
+jbenchmarker.factories.LogootFactory
+//jbenchmarker.factories.LogootSplitAVLFactory
+//jbenchmarker.factories.RGAFactory
+jbenchmarker.factories.RGAFactory
