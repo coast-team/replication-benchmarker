@@ -279,7 +279,7 @@ public class Trace2XML {
                 org.jdom.Element opl = builder.build(racine);
                 for (int d : docs) {
                     Trace trace = new TraceGenerator.XMLTrace(d, opl.getChildren().iterator());
-                    CausalSimulator cd = new CausalSimulator(new CausalCheckerFactory(),  false, 0, false);
+                    CausalSimulator cd = new CausalSimulator(new CausalCheckerFactory(),  false, 0);
                     cd.run(trace);
                 }
             }

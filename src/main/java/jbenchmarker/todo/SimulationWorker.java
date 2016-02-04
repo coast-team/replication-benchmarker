@@ -18,15 +18,9 @@
  */
 package jbenchmarker.todo;
 
-import crdt.CRDT;
-import crdt.Factory;
 import crdt.simulator.CausalSimulator;
 import crdt.simulator.Trace;
-import crdt.simulator.random.RandomTrace;
-import crdt.simulator.random.StandardSeqOpProfile;
 import java.io.*;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.TypeVariable;
 import java.util.List;
 
 /**
@@ -93,7 +87,7 @@ public class SimulationWorker {
             /*Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
                     new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);*/
             Trace trace = config.getTrace();
-            CausalSimulator cd = new CausalSimulator(config.getRf(), config.isTimeExecution(),  config.getScaleMemory(), config.isOverHead());
+            CausalSimulator cd = new CausalSimulator(config.getRf(), config.isTimeExecution(),  config.getScaleMemory());
             if(config.getOutLog()!=null){
                 cd.setLogging(config.getOutLog());//file result
             }

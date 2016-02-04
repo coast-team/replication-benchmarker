@@ -19,7 +19,6 @@
 package crdt.simulator;
 
 import collect.Node;
-import collect.OrderedNode;
 import crdt.CRDT;
 import crdt.Factory;
 import crdt.PreconditionException;
@@ -32,8 +31,6 @@ import crdt.set.observedremove.ConvergentOrSet;
 import crdt.simulator.random.OperationProfile;
 import crdt.simulator.random.RandomTrace;
 import crdt.simulator.random.SetOperationProfile;
-import crdt.simulator.random.StandardDiffProfile;
-import crdt.simulator.random.StandardSeqOpProfile;
 import crdt.simulator.random.TreeOperationProfile;
 import crdt.tree.wordtree.WordPolicy;
 import crdt.tree.wordtree.WordTree;
@@ -43,15 +40,11 @@ import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import jbenchmarker.factories.LogootListFactory;
-import jbenchmarker.factories.RGAFactory;
-import jbenchmarker.factories.RgaSFactory;
 import jbenchmarker.ot.otset.AddWinTransformation;
 import jbenchmarker.ot.otset.DelWinTransformation;
 import jbenchmarker.ot.otset.OTSet;
 import jbenchmarker.ot.soct2.SOCT2;
 import jbenchmarker.ot.soct2.SOCT2GarbageCollector;
-import jbenchmarker.rgasplit.RgaSMerge;
 
 import org.junit.AfterClass;
 
@@ -96,7 +89,7 @@ public class CausalDispatcherSetsAndTreesTest {
     }
 
     public static CRDT testRunX(Factory<CRDT> factory, int times, int duration, int nbreplica, OperationProfile opp) throws PreconditionException, IncorrectTraceException, IOException {
-        CausalSimulator cd = new CausalSimulator(factory, false, 0, false);
+        CausalSimulator cd = new CausalSimulator(factory, false, 0);
         for (int t = 0; t < times; ++t) {
             //System.out.println(t);
             cd.reset(); 

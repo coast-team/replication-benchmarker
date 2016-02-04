@@ -28,10 +28,10 @@ import java.io.IOException;
  */
 public interface SizeCalculator {
     /**
-     *
-     * @param m the value of m
-     * @return the long
-     * @throws IOException
+     * Compute the size of an object
+     * @param m the object to be sized
+     * @return the computed of the object
+     * @throws java.io.IOException 
      */
     public long serializ(CRDT m) throws IOException;
     

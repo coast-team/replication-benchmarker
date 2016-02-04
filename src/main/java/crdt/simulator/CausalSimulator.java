@@ -26,15 +26,14 @@ import crdt.Factory;
 import crdt.PreconditionException;
 import crdt.simulator.sizecalculator.SizeCalculator;
 import crdt.simulator.sizecalculator.StandardSizeCalculator;
-import java.io.File;
+import crdt.simulator.sizecalculator.VladiumCalculator;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jbenchmarker.core.LocalOperation;
-import jbenchmarker.vladium.*;
+import jbenchmarker.vladium.IObjectProfileNode;
+import jbenchmarker.vladium.ObjectProfiler;
+
 
 /**
  *
@@ -51,14 +50,16 @@ public class CausalSimulator extends Simulator {
 	private int nbrTrace = 0;
 	TraceStore writer = null;
 	private HashMap<TraceOperation, Integer> orderTrace;
-	private boolean detail = true;
-	private SizeCalculator serializer;
+	private boolean detail = false;
+	final private SizeCalculator serializer;
 	private int passiveReplica = 1;
-	private boolean debugInformation=true;
+	private boolean debugInformation = true;
 	public int nbRedo, nbMClean, delConcur, insConcur, insDelConcur;
+        
+        
 	public CausalSimulator(Factory<? extends CRDT> rf) {
 		super(rf);
-		this.serializer = new StandardSizeCalculator(true);
+		this.serializer = new VladiumCalculator();
 	}
 
 	public CausalSimulator(Factory<? extends CRDT> rf, boolean detail, int nbrTrace, SizeCalculator sizeCalc) {
@@ -67,23 +68,9 @@ public class CausalSimulator extends Simulator {
 		this.nbrTrace = nbrTrace;
 		this.serializer = sizeCalc;
 	}
-
-	/**
-	 *
-	 * @param rf
-	 * @param detail true for a detail of each execution time false for only the
-	 * overall sum.
-	 * @param nbrTrace frequency with which the calculated memory usage, 0 for
-	 * no memory measurement.
-	 * @param overhead true for replica memory memory measurement, false for
-	 * document measurement.
-	 *
-	 */
-	public CausalSimulator(Factory<? extends CRDT> rf, boolean detail, int nbrTrace, boolean overhead) {
-		super(rf);
-		this.detail = detail;
-		this.nbrTrace = nbrTrace;
-		this.serializer = new StandardSizeCalculator(overhead);
+        	
+        public CausalSimulator(Factory<? extends CRDT> rf, boolean detail, int nbrTrace) {
+		this(rf, detail, nbrTrace, new VladiumCalculator());
 	}
 	/*
 	 * Passive replica is a replicat added in simulation witch recieve all operations
@@ -412,10 +399,11 @@ public class CausalSimulator extends Simulator {
 				long after=System.nanoTime();
 				sumTimeView += after-before;
 				IObjectProfileNode profile = ObjectProfiler.profile (crdt);
-				sumMemory += profile.size ();
+				sumMemory += serializer.serializ(crdt); 
+                                profile.size ();
 			}
-			viewTime.add(new Long(sumTimeView / this.getReplicas().keySet().size()));
-			memUsed.add(new Long(sumMemory / this.getReplicas().keySet().size()));
+			viewTime.add(sumTimeView / this.getReplicas().keySet().size());
+			memUsed.add(sumMemory / this.getReplicas().keySet().size());
 			tour = 0;
 		}
 	}

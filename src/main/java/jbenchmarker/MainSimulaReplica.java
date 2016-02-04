@@ -80,7 +80,7 @@ public class MainSimulaReplica {
             System.out.println("algorithm : "+nameUsr+",execution : " + ex + ", with " + replicas + " replica");
             Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
                     new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
-            CausalSimulator cd = new CausalSimulator(rf, false,  scaleMemory, false);
+            CausalSimulator cd = new CausalSimulator(rf, false,  scaleMemory);
             long befor = System.nanoTime();
             /*
              * trace : trace xml

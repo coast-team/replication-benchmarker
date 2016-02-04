@@ -20,7 +20,6 @@ package jbenchmarker.sim;
 
 import crdt.CRDT;
 import crdt.simulator.CausalSimulator;
-import java.lang.String;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import jbenchmarker.core.MergeAlgorithm;
@@ -39,7 +38,7 @@ public abstract class AbstractIntegrationTest {
 
 	@Before
 	public void setUp() {
-		cd = new CausalSimulator(createFactory(),  false, 0, false);
+		cd = new CausalSimulator(createFactory(),  false, 0);
 	}
 
 	protected abstract ReplicaFactory createFactory();

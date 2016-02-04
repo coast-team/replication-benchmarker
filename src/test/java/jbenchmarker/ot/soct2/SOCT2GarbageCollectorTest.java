@@ -189,7 +189,7 @@ public class SOCT2GarbageCollectorTest {
                 String t = TracesExample.getExampleTraceMatch("exemple.xml");
                 System.out.println(l.getClass().getCanonicalName() + " | " + (g == null ? "No gc" : g.getClass().getCanonicalName()) + " | " + t);
                 CausalSimulator cd = new CausalSimulator(new TTFMergeAlgorithm(new TTFDocument(), 0,
-                        new SOCT2<TTFOperation>(l, g)), false, 0, false);
+                        new SOCT2<TTFOperation>(l, g)), false, 0);
                 cd.run(TraceGenerator.traceFromXML(t, 1));
                 assertConsistentViews(cd);
 
@@ -205,7 +205,7 @@ public class SOCT2GarbageCollectorTest {
                 for (String t : TracesExample.getIterable(TracesExample.Type.XML)) {
                     System.out.println(l.getClass().getCanonicalName() + " | " + (g == null ? "No gc" : g.getClass().getCanonicalName()) + " | " + t);
                     CausalSimulator cd = new CausalSimulator(new TTFMergeAlgorithm(new TTFDocument(), 0,
-                            new SOCT2<TTFOperation>(l, g)), false, 0, false);
+                            new SOCT2<TTFOperation>(l, g)), false, 0);
                     cd.run(TraceGenerator.traceFromXML(t, 1));
                     assertConsistentViews(cd);
                 }

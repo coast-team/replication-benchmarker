@@ -80,7 +80,7 @@ public class MainSimulation {
 
 		Trace trace = new RandomTrace(duration, RandomTrace.FLAT,
 				new StandardSeqOpProfile(perIns, perBlock, avgBlockSize, sdvBlockSize), probability, delay, sdv, replicas);
-		CausalSimulator cd = new CausalSimulator(rf, false,  0, false);
+		CausalSimulator cd = new CausalSimulator(rf, false,  0);
 		cd.setWriter(new TraceObjectWriter(repPath+nameUsr));
 
 
