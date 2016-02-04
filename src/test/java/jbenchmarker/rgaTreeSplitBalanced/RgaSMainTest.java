@@ -2,7 +2,7 @@ package jbenchmarker.rgaTreeSplitBalanced;
 
 import java.util.ArrayList;
 
-import jbenchmarker.factories.RgaTreeSplitFactory;
+import jbenchmarker.factories.RGATreeSplitFactory;
 import jbenchmarker.vladium.IObjectProfileNode;
 import jbenchmarker.vladium.ObjectProfiler;
 

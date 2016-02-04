@@ -1,9 +1,9 @@
 package jbenchmarker.factories;
 import jbenchmarker.core.MergeAlgorithm;
 import jbenchmarker.core.ReplicaFactory;
-import jbenchmarker.rgaTreeSplitBalanced.*;
+import jbenchmarker.rgaTreeSplit.*;
 
-public class RgaTreeSplitBalancedFactory extends ReplicaFactory{
+public class RGATreeSplitFactory extends ReplicaFactory{
 
 	@Override
 	public MergeAlgorithm create(int r) {

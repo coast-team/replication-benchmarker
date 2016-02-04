@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
-import jbenchmarker.factories.RgaSFactory;
+import jbenchmarker.factories.RGASplitFactory;
 import org.junit.Before;
 import org.junit.Test;
 import crdt.PreconditionException;
@@ -38,7 +38,7 @@ public class RgaSDocumentTest {
 
 	@Before
 	public void setUp() throws Exception {
-		replica = (RgaSMerge) new RgaSFactory().create(REPLICA_ID);
+		replica = (RgaSMerge) new RGASplitFactory().create(REPLICA_ID);
 	}
 
 	@Test

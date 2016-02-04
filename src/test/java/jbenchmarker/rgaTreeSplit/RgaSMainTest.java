@@ -2,7 +2,7 @@ package jbenchmarker.rgaTreeSplit;
 
 import java.util.ArrayList;
 
-import jbenchmarker.factories.RgaTreeSplitFactory;
+import jbenchmarker.factories.RGATreeSplitFactory;
 
 import java.util.List;
 

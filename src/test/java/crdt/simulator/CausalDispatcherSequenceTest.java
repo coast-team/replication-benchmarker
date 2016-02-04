@@ -62,7 +62,7 @@ public class CausalDispatcherSequenceTest {
         new WootHFactory(),
         new WootUFactory(),
         new RGAFactory(),
-        new RgaSFactory(),
+        new RGASplitFactory(),
         new TTFFactories.WithoutGCFactory(),
         new TTFFactories.WithGC10(),
         new TTFFactories.WithLL_PGC(),

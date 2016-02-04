@@ -21,7 +21,7 @@ public class MainToRunExperiments {
     /*
      * launch in command line
 
-     jbenchmarker.factories.TraceFactory  jbenchmarker.factories.RgaTreeSplitFactory TraceTest 3 2 0 0 1 0 1 7 1000 0.8 0.15 10 1 0.1 5 1 10 'realized on Grid 5000'
+     jbenchmarker.factories.TraceFactory  jbenchmarker.factories.RGATreeSplitFactory TraceTest 3 2 0 0 1 0 1 7 1000 0.8 0.15 10 1 0.1 5 1 10 'realized on Grid 5000'
 
      */
     public static void main(String[] args) throws Exception {
@@ -111,10 +111,9 @@ public class MainToRunExperiments {
 /*            factories.add("jbenchmarker.factories.LogootFactory");
             factories.add("jbenchmarker.factories.LogootSplitAVLFactory");
             factories.add("jbenchmarker.factories.RGAFactory");
-            factories.add("jbenchmarker.factories.RGAFFactory");
             factories.add("jbenchmarker.factories.RGATreeListFactory");
-            factories.add("jbenchmarker.factories.RgaSFactory");
-            factories.add("jbenchmarker.factories.RgaTreeSplitBalancedFactory");
+            factories.add("jbenchmarker.factories.RGASplitFactory");
+            factories.add("jbenchmarker.factories.RGATreeSplitBalancedFactory");
             factories.add("jbenchmarker.factories.TreedocFactory");
 */
             factories.add("jbenchmarker.factories.RgaTreeSplitFactory");

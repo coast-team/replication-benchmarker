@@ -10,10 +10,6 @@ import jbenchmarker.core.MergeAlgorithm;
 import crdt.Operation;
 import crdt.simulator.IncorrectTraceException;
 import jbenchmarker.core.SequenceOperation;
-import jbenchmarker.rgaTreeSplitBalanced.RgaSDocument;
-import jbenchmarker.rgaTreeSplitBalanced.RgaSNode;
-import jbenchmarker.rgaTreeSplitBalanced.RgaSInsertion;
-import jbenchmarker.rgaTreeSplitBalanced.RgaSS3Vector;
 import jbenchmarker.rgaTreeSplitBalanced.RgaSDocument.Position;
 
 

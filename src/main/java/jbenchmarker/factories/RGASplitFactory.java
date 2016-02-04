@@ -6,7 +6,7 @@ import jbenchmarker.core.ReplicaFactory;
 import jbenchmarker.rgasplit.*;
 
 
-public class RgaSFactory extends ReplicaFactory {
+public class RGASplitFactory extends ReplicaFactory {
 
 	@Override
 	public MergeAlgorithm create(int r) {

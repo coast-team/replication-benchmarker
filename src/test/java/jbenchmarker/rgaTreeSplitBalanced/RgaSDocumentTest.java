@@ -7,7 +7,7 @@ import java.util.List;
 
 import jbenchmarker.core.SequenceOperation;
 import jbenchmarker.core.SequenceOperation.OpType;
-import jbenchmarker.factories.RgaTreeSplitBalancedFactory;
+import jbenchmarker.factories.RGATreeSplitBalancedFactory;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +42,7 @@ public class RgaSDocumentTest {
 
 	@Before
 	public void setUp() throws Exception {
-		replica = (RgaSMerge) new RgaTreeSplitBalancedFactory().create(REPLICA_ID);
+		replica = (RgaSMerge) new RGATreeSplitBalancedFactory().create(REPLICA_ID);
 	}
 
 	@Test

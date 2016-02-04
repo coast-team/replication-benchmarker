@@ -28,9 +28,9 @@ public class PlotFromMultipleTraces {
 		//algoList.add("Logoot");
 		//algoList.add("WootH");		
 		algoList.add("RGA");
-		algoList.add("RgaS");
+		algoList.add("RGASplit");
 		algoList.add("RGATreeList");
-		algoList.add("RgaTreeSplitBalanced");
+		algoList.add("RGATreeSplitBalanced");
 		algoList.add("LogootS");
 		algoList.add("LogootSplitAVL");
 		algoList.add("Treedoc");
@@ -161,7 +161,7 @@ public class PlotFromMultipleTraces {
 		PlotStyle myPlotStyle = new PlotStyle();
 		myPlotStyle.setStyle(Style.LINES);
 		DataSetPlot s = new DataSetPlot(dataPlot);
-		if (dataName=="RgaTreeSplitBalanced") dataName = "RGATreeSplit";
+		if (dataName=="RGATreeSplitBalanced") dataName = "RGATreeSplit";
 		s.setTitle(dataName);
 		myPlotStyle.setLineWidth(2);
 		s.setPlotStyle(myPlotStyle);
